@@ -12,7 +12,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-family:system-ui,sans-serif;font-size:14px;overscroll-behavior-y:none}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-family:system-ui,sans-serif;font-size:14px;overscroll-behavior-y:none}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>名古屋看花花</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
@@ -318,6 +318,8 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .trip-over .tile.past{opacity:1}
 .trip-over .tile.past .art>svg{filter:none}
 .tile.today .art{outline:3px solid var(--mint-ink);outline-offset:3px}
+/* iOS 輸入框字小於 16px 會在點擊時自動放大畫面 */
+.field,.rate input,textarea,select{font-size:16px!important}
 .mood-cta,.mood-done{display:flex;align-items:center;gap:12px;width:calc(100% - 40px);margin:0 20px 18px;border:0;border-radius:20px;padding:12px 14px;text-align:left;cursor:pointer;font-family:var(--f-body)}
 .mood-cta{background:#E07A5C;color:#fff;box-shadow:0 4px 0 #B9573C}
 .mood-cta:active{transform:translateY(2px);box-shadow:0 2px 0 #B9573C}
