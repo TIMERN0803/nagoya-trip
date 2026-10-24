@@ -12,7 +12,89 @@
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="icon-192.png">
-<style>*,*::before,*::after{touch-action:manipulation}html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-family:system-ui,sans-serif;font-size:14px;overscroll-behavior-y:none}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>*,*::before,*::after{touch-action:manipulation}html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-family:system-ui,sans-serif;font-size:14px;overscroll-behavior-y:none}img{max-width:100%}[hidden]{display:none!important}
+/* ===== 遊戲化首頁：粗外框、貼紙陰影、收藏卡片（先套用在首頁） ===== */
+:root{--ol:#3F3127;--butter:#F6D58A;--butter-soft:#FCEFC6;--pop:0 4px 0 var(--ol)}
+.g-home{--olw:2.5px;position:relative}
+.g-home::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23E3D3BE' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M14 22q6-8 12 0t12 0'/%3E%3Ccircle cx='92' cy='26' r='5'/%3E%3Cpath d='M70 92l6 6m0-6l-6 6'/%3E%3Cpath d='M18 88q4 10 14 4'/%3E%3C/g%3E%3Cg fill='%23E9DBC8'%3E%3Ccircle cx='96' cy='78' r='5'/%3E%3Ccircle cx='89' cy='70' r='2.6'/%3E%3Ccircle cx='96' cy='67' r='2.6'/%3E%3Ccircle cx='103' cy='70' r='2.6'/%3E%3Ccircle cx='50' cy='56' r='2.4'/%3E%3C/g%3E%3C/svg%3E") repeat}
+/* HUD */
+.g-home .hud{display:flex;align-items:center;gap:10px;min-height:56px;padding-top:2px}
+.hud-badge{width:52px;height:52px;flex:none;border-radius:50%;background:var(--butter);border:var(--olw) solid var(--ol);box-shadow:0 3px 0 var(--ol);display:grid;place-items:center;overflow:hidden}
+.hud-badge svg{width:46px;height:24px;margin-top:4px}
+.hud-t h1{margin:0;font-size:22px;letter-spacing:.02em;line-height:1.15}
+.hud-t small{display:block;font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--muted)}
+.hud-row{display:grid;grid-template-columns:1.15fr .9fr 1.15fr;gap:8px;margin:10px 0 4px}
+.hud-pill{position:relative;display:flex;align-items:center;gap:6px;min-width:0;height:38px;padding:0 10px 0 4px;border:var(--olw) solid var(--ol);border-radius:999px;background:var(--card);box-shadow:0 3px 0 var(--ol);cursor:pointer;font:inherit;color:var(--ink);transition:transform .08s,box-shadow .08s}
+.hud-pill:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+.hp-ic{width:28px;height:28px;flex:none;border-radius:50%;display:grid;place-items:center;border:2px solid var(--ol)}
+.hp-ic svg{width:16px;height:16px}
+.hp-day .hp-ic{background:var(--butter);color:var(--ol)}
+.hp-todo .hp-ic{background:var(--mint-soft);color:var(--mint-ink)}
+.hp-yen .hp-ic{background:var(--coral-soft);color:var(--coral-ink)}
+.hud-pill b{font-family:var(--f-display);font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
+/* 主卡 */
+.g-home .hero{border:var(--olw) solid var(--ol);border-radius:26px;box-shadow:var(--pop);margin-top:12px;overflow:visible}
+.g-home .scene-wrap{position:relative;border-bottom:var(--olw) solid var(--ol);border-radius:23px 23px 0 0;overflow:hidden}
+.g-home .hero .scene{border-radius:0}
+.g-home .plaque{position:absolute;left:50%;bottom:10px;transform:translateX(-50%) rotate(-1.5deg);max-width:86%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--card);border:var(--olw) solid var(--ol);border-radius:14px;box-shadow:0 3px 0 var(--ol);padding:5px 16px 6px;font-family:var(--f-display);font-weight:900;font-size:17px;color:var(--ink)}
+.g-home .plaque::before,.g-home .plaque::after{content:"";position:absolute;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--butter);border:1.5px solid var(--ol)}
+.g-home .plaque::before{left:6px}.g-home .plaque::after{right:6px}
+.g-home .hero .body{padding:16px 18px 6px}
+.g-home .hms span{background:var(--butter-soft);border:2px solid var(--ol);box-shadow:0 2px 0 var(--ol);border-radius:12px}
+.g-home .hms i{color:var(--brown)}
+.g-home .hero .foot{padding:4px 18px 16px}
+.g-home .chip.coral{box-shadow:inset 0 0 0 2px var(--coral-ink)}
+/* 旅程進度 */
+.trip-bar{padding:8px 18px 14px}
+.tb-head{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--brown);margin-bottom:6px}
+.tb-head b{font-weight:900;color:var(--ink);font-size:15px;font-variant-numeric:tabular-nums}
+.tb-seg{display:grid;grid-template-columns:repeat(8,1fr);gap:4px;padding:3px;border:2px solid var(--ol);border-radius:10px;background:var(--sunk)}
+.tb-seg i{height:12px;border-radius:5px;background:var(--card)}
+.tb-seg i.on{background:var(--butter)}
+.tb-seg i.now{background:repeating-linear-gradient(135deg,var(--butter) 0 5px,#F0C463 5px 10px);box-shadow:inset 0 0 0 1.5px var(--ol)}
+.g-home .today-main{padding:14px 18px 4px}
+.g-home .mood-line{border-top:2px dashed var(--line-strong)}
+.g-home .trip-bar+.mood-line{margin-top:0}
+/* 到期提醒 */
+.g-home .due-alert{border:var(--olw) solid var(--ol);box-shadow:0 3px 0 var(--ol)}
+.g-home .da-done{border:2px solid var(--ol);box-shadow:0 2px 0 var(--ol)}
+.g-home .da-done:active{transform:translateY(2px);box-shadow:none}
+/* 區塊卡片 */
+.g-home .sheet{border:var(--olw) solid var(--ol);box-shadow:var(--pop);border-radius:26px;margin-top:30px}
+.g-home .clips{top:-15px}
+.g-home .clips i{border:2px solid var(--ol);border-top:0;width:16px;height:26px}
+.g-home .sheet-head h2{font-size:20px}
+/* 收藏卡：8 天的地點 */
+.g-home .grid{gap:12px 9px}
+.g-home .tile{background:var(--card);border:2px solid var(--ol);border-radius:16px;padding:5px 5px 7px;box-shadow:0 3px 0 var(--ol);gap:5px;transition:transform .08s,box-shadow .08s}
+.g-home .tile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+.g-home .tile .art{border-radius:11px;border:1.5px solid var(--ol)}
+.g-home .tile:active .art{transform:none}
+.g-home .tile b{font-size:13.5px;line-height:1.25}
+.g-home .tile small{margin-top:-4px}
+.g-home .tile.today{background:var(--butter);}
+.g-home .tile.today .art{outline:0}
+.g-home .tile.today small{color:var(--ol)}
+.g-home .tile.past{opacity:1}
+.g-home .tile.past b,.g-home .tile.past small{color:var(--muted)}
+.g-home .tile-pill{border:2px solid var(--ol);box-shadow:0 2px 0 var(--ol);left:6px;top:6px}
+.g-home .tile-done{border:2px solid var(--ol);box-shadow:none;background:var(--butter-soft)}
+/* 心情集章 */
+.g-home .ms-day{border:2px solid var(--line-strong);background:var(--card)}
+.g-home .ms-day.today{border-color:var(--ol);box-shadow:0 2px 0 var(--ol);background:var(--mint-soft)}
+/* 提醒設定 */
+.g-home .rm-row{border:2px solid var(--ol);background:var(--card);box-shadow:0 3px 0 var(--ol)}
+.g-home .rm-row:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+.g-home .rm-row.cal{border-color:var(--ol);box-shadow:0 3px 0 var(--ol)}
+.g-home .rm-ic{border:2px solid var(--ol);background:var(--butter-soft)}
+.g-home .rm-row.cal .rm-ic{background:rgba(255,255,255,.2);border-color:#fff}
+.g-home .switch{border:2px solid var(--ol);height:30px;width:52px}
+.g-home .switch i{border:2px solid var(--ol);box-shadow:none;left:2px;top:2px;width:22px;height:22px}
+/* 浮動按鈕跟著首頁風格 */
+.fab{border:2.5px solid var(--ol);box-shadow:0 4px 0 var(--ol),0 10px 20px -6px rgba(63,49,39,.35)}
+.fab .fh{border:2px solid var(--ol);background:var(--butter)}
+@media (prefers-reduced-motion:reduce){.hud-pill,.g-home .tile,.g-home .rm-row{transition:none}}
+</style>
 <title>名古屋看花花</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
@@ -67,7 +149,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .today-main{display:flex;align-items:flex-end;gap:12px;width:100%;padding:14px 20px 14px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
 .today-main .txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
 .today-main .lbl{font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--brown)}
-.today-main .ttl{font-family:var(--f-display);font-weight:900;font-size:22px;line-height:1.3}
+.today-main .ttl{font-family:var(--f-display);font-weight:900;font-size:23px;line-height:1.3}
 .today-main .rt{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .today-main .big{flex:none;text-align:right;font-family:var(--f-display);font-weight:900;line-height:.85;font-size:64px;letter-spacing:-.02em}
 .today-main .big small{display:block;font-size:13px;letter-spacing:0;color:var(--brown);margin-top:8px;line-height:1}
@@ -1040,15 +1122,26 @@ function heroHTML(){
   cd=`<div class="cd"><div class="cd-d"><b id="cd-d">${c.d}</b><small>天</small></div><div class="hms" aria-label="時分秒"><span><b id="cd-h">${p2(c.h)}</b><i>時</i></span><span><b id="cd-m">${p2(c.m)}</b><i>分</i></span><span><b id="cd-s">${p2(c.s)}</b><i>秒</i></span></div></div>`;lbl="名古屋，我們來了";
   sub="11/17（二）07:05 從台中起飛<br>JX 320，10:40 抵達名古屋";
   const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,soon=new Set(dueSoon().map(x=>x.r.id)),next=pl.find(r=>!done[r.id]&&r.due&&!soon.has(r.id));
-  foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>待辦 ${n} / ${pl.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
+  foot=`${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];
-  return `<section class="hero trip">${HERO.replace('<svg class="scene"','<svg class="scene" preserveAspectRatio="xMidYMax slice"')}<button class="today-main" type="button" data-day="${todayIdx}"><span class="txt"><span class="lbl">今天的行程</span><span class="ttl">${esc(x.title)}</span><span class="rt">${x.route.map(esc).join(" → ")}</span></span><span class="big">D${todayIdx+1}<small>${x.d}（${x.w}）</small></span></button>${moodLineHTML(x,todayIdx)}</section>`;
+  return `<section class="hero trip"><div class="scene-wrap">${HERO.replace('<svg class="scene"','<svg class="scene" preserveAspectRatio="xMidYMax slice"')}<div class="plaque">今天的行程</div></div><button class="today-main" type="button" data-day="${todayIdx}"><span class="txt"><span class="ttl">${esc(x.title)}</span><span class="rt">${x.route.map(esc).join(" → ")}</span></span><span class="big">D${todayIdx+1}<small>${x.d}（${x.w}）</small></span></button>${tripBarHTML()}${moodLineHTML(x,todayIdx)}</section>`;
  }else{big="完<small>旅程結束</small>";lbl="下次再一起出發";sub="記帳、清單和心情都還留著";foot=`<button class="chip mint" data-mood-day="0">回顧我們的心情<svg><use href="#i-arrow"/></svg></button>`;}
- return `<section class="hero">${HERO}${cd?`<div class="body col">${cd}<div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${foot?`<div class="foot">${foot}</div>`:""}${moodCta}</section>`;
+ return `<section class="hero"><div class="scene-wrap">${HERO}<div class="plaque">${lbl}</div></div>${cd?`<div class="body col">${cd}<div class="txt"><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${tripBarHTML()}${foot?`<div class="foot">${foot}</div>`:""}${moodCta}</section>`;
+}
+function hudHTML(){
+ const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,spent=expenses.reduce((a,e)=>a+e.amt,0);
+ const day=cdParts().ms>0?`還有 ${cdParts().d} 天`:todayIdx>=0?`第 ${todayIdx+1} 天`:"旅程完成";
+ const pill=(ic,cls,v,attr,lab)=>`<button class="hud-pill ${cls}" type="button" ${attr} aria-label="${lab}"><span class="hp-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${ic}"/></svg></span><b>${v}</b></button>`;
+ return `<header class="hud"><span class="hud-badge"><svg role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg></span><div class="hud-t"><h1>名古屋看花花</h1><small>11/17 – 11/24・兩個人的旅行</small></div></header>
+ <div class="hud-row">${pill("k-do","hp-day",day,`data-day="${todayIdx>=0?todayIdx:0}"`,`旅程：${day}`)}${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
+}
+function tripBarHTML(){
+ const done_=cdParts().ms>0?0:todayIdx>=0?todayIdx:DAYS.length;
+ return `<div class="trip-bar" aria-label="旅程進度 ${done_} / ${DAYS.length} 天"><div class="tb-head"><span>旅程進度</span><b>${cdParts().ms>0?0:todayIdx>=0?todayIdx+1:DAYS.length} / ${DAYS.length}</b></div><div class="tb-seg">${DAYS.map((x,i)=>`<i class="${i<done_?"on":""}${i===todayIdx?" now":""}"></i>`).join("")}</div></div>`;
 }
 function homeHTML(){
- return `<header class="bar"><svg class="logo" role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg><h1>名古屋看花花</h1><span class="right">11/17 – 11/24</span></header>
+ return `<div class="g-home">${hudHTML()}
  ${heroHTML()}
  ${dueAlertsHTML()}
  <section class="sheet"><div class="clips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
@@ -1057,7 +1150,7 @@ function homeHTML(){
    <button class="tile" data-go="list"><span class="art"><svg viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)"><rect width="120" height="120" fill="url(#gMint)"/><rect y="94" width="120" height="26" fill="#E7DCCB"/><g class="ol" transform="translate(90 62)"><path d="M-8-10v-6a8 8 0 0 1 16 0v6" fill="none"/><path d="M-18-10h36l-4 40h-28z" fill="#EE9479"/><rect x="-9" y="2" width="18" height="10" rx="3" fill="#fff"/></g></g>${cat("cat-w-wave",6,52,58)}</svg></span><b>要買的</b><small>${itemsOf("buy").filter(r=>done[r.id]).length} / ${itemsOf("buy").length} 已買</small></button></div>
  </section>
  ${moodStripHTML()}
- ${remindHTML()}`;
+ ${remindHTML()}</div>`;
 }
 /* ---------- 行程小插圖：每張卡片右側的圖，同一套粗線條手繪風 ---------- */
 const PB={eat:"#FDE3D2",go:"#DDF0E2",move:"#DCEBF7",stay:"#EBE2F6",do:"#FBDDE6",buy:"#FBEFC8"};
