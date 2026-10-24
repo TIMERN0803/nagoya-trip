@@ -400,6 +400,22 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .rm-txt small{font-size:12.5px;color:var(--muted)}
 .rm-row.cal small{color:rgba(255,255,255,.88)}
 .rm-row .go{width:20px;height:20px;flex:none}
+.sheet-modal{position:fixed;inset:0;z-index:55;background:rgba(43,36,32,.45);display:flex;align-items:flex-end;justify-content:center;animation:fadein .18s ease}
+.sm-card{width:100%;max-width:520px;background:var(--card);border-radius:26px 26px 0 0;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px;animation:sheetup .28s cubic-bezier(.2,.9,.3,1)}
+@keyframes sheetup{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
+.sm-head{display:flex;align-items:center;justify-content:space-between}
+.sm-head b{font-family:var(--f-display);font-weight:900;font-size:19px}
+.sm-x{width:40px;height:40px;border:0;border-radius:50%;background:var(--sunk);display:grid;place-items:center;cursor:pointer}
+.sm-x svg{width:18px;height:18px}
+.sm-opt{display:flex;flex-direction:column;gap:3px;text-align:left;text-decoration:none;color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:18px;padding:12px 14px;cursor:pointer;font-family:var(--f-body)}
+.sm-opt b{font-family:var(--f-display);font-weight:900;font-size:16px}
+.sm-opt small{font-size:13px;color:var(--muted);line-height:1.5}
+.sm-opt em{font-style:normal;font-weight:700;color:var(--coral-ink)}
+.sm-opt.main{background:var(--mint-ink);border-color:var(--mint-ink);color:#fff}
+.sm-opt.main small{color:rgba(255,255,255,.9)}
+.sm-opt.main em{color:#FFE29A}
+.sm-msg{margin:0;font-size:13px;color:var(--mint-ink);font-weight:700;min-height:1em}
+.sm-msg .sel{user-select:all;-webkit-user-select:all;font-weight:500;color:var(--ink);word-break:break-all}
 .switch{flex:none;width:48px;height:28px;border-radius:999px;background:#D9CBB8;position:relative;transition:background .2s}
 .switch i{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .22s cubic-bezier(.3,1.4,.5,1)}
 .switch.on{background:var(--mint-ink)}
@@ -1155,8 +1171,25 @@ function notifyStatus(){
 function remindHTML(){
  return `<section class="sheet remind"><div class="sheet-head"><h2>行程提醒</h2></div>
   <button class="rm-row" type="button" data-notify><span class="rm-ic"><svg viewBox="0 0 24 24"><use href="#i-bell"/></svg></span><span class="rm-txt"><b>App 內提醒</b><small>${esc(notifyStatus())}</small></span><span class="switch${notifyOn?" on":""}" role="switch" aria-checked="${notifyOn}" aria-label="App 內提醒"><i></i></span></button>
-  <a class="rm-row cal" href="nagoya-trip.ics" target="_blank" rel="noopener"><span class="rm-ic"><svg viewBox="0 0 24 24"><use href="#k-do"/></svg></span><span class="rm-txt"><b>加到手機行事曆</b><small>匯入一次，關掉 App、沒網路也會在 30 分鐘前提醒</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+  <button class="rm-row cal" type="button" data-cal><span class="rm-ic"><svg viewBox="0 0 24 24"><use href="#k-do"/></svg></span><span class="rm-txt"><b>加到手機行事曆</b><small>加一次，關掉 App、沒網路也會在 30 分鐘前提醒</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
  </section>`;
+}
+const ICS_HTTPS=new URL("nagoya-trip.ics",location.href).href;
+const ICS_WEBCAL=ICS_HTTPS.replace(/^https?:/,"webcal:");
+const isAndroid=/Android/i.test(navigator.userAgent);
+function openCalSheet(){
+ const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","加到手機行事曆");
+ v.innerHTML=`<div class="sm-card"><div class="sm-head"><b>加到手機行事曆</b><button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
+  ${isAndroid?"":`<a class="sm-opt main" href="${ICS_WEBCAL}"><b>iPhone：用行事曆訂閱</b><small>會打開行事曆 App，按「訂閱」。<br><em>重要：</em>下一頁把「移除提示」關掉，提醒才會響。之後行程有改，行事曆也會自動更新</small></a>`}
+  <a class="sm-opt${isAndroid?" main":""}" href="${ICS_HTTPS}" download="名古屋看花花.ics"><b>${isAndroid?"下載行事曆檔":"Android／電腦：下載行事曆檔"}</b><small>下載後點開，選 Google 日曆或行事曆匯入</small></a>
+  <button type="button" class="sm-opt" data-copy><b>複製連結</b><small>上面都打不開時，複製後貼到 Safari 或 Chrome 打開</small></button>
+  <p class="sm-msg" role="status"></p></div>`;
+ document.body.appendChild(v);document.body.style.overflow="hidden";
+ const close=()=>{v.remove();document.body.style.overflow=""};
+ v.addEventListener("click",async e=>{
+  if(e.target===v||e.target.closest(".sm-x")){close();return}
+  if(e.target.closest("[data-copy]")){const m=v.querySelector(".sm-msg");try{await navigator.clipboard.writeText(ICS_HTTPS);m.textContent="已複製連結，到 Safari 或 Chrome 貼上打開就好"}catch(_){m.innerHTML=`請長按選取這串網址：<br><span class="sel">${ICS_HTTPS}</span>`}}
+ });
 }
 async function showNote(title,body,tag){
  try{if(canNotify()&&Notification.permission==="granted"){const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg){await reg.showNotification(title,{body,tag,icon:"icon-192.png",badge:"icon-192.png"});return true}new Notification(title,{body,tag,icon:"icon-192.png"});return true}}catch(_){}
@@ -1222,6 +1255,7 @@ function refresh(){
 
 app.addEventListener("click",e=>{
  if(e.target.closest("[data-notify]")){toggleNotify();return}
+ if(e.target.closest("[data-cal]")){openCalSheet();return}
  const hp=e.target.closest("[data-hop]");if(hp){hp.classList.remove("hop");void hp.getBoundingClientRect();hp.classList.add("hop");setTimeout(()=>hp.classList.remove("hop"),700);return}
  if(e.target.closest("[data-map]")){openViewer("ghibli-map.jpg","吉卜力公園地圖");return}
  const md=e.target.closest("[data-mood-day]");if(md){gotoMood(+md.dataset.moodDay);return}
