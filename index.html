@@ -170,7 +170,8 @@ details.sched summary svg.m{transition:width .25s ease,height .25s ease}
 details.sched.stuck summary svg.m{width:42px;height:30px}
 details.sched .sbody{max-height:calc(100dvh - env(safe-area-inset-top,0px) - var(--strip-h,76px) - 200px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 details.sched small.cur{color:var(--mint-ink);font-weight:700}
-.srow.now{box-shadow:inset 4px 0 0 var(--mint);background:var(--mint-soft)}
+.srow.now{box-shadow:inset 4px 0 0 #F4C04A;background:#FDF3D6}
+.srow .flag{margin:0 6px 2px 0;vertical-align:2px}
 details.sched summary{cursor:pointer;padding:12px 18px;list-style:none;display:flex;align-items:center;gap:10px}
 details.sched summary::-webkit-details-marker{display:none}
 .sbody{overflow:hidden}
@@ -1096,7 +1097,7 @@ function schedNow(stat){if(!stat)return -1;return SCHED.findIndex(r=>{const[a,b]
 function schedHTML(stat){
  const ni=schedNow(stat),cur=ni>=0?SCHED[ni]:null;
  return `<details class="sched"${store.get("schedOpen")?" open":""} id="sched"><summary><svg class="m" aria-hidden="true"><use href="#cats"/></svg><div><b>園區時間表</b>${cur?`<small class="cur">現在：${esc(cur[3]===1?cur[2]:cur[1])}，到 ${cur[0].split("–")[1]}</small>`:`<small>10:00 入園，17:00 閉園</small>`}</div></summary><div class="sbody">
- ${SCHED.map((r,i)=>`<div class="srow${r[3]===1?" move":""}${r[3]===2?" star":""}${i===ni?" now":""}"><div class="st">${r[0]}</div><div>${r[3]===1?esc(r[2]):`<b>${esc(r[1])}</b><p>${esc(r[2])}</p>`}</div></div>`).join("")}
+ ${SCHED.map((r,i)=>`<div class="srow${r[3]===1?" move":""}${r[3]===2?" star":""}${i===ni?" now":""}"><div class="st">${r[0]}</div><div>${i===ni?`<span class="flag now">進行中</span>`:""}${r[3]===1?esc(r[2]):`<b>${esc(r[1])}</b><p>${esc(r[2])}</p>`}</div></div>`).join("")}
  <div class="tips"><div><b>青春之丘到 Dondoko 森林：</b>免費巴士剛好就搭，不然直接走</div><div><b>Dondoko 森林到魔法之里：</b>可搭一次 APM 貓巴士，體驗兼省腳力</div><div><b>魔法之里之後：</b>區域集中，直接走比等車快</div></div></div></details>`;
 }
 const chipInner=(d,i)=>`<small>${i===todayIdx?"今天":d.w}</small>${i===dayIdx?`<svg class="dh" aria-hidden="true"><use href="#head-${i%2?"b":"w"}"/></svg>`:`<b>${d.d.split("/")[1]}</b>`}`;
