@@ -334,6 +334,18 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .due-row .field{min-width:0;width:100%;-webkit-appearance:none;appearance:none;min-height:44px;background:var(--card)}
 .due-hint{font-size:12px;color:var(--muted);margin-top:-2px}
 .due-alerts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.fab{position:fixed;z-index:9;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(104px + env(safe-area-inset-bottom,0px));display:flex;align-items:center;gap:8px;max-width:min(240px,calc(100vw - 32px));padding:6px 16px 6px 6px;border:3px solid #fff;border-radius:999px;background:var(--card);color:var(--ink);box-shadow:0 10px 24px -6px rgba(63,49,39,.38),0 0 0 1px var(--line);cursor:pointer;font:inherit;text-align:left;touch-action:manipulation}
+.fab[hidden]{display:none}
+.fab.in{animation:fabin .38s cubic-bezier(.3,1.4,.5,1)}
+.fab:active{transform:scale(.96)}
+.fab .fh{width:42px;height:42px;flex:none;border-radius:50%;background:var(--accent-soft);display:grid;place-items:center;overflow:hidden}
+.fab .fh svg{width:36px;height:30px;margin-top:6px}
+.fab .ft{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.fab small{font-size:12px;font-weight:700;color:var(--mint-ink)}
+.fab b{font-family:var(--f-display);font-weight:900;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.has-fab .shell{padding-bottom:190px}
+@keyframes fabin{from{opacity:0;transform:translateY(12px) scale(.85)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.fab.in{animation:none}}
 .due-alert{display:flex;align-items:center;gap:8px;background:var(--coral-soft);border:1.5px solid var(--coral-line);border-radius:20px;padding:6px 8px 6px 4px}
 .da-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:var(--ink);padding:4px 6px}
 .da-ic{width:20px;height:20px;flex:none;color:var(--coral-ink)}
@@ -1402,11 +1414,34 @@ async function toggleNotify(){
  checkReminders();
 }
 setInterval(checkReminders,20000);
-setInterval(()=>{if(tab!=="plan"||view!=="home")return;const cur=document.getElementById("due-alerts"),html=dueAlertsHTML();if(cur){if(html)cur.outerHTML=html;else cur.remove()}else if(html){const h=app.querySelector(".hero");if(h)h.insertAdjacentHTML("afterend",html)}},30000);
+setInterval(()=>{updateFab();if(tab!=="plan"||view!=="home")return;const cur=document.getElementById("due-alerts"),html=dueAlertsHTML();if(cur){if(html)cur.outerHTML=html;else cur.remove()}else if(html){const h=app.querySelector(".hero");if(h)h.insertAdjacentHTML("afterend",html)}},30000);
 document.addEventListener("visibilitychange",checkReminders);
 
 const scrollMem={};let curKey=null;
 const viewKey=()=>tab==="plan"?"plan-"+view:tab;
+function jumpToItem(i,instant){const el=document.getElementById("it-"+i);if(!el)return;const pv=el.previousElementSibling,anchor=pv&&pv.classList.contains("leg")?pv:el;const top=anchor.getBoundingClientRect().top+scrollY-topGap()-14;scrollTo({top,behavior:reduce()||instant?"auto":"smooth"});el.classList.remove("ping");void el.offsetWidth;el.classList.add("ping")}
+/* 首頁右下的「現在行程」浮動按鈕：旅程中才出現，點了跳到當天正在進行的行程 */
+function curItem(x){
+ const st=dayStatus(x),nowM=st.nowM;let last=-1;
+ x.items.forEach((it,i)=>{const m=tmin(it.t);if(m!=null&&m<=nowM)last=i});
+ if(last>=0&&st.st[last]==="now")return{i:last,lbl:"現在"};
+ const j=last+1;if(j>=x.items.length)return null;
+ const it=x.items[j];if(!it.t)return{i:j,lbl:"現在"};
+ /* 下一個有時間的行程還早（超過 1 小時），就還算在上一個行程裡，例如整天在吉卜力公園 */
+ if(last>=0&&tmin(it.t)-nowM>60)return{i:last,lbl:"現在"};
+ return{i:j,lbl:`接下來 ${it.t}`};
+}
+const fab=document.createElement("button");fab.type="button";fab.className="fab";fab.hidden=true;document.body.appendChild(fab);
+function updateFab(){
+ const show=tab==="plan"&&view==="home"&&todayIdx>=0;const c=show&&curItem(DAYS[todayIdx]);
+ if(!c){fab.hidden=true;document.body.classList.remove("has-fab");return}
+ const it=DAYS[todayIdx].items[c.i],k=c.i+"|"+c.lbl;
+ if(fab.dataset.k!==k){fab.dataset.k=k;fab.dataset.i=c.i;fab.setAttribute("aria-label",`${c.lbl}：${it.n}，看行程`);
+  fab.innerHTML=`<span class="fh"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${todayIdx%2?"b":"w"}"/></svg></span><span class="ft"><small>${esc(c.lbl)}</small><b>${esc(it.n)}</b></span>`}
+ if(fab.hidden){fab.hidden=false;fab.classList.remove("in");void fab.offsetWidth;fab.classList.add("in")}
+ document.body.classList.add("has-fab");
+}
+fab.addEventListener("click",()=>{const i=fab.dataset.i;tab="plan";view="day";dayIdx=todayIdx;render();requestAnimationFrame(()=>jumpToItem(i))});
 function render(keep,restore){
  const y=scrollY;
  if(!keep&&curKey)scrollMem[curKey]=y;
@@ -1416,7 +1451,7 @@ function render(keep,restore){
  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===tab));
  placeInd(false);
  if(tab==="acct")renderAcct();
- bindSched();syncStrip();
+ bindSched();syncStrip();updateFab();
  scrollTo(0,keep?y:(restore?(scrollMem[curKey]||0):0));
 }
 function topGap(){const st=app.querySelector(".strip")?.offsetHeight||0,d=document.getElementById("sched");if(!d)return st;if(d.open){d.open=false;store.set("schedOpen",false)}return st+d.querySelector("summary").offsetHeight}
@@ -1459,7 +1494,7 @@ app.addEventListener("click",e=>{
  const fb=e.target.closest(".fbtn");if(fb){const f=fb.closest("form");moodDraft={d:f.dataset.d,score:+fb.dataset.score,note:f.querySelector("#mood-note").value};f.querySelectorAll(".fbtn").forEach(b=>{const on=b===fb;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});f.querySelector("[type=submit]").disabled=false;return}
  const me_=e.target.closest("[data-mood-edit]");if(me_){moodEdit=me_.dataset.moodEdit;moodDraft=null;const sec=document.getElementById("mood");sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);document.getElementById("mood-note")?.focus({preventScroll:true});return}
  if(e.target.closest("[data-mood-cancel]")){pendingMoodDel=false;moodEdit=null;moodDraft=null;document.getElementById("mood").outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
- const jp=e.target.closest("[data-jump]");if(jp){const el=document.getElementById("it-"+jp.dataset.jump);if(el){const pv=el.previousElementSibling,anchor=pv&&pv.classList.contains("leg")?pv:el;const top=anchor.getBoundingClientRect().top+scrollY-topGap()-14;scrollTo({top,behavior:reduce()?"auto":"smooth"});el.classList.remove("ping");void el.offsetWidth;el.classList.add("ping")}return}
+ const jp=e.target.closest("[data-jump]");if(jp){jumpToItem(jp.dataset.jump);return}
  if(e.target.closest("[data-restore]")){if(!pendingRestore){pendingRestore=true;render(true);clearTimeout(window._pr);window._pr=setTimeout(()=>{if(pendingRestore){pendingRestore=false;if(tab==="list")render(true)}},3000);return}pendingRestore=false;restoreDefaults().then(()=>render(true));return}
  const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);focusItemForm();return}
  const inw=e.target.closest("[data-item-new]");if(inw){editItem="new:"+inw.dataset.itemNew;pendingItemDel=null;render(true);focusItemForm();return}
