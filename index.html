@@ -426,6 +426,31 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
 .step-b{animation-delay:-.4s}
 @keyframes step{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(2deg)}}
 .cats-bob{animation:bob 3.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
+/* 首頁小動態：眨眼、偷看、尾巴、揮手、雲飄、點一下會跳 */
+.hero-cats{cursor:pointer}
+.hero-cats .cat-a,.hero-cats .cat-b{transform-box:fill-box;transform-origin:50% 100%;animation:breathe 3.6s ease-in-out infinite}
+.hero-cats .cat-b{animation-delay:-1.8s}
+.anim .eyes{transform-box:fill-box;transform-origin:50% 50%;animation:blink 4.6s infinite}
+.ab .eyes{animation-duration:5.7s;animation-delay:1.3s}
+.anim .pupil{animation:peek 9s ease-in-out infinite}
+.ab .pupil{animation-delay:4.5s}
+.anim .tail{transform-box:fill-box;transform-origin:0% 100%;animation:tail 2.8s ease-in-out infinite}
+.anim .tail.l{transform-origin:100% 100%;animation-name:tailL;animation-duration:3.2s}
+.anim .arm{transform-box:fill-box;transform-origin:0% 100%;animation:wave 4.8s ease-in-out infinite}
+.drift{animation:drift 14s ease-in-out infinite alternate}
+.drift.d2{animation-duration:18s;animation-direction:alternate-reverse}
+.hero-cats.hop .cat-a{animation:hop .55s cubic-bezier(.3,1.5,.5,1)}
+.hero-cats.hop .cat-b{animation:hop .55s .08s cubic-bezier(.3,1.5,.5,1)}
+.hero-cats.hop .eyes{animation:squint .55s}
+@keyframes breathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,.985)}}
+@keyframes blink{0%,91%,97%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+@keyframes peek{0%,40%,60%,100%{transform:translateX(0)}45%,55%{transform:translateX(-1.8px)}}
+@keyframes tail{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(8deg)}}
+@keyframes tailL{0%,100%{transform:rotate(4deg)}50%{transform:rotate(-8deg)}}
+@keyframes wave{0%,55%,100%{transform:rotate(0)}62%,76%{transform:rotate(-16deg)}69%,83%{transform:rotate(8deg)}}
+@keyframes drift{from{transform:translateX(-6px)}to{transform:translateX(12px)}}
+@keyframes hop{0%{transform:translateY(0) scale(1,1)}25%{transform:translateY(0) scale(1.06,.92)}55%{transform:translateY(-12px) scale(.97,1.04)}85%{transform:translateY(0) scale(1.03,.97)}100%{transform:translateY(0) scale(1,1)}}
+@keyframes squint{0%,100%{transform:scaleY(1)}20%,70%{transform:scaleY(.15)}}
 @keyframes bob{50%{transform:translateY(-3px)}}
 @keyframes pop{from{transform:scale(.97);opacity:.5}to{transform:none;opacity:1}}
 .view{animation:fadein .16s ease-out}
@@ -494,9 +519,9 @@ document.getElementById("defs").insertAdjacentHTML("beforeend",`<filter id="roug
 function headM(o){
  const s=`stroke="${LN}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"`;
  const look=o.look||2.4;
- const eye=(x)=>`<ellipse cx="${x}" cy="25" rx="7" ry="6.6" fill="#fff" ${s}/><circle cx="${x+look}" cy="25.6" r="3.4" fill="${LN}"/>`;
+ const eye=(x)=>`<ellipse cx="${x}" cy="25" rx="7" ry="6.6" fill="#fff" ${s}/><circle class="pupil" cx="${x+look}" cy="25.6" r="3.4" fill="${LN}"/>`;
  return `<path d="M15 40 C9 32 10 20 13.5 11 L17.5 1.5 L29.5 12.5 Q35 10.8 40.5 12.5 L52.5 1.5 L56.5 11 C60 20 61 32 55 40 C49 45.5 21 45.5 15 40 Z" fill="${o.fur}" ${s}/>
-  ${eye(27)}${eye(43)}
+  <g class="eyes">${eye(27)}${eye(43)}</g>
   <circle cx="${35+look*.5}" cy="33" r="1.8" fill="${o.nose}"/>
   <path d="M13 29 H6.5 M13.5 33.5 L7.5 35.5 M57 29 H63.5 M56.5 33.5 L62.5 35.5" stroke="${o.whisk||LN}" stroke-width="2.2" stroke-linecap="round"/>`;
 }
@@ -519,7 +544,8 @@ function walkSym(id,o){
   <path d="M14 34.5 L6 33.5 M14.5 37.5 L7.5 39.5" stroke="${LN}" stroke-width="2.2" stroke-linecap="round"/>
  </g></symbol>`;
 }
-function catSym(id,o){
+function catSym(id,o){return `<symbol id="${id}" viewBox="-4 -6 78 88">${catInner(o)}</symbol>`}
+function catInner(o){
  const s=`stroke="${LN}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"`;
  const dbl=(d)=>`<path d="${d}" fill="none" stroke="${LN}" stroke-width="9.5" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${o.fur}" stroke-width="3.3" stroke-linecap="round"/>`;
  let bodyPart;
@@ -530,20 +556,20 @@ function catSym(id,o){
   <path d="M20.5 47.5 C15 46.5 10.5 46.5 8.8 49.6 C7.6 52.6 10 55.6 13.2 55 C16 54.4 18.8 53.8 21 53.6" fill="${o.fur}" ${s}/>
   <path d="M48.5 47.5 C54 46 58.5 46 60.4 49.2 C61.8 52.2 59.4 55.4 56.2 54.9 C53.4 54.4 50.6 53.8 48.6 53.6" fill="${o.fur}" ${s}/>`;
  }else{
-  const armR=o.wave?dbl("M47 50 Q55 47 57 37"):`<path d="M47 51 Q54 56 52 62 Q48 64 45 59" fill="${o.fur}" ${s}/>`;
-  bodyPart=`${dbl(o.tailL?"M19 66 Q4 65 7 49":"M51 66 Q66 65 63 49")}
+  const armR=o.wave?`<g class="arm">${dbl("M47 50 Q55 47 57 37")}</g>`:`<path d="M47 51 Q54 56 52 62 Q48 64 45 59" fill="${o.fur}" ${s}/>`;
+  bodyPart=`<g class="tail${o.tailL?" l":""}">${dbl(o.tailL?"M19 66 Q4 65 7 49":"M51 66 Q66 65 63 49")}</g>
   <path d="M22 42 C19 52 18 61 20 67 Q35 71 50 67 C52 61 51 52 48 42 Z" fill="${o.fur}" ${s}/>
   <path d="M21.5 63 C17 66 17 74 22.5 75.5 C27.5 76.8 31.5 73.5 32 68.5" fill="${o.fur}" ${s}/><path d="M48.5 63 C53 66 53 74 47.5 75.5 C42.5 76.8 38.5 73.5 38 68.5" fill="${o.fur}" ${s}/>
   <path d="M21.5 72.5 v-2 M25.5 74 v-2 M48.5 72.5 v-2 M44.5 74 v-2" stroke="${LN}" stroke-width="1.8" stroke-linecap="round"/>
   <path d="M23 51 Q16 56 18 62 Q22 64 25 59" fill="${o.fur}" ${s}/>${armR}`;
  }
- return `<symbol id="${id}" viewBox="-4 -6 78 88"><g filter="url(#rough)"${o.walk?` transform="rotate(3 35 70)"`:""}>
+ return `<g filter="url(#rough)"${o.walk?` transform="rotate(3 35 70)"`:""}${o.anim?` class="anim ${o.anim}"`:""}>
   <ellipse cx="36" cy="${o.walk?75:77}" rx="${o.walk?27:25}" ry="2.6" fill="#000" opacity=".1"/>
   ${bodyPart}
   <path d="M21.5 41 Q35 47 48.5 41 L49 46.5 Q35 52.5 21 46.5 Z" fill="${o.scarf}" ${s} stroke-width="2.6"/>
   <circle cx="35" cy="50.5" r="3" fill="#F4C04A" ${s} stroke-width="2.4"/>
   ${headM(o)}
- </g></symbol>`;
+ </g>`;
 }
 const W={fur:"#FBFAF5",scarf:"#7CC8B4",nose:LN,tailL:1};
 const B={fur:"#3A3133",scarf:"#EE9479",nose:"#F2A79C",whisk:LN};
@@ -608,13 +634,13 @@ const SCENES={
 };
 const svgTile=k=>`<svg viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)">${SCENES[k]}</g></svg>`;
 const HERO=`<svg class="scene" viewBox="2 2 316 166" aria-hidden="true"><g filter="url(#rough)">
-  <rect width="320" height="170" fill="url(#gSky)"/><circle class="ol" cx="282" cy="30" r="14" fill="#FCE4A0"/>${cloud(60,34,1.2)}${cloud(196,24,.9)}
+  <rect width="320" height="170" fill="url(#gSky)"/><circle class="ol sun" cx="282" cy="30" r="14" fill="#FCE4A0"/><g class="drift d1">${cloud(60,34,1.2)}</g><g class="drift d2">${cloud(196,24,.9)}</g>
   <g fill="#D5E3E8"><rect x="14" y="78" width="26" height="60"/><rect x="44" y="64" width="20" height="74"/><rect x="226" y="80" width="22" height="58"/><rect x="290" y="84" width="24" height="54"/></g>
   <g class="ol" transform="translate(268 24)"><rect x="-2" y="0" width="4" height="14" fill="#C8CED0"/><path d="M-10 14h20l-4 58H-6z" fill="#E1E5E6"/><rect x="-13" y="36" width="26" height="7" rx="1.5" fill="#C8CED0"/><path d="M-16 72h32l8 46h-48z" fill="#D6DCDE"/></g>
   <path d="M0 132q80-18 160-6t160-4v48H0z" fill="#CFE6BE"/>${castle(112,98,1.3)}
   ${maple(26,142,"#F2A877",1.1)}${maple(196,146,"#EF8E74",.85)}
   <rect y="152" width="320" height="18" fill="#B7D9A3"/>
-  </g><g class="cats-bob">${use("cats-hi",188,78,118,77)}</g></svg>`;
+  </g><g class="hero-cats" data-hop><g class="cat-a"><svg x="188" y="80.7" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible">${catInner({...W,wave:1,anim:"aw"})}</svg></g><g class="cat-b"><svg x="243.4" y="80.7" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible">${catInner({...B,look:-2.4,anim:"ab"})}</svg></g></g></svg>`;
 
 const KIND={move:["交通","k-move","c-move"],fly:["航班","k-fly","c-move"],go:["景點","k-go","c-go"],eat:["餐廳","k-eat","c-eat"],stay:["住宿","k-stay","c-stay"],do:["預約","k-do","c-do"],remind:["提醒","k-do","c-do"],buy:["外帶","k-buy","c-buy"]};
 const DAYS=[
@@ -1075,6 +1101,7 @@ function refresh(){
 }
 
 app.addEventListener("click",e=>{
+ const hp=e.target.closest("[data-hop]");if(hp){hp.classList.remove("hop");void hp.getBoundingClientRect();hp.classList.add("hop");setTimeout(()=>hp.classList.remove("hop"),700);return}
  if(e.target.closest("[data-map]")){openViewer("ghibli-map.jpg","吉卜力公園地圖");return}
  const md=e.target.closest("[data-mood-day]");if(md){gotoMood(+md.dataset.moodDay);return}
  const pm=e.target.closest("[data-me]");if(pm){pendingMe=pm.dataset.me;rerenderMoodSec();return}
