@@ -503,6 +503,8 @@ body.has-fab .shell{padding-bottom:190px}
 .item.s-done h3{text-decoration:line-through;text-decoration-thickness:1.5px}
 .item.ping .card{animation:ping 1s ease}
 @keyframes ping{30%{transform:scale(1.02)}}
+.chk-row.ping{animation:rowping 1.6s ease}
+@keyframes rowping{0%,100%{background:transparent}20%,60%{background:var(--butter-soft)}}
 .nowcard{width:100%;margin-top:12px;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:16px;padding:9px 12px;font-family:var(--f-body);font-size:14px}
 .nowcard:active{background:var(--sunk)}
 .nowcard .flag{flex:none}
@@ -1079,7 +1081,7 @@ function dueTs(v){const p=dueParts(v);if(!p)return null;const jp=p.mo>11||(p.mo=
 const leftText=ms=>{const m=Math.round(Math.abs(ms)/6e4),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return d?`${d} 天${h?` ${h} 小時`:""}`:h?`${h} 小時${mm?` ${mm} 分`:""}`:`${mm} 分`};
 function dueSoon(){const n=Date.now();return itemsOf("prep").filter(r=>!done[r.id]&&r.due).map(r=>({r,ts:dueTs(r.due)})).filter(x=>x.ts!=null&&x.ts-n<=24*3600e3&&n-x.ts<=12*3600e3).sort((a,b)=>a.ts-b.ts)}
 function dueAlertsHTML(){const l=dueSoon();if(!l.length)return"";const n=Date.now();
- return `<section class="due-alerts" id="due-alerts" aria-label="待辦到期提醒">${l.map(({r,ts})=>`<div class="due-alert${ts<n?" over":""}"><button class="da-main" type="button" data-go="list"><svg class="da-ic" viewBox="0 0 24 24"><use href="#i-bell"/></svg><span><b>${ts<n?`已過期限 ${leftText(n-ts)}`:`還有 ${leftText(ts-n)} 到期`}</b><small>${esc(r.title)}・${esc(r.due)}</small></span></button>${canWrite?`<button class="da-done" type="button" data-done-id="${esc(r.id)}">完成</button>`:""}</div>`).join("")}</section>`}
+ return `<section class="due-alerts" id="due-alerts" aria-label="待辦到期提醒">${l.map(({r,ts})=>`<div class="due-alert${ts<n?" over":""}"><button class="da-main" type="button" data-go-item="${esc(r.id)}"><svg class="da-ic" viewBox="0 0 24 24"><use href="#i-bell"/></svg><span><b>${ts<n?`已過期限 ${leftText(n-ts)}`:`還有 ${leftText(ts-n)} 到期`}</b><small>${esc(r.title)}・${esc(r.due)}</small></span></button>${canWrite?`<button class="da-done" type="button" data-done-id="${esc(r.id)}">完成</button>`:""}</div>`).join("")}</section>`}
 let editItem=null,pendingItemDel=null;
 const PEOPLE=[["zhang","阿彰","cat-b"],["star","星星","cat-w"]];
 const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"],["shop","購物","k-buy","c-buy"],["ticket","門票","k-ticket","c-go"],["stay","住宿","k-stay","c-stay"],["etc","其他","k-etc","c-etc"]];
@@ -1254,7 +1256,7 @@ function heroHTML(){
   cd=`<div class="cd"><div class="cd-d"><b id="cd-d">${c.d}</b><small>天</small></div><div class="hms" aria-label="時分秒"><span><b id="cd-h">${p2(c.h)}</b><i>時</i></span><span><b id="cd-m">${p2(c.m)}</b><i>分</i></span><span><b id="cd-s">${p2(c.s)}</b><i>秒</i></span></div></div>`;lbl="名古屋，我們來了";
   sub="11/17（二）07:05 從台中起飛<br>JX 320，10:40 抵達名古屋";
   const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,soon=new Set(dueSoon().map(x=>x.r.id)),next=pl.find(r=>!done[r.id]&&r.due&&!soon.has(r.id));
-  foot=`${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
+  foot=`${next?`<button class="chip coral" type="button" data-go-item="${esc(next.id)}"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</button>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];
   return `<section class="hero trip"><div class="scene-wrap">${heroSVG(heroPeriod()).replace('<svg class="scene"','<svg class="scene" preserveAspectRatio="xMidYMax slice"')}<div class="plaque">今天的行程</div></div><button class="today-main" type="button" data-day="${todayIdx}"><span class="txt"><span class="ttl">${esc(x.title)}</span><span class="rt">${x.route.map(esc).join(" → ")}</span></span><span class="big">D${todayIdx+1}<small>${x.d}（${x.w}）</small></span></button>${tripBarHTML()}${moodLineHTML(x,todayIdx)}</section>`;
@@ -1774,6 +1776,7 @@ app.addEventListener("click",e=>{
  if(e.target.closest("[data-pack-open]")){listSub="pack";editItem=null;render();return}
  if(e.target.closest("[data-pack-close]")){listSub=null;editItem=null;render(false,true);return}
  if(e.target.closest("[data-pack-todo]")){packTodo=!packTodo;try{localStorage.setItem("ngy:packTodo",packTodo?"1":"0")}catch(_){};render(true);return}
+ const gi=e.target.closest("[data-go-item]");if(gi){const id=gi.dataset.goItem;tab="list";listSub=null;editItem=null;render();requestAnimationFrame(()=>{const cb=document.getElementById("c-"+id),row=cb&&cb.closest(".chk-row");if(!row)return;const top=row.getBoundingClientRect().top+scrollY-110;scrollTo({top,behavior:reduce()?"auto":"smooth"});row.classList.remove("ping");void row.offsetWidth;row.classList.add("ping")});return}
  const pkb=e.target.closest("[data-pack]");if(pkb){const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);if(db)db.doc("checks/"+k).set({done:v}).catch(()=>{});return}
  const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);if(db)db.doc("checks/"+id).set({done:true}).catch(()=>{});return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
