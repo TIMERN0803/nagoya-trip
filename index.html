@@ -408,7 +408,7 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .edit-btn:active{background:var(--sunk)}
 .chk-row .due{margin-right:4px}
 .hp-buy .hp-ic{background:var(--butter);color:var(--ol)}
-.bi{display:flex;flex-direction:column;gap:2px;margin-top:3px}
+.bi{display:flex;flex-wrap:wrap;align-items:flex-start;gap:2px 12px;margin-top:3px}
 .bi-row{display:flex;align-items:flex-start;gap:5px;font-size:13px;color:var(--muted);line-height:1.4;text-decoration:none}
 .bi-row svg{width:15px;height:15px;flex:none;margin-top:2px}
 .bi-place{color:var(--brown);font-weight:700;align-self:flex-start;border-radius:6px}
@@ -1531,7 +1531,7 @@ function itemForm(g,it){
  const isNew=!it;it=it||{title:"",note:"",due:""};
  return `<form class="chk-form" data-group="${g}" data-id="${isNew?"":esc(it.id)}" autocomplete="off">
   <input class="field" name="title" placeholder="${g==="buy"?"要買什麼？例如：小倉山莊":g==="pack"?"要帶什麼？例如：耳機":"要做什麼？例如：換日圓"}" value="${esc(it.title)}" maxlength="40" aria-label="名稱" required>
-  ${g==="buy"?(()=>{const b=buyParts(it);return `<label class="fld-ic"><svg aria-hidden="true"><use href="#i-pin"/></svg><input class="field" name="place" placeholder="地點，例如：高島屋（可不填）" value="${esc(b.place)}" maxlength="40" aria-label="地點"></label><label class="fld-ic"><svg aria-hidden="true"><use href="#i-list"/></svg><input class="field" name="what" placeholder="品項，例如：常磐の昔、初昔（可不填）" value="${esc(b.what||b.rest)}" maxlength="60" aria-label="品項"></label>`})():`<input class="field" name="note" placeholder="備註（可不填）" value="${esc(it.note||"")}" maxlength="60" aria-label="備註">`}
+  ${g==="buy"?(()=>{const b=buyParts(it);return `<label class="fld-ic"><svg aria-hidden="true"><use href="#i-pin"/></svg><input class="field" name="place" placeholder="地點，例如：高島屋（可不填）" value="${esc(b.place)}" maxlength="40" aria-label="地點"></label><label class="fld-ic"><svg aria-hidden="true"><use href="#k-buy"/></svg><input class="field" name="what" placeholder="品項，例如：常磐の昔、初昔（可不填）" value="${esc(b.what||b.rest)}" maxlength="60" aria-label="品項"></label>`})():`<input class="field" name="note" placeholder="備註（可不填）" value="${esc(it.note||"")}" maxlength="60" aria-label="備註">`}
   ${g==="pack"?`<select class="field" name="cat" aria-label="分類">${PCATS.map(([c,n])=>`<option value="${c}"${(it.cat||"etc")===c?" selected":""}>${n}</option>`).join("")}</select>`:""}
   ${g==="prep"?(()=>{const p=dueParts(it.due);return `<div class="due-row"><label><span>期限日期</span><input class="field" type="date" name="dued" min="${YEAR}-10-01" max="${YEAR}-12-31" value="${p?`${YEAR}-${p2(p.mo)}-${p2(p.da)}`:""}"></label><label><span>時間</span><input class="field" type="time" name="duet" value="${p&&p.h!=null?`${p2(p.h)}:${p2(p.mi)}`:""}"></label></div><small class="due-hint">可不填；11/17 前是台灣時間，旅程中是日本時間</small>`})():""}
   <div class="form-btns"><button class="primary" type="submit">${isNew?"新增":"儲存"}</button><button class="ghost" type="button" data-item-cancel>取消</button>
@@ -1549,7 +1549,7 @@ function buyParts(r){
 }
 function buyInfoHTML(r){
  const b=buyParts(r);if(!b.place&&!b.what)return b.rest?`<small>${esc(b.rest)}</small>`:"";
- return `<span class="bi">${b.place?`<a class="bi-row bi-place" href="${mapUrl(b.place)}" target="_blank" rel="noopener" aria-label="在地圖打開 ${esc(b.place)}"><svg aria-hidden="true"><use href="#i-pin"/></svg>${esc(b.place)}</a>`:""}${b.what?`<span class="bi-row bi-what"><svg aria-hidden="true"><use href="#i-list"/></svg>${esc(b.what)}</span>`:""}</span>`;
+ return `<span class="bi">${b.place?`<a class="bi-row bi-place" href="${mapUrl(b.place)}" target="_blank" rel="noopener" aria-label="在地圖打開 ${esc(b.place)}"><svg aria-hidden="true"><use href="#i-pin"/></svg>${esc(b.place)}</a>`:""}${b.what?`<span class="bi-row bi-what"><svg aria-hidden="true"><use href="#k-buy"/></svg>${esc(b.what)}</span>`:""}</span>`;
 }
 const EDIT_SVG=`<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
 const packCnt=(rows,who)=>rows.filter(r=>done[packKey(r.id,who)]).length;
