@@ -142,11 +142,11 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .item .card.has-pic{display:grid;grid-template-columns:minmax(0,1fr) 72px;column-gap:12px;align-items:start}
 .item .card.has-pic>*:not(.pic){grid-column:1}
 .item .card.has-pic>.pic{grid-column:2;grid-row:1 / span 6}
-.pic{position:relative;display:block;width:72px;height:72px;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1.5px var(--line);flex:none}
+.pic{position:relative;display:block;width:72px;height:72px;border-radius:16px;overflow:hidden;flex:none}
 .pic svg{display:block;width:100%;height:100%}
 a.pic:active{transform:scale(.96)}
-.pic .pin{position:absolute;right:4px;bottom:4px;width:22px;height:22px;border-radius:50%;background:#fff;color:var(--brown);display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.18)}
-.pic .pin svg{width:13px;height:13px}
+.pic .go-tag{position:absolute;right:4px;bottom:4px;display:inline-flex;align-items:center;gap:1px;background:var(--ink);color:#fff;font-size:11px;font-weight:700;line-height:1;border-radius:999px;padding:4px 5px 4px 8px}
+.pic .go-tag svg{width:11px;height:11px}
 .item.s-done .pic{filter:grayscale(.6)}
 .c-move{--tb:var(--c-move-bg);--tc:var(--c-move)} .c-go{--tb:var(--c-go-bg);--tc:var(--c-go)} .c-eat{--tb:var(--c-eat-bg);--tc:var(--c-eat)}
 .c-stay{--tb:var(--c-stay-bg);--tc:var(--c-stay)} .c-do{--tb:var(--c-do-bg);--tc:var(--c-do)} .c-buy{--tb:var(--c-buy-bg);--tc:var(--c-buy)} .c-etc{--tb:var(--c-etc-bg);--tc:var(--c-etc)}
@@ -1007,8 +1007,8 @@ const PIC_OF={"JX 320 台中 → 名古屋":"plane","搭名鐵到名古屋車站
 const KCOL={fly:"move",move:"move",go:"go",eat:"eat",stay:"stay",do:"do",remind:"do",buy:"buy"};
 function picHTML(it){
  const key=PIC_OF[it.n]||({eat:"plate",go:"park",move:"train",fly:"plane",stay:"hotel",buy:"shop",do:"ticket",remind:"ticket"})[it.k];
- const svg=`<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${PB[KCOL[it.k]]||"#F0E7DB"}"/><g filter="url(#rough)">${PICS[key]||""}</g></svg>`;
- return it.map?`<a class="pic" href="${mapUrl(it.map)}" target="_blank" rel="noopener" aria-label="在地圖上看 ${esc(it.n)}">${svg}<span class="pin"><svg viewBox="0 0 24 24"><use href="#i-pin"/></svg></span></a>`:`<span class="pic">${svg}</span>`;
+ const svg=`<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${PB[KCOL[it.k]]||"#F0E7DB"}"/><g filter="url(#rough)"${it.map?` transform="translate(4 0) scale(.875)"`:""}>${PICS[key]||""}</g></svg>`;
+ return it.map?`<a class="pic" href="${mapUrl(it.map)}" target="_blank" rel="noopener" aria-label="在地圖上看 ${esc(it.n)}">${svg}<span class="go-tag">前往<svg viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>`:`<span class="pic">${svg}</span>`;
 }
 
 const tmin=t=>{const m=/(\d{1,2}):(\d{2})/.exec(t||"");return m?+m[1]*60+ +m[2]:null};
