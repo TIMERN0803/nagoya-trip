@@ -40,7 +40,7 @@
 .g-home .plaque::before,.g-home .plaque::after{content:"";position:absolute;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--butter);border:1.5px solid var(--ol)}
 .g-home .plaque::before{left:6px}.g-home .plaque::after{right:6px}
 .g-home .hero .body{padding:16px 18px 6px}
-.g-home .hms span{background:var(--butter-soft);border:2px solid var(--ol);box-shadow:0 2px 0 var(--ol);border-radius:12px}
+.g-home .hms span{background:var(--butter-soft);border-radius:12px}
 .g-home .hms i{color:var(--brown)}
 .g-home .hero .foot{padding:4px 18px 16px}
 .g-home .chip.coral{box-shadow:inset 0 0 0 2px var(--coral-ink)}
@@ -64,32 +64,30 @@
 .g-home .clips{top:-15px}
 .g-home .clips i{border:2px solid var(--ol);border-top:0;width:16px;height:26px}
 .g-home .sheet-head h2{font-size:20px}
-/* 收藏卡：8 天的地點 */
-.g-home .grid{gap:12px 9px}
-.g-home .tile{background:var(--card);border:2px solid var(--ol);border-radius:16px;padding:5px 5px 7px;box-shadow:0 3px 0 var(--ol);gap:5px;transition:transform .08s,box-shadow .08s}
-.g-home .tile:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
-.g-home .tile .art{border-radius:11px;border:1.5px solid var(--ol)}
+/* 內層選項：不加外框，用底色區分（外層卡片才有粗外框） */
+.g-home .grid{gap:10px 8px}
+.g-home .tile{background:var(--sunk);border-radius:18px;padding:6px 6px 8px;gap:5px;transition:transform .08s,background .15s}
+.g-home .tile:active{transform:scale(.96)}
+.g-home .tile .art{border-radius:13px}
 .g-home .tile:active .art{transform:none}
 .g-home .tile b{font-size:13.5px;line-height:1.25}
 .g-home .tile small{margin-top:-4px}
-.g-home .tile.today{background:var(--butter);}
+.g-home .tile.today{background:var(--butter)}
 .g-home .tile.today .art{outline:0}
 .g-home .tile.today small{color:var(--ol)}
-.g-home .tile.past{opacity:1}
+.g-home .tile.past{opacity:1;background:#F4EEE6}
 .g-home .tile.past b,.g-home .tile.past small{color:var(--muted)}
-.g-home .tile-pill{border:2px solid var(--ol);box-shadow:0 2px 0 var(--ol);left:6px;top:6px}
-.g-home .tile-done{border:2px solid var(--ol);box-shadow:none;background:var(--butter-soft)}
-/* 心情集章 */
-.g-home .ms-day{border:2px solid var(--line-strong);background:var(--card)}
-.g-home .ms-day.today{border-color:var(--ol);box-shadow:0 2px 0 var(--ol);background:var(--mint-soft)}
-/* 提醒設定 */
-.g-home .rm-row{border:2px solid var(--ol);background:var(--card);box-shadow:0 3px 0 var(--ol)}
-.g-home .rm-row:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
-.g-home .rm-row.cal{border-color:var(--ol);box-shadow:0 3px 0 var(--ol)}
-.g-home .rm-ic{border:2px solid var(--ol);background:var(--butter-soft)}
-.g-home .rm-row.cal .rm-ic{background:rgba(255,255,255,.2);border-color:#fff}
-.g-home .switch{border:2px solid var(--ol);height:30px;width:52px}
-.g-home .switch i{border:2px solid var(--ol);box-shadow:none;left:2px;top:2px;width:22px;height:22px}
+.g-home .tile-pill{left:6px;top:6px}
+.g-home .tile-done{box-shadow:none;background:var(--card)}
+.g-home .ms-day{background:var(--sunk)}
+.g-home .ms-day.today{background:var(--butter);box-shadow:none}
+.g-home .ms-day.today small{color:var(--ol)}
+.g-home .rm-row{border:0;background:var(--sunk)}
+.g-home .rm-row:active{transform:scale(.98)}
+.g-home .rm-row.cal{background:var(--accent);border:var(--olw) solid var(--ol);box-shadow:0 3px 0 var(--ol)}
+.g-home .rm-row.cal:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+.g-home .rm-ic{background:var(--card)}
+.g-home .rm-row.cal .rm-ic{background:rgba(255,255,255,.2)}
 /* 浮動按鈕跟著首頁風格 */
 .fab{border:2.5px solid var(--ol);box-shadow:0 4px 0 var(--ol),0 10px 20px -6px rgba(63,49,39,.35)}
 .fab .fh{border:2px solid var(--ol);background:var(--butter)}
