@@ -61,8 +61,7 @@
 .g-home .da-done:active{transform:translateY(2px);box-shadow:none}
 /* 區塊卡片 */
 .g-home .sheet{border:2px solid var(--ol);box-shadow:var(--lift);border-radius:26px;margin-top:30px}
-.g-home .clips{top:-15px}
-.g-home .clips i{border:2px solid var(--ol);border-top:0;width:16px;height:26px}
+.g-home .clips{top:-18px}
 .g-home .sheet-head h2{font-size:20px}
 /* 內層選項：不加外框，用底色區分（外層卡片才有粗外框） */
 .g-home .grid{gap:10px 8px}
@@ -183,7 +182,11 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 
 .sheet{position:relative;background:var(--card);border-radius:28px;margin-top:26px;padding:22px 16px 18px;border:1.5px solid var(--line);box-shadow:var(--shadow)}
 .clips{position:absolute;top:-12px;left:24px;right:24px;display:flex;justify-content:space-between;pointer-events:none}
-.clips i{width:15px;height:24px;border-radius:0 0 7px 7px;background:var(--brown)}
+.clips i{position:relative;width:18px;height:36px}
+/* 打孔：紙上的圓洞 */
+.clips i::before{content:"";position:absolute;left:2px;bottom:0;width:14px;height:14px;border-radius:50%;background:var(--sunk);border:2px solid var(--ol);box-sizing:border-box;box-shadow:inset 0 2px 0 rgba(140,109,85,.35)}
+/* 線圈：從洞口繞出紙張上緣的完整圓環 */
+.clips i::after{content:"";position:absolute;left:4px;top:0;width:10px;height:29px;border-radius:999px;border:3px solid var(--ol);border-bottom-color:transparent;box-sizing:border-box;background:none}
 .sheet-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
 .sheet-head h2{margin:0;font-size:20px}
 .sheet-head span{font-family:var(--f-display);font-weight:700;color:var(--muted);font-size:13px}
