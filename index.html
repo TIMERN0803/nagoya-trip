@@ -353,7 +353,9 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .nowcard{width:100%;margin-top:12px;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:16px;padding:9px 12px;font-family:var(--f-body);font-size:14px}
 .nowcard:active{background:var(--sunk)}
 .nowcard .flag{flex:none}
-.nowcard .nt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nowcard .nt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.nowcard .nt b,.nowcard .nt small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nowcard .nt small{font-size:13px;color:var(--muted)}
 .nowcard .nt b{font-weight:700}
 .nowcard .nl{flex:none;font-size:13px;color:var(--muted)}
 .nowcard .go{width:14px;height:14px;flex:none;color:var(--brown)}
@@ -1140,7 +1142,7 @@ function nowCardHTML(x,stat){
  if(!stat)return"";
  if(stat.next<0){const mv=me&&moods[mk(x.d,me)];return mv?`<div class="nowcard done"><svg class="cats" aria-hidden="true"><use href="#cats"/></svg><span class="nt"><b>今天的行程都走完了</b>，好好休息</span></div>`:`<button class="nowcard" type="button" data-scroll-mood><span class="flag next">都走完了</span><span class="nt"><b>寫今天的心情</b></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
  const it=x.items[stat.next],left=tmin(it.t)-stat.nowM,h=Math.floor(left/60),m=left%60;
- return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="flag next">接下來</span><span class="nt"><b>${esc(it.t)} ${esc(it.n)}</b></span><span class="nl">${h?h+" 小時 ":""}${m} 分後</span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+ return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="flag next">接下來</span><span class="nt"><b>${esc(it.t)} ${esc(it.n)}</b><small>${h?h+" 小時 ":""}${m} 分後${(L=>L?`・${LEG_TXT[L[0]]}約 ${L[1]} 分`:"")(LEGS[x.d+"|"+it.n])}</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 function dayBodyHTML(){
  const x=DAYS[dayIdx],w=wxFor(x),stat=dayIdx===todayIdx?dayStatus(x):null;
@@ -1433,7 +1435,7 @@ app.addEventListener("click",e=>{
  const fb=e.target.closest(".fbtn");if(fb){const f=fb.closest("form");moodDraft={d:f.dataset.d,score:+fb.dataset.score,note:f.querySelector("#mood-note").value};f.querySelectorAll(".fbtn").forEach(b=>{const on=b===fb;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});f.querySelector("[type=submit]").disabled=false;return}
  const me_=e.target.closest("[data-mood-edit]");if(me_){moodEdit=me_.dataset.moodEdit;moodDraft=null;const sec=document.getElementById("mood");sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);document.getElementById("mood-note")?.focus({preventScroll:true});return}
  if(e.target.closest("[data-mood-cancel]")){pendingMoodDel=false;moodEdit=null;moodDraft=null;document.getElementById("mood").outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
- const jp=e.target.closest("[data-jump]");if(jp){const el=document.getElementById("it-"+jp.dataset.jump);if(el){const top=el.getBoundingClientRect().top+scrollY-topGap()-24;scrollTo({top,behavior:reduce()?"auto":"smooth"});el.classList.remove("ping");void el.offsetWidth;el.classList.add("ping")}return}
+ const jp=e.target.closest("[data-jump]");if(jp){const el=document.getElementById("it-"+jp.dataset.jump);if(el){const pv=el.previousElementSibling,anchor=pv&&pv.classList.contains("leg")?pv:el;const top=anchor.getBoundingClientRect().top+scrollY-topGap()-14;scrollTo({top,behavior:reduce()?"auto":"smooth"});el.classList.remove("ping");void el.offsetWidth;el.classList.add("ping")}return}
  if(e.target.closest("[data-restore]")){if(!pendingRestore){pendingRestore=true;render(true);clearTimeout(window._pr);window._pr=setTimeout(()=>{if(pendingRestore){pendingRestore=false;if(tab==="list")render(true)}},3000);return}pendingRestore=false;restoreDefaults().then(()=>render(true));return}
  const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);focusItemForm();return}
  const inw=e.target.closest("[data-item-new]");if(inw){editItem="new:"+inw.dataset.itemNew;pendingItemDel=null;render(true);focusItemForm();return}
