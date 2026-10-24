@@ -89,8 +89,6 @@
 .g-home .rm-row.cal .rm-ic{background:rgba(255,255,255,.2)}
 
 /* 浮動按鈕跟著首頁風格 */
-.fab{border:2.5px solid var(--ol);box-shadow:0 4px 0 var(--ol),0 10px 20px -6px rgba(63,49,39,.35)}
-.fab .fh{border:2px solid var(--ol);background:var(--butter)}
 @media (prefers-reduced-motion:reduce){.hud-pill,.g-home .tile,.g-home .rm-row{transition:none}}
 </style>
 <title>名古屋看花花</title>
@@ -144,7 +142,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .hero .big small{display:block;font-size:14px;letter-spacing:0;color:var(--brown);margin-top:8px;line-height:1}
 .hero .body.col{flex-direction:column;align-items:stretch;gap:12px}
 .hero.trip .scene{aspect-ratio:320/150}
-.today-main{display:flex;align-items:flex-end;gap:12px;width:100%;padding:14px 20px 14px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.today-main{display:flex;align-items:flex-start;gap:12px;width:100%;padding:14px 20px 14px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
 .today-main .txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
 .today-main .lbl{font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--brown)}
 .today-main .ttl{font-family:var(--f-display);font-weight:900;font-size:23px;line-height:1.3}
@@ -533,7 +531,15 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .fab b{font-family:var(--f-display);font-weight:900;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 body.has-fab .shell{padding-bottom:190px}
 @keyframes fabin{from{opacity:0;transform:translateY(12px) scale(.85)}to{opacity:1;transform:none}}
-@media (prefers-reduced-motion:reduce){.fab.in{animation:none}}
+/* 遊戲風外框（要寫在基本樣式之後才會蓋過白框） */
+.fab{border:2.5px solid var(--ol);box-shadow:0 4px 0 var(--ol)}
+.fab:active{transform:translateY(2px);box-shadow:0 2px 0 var(--ol)}
+.fab .fh{border:2px solid var(--ol);background:var(--butter)}
+/* 光波：從按鈕外緣慢慢往外擴散、淡出，提醒「這裡可以點」 */
+.fab::before,.fab::after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:3px solid #EDB54A;pointer-events:none;opacity:0;animation:fabwave 2.8s ease-out infinite}
+.fab::after{animation-delay:1.4s}
+@keyframes fabwave{0%{transform:scale(1);opacity:.9}70%{opacity:0}100%{transform:scale(1.14,1.4);opacity:0}}
+@media (prefers-reduced-motion:reduce){.fab.in{animation:none}.fab::before,.fab::after{animation:none;display:none}}
 .due-alert{display:flex;align-items:center;gap:8px;background:var(--coral-soft);border:1.5px solid var(--coral-line);border-radius:20px;padding:6px 8px 6px 4px}
 .da-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:var(--ink);padding:4px 6px}
 .da-ic{width:20px;height:20px;flex:none;color:var(--coral-ink)}
