@@ -1900,7 +1900,7 @@ const syncIsPill=()=>live||!FIREBASE||syncMsg==="connecting"||syncMsg==="offline
 const syncPill=()=>syncIsPill()?syncHTML():"";
 const syncForm=()=>syncIsPill()?"":syncHTML();
 function syncHTML(){
- if(live)return `<div class="sync on"><i></i><span>和同行者共用</span></div>`;
+ if(live)return `<div class="sync on"><i></i><span>同步中</span></div>`;
  if(!FIREBASE)return `<div class="sync"><i></i><span>記在這支手機上</span></div>`;
  if(syncMsg==="connecting")return `<div class="sync"><i></i><span>連線中…</span></div>`;
  if(syncMsg==="offline")return `<div class="sync"><i></i><span>目前離線，先記在這支手機上</span></div>`;
