@@ -536,9 +536,10 @@ body.has-fab .shell{padding-bottom:190px}
 .fab:active{transform:translateY(2px);box-shadow:0 2px 0 var(--ol)}
 .fab .fh{border:2px solid var(--ol);background:var(--butter)}
 /* 光波：從按鈕外緣慢慢往外擴散、淡出，提醒「這裡可以點」 */
-.fab::before,.fab::after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:3px solid #EDB54A;pointer-events:none;opacity:0;animation:fabwave 2.8s ease-out infinite}
-.fab::after{animation-delay:1.4s}
-@keyframes fabwave{0%{transform:scale(1);opacity:.9}70%{opacity:0}100%{transform:scale(1.14,1.4);opacity:0}}
+.fab::before,.fab::after{content:"";position:absolute;inset:-3px;border-radius:inherit;border:3px solid var(--ol);pointer-events:none;opacity:0}
+.fab.pulse::before,.fab.pulse::after{animation:fabwave 2.8s ease-out infinite}
+.fab.pulse::after{animation-delay:1.4s}
+@keyframes fabwave{0%{transform:scale(1);opacity:.7}70%{opacity:0}100%{transform:scale(1.14,1.4);opacity:0}}
 @media (prefers-reduced-motion:reduce){.fab.in{animation:none}.fab::before,.fab::after{animation:none;display:none}}
 .due-alert{display:flex;align-items:center;gap:8px;background:var(--coral-soft);border:1.5px solid var(--coral-line);border-radius:20px;padding:6px 8px 6px 4px}
 .da-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:var(--ink);padding:4px 6px}
@@ -1843,7 +1844,10 @@ function updateFab(){
  if(!c){fab.hidden=true;document.body.classList.remove("has-fab");return}
  const it=DAYS[todayIdx].items[c.i],k=c.i+"|"+c.lbl;
  if(fab.dataset.k!==k){fab.dataset.k=k;fab.dataset.i=c.i;fab.setAttribute("aria-label",`${c.lbl}：${it.n}，看行程`);
-  fab.innerHTML=`<span class="fh"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${todayIdx%2?"b":"w"}"/></svg></span><span class="ft"><small>${esc(c.lbl)}</small><b>${esc(it.n)}</b></span>`}
+  fab.innerHTML=`<span class="fh"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${todayIdx%2?"b":"w"}"/></svg></span><span class="ft"><small>${esc(c.lbl)}</small><b>${esc(it.n)}</b></span>`;
+  /* 換到新的一項（含上次打開後已經換過）才跑光波約 10 秒 */
+  const sk=DAYS[todayIdx].d+"|"+c.i+"|"+c.lbl;let seen=null;try{seen=localStorage.getItem("ngy:fabSeen")}catch(_){}
+  if(seen!==sk){try{localStorage.setItem("ngy:fabSeen",sk)}catch(_){};fab.classList.remove("pulse");void fab.offsetWidth;fab.classList.add("pulse");clearTimeout(window._fabp);window._fabp=setTimeout(()=>fab.classList.remove("pulse"),10000)}}
  if(fab.hidden){fab.hidden=false;fab.classList.remove("in");void fab.offsetWidth;fab.classList.add("in")}
  document.body.classList.add("has-fab");
 }
