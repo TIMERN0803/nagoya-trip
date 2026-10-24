@@ -1723,7 +1723,7 @@ function render(keep,restore){
  placeInd(false);
  if(tab==="acct")renderAcct();
  bindSched();syncStrip();updateFab();
- if(tab==="list"&&focusItem&&Date.now()<focusUntil){const id=focusItem;requestAnimationFrame(()=>{const cb=document.getElementById("c-"+id),row=cb&&cb.closest(".chk-row");if(!row)return;const rt=row.getBoundingClientRect().top;if(rt<100||rt>innerHeight*.45)scrollTo(0,rt+scrollY-110);row.classList.add("ping")})}
+ if(tab==="list"&&focusItem&&Date.now()<focusUntil){const id=focusItem;setTimeout(()=>{const cb=document.getElementById("c-"+id),row=cb&&cb.closest(".chk-row");if(!row)return;const rt=row.getBoundingClientRect().top;if(rt<100||rt>innerHeight*.45)scrollTo(0,rt+scrollY-110);row.classList.add("ping")},30)}
  scrollTo(0,keep?y:(restore?(scrollMem[curKey]||0):0));
 }
 function topGap(){const st=app.querySelector(".strip")?.offsetHeight||0,d=document.getElementById("sched");if(!d)return st;if(d.open){d.open=false;store.set("schedOpen",false)}return st+d.querySelector("summary").offsetHeight}
