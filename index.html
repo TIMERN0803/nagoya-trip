@@ -182,7 +182,7 @@ a.pic:active{transform:scale(.96)}
 .c-stay{--tb:var(--c-stay-bg);--tc:var(--c-stay)} .c-do{--tb:var(--c-do-bg);--tc:var(--c-do)} .c-buy{--tb:var(--c-buy-bg);--tc:var(--c-buy)} .c-etc{--tb:var(--c-etc-bg);--tc:var(--c-etc)}
 
 .sched-pin{height:0}
-details.sched{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--strip-h,76px));z-index:4;margin:16px 0 18px;background:var(--card);border-radius:20px;border:1.5px solid var(--line);box-shadow:var(--shadow);transition:box-shadow .25s ease}
+details.sched{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--strip-h,76px));z-index:4;margin:0 0 14px;background:var(--card);border-radius:20px;border:1.5px solid var(--line);box-shadow:var(--shadow);transition:box-shadow .25s ease}
 details.sched.stuck{border-radius:20px;box-shadow:var(--shadow-float)}
 details.sched summary{transition:padding .25s ease}
 details.sched.stuck summary{padding-block:7px}
@@ -1181,12 +1181,12 @@ function nowCardHTML(x,stat){
 }
 function dayBodyHTML(){
  const x=DAYS[dayIdx],w=wxFor(x),stat=dayIdx===todayIdx?dayStatus(x):null;
- return `<section class="banner"><div class="top"><svg class="art" viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)">${SCENES[x.art]}</g></svg><div class="ttl"><div class="when">${x.d}（${x.w}）${dayIdx===todayIdx?`<span class="today-pill">今天</span>`:dayDate(x)<today?`<span class="past-pill">已結束</span>`:""}</div><h2>${esc(x.title)}</h2>
+ return `${x.sched?`<div class="sched-pin" aria-hidden="true"></div>${schedHTML(stat)}`:""}<section class="banner"><div class="top"><svg class="art" viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)">${SCENES[x.art]}</g></svg><div class="ttl"><div class="when">${x.d}（${x.w}）${dayIdx===todayIdx?`<span class="today-pill">今天</span>`:dayDate(x)<today?`<span class="past-pill">已結束</span>`:""}</div><h2>${esc(x.title)}</h2>
   <div class="route">${x.route.map(esc).join('<svg><use href="#i-arrow"/></svg>')}</div></div></div>
   <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
 ${nowCardHTML(x,stat)}
  ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="note"><svg><use href="#i-bell"/></svg><span>${esc(n)}</span></div>`).join("")}</div>`:""}
- ${x.sched?`<div class="sched-pin" aria-hidden="true"></div>${schedHTML(stat)}`:""}<ol class="tl">${x.items.map((it,i)=>legHTML(x,i)+itemHTML(it,i,stat)).join("")}</ol>${moodSectionHTML(x)}`;
+ <ol class="tl">${x.items.map((it,i)=>legHTML(x,i)+itemHTML(it,i,stat)).join("")}</ol>${moodSectionHTML(x)}`;
 }
 function dayHTML(){
  return `<header class="bar"><button class="back" data-home><svg><use href="#i-back"/></svg>全部天數</button><span class="right" id="dayCount">第 ${dayIdx+1} 天，共 8 天</span></header>
