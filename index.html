@@ -129,6 +129,12 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .note svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--coral-ink)}
 
 .tl{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
+.leg{margin:-4px 0 -4px 58px;padding-left:14px;border-left:2.5px dotted var(--brown-soft)}
+.leg a{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:4px 12px 4px 8px;border-radius:999px;color:var(--muted);text-decoration:none;font-size:13px;font-weight:700}
+.leg a:active{background:var(--sunk)}
+.leg .li{width:17px;height:17px;color:var(--c-move)}
+.leg b{color:var(--ink);font-family:var(--f-display);font-weight:900}
+.leg .ar{width:12px;height:12px}
 .item{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:start}
 .item .t{font-family:var(--f-display);font-weight:900;font-size:15px;font-variant-numeric:tabular-nums;text-align:right;padding-top:14px;line-height:1.2}
 .item .t small{display:block;font-size:11.5px;color:var(--muted);font-weight:700}
@@ -1005,6 +1011,15 @@ const PICS={
 };
 const PIC_OF={"JX 320 台中 → 名古屋":"plane","搭名鐵到名古屋車站":"train","名古屋燈光圖書飯店":"hotel","つばめパン＆Milk 名駅店":"bread","名古屋城":"castle","榮":"tower","すゞ家 赤門店":"katsu","名古屋車站 4 樓搭名鐵巴士":"bus","吉卜力公園":"park","伏見屋 飛騨牛 別邸":"yakiniku","コンパル サンロード店":"coffee","搭名鐵到犬山":"train","犬山城":"castle","城下町小吃":"gohei","麵家 獅子丸":"ramen","Sky Promenade 屋外展望台":"night","イトウ珈琲喫茶室":"coffee","東山動物植物園":"giraffe","星星：snuw【スニュウ】":"hair","阿彰：men's NEELU 名古屋":"hair","搶 KISO 號碼牌":"ticket","挽き肉のトリコ":"hamburg","KISO":"breakfast","熱田神宮":"torii","熱田うなぎ 天":"unagi","大須商店街":"lantern","大須鮨":"sushi","久屋大通與中日大樓 7 樓":"night","ふみ屋 錦店":"beer","New Poppy":"breakfast","常滑":"pottery","nuu":"cake","風舎 常滑店":"cake","西条園抹茶カフェ":"matcha","Yellow 則武新町店":"plate","伏見町 POPEYE":"coffee","升半茶店 本店":"matcha","沢村 名古屋":"bread","桂昇":"donburi","名古屋車站搭名鐵往機場":"train","抵達中部國際機場":"plane","JX 321 名古屋 → 台中":"plane"};
 const KCOL={fly:"move",move:"move",go:"go",eat:"eat",stay:"stay",do:"do",remind:"do",buy:"buy"};
+/* ---------- 兩站之間：已知的交通時間＋一鍵查路線（Google 地圖即時路線） ---------- */
+const LEG_EST={"名古屋車站 4 樓搭名鐵巴士>吉卜力公園":["bus","巴士約 60 分"],"東山動物植物園>星星：snuw【スニュウ】":["train","地鐵約 20 分"],"東山動物植物園>阿彰：men's NEELU 名古屋":["train","地鐵約 20 分"]};
+function legHTML(x,i){
+ const a=x.items[i],b=x.items[i+1];if(!b||!a.map||!b.map)return "";
+ if(a.n.startsWith("星星：")&&b.n.startsWith("阿彰："))return "";
+ const est=LEG_EST[a.n+">"+b.n];
+ const url=`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(a.map)}&destination=${encodeURIComponent(b.map)}&travelmode=transit`;
+ return `<li class="leg"><a href="${url}" target="_blank" rel="noopener" aria-label="查 ${esc(a.n)} 到 ${esc(b.n)} 的路線"><svg class="li" viewBox="0 0 24 24"><use href="#k-move"/></svg>${est?`<b>${esc(est[1])}</b>`:""}<span>${est?"看即時路線":"查交通時間"}</span><svg class="ar" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a></li>`;
+}
 function picHTML(it){
  const key=PIC_OF[it.n]||({eat:"plate",go:"park",move:"train",fly:"plane",stay:"hotel",buy:"shop",do:"ticket",remind:"ticket"})[it.k];
  const svg=`<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${PB[KCOL[it.k]]||"#F0E7DB"}"/><g filter="url(#rough)"${it.map?` transform="translate(4 0) scale(.875)"`:""}>${PICS[key]||""}</g></svg>`;
@@ -1046,7 +1061,7 @@ function dayBodyHTML(){
   <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
 ${nowCardHTML(x,stat)}
  ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="note"><svg><use href="#i-bell"/></svg><span>${esc(n)}</span></div>`).join("")}</div>`:""}
- <ol class="tl">${x.items.map((it,i)=>itemHTML(it,i,stat)).join("")}</ol>${x.sched?schedHTML():""}${moodSectionHTML(x)}`;
+ <ol class="tl">${x.items.map((it,i)=>itemHTML(it,i,stat)+legHTML(x,i)).join("")}</ol>${x.sched?schedHTML():""}${moodSectionHTML(x)}`;
 }
 function dayHTML(){
  return `<header class="bar"><button class="back" data-home><svg><use href="#i-back"/></svg>全部天數</button><span class="right" id="dayCount">第 ${dayIdx+1} 天，共 8 天</span></header>
