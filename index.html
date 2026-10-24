@@ -407,6 +407,27 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .edit-btn svg{width:19px;height:19px}
 .edit-btn:active{background:var(--sunk)}
 .chk-row .due{margin-right:4px}
+.hud-pill.low b{color:var(--coral-ink)}
+.hp-yen.low .hp-ic{background:var(--coral-soft)}
+.wallet{display:flex;flex-direction:column;gap:6px}
+.w-head{display:flex;justify-content:space-between;align-items:baseline}
+.w-head h3{margin:0;font-size:17px}
+.w-head span{font-size:13px;color:var(--muted);font-family:var(--f-display);font-weight:700}
+.w-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:16px;background:var(--sunk)}
+.w-row.mine{background:var(--butter-soft)}
+.w-cat{width:34px;height:28px;flex:none}
+.w-txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.w-txt b{font-family:var(--f-display);font-weight:900}
+.w-txt small{font-size:12px;color:var(--muted)}
+.w-left{flex:none;font-family:var(--f-display);font-weight:900;font-size:20px;font-variant-numeric:tabular-nums;text-align:right}
+.w-left small{font-size:12px;color:var(--muted);margin-right:3px;font-weight:700}
+.w-left.low{color:var(--coral-ink)}
+.w-acts{display:flex;gap:6px;margin:0 0 4px 44px}
+.w-form{display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:16px;background:var(--butter-soft)}
+.w-mode{display:flex;gap:6px}
+.w-form .amt{display:flex;align-items:center;gap:6px;border:2px solid var(--line-strong);border-radius:16px;padding:4px 12px;background:var(--card)}
+.w-form .amt span{font-family:var(--f-display);font-weight:900;font-size:20px;color:var(--brown)}
+.w-form .amt input{flex:1;min-width:0;border:0;background:none;font-size:20px;font-family:var(--f-display);font-weight:900;padding:6px 0;outline:none}
 .hp-buy .hp-ic{background:var(--butter);color:var(--ol)}
 .bi{display:flex;flex-wrap:wrap;align-items:flex-start;gap:2px 12px;margin-top:3px}
 .bi-row{display:flex;align-items:flex-start;gap:5px;font-size:13px;color:var(--muted);line-height:1.4;text-decoration:none}
@@ -815,6 +836,8 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
     <symbol id="k-move" viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="13" rx="3.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6 11h12M9 20l-1.5 1.5M15 20l1.5 1.5M9 14h.01M15 14h.01" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
     <symbol id="k-fly" viewBox="0 0 24 24"><path d="M21 15l-8-4V5a1.5 1.5 0 0 0-3 0v6l-7 4v2l7-2v4l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-4l8 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
     <symbol id="k-do" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-cash" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 9.5v5M17.5 9.5v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M3 10h18M7 15h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
     <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6.5h11M9 12h11M9 17.5h11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="4.5" cy="6.5" r="1.6" fill="currentColor"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor"/><circle cx="4.5" cy="17.5" r="1.6" fill="currentColor"/></symbol>
     <symbol id="k-buy" viewBox="0 0 24 24"><path d="M5 8h14l-1 12H6zM9 8V6a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></symbol>
     <symbol id="k-ticket" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 0 2-2h14a2 2 0 0 0 2 2v8a2 2 0 0 0-2 2H5a2 2 0 0 0-2-2z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><path d="M14 7v10" stroke="currentColor" stroke-width="2" stroke-dasharray="2 2"/></symbol>
@@ -1119,7 +1142,13 @@ const todayIdx=DAYS.findIndex(x=>dayDate(x).getTime()===today.getTime());
 let tab="plan",view="home",dayIdx=todayIdx>=0?todayIdx:0;
 let done=store.get("done")||{},db=null,canWrite=true,live=false;
 let expenses=store.get("exp")||[],rate=store.get("rate")||0.2,forecast=null;
-let draft={amt:"",cat:"food",who:(()=>{try{return localStorage.getItem("ngy:me")||"zhang"}catch(_){return "zhang"}})(),split:"both",day:todayIdx>=0?DAYS[todayIdx].d:"11/17",note:""};
+/* 現金錢包：各自記「手上換了多少日圓」，現金付的帳從付款人扣 */
+let wallet=store.get("wallet")||{},walletEdit=null;
+const cashIn=w=>+((wallet[w]||{}).cashIn)||0;
+const cashSpent=w=>expenses.filter(e=>e.who===w&&e.pay==="cash").reduce((a,e)=>a+e.amt,0);
+const cashLeft=w=>cashIn(w)-cashSpent(w);
+const LOW_CASH=5000;
+let draft={amt:"",cat:"food",who:(()=>{try{return localStorage.getItem("ngy:me")||"zhang"}catch(_){return "zhang"}})(),split:"both",pay:"cash",day:todayIdx>=0?DAYS[todayIdx].d:"11/17",note:""};
 /* ---------- 心情日記 ---------- */
 const MOODS=[[1,"很糟","#C9C3E6"],[2,"不太好","#BFDCEB"],[3,"普通","#EDE3D3"],[4,"開心","#F8D778"],[5,"超開心","#F4A68C"]];
 const ME_KEY="ngy:me";
@@ -1245,7 +1274,7 @@ function openViewer(src,alt){
 let pendingDel=null,editingId=null;
 function startEdit(id){
  const e=expenses.find(x=>x.id===id);if(!e)return;editingId=id;pendingDel=null;
- draft={amt:String(e.amt),cat:e.cat||"etc",who:e.who||"zhang",split:e.split||"both",day:e.day||"11/17",note:e.note||""};
+ draft={amt:String(e.amt),cat:e.cat||"etc",who:e.who||"zhang",split:e.split||"both",pay:e.pay||"card",day:e.day||"11/17",note:e.note||""};
  render(true);
  document.getElementById("acct-form").scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});
  document.getElementById("f-msg").textContent="正在修改這筆，改好後按「更新這筆」";
@@ -1279,7 +1308,7 @@ function hudHTML(){
  const day=cdParts().ms>0?`還有 ${cdParts().d} 天`:todayIdx>=0?`第 ${todayIdx+1} 天`:"旅程完成";
  const pill=(ic,cls,v,attr,lab)=>`<button class="hud-pill ${cls}" type="button" ${attr} aria-label="${lab}"><span class="hp-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${ic}"/></svg></span><b>${v}</b></button>`;
  return `<header class="hud"><span class="hud-badge"><svg role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg></span><div class="hud-t"><h1>名古屋看花花</h1><small>11/17 – 11/24・兩個人的旅行</small></div></header>
- <div class="hud-row">${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("k-buy","hp-buy",`${bl.filter(r=>done[r.id]).length} / ${bl.length}`,'data-go-group="buy"',`要買的已買 ${bl.filter(r=>done[r.id]).length} 項，共 ${bl.length} 項`)}${pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
+ <div class="hud-row">${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("k-buy","hp-buy",`${bl.filter(r=>done[r.id]).length} / ${bl.length}`,'data-go-group="buy"',`要買的已買 ${bl.filter(r=>done[r.id]).length} 項，共 ${bl.length} 項`)}${me&&cashIn(me)>0?pill("i-cash",`hp-yen${cashLeft(me)<LOW_CASH?" low":""}`,yen(cashLeft(me)),'data-go="acct"',`我的現金剩 ${yen(cashLeft(me))}`):pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
 }
 function tripBarHTML(){
  const done_=cdParts().ms>0?0:todayIdx>=0?todayIdx:DAYS.length;
@@ -1495,12 +1524,13 @@ function moveHTML(){
 function acctHTML(){
  return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>記帳</h1>${syncPill()}</header>
  ${syncForm()}
- <div class="stack"><div class="box" id="acct-sum"></div>
+ <div class="stack"><div class="box wallet" id="acct-wallet"></div><div class="box" id="acct-sum"></div>
  <form class="box form" id="acct-form" autocomplete="off">
   <div class="amt"><span>¥</span><input id="f-amt" inputmode="numeric" placeholder="0" aria-label="金額（日圓）" value="${esc(draft.amt)}"></div>
   <span class="l">類別</span><div class="picks" data-pick="cat">${ECAT.map(c=>`<button type="button" class="pick ${c[3]}" data-v="${c[0]}" aria-pressed="${draft.cat===c[0]}"><svg><use href="#${c[2]}"/></svg>${c[1]}</button>`).join("")}</div>
   <span class="l">誰付的</span><div class="picks" data-pick="who">${PEOPLE.map(p=>`<button type="button" class="pick who" data-v="${p[0]}" aria-pressed="${draft.who===p[0]}"><svg viewBox="0 0 60 70"><use href="#${p[2]}"/></svg>${p[1]}</button>`).join("")}</div>
   <span class="l">怎麼分</span><div class="picks" data-pick="split"><button type="button" class="pick" data-v="both" aria-pressed="${draft.split==="both"}">兩人平分</button><button type="button" class="pick" data-v="self" aria-pressed="${draft.split==="self"}">自己的</button></div>
+  <span class="l">怎麼付</span><div class="picks" data-pick="pay"><button type="button" class="pick" data-v="cash" aria-pressed="${draft.pay==="cash"}"><svg><use href="#i-cash"/></svg>現金</button><button type="button" class="pick" data-v="card" aria-pressed="${draft.pay==="card"}"><svg><use href="#i-card"/></svg>刷卡</button></div>
   <div class="row2"><div><label class="l" for="f-day">日期</label><select class="field" id="f-day">${DAYS.map(x=>`<option value="${x.d}"${draft.day===x.d?" selected":""}>${x.d}（${x.w}）</option>`).join("")}</select></div>
    <div><label class="l" for="f-note">備註</label><input class="field" id="f-note" placeholder="例如：鰻魚飯" value="${esc(draft.note)}" maxlength="40"></div></div>
   <button class="primary" id="f-save" type="submit"${canWrite?"":" disabled"}>${editingId?"更新這筆":"記下這筆"}</button>
@@ -1509,8 +1539,19 @@ function acctHTML(){
  </form>
  <div class="box" id="acct-list"></div></div>`;
 }
+function walletHTML(){
+ return `<div class="w-head"><h3>現金錢包</h3><span>各自手上的日圓</span></div>
+ ${PEOPLE.map(p=>{const w=p[0],set=cashIn(w)>0,left=cashLeft(w),mine=!me||w===me,low=set&&left<LOW_CASH;
+  return `<div class="w-row${mine?" mine":""}"><svg class="w-cat" viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${w==="zhang"?"b":"w"}"/></svg>
+   <div class="w-txt"><b>${p[1]}</b><small>${set?`換了 ${yen(cashIn(w))}・花了 ${yen(cashSpent(w))}`:"還沒設定換了多少日圓"}</small></div>
+   <div class="w-left${low?" low":""}">${set?`<small>剩</small>${yen(left)}`:"—"}</div></div>
+   ${mine&&canWrite?(walletEdit===w?`<form class="w-form" data-wallet-form="${w}" autocomplete="off"><div class="w-mode"><button type="button" class="pick" data-wmode="add" aria-pressed="${walletMode==="add"}">補錢（領了多少）</button><button type="button" class="pick" data-wmode="set" aria-pressed="${walletMode==="set"}">修改總額</button></div><div class="amt"><span>¥</span><input name="amt" inputmode="numeric" placeholder="${walletMode==="add"?"例如 10000":"一共換了多少"}" aria-label="金額"></div><div class="form-btns"><button class="primary" type="submit">${walletMode==="add"?"加進錢包":"儲存"}</button><button class="ghost" type="button" data-wallet-cancel>取消</button></div></form>`:`<div class="w-acts"><button type="button" class="chip" data-wallet-edit="${w}" data-mode="${set?"add":"set"}">${set?"＋ 補錢":"設定換了多少"}</button>${set?`<button type="button" class="chip" data-wallet-edit="${w}" data-mode="set">修改總額</button>`:""}</div>`):""}`}).join("")}`;
+}
+let walletMode="set";
+async function saveWallet(w,val){wallet={...wallet,[w]:{...(wallet[w]||{}),cashIn:val,ts:Date.now()}};store.set("wallet",wallet);if(db){try{await db.doc("wallet/"+w).set(wallet[w])}catch(_){}}}
 function renderAcct(){
  const sum=document.getElementById("acct-sum"),list=document.getElementById("acct-list");if(!sum)return;
+ const wb=document.getElementById("acct-wallet");if(wb)wb.innerHTML=walletHTML();
  const total=expenses.reduce((a,e)=>a+e.amt,0);
  const byCat=ECAT.map(c=>[c,expenses.filter(e=>e.cat===c[0]).reduce((a,e)=>a+e.amt,0)]).filter(x=>x[1]>0);
  let bal=0;expenses.forEach(e=>{if(e.split==="both")bal+=e.who==="zhang"?e.amt/2:-e.amt/2});
@@ -1525,7 +1566,7 @@ function renderAcct(){
  const days=[...new Set(expenses.map(e=>e.day))].sort((a,b)=>b.localeCompare(a));
  list.innerHTML=days.map(d=>{const es=expenses.filter(e=>e.day===d).sort((a,b)=>(b.ts||0)-(a.ts||0));const x=DAYS.find(z=>z.d===d);
   return `<div class="day-group"><h4>${esc(d)}${x?`（${x.w}）`:""}<span>${yen(es.reduce((a,e)=>a+e.amt,0))}</span></h4>${es.map(e=>{const c=ECAT.find(z=>z[0]===e.cat)||ECAT[5];const p=PEOPLE.find(z=>z[0]===e.who)||PEOPLE[0];
-   return `<div class="ex${editingId===e.id?" editing":""}"${canWrite?` data-edit="${esc(e.id)}" role="button" tabindex="0"`:""}><span class="ic ${c[3]}"><svg><use href="#${c[2]}"/></svg></span><div class="m"><b>${esc(e.note||c[1])}</b><small>${p[1]}付，${e.split==="both"?"兩人平分":"自己的"}${canWrite?"，點一下修改":""}</small></div><div class="a">${yen(e.amt)}${canWrite?`<button type="button" class="del${pendingDel===e.id?" sure":""}" data-del="${esc(e.id)}">${pendingDel===e.id?"確定刪除":"刪除"}</button>`:""}</div></div>`}).join("")}</div>`}).join('<div class="gap"></div>');
+   return `<div class="ex${editingId===e.id?" editing":""}"${canWrite?` data-edit="${esc(e.id)}" role="button" tabindex="0"`:""}><span class="ic ${c[3]}"><svg><use href="#${c[2]}"/></svg></span><div class="m"><b>${esc(e.note||c[1])}</b><small>${p[1]}${e.pay==="cash"?"付現":e.pay==="card"?"刷卡":"付"}，${e.split==="both"?"兩人平分":"自己的"}${canWrite?"，點一下修改":""}</small></div><div class="a">${yen(e.amt)}${canWrite?`<button type="button" class="del${pendingDel===e.id?" sure":""}" data-del="${esc(e.id)}">${pendingDel===e.id?"確定刪除":"刪除"}</button>`:""}</div></div>`}).join("")}</div>`}).join('<div class="gap"></div>');
 }
 function itemForm(g,it){
  const isNew=!it;it=it||{title:"",note:"",due:""};
@@ -1807,6 +1848,9 @@ app.addEventListener("click",e=>{
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
  const pk=e.target.closest(".pick");if(pk){const grp=pk.parentElement.dataset.pick;draft[grp]=pk.dataset.v;pk.parentElement.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",b===pk));return}
  const del=e.target.closest("[data-del]");if(del){const id=del.dataset.del;if(pendingDel!==id){pendingDel=id;renderAcct();clearTimeout(window._pd);window._pd=setTimeout(()=>{if(pendingDel===id){pendingDel=null;renderAcct()}},3000);return}pendingDel=null;removeExpense(id);return}
+ const we=e.target.closest("[data-wallet-edit]");if(we){walletEdit=we.dataset.walletEdit;walletMode=we.dataset.mode||"set";renderAcct();setTimeout(()=>document.querySelector(".w-form input")?.focus(),30);return}
+ const wm=e.target.closest("[data-wmode]");if(wm){walletMode=wm.dataset.wmode;const v=document.querySelector(".w-form input")?.value||"";renderAcct();const i=document.querySelector(".w-form input");if(i){i.value=v;i.focus()}return}
+ if(e.target.closest("[data-wallet-cancel]")){walletEdit=null;renderAcct();return}
  const ed=e.target.closest("[data-edit]");if(ed){startEdit(ed.dataset.edit);return}
  if(e.target.closest("#f-cancel")){stopEdit();return}
 });
@@ -1841,11 +1885,12 @@ app.addEventListener("submit",async e=>{
   const it={...(old||{}),id:id||("i"+Date.now().toString(36)),group:g,title,...(g==="buy"?{place:f.place.value.trim(),what:f.what.value.trim(),note:""}:{note:f.note.value.trim()}),...(g==="pack"?{cat:f.cat?f.cat.value:"etc"}:{}),due:(()=>{const dd=f.dued&&f.dued.value;if(!dd)return "";const[,mo,da]=dd.split("-");const t=f.duet&&f.duet.value;return `${+mo}/${+da}`+(t?` ${t}`:"")})(),links:old?old.links||null:null,order:old?old.order:Math.max(0,...items.filter(x=>x.group===g).map(x=>x.order||0))+1};
   editItem=null;await saveItem(it);render(true);return;
  }
+ if(e.target.matches("[data-wallet-form]")){const w=e.target.dataset.walletForm,v=parseInt((e.target.amt.value||"").replace(/[^\d]/g,""),10);if(!(v>0)){e.target.amt.focus();return}await saveWallet(w,walletMode==="add"?cashIn(w)+v:v);walletEdit=null;renderAcct();return}
  if(e.target.id==="code-form"){const v=(document.getElementById("f-code").value||"").trim();if(!v)return;try{localStorage.setItem(TRIP_KEY,v)}catch(_){};syncMsg="connecting";render(true);connect();return}
  const msg=document.getElementById("f-msg"),amt=parseInt(draft.amt,10);
  msg.className="msg";
  if(!amt||amt<=0){msg.className="msg err";msg.textContent="請先輸入金額";document.getElementById("f-amt").focus();return}
- const rec={amt,cat:draft.cat,who:draft.who,split:draft.split,day:draft.day,note:draft.note.trim(),ts:Date.now()};
+ const rec={amt,cat:draft.cat,who:draft.who,split:draft.split,pay:draft.pay||"cash",day:draft.day,note:draft.note.trim(),ts:Date.now()};
  const btn=document.getElementById("f-save");btn.disabled=true;
  try{
   if(editingId){
@@ -1938,7 +1983,8 @@ async function connect(){
   try{await ensureSeeded()}catch(_){}
   db.collection("moods").onSnapshot(snap=>{const n={...moods};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{});
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
-  db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,day:v.day,note:v.note||"",ts:v.ts||0}});if(tab==="acct")renderAcct()},()=>{});
+  db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0}});if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
+  db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const v=+(s.data()||{}).jpyTwd;if(v>0){rate=v;store.set("rate",v);if(tab==="acct")renderAcct()}}},()=>{});
   rerenderData();
  }catch(err){
