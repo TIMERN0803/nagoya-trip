@@ -139,6 +139,15 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .item .card .jp{font-size:12.5px;color:var(--muted)}
 .item .card p{margin:2px 0 0;font-size:14px;color:var(--muted)}
 .acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.item .card.has-pic{display:grid;grid-template-columns:minmax(0,1fr) 72px;column-gap:12px;align-items:start}
+.item .card.has-pic>*:not(.pic){grid-column:1}
+.item .card.has-pic>.pic{grid-column:2;grid-row:1 / span 6}
+.pic{position:relative;display:block;width:72px;height:72px;border-radius:16px;overflow:hidden;box-shadow:0 0 0 1.5px var(--line);flex:none}
+.pic svg{display:block;width:100%;height:100%}
+a.pic:active{transform:scale(.96)}
+.pic .pin{position:absolute;right:4px;bottom:4px;width:22px;height:22px;border-radius:50%;background:#fff;color:var(--brown);display:grid;place-items:center;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.pic .pin svg{width:13px;height:13px}
+.item.s-done .pic{filter:grayscale(.6)}
 .c-move{--tb:var(--c-move-bg);--tc:var(--c-move)} .c-go{--tb:var(--c-go-bg);--tc:var(--c-go)} .c-eat{--tb:var(--c-eat-bg);--tc:var(--c-eat)}
 .c-stay{--tb:var(--c-stay-bg);--tc:var(--c-stay)} .c-do{--tb:var(--c-do-bg);--tc:var(--c-do)} .c-buy{--tb:var(--c-buy-bg);--tc:var(--c-buy)} .c-etc{--tb:var(--c-etc-bg);--tc:var(--c-etc)}
 
@@ -957,6 +966,51 @@ function homeHTML(){
  ${moodStripHTML()}
  ${remindHTML()}`;
 }
+/* ---------- 行程小插圖：每張卡片右側的圖，同一套粗線條手繪風 ---------- */
+const PB={eat:"#FDE3D2",go:"#DDF0E2",move:"#DCEBF7",stay:"#EBE2F6",do:"#FBDDE6",buy:"#FBEFC8"};
+const O=`stroke="#2B2420" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"`;
+const steam=(x,y)=>`<path d="M${x} ${y}q-3-4 0-8M${x+7} ${y}q-3-4 0-8" fill="none" stroke="#B9A88F" stroke-width="2" stroke-linecap="round"/>`;
+const bowl=(fill="#fff")=>`<path d="M12 34h40a20 18 0 0 1-40 0z" fill="${fill}" ${O}/><path d="M24 52h16" ${O}/>`;
+const PICS={
+ plane:`<path d="M10 40q22-14 44-14 4 0 4 4t-6 5l-38 8z" fill="#fff" ${O}/><path d="M30 33l-6-14h6l12 13zM28 41l-4 10h5l9-11z" fill="#9CC6DE" ${O}/><path d="M12 39l-3-9h4l6 7z" fill="#EE9479" ${O}/><circle cx="44" cy="33" r="1.6" fill="#2B2420"/><circle cx="38" cy="34" r="1.6" fill="#2B2420"/>`,
+ train:`<rect x="14" y="12" width="36" height="34" rx="10" fill="#fff" ${O}/><rect x="19" y="18" width="26" height="12" rx="3" fill="#BFE2F0" ${O}/><rect x="14" y="36" width="36" height="4" fill="#EE9479"/><circle cx="21" cy="42" r="2" fill="#2B2420"/><circle cx="43" cy="42" r="2" fill="#2B2420"/><path d="M20 50l-4 6M44 50l4 6" ${O}/>`,
+ bus:`<rect x="12" y="14" width="40" height="32" rx="8" fill="#F8D778" ${O}/><rect x="17" y="19" width="30" height="11" rx="2" fill="#fff" ${O}/><path d="M12 36h40" ${O}/><circle cx="21" cy="47" r="4" fill="#6E5A48" ${O}/><circle cx="43" cy="47" r="4" fill="#6E5A48" ${O}/>`,
+ hotel:`<rect x="14" y="16" width="36" height="36" rx="3" fill="#fff" ${O}/><path d="M10 18h44l-6-8H16z" fill="#B79BD6" ${O}/>${[0,1,2].map(r=>[0,1,2].map(c=>`<rect x="${19+c*10}" y="${22+r*8}" width="6" height="5" rx="1" fill="#F8D778"/>`).join("")).join("")}<rect x="28" y="44" width="8" height="8" fill="#B08463"/>`,
+ bread:`<path d="M14 30c0-10 8-14 18-14s18 4 18 14c0 4-3 5-4 6v12H18V36c-1-1-4-2-4-6z" fill="#E3A86A" ${O}/><path d="M20 30c0-6 5-8 12-8s12 2 12 8v16H20z" fill="#FFF3D1"/><circle cx="27" cy="33" r="1.6" fill="#2B2420"/><circle cx="37" cy="33" r="1.6" fill="#2B2420"/><path d="M30 37q2 2 4 0" fill="none" stroke="#2B2420" stroke-width="1.8" stroke-linecap="round"/>`,
+ castle:`<path d="M14 52h36l-4-8H18z" fill="#D8CBB8" ${O}/><rect x="20" y="34" width="24" height="10" fill="#fff" ${O}/><path d="M16 35h32l-5-6H21z" fill="#7FA79C" ${O}/><rect x="25" y="22" width="14" height="7" fill="#fff" ${O}/><path d="M22 23h20l-4-6H26z" fill="#7FA79C" ${O}/><circle cx="27" cy="14" r="2.2" fill="#F4C04A" ${O} stroke-width="1.6"/><circle cx="37" cy="14" r="2.2" fill="#F4C04A" ${O} stroke-width="1.6"/>`,
+ tower:`<path d="M30 10h4v8h-4z" fill="#C8CED0" ${O}/><path d="M27 18h10l-2 22h-6z" fill="#E1E5E6" ${O}/><rect x="24" y="28" width="16" height="4" rx="1" fill="#C8CED0" ${O}/><path d="M22 40h20l5 14H17z" fill="#D6DCDE" ${O}/><circle cx="48" cy="16" r="5" fill="#FCE4A0" ${O}/>`,
+ katsu:`${bowl()}<path d="M16 30l6-8 30 4-4 8z" fill="#E8A65A" ${O}/><path d="M24 26v6M32 27v6M40 28v6" stroke="#C17A33" stroke-width="2" stroke-linecap="round"/><path d="M14 22q6-6 10 0" fill="#9FD38A" ${O}/>`,
+ park:`<path d="M6 50q26-14 52 0v8H6z" fill="#A6D398"/><rect x="22" y="30" width="20" height="16" fill="#FFF7EA" ${O}/><path d="M18 31h28L32 18z" fill="#E98C6E" ${O}/><rect x="29" y="37" width="6" height="9" fill="#B08463"/><path d="M50 42l-6 0 6-18 6 18z" fill="#5FA77B" ${O}/>`,
+ yakiniku:`<rect x="10" y="34" width="44" height="14" rx="6" fill="#6E5A48" ${O}/><path d="M12 32h40" stroke="#2B2420" stroke-width="2.2"/><path d="M16 28h32M16 24h32" stroke="#B9A88F" stroke-width="2"/><path d="M18 22c4-3 10-3 12 1-3 3-9 3-12-1z" fill="#E07A6B" ${O}/><path d="M33 26c4-3 10-3 13 1-3 3-10 3-13-1z" fill="#C9605A" ${O}/>${steam(26,16)}`,
+ coffee:`<path d="M14 26h28v12a14 12 0 0 1-28 0z" fill="#fff" ${O}/><path d="M42 30h4a5 5 0 0 1 0 10h-5" fill="none" ${O}/><ellipse cx="28" cy="26" rx="14" ry="3" fill="#8A5A3B" ${O}/><path d="M10 52h40" ${O}/>${steam(24,20)}`,
+ gohei:`<path d="M32 58V16" stroke="#C9A36A" stroke-width="3" stroke-linecap="round"/><path d="M22 18c0-6 4-8 10-8s10 2 10 8v20c0 6-4 8-10 8s-10-2-10-8z" fill="#FFF3D1" ${O}/><path d="M22 22c4 2 16 2 20 0v14c-4 2-16 2-20 0z" fill="#B76A3A" opacity=".85"/>`,
+ ramen:`${bowl("#EE9479")}<path d="M14 34h36" ${O}/><path d="M20 30q4-4 8 0t8 0 8 0" fill="none" stroke="#F4C04A" stroke-width="2.4" stroke-linecap="round"/><circle cx="24" cy="27" r="4" fill="#fff" ${O}/><circle cx="24" cy="27" r="1.8" fill="#F4C04A"/><path d="M38 10l8 22M44 10l6 22" ${O}/>`,
+ night:`<rect x="4" y="4" width="56" height="56" rx="12" fill="#3F4A6E"/><circle cx="46" cy="16" r="5" fill="#FCE4A0"/><path d="M8 54V36h8v-8h8v14h6V24h8v30h6V40h8v14z" fill="#2B2F45" ${O}/><g fill="#F8D778"><rect x="34" y="30" width="2" height="2"/><rect x="34" y="36" width="2" height="2"/><rect x="20" y="36" width="2" height="2"/><rect x="48" y="46" width="2" height="2"/></g>`,
+ giraffe:`<path d="M30 54V40" stroke="#F4C76A" stroke-width="6" stroke-linecap="round"/><path d="M40 54V40" stroke="#F4C76A" stroke-width="6" stroke-linecap="round"/><ellipse cx="35" cy="38" rx="11" ry="7" fill="#F4C76A" ${O}/><path d="M42 34V14" stroke="#2B2420" stroke-width="8" stroke-linecap="round"/><path d="M42 34V14" stroke="#F4C76A" stroke-width="4.4" stroke-linecap="round"/><ellipse cx="46" cy="13" rx="7" ry="4.5" fill="#F4C76A" ${O}/><circle cx="48" cy="12" r="1.3" fill="#2B2420"/><circle cx="31" cy="37" r="2" fill="#D9A04E"/><circle cx="38" cy="40" r="1.8" fill="#D9A04E"/>`,
+ hair:`<circle cx="22" cy="44" r="7" fill="#fff" ${O}/><circle cx="42" cy="44" r="7" fill="#fff" ${O}/><path d="M26 38l18-26M38 38L20 12" stroke="#9AA3A6" stroke-width="4" stroke-linecap="round"/><path d="M26 38l18-26M38 38L20 12" ${O} fill="none"/><circle cx="32" cy="28" r="2" fill="#2B2420"/>`,
+ ticket:`<rect x="18" y="8" width="28" height="48" rx="6" fill="#fff" ${O}/><rect x="22" y="16" width="20" height="26" rx="2" fill="#F8D778" ${O}/><text x="32" y="34" text-anchor="middle" font-size="12" font-weight="900" font-family="system-ui" fill="#2B2420">08</text><circle cx="32" cy="49" r="2.4" fill="#2B2420"/>`,
+ hamburg:`<ellipse cx="32" cy="42" rx="22" ry="8" fill="#fff" ${O}/><ellipse cx="30" cy="36" rx="14" ry="8" fill="#8A4B33" ${O}/><path d="M22 34q8-6 16 0" fill="none" stroke="#C2703F" stroke-width="2.2" stroke-linecap="round"/><circle cx="46" cy="36" r="4" fill="#9FD38A" ${O}/>${steam(26,22)}`,
+ breakfast:`<ellipse cx="32" cy="42" rx="22" ry="9" fill="#fff" ${O}/><rect x="16" y="26" width="16" height="16" rx="4" fill="#E3A86A" ${O}/><rect x="19" y="29" width="10" height="10" rx="2" fill="#FFF3D1"/><path d="M36 40c-2-6 2-10 7-10s9 4 7 10z" fill="#fff" ${O}/><circle cx="43" cy="36" r="3.2" fill="#F4C04A"/>`,
+ torii:`<path d="M8 18q24-6 48 0v5H8z" fill="#E87A5D" ${O}/><rect x="14" y="27" width="36" height="4" fill="#E87A5D" ${O}/><rect x="18" y="22" width="5" height="34" fill="#E87A5D" ${O}/><rect x="41" y="22" width="5" height="34" fill="#E87A5D" ${O}/>`,
+ unagi:`<rect x="10" y="26" width="44" height="24" rx="5" fill="#B9473A" ${O}/><rect x="14" y="22" width="36" height="10" rx="3" fill="#FFF3D1" ${O}/><path d="M16 24h32v6H16z" fill="#9A5A2A"/><path d="M20 27h24" stroke="#5E3416" stroke-width="2" stroke-linecap="round" stroke-dasharray="3 3"/>`,
+ lantern:`<path d="M6 14h52" ${O}/>${[14,32,50].map((x,i)=>`<path d="M${x} 14v4" ${O}/><rect x="${x-7}" y="18" width="14" height="20" rx="7" fill="${i===1?"#F4C04A":"#EE9479"}" ${O}/><path d="M${x-7} 28h14" stroke="#2B2420" stroke-width="1.4"/>`).join("")}<path d="M6 54h52" ${O}/><rect x="12" y="44" width="40" height="10" fill="#fff" ${O}/>`,
+ sushi:`<rect x="8" y="40" width="48" height="8" rx="3" fill="#C9A36A" ${O}/><path d="M14 40c0-6 2-8 8-8h4c6 0 8 2 8 8z" fill="#fff" ${O}/><path d="M12 34c4-6 18-6 22 0-6 3-16 3-22 0z" fill="#F08A6B" ${O}/><path d="M36 40c0-6 2-8 6-8h4c4 0 6 2 6 8z" fill="#fff" ${O}/><path d="M34 34c3-5 15-5 20 0-5 3-15 3-20 0z" fill="#F6C59A" ${O}/>`,
+ beer:`<rect x="14" y="20" width="22" height="32" rx="3" fill="#F4C04A" ${O}/><path d="M36 26h5a5 5 0 0 1 0 10h-5" fill="none" ${O}/><path d="M12 22c0-6 4-8 8-8 2-4 10-4 12 0 4 0 6 2 6 6z" fill="#fff" ${O}/><path d="M46 52L54 14" stroke="#C9A36A" stroke-width="3" stroke-linecap="round"/><circle cx="51" cy="26" r="4" fill="#B76A3A" ${O}/><circle cx="49" cy="35" r="4" fill="#B76A3A" ${O}/>`,
+ pottery:`<path d="M20 54c-8-8-8-20 4-24h16c12 4 12 16 4 24z" fill="#C46B4B" ${O}/><rect x="24" y="22" width="16" height="9" rx="2" fill="#B05C3E" ${O}/><path d="M18 42h28" stroke="#8C3F28" stroke-width="2"/>`,
+ cake:`<path d="M12 34l28-14 12 14z" fill="#FFF3D1" ${O}/><path d="M12 34h40v14H12z" fill="#FFF3D1" ${O}/><path d="M12 40h40" stroke="#EE9479" stroke-width="3"/><circle cx="38" cy="18" r="4" fill="#E04A4A" ${O}/>`,
+ matcha:`<path d="M12 30h40a20 18 0 0 1-40 0z" fill="#fff" ${O}/><ellipse cx="32" cy="30" rx="20" ry="4" fill="#7DB35A" ${O}/><path d="M24 52h16" ${O}/><path d="M44 10l-6 18" stroke="#C9A36A" stroke-width="3" stroke-linecap="round"/><path d="M36 26l6 2 3-6" fill="#C9A36A"/>`,
+ plate:`<ellipse cx="32" cy="40" rx="22" ry="9" fill="#fff" ${O}/><ellipse cx="32" cy="37" rx="12" ry="6" fill="#F4C04A" ${O}/><path d="M26 36q6-4 12 0" fill="none" stroke="#C17A33" stroke-width="2" stroke-linecap="round"/><path d="M50 18v12M54 18v12M52 30v10" ${O}/><path d="M12 18v22M10 18q2 8 4 0" ${O} fill="none"/>`,
+ donburi:`${bowl("#fff")}<path d="M14 34c4-8 32-8 36 0z" fill="#F8D778" ${O}/><circle cx="26" cy="30" r="3" fill="#EE9479"/><circle cx="36" cy="29" r="3" fill="#9FD38A"/><path d="M38 10l10 22M44 10l8 20" ${O}/>`,
+ shop:`<rect x="12" y="24" width="40" height="28" fill="#fff" ${O}/>${[0,1,2,3].map(i=>`<path d="M${12+i*10} 24h10v6a5 5 0 0 1-10 0z" fill="${i%2?"#fff":"#EE9479"}" ${O}/>`).join("")}<rect x="18" y="36" width="12" height="16" fill="#BFE2F0" ${O}/><rect x="36" y="38" width="10" height="14" fill="#B08463" ${O}/>`
+};
+const PIC_OF={"JX 320 台中 → 名古屋":"plane","搭名鐵到名古屋車站":"train","名古屋燈光圖書飯店":"hotel","つばめパン＆Milk 名駅店":"bread","名古屋城":"castle","榮":"tower","すゞ家 赤門店":"katsu","名古屋車站 4 樓搭名鐵巴士":"bus","吉卜力公園":"park","伏見屋 飛騨牛 別邸":"yakiniku","コンパル サンロード店":"coffee","搭名鐵到犬山":"train","犬山城":"castle","城下町小吃":"gohei","麵家 獅子丸":"ramen","Sky Promenade 屋外展望台":"night","イトウ珈琲喫茶室":"coffee","東山動物植物園":"giraffe","星星：snuw【スニュウ】":"hair","阿彰：men's NEELU 名古屋":"hair","搶 KISO 號碼牌":"ticket","挽き肉のトリコ":"hamburg","KISO":"breakfast","熱田神宮":"torii","熱田うなぎ 天":"unagi","大須商店街":"lantern","大須鮨":"sushi","久屋大通與中日大樓 7 樓":"night","ふみ屋 錦店":"beer","New Poppy":"breakfast","常滑":"pottery","nuu":"cake","風舎 常滑店":"cake","西条園抹茶カフェ":"matcha","Yellow 則武新町店":"plate","伏見町 POPEYE":"coffee","升半茶店 本店":"matcha","沢村 名古屋":"bread","桂昇":"donburi","名古屋車站搭名鐵往機場":"train","抵達中部國際機場":"plane","JX 321 名古屋 → 台中":"plane"};
+const KCOL={fly:"move",move:"move",go:"go",eat:"eat",stay:"stay",do:"do",remind:"do",buy:"buy"};
+function picHTML(it){
+ const key=PIC_OF[it.n]||({eat:"plate",go:"park",move:"train",fly:"plane",stay:"hotel",buy:"shop",do:"ticket",remind:"ticket"})[it.k];
+ const svg=`<svg viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" fill="${PB[KCOL[it.k]]||"#F0E7DB"}"/><g filter="url(#rough)">${PICS[key]||""}</g></svg>`;
+ return it.map?`<a class="pic" href="${mapUrl(it.map)}" target="_blank" rel="noopener" aria-label="在地圖上看 ${esc(it.n)}">${svg}<span class="pin"><svg viewBox="0 0 24 24"><use href="#i-pin"/></svg></span></a>`:`<span class="pic">${svg}</span>`;
+}
+
 const tmin=t=>{const m=/(\d{1,2}):(\d{2})/.exec(t||"");return m?+m[1]*60+ +m[2]:null};
 /* 今天的行程狀態：已過的有時間行程反灰，剛開始 90 分鐘內算「進行中」，下一個有時間的行程標「接下來」 */
 function dayStatus(x){
@@ -970,7 +1024,7 @@ function itemHTML(it,i,stat){
  const[kl,ki,kc]=KIND[it.k];const acts=[];const s=stat?stat.st[i]:"";
  if(it.map)acts.push(`<a class="chip" href="${mapUrl(it.map)}" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>地圖</a>`);
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
- return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card"><div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
+ return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
   <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
 function schedHTML(){
