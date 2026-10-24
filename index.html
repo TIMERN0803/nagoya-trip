@@ -315,7 +315,75 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .tile-done{position:absolute;right:7px;top:7px;width:24px;height:24px;border-radius:50%;background:#fff;color:var(--mint-ink);display:grid;place-items:center;box-shadow:0 0 0 2px var(--line)}
 .tile .art .tile-done svg{width:15px;height:15px}
 .tile.past .art svg{filter:grayscale(.7)}
+.trip-over .tile.past{opacity:1}
+.trip-over .tile.past .art>svg{filter:none}
 .tile.today .art{outline:3px solid var(--mint-ink);outline-offset:3px}
+.mood-chip .face.xs{width:20px;height:20px}
+.mood{margin-top:20px;background:var(--card);border:1.5px solid var(--line);border-radius:24px;padding:16px 16px 6px;box-shadow:var(--shadow);scroll-margin-top:96px}
+.mood.saved{animation:ping .8s ease}
+.mood-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.mood-head h3{margin:0;font-size:18px}
+.mood-head span{font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--muted)}
+.mood-row{position:relative;display:flex;gap:12px;align-items:flex-start;padding:12px 44px 12px 0;border-top:2px dashed var(--line)}
+.mood-head+.mood-row,.mood-head+.mood-form{border-top:0}
+.mface .face{width:46px;height:46px;display:block}
+.mtxt{min-width:0;flex:1}
+.mtxt b{font-family:var(--f-display);font-weight:900;font-size:15.5px;display:flex;align-items:center;gap:6px}
+.mlabel{font-family:var(--f-body);font-size:12px;font-weight:700;background:var(--sunk);color:var(--ink);border-radius:999px;padding:1px 8px}
+.mtxt p{margin:3px 0 0;font-size:14.5px;line-height:1.55;overflow-wrap:anywhere;white-space:pre-wrap}
+.mtxt p.dim{color:var(--muted)}
+.mood-row .edit-btn{right:-6px;top:6px}
+.mood-form{display:flex;flex-direction:column;gap:10px;padding:10px 0 14px;border-top:2px dashed var(--line)}
+.mood-form .who{display:flex;align-items:center;gap:8px}
+.mood-form .who .wc{width:26px;height:30px}
+.mood-form .who b{font-family:var(--f-display);font-weight:900}
+.mood-form .who span{color:var(--muted);font-size:13.5px}
+.faces{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.fbtn{border:2px solid transparent;background:none;border-radius:16px;padding:6px 0 4px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;transition:transform .15s,background .15s,border-color .15s}
+.fbtn .face{width:44px;height:44px;transition:transform .2s cubic-bezier(.3,1.6,.5,1)}
+.fbtn small{font-size:11.5px;font-weight:700;color:var(--muted)}
+.fbtn.on{background:var(--paper);border-color:var(--mint-ink)}
+.fbtn.on .face{transform:scale(1.15) rotate(-6deg)}
+.fbtn.on small{color:var(--ink)}
+.faces:has(.on) .fbtn:not(.on) .face{opacity:.5}
+.mood-form textarea{resize:vertical;min-height:72px;font-family:var(--f-body);line-height:1.5}
+.pickme{background:var(--mint-soft);border-radius:18px;padding:12px 14px;margin:4px 0 10px;display:flex;flex-direction:column;gap:2px}
+.pickme b{font-family:var(--f-display);font-weight:900}
+.pickme span{font-size:13px;color:var(--muted)}
+.pick-row{display:flex;gap:8px;margin-top:8px}
+.pick-row .pick{flex:1;justify-content:center;padding:8px 12px;background:var(--card)}
+.mood-strip{margin-top:18px}
+.mood-strip .sheet-head{margin-bottom:10px}
+.ms-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+.ms-day{border:0;background:var(--paper);border-radius:14px;padding:6px 0 4px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:var(--f-display)}
+.ms-day small{font-size:12px;font-weight:900;color:var(--muted)}
+.ms-day.today{background:var(--mint-soft);box-shadow:inset 0 0 0 2px var(--mint-ink)}
+.ms-day.today small{color:var(--mint-ink)}
+.ms-day:disabled{cursor:default;opacity:.55}
+.face.sm{width:30px;height:30px}
+.ms-dot{width:30px;height:30px;display:grid;place-items:center}
+.ms-dot::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--line)}
+.ms-legend{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:10px;font-size:12.5px;color:var(--muted);align-items:center}
+.ms-legend span{display:inline-flex;align-items:center;gap:4px}
+.ms-legend svg{width:16px;height:19px}
+.ms-legend .ms-note{margin-left:auto}
+.mapcard{width:100%;margin-top:18px;display:flex;align-items:center;gap:12px;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:22px;padding:10px 14px 10px 10px;box-shadow:var(--shadow);cursor:pointer;font-family:var(--f-body)}
+.mapcard img{width:84px;height:84px;border-radius:14px;object-fit:cover;flex:none}
+.mapcard span{flex:1;display:flex;flex-direction:column}
+.mapcard b{font-family:var(--f-display);font-weight:900;font-size:16px}
+.mapcard small{color:var(--muted);font-size:13px}
+.mapcard .go{width:20px;height:20px;color:var(--brown);flex:none}
+.mapcard:active{transform:scale(.98)}
+.viewer{position:fixed;inset:0;z-index:50;background:rgba(43,36,32,.94);touch-action:none;overflow:hidden;animation:fadein .18s ease}
+.viewer.out{opacity:0;transition:opacity .18s}
+.viewer img{position:absolute;left:0;top:0;transform-origin:0 0;user-select:none;-webkit-user-select:none;border-radius:6px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
+.vclose{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#2B2420;display:grid;place-items:center;cursor:pointer}
+.vclose svg{width:20px;height:20px}
+.vtools{position:absolute;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);display:flex;gap:6px;background:rgba(255,255,255,.92);border-radius:999px;padding:5px}
+.vtools button{min-width:44px;height:40px;border:0;background:none;border-radius:999px;font-family:var(--f-display);font-weight:900;font-size:16px;color:#2B2420;cursor:pointer;padding:0 12px}
+.vtools button:active{background:#F0E7DB}
+.vhint{position:absolute;left:50%;top:calc(18px + env(safe-area-inset-top,0px));transform:translateX(-50%);background:rgba(43,36,32,.82);color:#fff;font-size:13px;font-weight:700;border-radius:999px;padding:6px 14px;pointer-events:none;white-space:nowrap;animation:hintout 3.2s ease forwards}
+@keyframes hintout{0%,75%{opacity:1}100%{opacity:0}}
 .empty{text-align:center;padding:4px 0;color:var(--muted);font-size:14px}
 .empty svg{width:110px;height:70px;display:block;margin:0 auto 6px}
 
@@ -359,6 +427,7 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
     <symbol id="w-cloud" viewBox="0 0 32 32"><path d="M8 25h16a6 6 0 0 0 0-12 8 8 0 0 0-15 2.5A4.8 4.8 0 0 0 8 25z" fill="#EEF2F5" stroke="#8A9BAA" stroke-width="2"/></symbol>
     <symbol id="w-rain" viewBox="0 0 32 32"><path d="M8 20h16a6 6 0 0 0 0-12 8 8 0 0 0-15 2.5A4.8 4.8 0 0 0 8 20z" fill="#EEF2F5" stroke="#8A9BAA" stroke-width="2"/><path d="M11 24l-1.5 4M17 24l-1.5 4M23 24l-1.5 4" stroke="#5C93C4" stroke-width="2.2" stroke-linecap="round"/></symbol>
 
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.3" fill="currentColor"/></symbol>
     <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -628,7 +697,93 @@ const todayIdx=DAYS.findIndex(x=>dayDate(x).getTime()===today.getTime());
 let tab="plan",view="home",dayIdx=todayIdx>=0?todayIdx:0;
 let done=store.get("done")||{},db=null,canWrite=true,live=false;
 let expenses=store.get("exp")||[],rate=store.get("rate")||0.2,forecast=null;
-let draft={amt:"",cat:"food",who:"zhang",split:"both",day:todayIdx>=0?DAYS[todayIdx].d:"11/17",note:""};
+let draft={amt:"",cat:"food",who:(()=>{try{return localStorage.getItem("ngy:me")||"zhang"}catch(_){return "zhang"}})(),split:"both",day:todayIdx>=0?DAYS[todayIdx].d:"11/17",note:""};
+/* ---------- 心情日記 ---------- */
+const MOODS=[[1,"很糟","#C9C3E6"],[2,"不太好","#BFDCEB"],[3,"普通","#EDE3D3"],[4,"開心","#F8D778"],[5,"超開心","#F4A68C"]];
+const ME_KEY="ngy:me";
+let me=(()=>{try{return localStorage.getItem(ME_KEY)}catch(_){return null}})();
+let moods=store.get("moods")||{},moodEdit=null,moodDraft=null;
+const mk=(d,who)=>d.replace("/","-")+"_"+who;
+const nameOf=w=>(PEOPLE.find(p=>p[0]===w)||[0,"?"])[1];
+function moodFace(n,cls=""){
+ const m=MOODS[n-1],L="#2B2420",sw=`stroke="${L}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"`;
+ const eyes=n===5?`<path d="M11.5 21.5 Q14.5 17.5 17.5 21.5 M22.5 21.5 Q25.5 17.5 28.5 21.5" fill="none" ${sw}/>`
+  :n===1?`<path d="M12 19.5 L16.5 21.5 L12 23.5 M28 19.5 L23.5 21.5 L28 23.5" fill="none" ${sw}/>`
+  :`<circle cx="14.5" cy="21" r="2.2" fill="${L}"/><circle cx="25.5" cy="21" r="2.2" fill="${L}"/>`;
+ const mouth=[`<path d="M15 30.5 Q20 25.5 25 30.5" fill="none" ${sw}/><path d="M10.5 25 q-1.5 3 0 4.5 q1.5-1.5 0-4.5z" fill="#6FA8D6"/>`,
+  `<path d="M15.5 29.5 Q20 27 24.5 29.5" fill="none" ${sw}/>`,
+  `<path d="M15.5 28.5 H24.5" fill="none" ${sw}/>`,
+  `<path d="M15 27.5 Q20 31.5 25 27.5" fill="none" ${sw}/>`,
+  `<path d="M14.5 26 Q20 34.5 25.5 26 Z" fill="#B8463A" ${sw}/>`][n-1];
+ return `<svg class="face ${cls}" viewBox="0 0 40 40" aria-hidden="true"><path d="M5.5 26 C4.5 17 6 12 8 8.5 L9.5 3.5 L16.5 9.5 Q20 8.6 23.5 9.5 L30.5 3.5 L32 8.5 C34 12 35.5 17 34.5 26 C33 34 26 37 20 37 C14 37 7 34 5.5 26Z" fill="${m[2]}" ${sw}/>${eyes}${mouth}${n>=4?`<ellipse cx="10.5" cy="26" rx="2.6" ry="1.5" fill="#F4A3A0" opacity=".9"/><ellipse cx="29.5" cy="26" rx="2.6" ry="1.5" fill="#F4A3A0" opacity=".9"/>`:""}</svg>`;
+}
+const emptyFace=`<svg class="face empty" viewBox="0 0 40 40" aria-hidden="true"><path d="M5.5 26 C4.5 17 6 12 8 8.5 L9.5 3.5 L16.5 9.5 Q20 8.6 23.5 9.5 L30.5 3.5 L32 8.5 C34 12 35.5 17 34.5 26 C33 34 26 37 20 37 C14 37 7 34 5.5 26Z" fill="none" stroke="#CDB79F" stroke-width="2.2" stroke-dasharray="4 3"/></svg>`;
+const moodOpen=x=>dayDate(x)<=today;
+function moodSectionHTML(x){
+ if(!moodOpen(x))return "";
+ const mineKey=me?mk(x.d,me):null,mine=mineKey&&moods[mineKey],editing=me&&(moodEdit===x.d||!mine);
+ const row=(who)=>{const v=moods[mk(x.d,who)],isMe=who===me;
+  if(isMe&&editing){const dft=moodDraft&&moodDraft.d===x.d?moodDraft:{score:mine?mine.score:0,note:mine?mine.note:""};
+   return `<form class="mood-form" id="mood-form" data-d="${x.d}" autocomplete="off"><div class="who"><svg class="wc" viewBox="0 0 60 70"><use href="#${(PEOPLE.find(p=>p[0]===who)||[])[2]}"/></svg><b>${nameOf(who)}</b><span>今天過得怎麼樣？</span></div>
+    <div class="faces" role="radiogroup" aria-label="心情分數">${MOODS.map(m=>`<button type="button" class="fbtn${dft.score===m[0]?" on":""}" data-score="${m[0]}" role="radio" aria-checked="${dft.score===m[0]}" aria-label="${m[1]}">${moodFace(m[0])}<small>${m[1]}</small></button>`).join("")}</div>
+    <textarea class="field" id="mood-note" rows="3" maxlength="200" placeholder="寫一句今天的心得，例如：鰻魚飯超好吃">${esc(dft.note||"")}</textarea>
+    <div class="form-btns"><button class="primary" type="submit"${dft.score?"":" disabled"}>${mine?"更新":"送出"}</button>${mine?`<button class="ghost" type="button" data-mood-cancel>取消</button>`:""}</div></form>`}
+  return `<div class="mood-row"><div class="mface">${v?moodFace(v.score):emptyFace}</div><div class="mtxt"><b>${nameOf(who)}${v?`<span class="mlabel">${MOODS[v.score-1][1]}</span>`:""}</b>${v?(v.note?`<p>${esc(v.note)}</p>`:`<p class="dim">沒有留言</p>`):`<p class="dim">${isMe?"還沒填":"還沒填，等等再來看"}</p>`}</div>${isMe&&v?`<button class="edit-btn" type="button" data-mood-edit="${x.d}" aria-label="修改我的心情"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>`:""}</div>`};
+ const order=me?[me,...PEOPLE.map(p=>p[0]).filter(w=>w!==me)]:PEOPLE.map(p=>p[0]);
+ return `<section class="mood" id="mood"><div class="mood-head"><h3>今天的心情</h3><span>${x.d}（${x.w}）</span></div>
+  ${me?"":`<div class="pickme"><b>先選你是哪一位</b><span>只需要選一次，之後會記住</span><div class="pick-row">${PEOPLE.map(p=>`<button type="button" class="pick who" data-me="${p[0]}"><svg viewBox="0 0 60 70"><use href="#${p[2]}"/></svg>${p[1]}</button>`).join("")}</div></div>`}
+  ${order.map(row).join("")}</section>`;
+}
+function moodStripHTML(){
+ if(todayIdx<0&&diff>0)return "";
+ return `<section class="sheet mood-strip"><div class="sheet-head"><h2>我們的心情</h2><span>點一天看留言</span></div>
+  <div class="ms-grid">${DAYS.map((x,i)=>{const open=moodOpen(x);return `<button class="ms-day${i===todayIdx?" today":""}" ${open?`data-mood-day="${i}"`:"disabled"} aria-label="${x.d} 心情"><small>${i===todayIdx?"今天":x.d.split("/")[1]}</small>${PEOPLE.map(p=>{const v=moods[mk(x.d,p[0])];return v?moodFace(v.score,"sm"):(open?emptyFace.replace('class="face empty"','class="face empty sm"'):`<span class="ms-dot"></span>`)}).join("")}</button>`}).join("")}</div>
+  <div class="ms-legend">${PEOPLE.map(p=>`<span><svg viewBox="0 0 60 70"><use href="#${p[2]}"/></svg>${p[1]}</span>`).join("")}<span class="ms-note">上排${PEOPLE[0][1]}・下排${PEOPLE[1][1]}</span></div></section>`;
+}
+function rerenderMood(){
+ const sec=document.getElementById("mood");
+ if(sec&&!sec.contains(document.activeElement)){const x=DAYS[dayIdx];sec.outerHTML=moodSectionHTML(x)}
+ if(tab==="plan"&&view==="home"){const st=app.querySelector(".mood-strip");if(st)st.outerHTML=moodStripHTML();const h=app.querySelector(".hero");if(h&&!h.contains(document.activeElement)){const y=scrollY;render(true);scrollTo(0,y)}}
+}
+async function saveMood(d,score,note){
+ const key=mk(d,me),rec={score,note,ts:Date.now(),who:me,day:d};
+ moods[key]=rec;store.set("moods",moods);
+ if(db){try{await db.doc("moods/"+key).set(rec)}catch(_){}}
+}
+function gotoMood(i){
+ tab="plan";view="day";dayIdx=i;render();
+ requestAnimationFrame(()=>{const el=document.getElementById("mood");if(el){const top=el.getBoundingClientRect().top+scrollY-(app.querySelector(".strip")?.offsetHeight||0)-16;scrollTo({top,behavior:reduce()?"auto":"smooth"})}});
+}
+
+/* ---------- 地圖檢視器：點開全螢幕，雙指縮放、拖曳、點兩下放大 ---------- */
+function openViewer(src,alt){
+ const v=document.createElement("div");v.className="viewer";v.setAttribute("role","dialog");v.setAttribute("aria-label",alt);
+ v.innerHTML=`<img src="${src}" alt="${esc(alt)}" draggable="false"><button class="vclose" type="button" aria-label="關閉地圖"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
+  <div class="vtools"><button type="button" data-z="-1" aria-label="縮小">－</button><button type="button" data-z="0" aria-label="還原">還原</button><button type="button" data-z="1" aria-label="放大">＋</button></div><div class="vhint">雙指縮放・點兩下放大</div>`;
+ document.body.appendChild(v);document.body.style.overflow="hidden";
+ const img=v.querySelector("img");let s=1,x=0,y=0,size=0;
+ const vw=()=>v.clientWidth,vh=()=>v.clientHeight;
+ const clamp=()=>{const w=size*s;x=w<=vw()?(vw()-w)/2:Math.min(0,Math.max(vw()-w,x));y=w<=vh()?(vh()-w)/2:Math.min(0,Math.max(vh()-w,y))};
+ const apply=(anim)=>{clamp();img.style.transition=anim&&!reduce()?"transform .25s cubic-bezier(.2,.8,.2,1)":"none";img.style.transform=`translate(${x}px,${y}px) scale(${s})`};
+ const fit=()=>{size=Math.min(vw(),vh()-140);img.style.width=img.style.height=size+"px";s=1;x=(vw()-size)/2;y=(vh()-size)/2;apply(false)};
+ const zoomAt=(px,py,ns,anim)=>{ns=Math.max(1,Math.min(4,ns));x=px-(px-x)*(ns/s);y=py-(py-y)*(ns/s);s=ns;apply(anim)};
+ fit();addEventListener("resize",fit);
+ const pts=new Map();let last=null,tap=null;
+ v.addEventListener("pointerdown",e=>{if(e.target.closest("button"))return;v.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});last=null;if(pts.size===1)tap={x:e.clientX,y:e.clientY,t:Date.now(),moved:false}});
+ v.addEventListener("pointermove",e=>{if(!pts.has(e.pointerId))return;const prev=pts.get(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(tap&&Math.hypot(e.clientX-tap.x,e.clientY-tap.y)>8)tap.moved=true;
+  if(pts.size===1){if(s>1){x+=e.clientX-prev.x;y+=e.clientY-prev.y;apply(false)}}
+  else if(pts.size===2){const [a,b]=[...pts.values()],mx=(a.x+b.x)/2,my=(a.y+b.y)/2,d=Math.hypot(a.x-b.x,a.y-b.y);if(last){x+=mx-last.mx;y+=my-last.my;zoomAt(mx,my,s*d/last.d,false)}last={mx,my,d}}});
+ let lastTap=0;
+ const up=e=>{pts.delete(e.pointerId);last=null;if(pts.size===0&&tap&&!tap.moved&&Date.now()-tap.t<300){const now=Date.now();if(now-lastTap<320){zoomAt(tap.x,tap.y,s>1.2?1:2.5,true);lastTap=0}else lastTap=now}if(pts.size===0)tap=null};
+ v.addEventListener("pointerup",up);v.addEventListener("pointercancel",up);
+ v.addEventListener("wheel",e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,s*(e.deltaY<0?1.15:1/1.15),false)},{passive:false});
+ v.querySelector(".vtools").addEventListener("click",e=>{const b=e.target.closest("[data-z]");if(!b)return;const z=+b.dataset.z;if(z===0)zoomAt(vw()/2,vh()/2,1,true);else zoomAt(vw()/2,vh()/2,s*(z>0?1.6:1/1.6),true)});
+ const close=()=>{removeEventListener("resize",fit);removeEventListener("keydown",esc_);v.classList.add("out");document.body.style.overflow="";setTimeout(()=>v.remove(),reduce()?0:180)};
+ const esc_=e=>{if(e.key==="Escape")close()};addEventListener("keydown",esc_);
+ v.querySelector(".vclose").addEventListener("click",close);
+ v.querySelector(".vclose").focus({preventScroll:true});
+}
 let pendingDel=null,editingId=null;
 function startEdit(id){
  const e=expenses.find(x=>x.id===id);if(!e)return;editingId=id;pendingDel=null;
@@ -657,8 +812,8 @@ function heroHTML(){
   foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>行前待辦 ${n} / ${pl.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];big=`D${todayIdx+1}<small>${x.d}</small>`;lbl="今天的行程";sub=esc(x.title);
-  foot=`<button class="chip mint" data-day="${todayIdx}">看今天的行程<svg><use href="#i-arrow"/></svg></button>`;
- }else{big="完<small>旅程結束</small>";lbl="下次再一起出發";sub="記帳和清單都還留著";}
+  const mv=me&&moods[mk(x.d,me)];foot=`<button class="chip mint" data-day="${todayIdx}">看今天的行程<svg><use href="#i-arrow"/></svg></button><button class="chip ${mv?"":"coral"} mood-chip" data-mood-day="${todayIdx}">${mv?moodFace(mv.score,"xs")+"今天的心情":`<svg><use href="#i-pen"/></svg>寫今天的心情`}</button>`;
+ }else{big="完<small>旅程結束</small>";lbl="下次再一起出發";sub="記帳、清單和心情都還留著";foot=`<button class="chip mint" data-mood-day="0">回顧我們的心情<svg><use href="#i-arrow"/></svg></button>`;}
  return `<section class="hero">${HERO}${cd?`<div class="body col">${cd}<div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${foot?`<div class="foot">${foot}</div>`:""}</section>`;
 }
 function homeHTML(){
@@ -666,9 +821,10 @@ function homeHTML(){
  ${heroHTML()}
  <section class="sheet"><div class="clips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="sheet-head"><h2>8 天的地點</h2><span>點一下看當天</span></div>
-  <div class="grid">${DAYS.map((x,i)=>`<button class="tile${dayDate(x)<today?" past":""}${i===todayIdx?" today":""}" data-day="${i}"><span class="art">${svgTile(x.art)}${i===todayIdx?`<span class="tile-pill">今天</span>`:dayDate(x)<today?`<span class="tile-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`:""}</span><b>${esc(x.place)}</b><small>${x.d} 週${x.w}</small></button>`).join("")}
+  <div class="grid${todayIdx<0&&diff<=0?" trip-over":""}">${DAYS.map((x,i)=>`<button class="tile${dayDate(x)<today?" past":""}${i===todayIdx?" today":""}" data-day="${i}"><span class="art">${svgTile(x.art)}${i===todayIdx?`<span class="tile-pill">今天</span>`:dayDate(x)<today?`<span class="tile-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`:""}</span><b>${esc(x.place)}</b><small>${x.d} 週${x.w}</small></button>`).join("")}
    <button class="tile" data-go="list"><span class="art"><svg viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)"><rect width="120" height="120" fill="url(#gMint)"/><rect y="94" width="120" height="26" fill="#E7DCCB"/><g class="ol" transform="translate(90 62)"><path d="M-8-10v-6a8 8 0 0 1 16 0v6" fill="none"/><path d="M-18-10h36l-4 40h-28z" fill="#EE9479"/><rect x="-9" y="2" width="18" height="10" rx="3" fill="#fff"/></g></g>${cat("cat-w-wave",6,52,58)}</svg></span><b>要買的</b><small>${itemsOf("buy").filter(r=>done[r.id]).length} / ${itemsOf("buy").length} 已買</small></button></div>
- </section>`;
+ </section>
+ ${moodStripHTML()}`;
 }
 const tmin=t=>{const m=/(\d{1,2}):(\d{2})/.exec(t||"");return m?+m[1]*60+ +m[2]:null};
 /* 今天的行程狀態：已過的有時間行程反灰，剛開始 90 分鐘內算「進行中」，下一個有時間的行程標「接下來」 */
@@ -705,7 +861,7 @@ function dayBodyHTML(){
   <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
 ${nowCardHTML(x,stat)}
  ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="note"><svg><use href="#i-bell"/></svg><span>${esc(n)}</span></div>`).join("")}</div>`:""}
- <ol class="tl">${x.items.map((it,i)=>itemHTML(it,i,stat)).join("")}</ol>${x.sched?schedHTML():""}`;
+ <ol class="tl">${x.items.map((it,i)=>itemHTML(it,i,stat)).join("")}</ol>${x.sched?`<button class="mapcard" type="button" data-map><img src="ghibli-map-thumb.jpg" alt="" loading="lazy"><span><b>園區地圖</b><small>點開全螢幕，可以縮放</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`+schedHTML():""}${moodSectionHTML(x)}`;
 }
 function dayHTML(){
  return `<header class="bar"><button class="back" data-home><svg><use href="#i-back"/></svg>全部天數</button><span class="right" id="dayCount">第 ${dayIdx+1} 天，共 8 天</span></header>
@@ -873,6 +1029,12 @@ function refresh(){
 }
 
 app.addEventListener("click",e=>{
+ if(e.target.closest("[data-map]")){openViewer("ghibli-map.jpg","吉卜力公園地圖");return}
+ const md=e.target.closest("[data-mood-day]");if(md){gotoMood(+md.dataset.moodDay);return}
+ const pm=e.target.closest("[data-me]");if(pm){me=pm.dataset.me;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;const sec=document.getElementById("mood");if(sec)sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
+ const fb=e.target.closest(".fbtn");if(fb){const f=fb.closest("form");moodDraft={d:f.dataset.d,score:+fb.dataset.score,note:f.querySelector("#mood-note").value};f.querySelectorAll(".fbtn").forEach(b=>{const on=b===fb;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});f.querySelector("[type=submit]").disabled=false;return}
+ const me_=e.target.closest("[data-mood-edit]");if(me_){moodEdit=me_.dataset.moodEdit;moodDraft=null;const sec=document.getElementById("mood");sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);document.getElementById("mood-note")?.focus({preventScroll:true});return}
+ if(e.target.closest("[data-mood-cancel]")){moodEdit=null;moodDraft=null;document.getElementById("mood").outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
  const jp=e.target.closest("[data-jump]");if(jp){const el=document.getElementById("it-"+jp.dataset.jump);if(el){const top=el.getBoundingClientRect().top+scrollY-(app.querySelector(".strip")?.offsetHeight||0)-24;scrollTo({top,behavior:reduce()?"auto":"smooth"});el.classList.remove("ping");void el.offsetWidth;el.classList.add("ping")}return}
  const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);focusItemForm();return}
  const inw=e.target.closest("[data-item-new]");if(inw){editItem="new:"+inw.dataset.itemNew;pendingItemDel=null;render(true);focusItemForm();return}
@@ -889,6 +1051,7 @@ app.addEventListener("click",e=>{
 app.addEventListener("keydown",e=>{const ed=e.target.closest&&e.target.closest("[data-edit]");if(ed&&(e.key==="Enter"||e.key===" ")&&e.target===ed){e.preventDefault();startEdit(ed.dataset.edit)}});
 app.addEventListener("input",e=>{
  const t=e.target;
+ if(t.id==="mood-note"){const f=t.closest("form");const on=f.querySelector(".fbtn.on");moodDraft={d:f.dataset.d,score:on?+on.dataset.score:0,note:t.value}}
  if(t.id==="f-amt"){t.value=t.value.replace(/[^\d]/g,"").slice(0,8);draft.amt=t.value}
  if(t.id==="f-note")draft.note=t.value;
  if(t.id==="f-day")draft.day=t.value;
@@ -903,6 +1066,13 @@ app.addEventListener("change",async e=>{
 });
 app.addEventListener("submit",async e=>{
  e.preventDefault();
+ if(e.target.id==="mood-form"){
+  const f=e.target,on=f.querySelector(".fbtn.on");if(!on)return;
+  const d=f.dataset.d,score=+on.dataset.score,note=f.querySelector("#mood-note").value.trim();
+  moodEdit=null;moodDraft=null;await saveMood(d,score,note);
+  const sec=document.getElementById("mood");if(sec){sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);const n=document.getElementById("mood");n.classList.add("saved")}
+  return;
+ }
  if(e.target.classList.contains("chk-form")){
   const f=e.target,g=f.dataset.group,id=f.dataset.id,title=f.title.value.trim();if(!title){f.title.focus();return}
   const old=items.find(x=>x.id===id);
@@ -935,7 +1105,7 @@ async function removeExpense(id){
  if(db&&!id.startsWith("l")){try{await db.doc("expenses/"+id).delete()}catch(_){}}
  expenses=expenses.filter(e=>e.id!==id);if(!db)store.set("exp",expenses);renderAcct();
 }
-document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(t===tab&&!(t==="plan"&&view==="day")){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}if(tab==="plan"&&t==="plan"&&view==="day"){app.querySelector("[data-home]").click();return}tab=t;render(false,true)});
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(t==="plan"){const same=tab==="plan"&&view==="home";tab="plan";view="home";if(same){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}render();scrollTo(0,0);return}if(t===tab&&!(t==="plan"&&view==="day")){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}if(tab==="plan"&&t==="plan"&&view==="day"){app.querySelector("[data-home]").click();return}tab=t;render(false,true)});
 
 const h=location.hash.slice(1);
 if(["wx","move","acct","list"].includes(h))tab=h;
@@ -994,6 +1164,7 @@ async function connect(){
   if(locals.length){try{localStorage.removeItem("ngy:exp")}catch(_){}}
   try{const meta=await db.doc("settings/meta").get();if(!meta.exists||!(meta.data()||{}).itemsSeeded){for(const it of items){const {id,...rec}=it;await db.doc("items/"+id).set(rec)}await db.doc("settings/meta").set({itemsSeeded:true})}}catch(_){}
   db.collection("items").onSnapshot(snap=>{if(!snap.docs.length)return;items=snap.docs.map(d=>({id:d.id,...d.data()}));store.set("items",items);if(tab!=="acct")refresh()},()=>{});
+  db.collection("moods").onSnapshot(snap=>{const n={...moods};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{});
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
   db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,day:v.day,note:v.note||"",ts:v.ts||0}});if(tab==="acct")renderAcct()},()=>{});
   db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const v=+(s.data()||{}).jpyTwd;if(v>0){rate=v;store.set("rate",v);if(tab==="acct")renderAcct()}}},()=>{});

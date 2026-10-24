@@ -1,6 +1,6 @@
 /* 離線快取：頁面先抓最新、沒網路時用快取；字型與 Firebase 程式庫用快取並在背景更新 */
-const VERSION = "ngy-v3";
-const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
+const VERSION = "ngy-v4";
+const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./ghibli-map.jpg", "./ghibli-map-thumb.jpg"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
