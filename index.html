@@ -63,16 +63,23 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .hero .big{flex:none;text-align:right;font-family:var(--f-display);font-weight:900;line-height:.85;font-size:72px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .hero .big small{display:block;font-size:14px;letter-spacing:0;color:var(--brown);margin-top:8px;line-height:1}
 .hero .body.col{flex-direction:column;align-items:stretch;gap:12px}
-.hero.trip .today-row{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
-.today-row .ta{width:76px;height:76px;flex:none;border-radius:16px;overflow:hidden;display:block}
-.today-row .ta svg{width:100%;height:100%;display:block}
-.today-row .tt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
-.today-row small{font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--brown)}
-.today-row .today-pill{margin-left:6px}
-.today-row b{font-family:var(--f-display);font-weight:900;font-size:22px;line-height:1.25}
-.today-row .rt{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.today-row .go{width:18px;height:18px;flex:none;color:var(--brown)}
-.hero.trip .mood-cta,.hero.trip .mood-done{width:calc(100% - 32px);margin:0 16px 16px}
+.hero.trip .scene{aspect-ratio:320/150}
+.today-main{display:flex;align-items:flex-end;gap:12px;width:100%;padding:14px 20px 14px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.today-main .txt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.today-main .lbl{font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--brown)}
+.today-main .ttl{font-family:var(--f-display);font-weight:900;font-size:22px;line-height:1.3}
+.today-main .rt{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.today-main .big{flex:none;text-align:right;font-family:var(--f-display);font-weight:900;line-height:.85;font-size:64px;letter-spacing:-.02em}
+.today-main .big small{display:block;font-size:13px;letter-spacing:0;color:var(--brown);margin-top:8px;line-height:1}
+.mood-line{display:flex;align-items:center;gap:10px;width:100%;padding:11px 20px 13px;border:0;border-top:2px dashed var(--line);background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.mood-line:active{background:var(--sunk)}
+.mood-line .mc-faces{display:flex;flex:none}
+.mood-line .mc-faces .face{width:26px;height:26px;margin-right:-6px}
+.mood-line>.face{width:30px;height:30px;flex:none}
+.mood-line .ml{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35;margin-left:6px}
+.mood-line b{font-family:var(--f-display);font-weight:900;font-size:15px;color:var(--brown)}
+.mood-line small{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mood-line .go{width:16px;height:16px;flex:none;color:var(--brown)}
 .cd{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
 .cd-d{display:flex;align-items:baseline;gap:4px;font-family:var(--f-display);font-weight:900;line-height:.85}
 .cd-d b{font-size:72px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
@@ -882,6 +889,12 @@ function moodHint(x){
  if(h<17)return "今天才剛開始，晚上回飯店記得留一句";
  return "今天過得怎麼樣？選一隻貓、寫一句話";
 }
+function moodLineHTML(x,i){
+ const mv=me&&moods[mk(x.d,me)],GO=`<svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+ if(mv){const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])];
+  return `<button class="mood-line" type="button" data-mood-day="${i}">${moodFace(mv.score)}<span class="ml"><b>今天：${MOODS[mv.score-1][1]}</b><small>${ov?`${other[1]}也寫了，點開看看`:`等${other?other[1]:"對方"}寫完一起看`}</small></span>${GO}</button>`}
+ return `<button class="mood-line" type="button" data-mood-day="${i}"><span class="mc-faces">${[1,3,5].map(n=>moodFace(n)).join("")}</span><span class="ml"><b>寫今天的心情</b><small>${esc(moodHint(x))}</small></span>${GO}</button>`;
+}
 function moodCtaHTML(x,i){
  const mv=me&&moods[mk(x.d,me)];
  if(mv){const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])];
@@ -989,7 +1002,7 @@ function heroHTML(){
   foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>行前待辦 ${n} / ${pl.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];
-  return `<section class="hero trip"><button class="today-row" type="button" data-day="${todayIdx}"><span class="ta">${svgTile(x.art)}</span><span class="tt"><small>D${todayIdx+1}・${x.d}（${x.w}）<span class="today-pill">今天</span></small><b>${esc(x.title)}</b><span class="rt">${x.route.map(esc).join(" → ")}</span></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>${moodCtaHTML(x,todayIdx)}</section>`;
+  return `<section class="hero trip">${HERO.replace('<svg class="scene"','<svg class="scene" preserveAspectRatio="xMidYMax slice"')}<button class="today-main" type="button" data-day="${todayIdx}"><span class="txt"><span class="lbl">今天的行程</span><span class="ttl">${esc(x.title)}</span><span class="rt">${x.route.map(esc).join(" → ")}</span></span><span class="big">D${todayIdx+1}<small>${x.d}（${x.w}）</small></span></button>${moodLineHTML(x,todayIdx)}</section>`;
  }else{big="完<small>旅程結束</small>";lbl="下次再一起出發";sub="記帳、清單和心情都還留著";foot=`<button class="chip mint" data-mood-day="0">回顧我們的心情<svg><use href="#i-arrow"/></svg></button>`;}
  return `<section class="hero">${HERO}${cd?`<div class="body col">${cd}<div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${foot?`<div class="foot">${foot}</div>`:""}${moodCta}</section>`;
 }
