@@ -161,7 +161,16 @@ a.pic:active{transform:scale(.96)}
 .c-move{--tb:var(--c-move-bg);--tc:var(--c-move)} .c-go{--tb:var(--c-go-bg);--tc:var(--c-go)} .c-eat{--tb:var(--c-eat-bg);--tc:var(--c-eat)}
 .c-stay{--tb:var(--c-stay-bg);--tc:var(--c-stay)} .c-do{--tb:var(--c-do-bg);--tc:var(--c-do)} .c-buy{--tb:var(--c-buy-bg);--tc:var(--c-buy)} .c-etc{--tb:var(--c-etc-bg);--tc:var(--c-etc)}
 
-details.sched{margin-top:18px;background:var(--card);border-radius:24px;overflow:hidden;border:1.5px solid var(--line);box-shadow:var(--shadow)}
+.sched-pin{height:0}
+details.sched{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--strip-h,76px));z-index:4;margin:16px 0 18px;background:var(--card);border-radius:24px;overflow:hidden;border:1.5px solid var(--line);box-shadow:var(--shadow);transition:box-shadow .25s ease,border-radius .25s ease}
+details.sched.stuck{border-radius:20px;box-shadow:0 10px 24px -10px rgba(63,49,39,.35)}
+details.sched summary{transition:padding .25s ease}
+details.sched.stuck summary{padding-block:7px}
+details.sched summary svg.m{transition:width .25s ease,height .25s ease}
+details.sched.stuck summary svg.m{width:42px;height:30px}
+details.sched .sbody{max-height:calc(100dvh - env(safe-area-inset-top,0px) - var(--strip-h,76px) - 200px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+details.sched small.cur{color:var(--mint-ink);font-weight:700}
+.srow.now{box-shadow:inset 4px 0 0 var(--mint);background:var(--mint-soft)}
 details.sched summary{cursor:pointer;padding:12px 18px;list-style:none;display:flex;align-items:center;gap:10px}
 details.sched summary::-webkit-details-marker{display:none}
 .sbody{overflow:hidden}
@@ -725,7 +734,7 @@ const DAYS=[
  {d:"11/18",w:"三",title:"吉卜力公園",place:"吉卜力公園",art:"park",wx:["長久手",16,6],route:["青春之丘","Dondoko 森林","魔法之里","魔女之谷","大倉庫"],
   notes:["公園 10:00 開，最晚 9:20 要到「愛・地球博記念公園站」","大倉庫入場 14:00"],sched:true,items:[
    {k:"move",n:"名古屋車站 4 樓搭名鐵巴士",p:"車程約 1 小時",map:"名鉄バスセンター"},
-   {t:"10:00",k:"go",n:"吉卜力公園",p:"園區時間表在當天最下方",map:"ジブリパーク",img:"ghibli"},
+   {t:"10:00",k:"go",n:"吉卜力公園",p:"園區時間表在本頁上方",map:"ジブリパーク",img:"ghibli"},
    {t:"19:30",k:"do",l:"晚餐預約",n:"伏見屋 飛騨牛 別邸",jp:"名駅焼肉 Fushimiya Bettei",p:"已預約 19:30",map:"名駅焼肉 伏見屋 別邸"}]},
  {d:"11/19",w:"四",title:"犬山一日",place:"犬山",art:"inuyama",wx:["犬山",16,6],route:["犬山城","城下町","名古屋"],
   notes:["可到名鐵買「犬山城下町套票」：車票、犬山城門票加商家優惠"],items:[
@@ -1082,9 +1091,12 @@ function itemHTML(it,i,stat){
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
   <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
-function schedHTML(){
- return `<details class="sched"${store.get("schedOpen")?" open":""} id="sched"><summary><svg class="m" aria-hidden="true"><use href="#cats"/></svg><div><b>園區時間表</b><small>10:00 入園，17:00 閉園</small></div></summary><div class="sbody">
- ${SCHED.map(r=>`<div class="srow${r[3]===1?" move":""}${r[3]===2?" star":""}"><div class="st">${r[0]}</div><div>${r[3]===1?esc(r[2]):`<b>${esc(r[1])}</b><p>${esc(r[2])}</p>`}</div></div>`).join("")}
+const smin=t=>{const[h,m]=t.split(":");return h*60+ +m};
+function schedNow(stat){if(!stat)return -1;return SCHED.findIndex(r=>{const[a,b]=r[0].split("–");return stat.nowM>=smin(a)&&stat.nowM<smin(b)})}
+function schedHTML(stat){
+ const ni=schedNow(stat),cur=ni>=0?SCHED[ni]:null;
+ return `<details class="sched"${store.get("schedOpen")?" open":""} id="sched"><summary><svg class="m" aria-hidden="true"><use href="#cats"/></svg><div><b>園區時間表</b>${cur?`<small class="cur">現在：${esc(cur[3]===1?cur[2]:cur[1])}，到 ${cur[0].split("–")[1]}</small>`:`<small>10:00 入園，17:00 閉園</small>`}</div></summary><div class="sbody">
+ ${SCHED.map((r,i)=>`<div class="srow${r[3]===1?" move":""}${r[3]===2?" star":""}${i===ni?" now":""}"><div class="st">${r[0]}</div><div>${r[3]===1?esc(r[2]):`<b>${esc(r[1])}</b><p>${esc(r[2])}</p>`}</div></div>`).join("")}
  <div class="tips"><div><b>青春之丘到 Dondoko 森林：</b>免費巴士剛好就搭，不然直接走</div><div><b>Dondoko 森林到魔法之里：</b>可搭一次 APM 貓巴士，體驗兼省腳力</div><div><b>魔法之里之後：</b>區域集中，直接走比等車快</div></div></div></details>`;
 }
 const chipInner=(d,i)=>`<small>${i===todayIdx?"今天":d.w}</small>${i===dayIdx?`<svg class="dh" aria-hidden="true"><use href="#head-${i%2?"b":"w"}"/></svg>`:`<b>${d.d.split("/")[1]}</b>`}`;
@@ -1101,7 +1113,7 @@ function dayBodyHTML(){
   <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
 ${nowCardHTML(x,stat)}
  ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="note"><svg><use href="#i-bell"/></svg><span>${esc(n)}</span></div>`).join("")}</div>`:""}
- <ol class="tl">${x.items.map((it,i)=>legHTML(x,i)+itemHTML(it,i,stat)).join("")}</ol>${x.sched?schedHTML():""}${moodSectionHTML(x)}`;
+ ${x.sched?`<div class="sched-pin" aria-hidden="true"></div>${schedHTML(stat)}`:""}<ol class="tl">${x.items.map((it,i)=>legHTML(x,i)+itemHTML(it,i,stat)).join("")}</ol>${moodSectionHTML(x)}`;
 }
 function dayHTML(){
  return `<header class="bar"><button class="back" data-home><svg><use href="#i-back"/></svg>全部天數</button><span class="right" id="dayCount">第 ${dayIdx+1} 天，共 8 天</span></header>
@@ -1130,7 +1142,7 @@ async function switchDay(i){
  const token=switching=Symbol();
  if(!reduce()&&body.animate){await body.animate([{opacity:1,transform:"translateX(0)"},{opacity:0,transform:`translateX(${-dir*18}px)`}],{duration:110,easing:"ease-in"}).finished.catch(()=>{});}
  if(token!==switching)return;
- body.innerHTML=dayBodyHTML();bindSched();
+ body.innerHTML=dayBodyHTML();bindSched();pinCheck();
  if(bodyTop<stripBottom)scrollTo({top:scrollY+(body.getBoundingClientRect().top-stripBottom)-4});
  if(!reduce()&&body.animate)body.animate([{opacity:0,transform:`translateX(${dir*18}px)`},{opacity:1,transform:"translateX(0)"}],{duration:220,easing:"cubic-bezier(.2,.8,.2,1)"});
 }
@@ -1342,18 +1354,21 @@ function render(keep,restore){
  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===tab));
  placeInd(false);
  if(tab==="acct")renderAcct();
- bindSched();
+ bindSched();syncStrip();
  scrollTo(0,keep?y:(restore?(scrollMem[curKey]||0):0));
 }
+function syncStrip(){const st=app.querySelector(".strip");if(st)document.documentElement.style.setProperty("--strip-h",st.offsetHeight+"px");pinCheck()}
+function pinCheck(){const d=document.getElementById("sched"),pin=app.querySelector(".sched-pin");if(!d||!pin)return;const top=parseFloat(getComputedStyle(d).top)||0;d.classList.toggle("stuck",pin.getBoundingClientRect().top+16<top)}
+let pinRaf=0;addEventListener("scroll",()=>{if(!pinRaf)pinRaf=requestAnimationFrame(()=>{pinRaf=0;pinCheck()})},{passive:true});addEventListener("resize",syncStrip);
 function bindSched(){
  const d=document.getElementById("sched");if(!d)return;const sum=d.querySelector("summary"),body=d.querySelector(".sbody");
  sum.addEventListener("click",e=>{
   e.preventDefault();if(d.dataset.busy)return;
   const opening=!d.open;store.set("schedOpen",opening);
-  if(reduce()||!body.animate){d.open=opening;return}
+  if(reduce()||!body.animate){d.open=opening;const nw=opening&&body.querySelector(".srow.now");if(nw)body.scrollTop=Math.max(0,nw.offsetTop-body.offsetTop-44);return}
   d.dataset.busy=1;
-  if(opening){d.open=true;const h=body.scrollHeight;body.animate([{height:"0px",opacity:0},{height:h+"px",opacity:1}],{duration:260,easing:"cubic-bezier(.2,.8,.2,1)"}).finished.then(()=>delete d.dataset.busy)}
-  else{const h=body.scrollHeight;body.animate([{height:h+"px",opacity:1},{height:"0px",opacity:0}],{duration:200,easing:"ease-in"}).finished.then(()=>{d.open=false;delete d.dataset.busy})}
+  if(opening){d.open=true;const nw=body.querySelector(".srow.now");if(nw)body.scrollTop=Math.max(0,nw.offsetTop-body.offsetTop-44);const h=body.offsetHeight;body.animate([{height:"0px",opacity:0},{height:h+"px",opacity:1}],{duration:260,easing:"cubic-bezier(.2,.8,.2,1)"}).finished.then(()=>delete d.dataset.busy)}
+  else{const h=body.offsetHeight;body.animate([{height:h+"px",opacity:1},{height:"0px",opacity:0}],{duration:200,easing:"ease-in"}).finished.then(()=>{d.open=false;delete d.dataset.busy})}
  });
 }
 function refresh(){
@@ -1457,7 +1472,7 @@ if(todayIdx>=0){view="day";dayIdx=todayIdx}
 render();
 
 
-setInterval(()=>{if(tab==="plan"&&view==="day"&&dayIdx===todayIdx){const b=document.getElementById("dayBody");const k=JSON.stringify(dayStatus(DAYS[dayIdx]));if(b&&b.dataset.k!==k){b.dataset.k=k;b.innerHTML=dayBodyHTML();bindSched()}}},30000);
+setInterval(()=>{if(tab==="plan"&&view==="day"&&dayIdx===todayIdx){const b=document.getElementById("dayBody");const k=JSON.stringify(dayStatus(DAYS[dayIdx]));if(b&&b.dataset.k!==k){b.dataset.k=k;b.innerHTML=dayBodyHTML();bindSched();pinCheck()}}},30000);
 setInterval(()=>{const el=document.getElementById("cd-s");if(!el)return;const c=cdParts();if(c.ms<=0){render(true);return}
  document.getElementById("cd-d").textContent=c.d;document.getElementById("cd-h").textContent=p2(c.h);document.getElementById("cd-m").textContent=p2(c.m);el.textContent=p2(c.s)},1000);
 
@@ -1541,7 +1556,7 @@ async function loadWeather(){
   DAYS.forEach(x=>{const d=j[names.indexOf(x.wx[0])]?.daily;if(!d)return;const i=d.time.indexOf(`${YEAR}-${x.d.replace("/","-")}`);if(i<0)return;const[icon,desc]=WMO(d.weather_code[i]);days[x.d]={hi:Math.round(d.temperature_2m_max[i]),lo:Math.round(d.temperature_2m_min[i]),icon,desc,pop:d.precipitation_probability_max[i]};got++});
   forecast={updated:new Date().toISOString(),fetched:Date.now(),days};store.set("wx",forecast);
   if(!got)return;
-  if(tab==="wx")render(true);else if(tab==="plan"&&view==="day"){const b=document.getElementById("dayBody");if(b){b.innerHTML=dayBodyHTML();bindSched()}}
+  if(tab==="wx")render(true);else if(tab==="plan"&&view==="day"){const b=document.getElementById("dayBody");if(b){b.innerHTML=dayBodyHTML();bindSched();pinCheck()}}
  }catch(_){}
 }
 loadWeather();
