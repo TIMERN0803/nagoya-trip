@@ -412,6 +412,11 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .wallet{display:flex;flex-direction:column;gap:6px}
 .w-head{display:flex;justify-content:space-between;align-items:baseline}
 .w-head h3{margin:0;font-size:17px}
+.w-ask{margin:2px 0 4px;font-size:14px;color:var(--muted);line-height:1.5}
+.w-who{display:flex;gap:8px}
+.w-who .pick{flex:1;justify-content:center;gap:6px}
+.w-who svg{width:30px;height:25px}
+.w-swap{border:0;background:none;padding:6px 0;font:inherit;font-size:13px;font-weight:700;color:var(--accent);font-family:var(--f-display);cursor:pointer}
 .w-head span{font-size:13px;color:var(--muted);font-family:var(--f-display);font-weight:700}
 .w-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:16px;background:var(--sunk)}
 .w-row.mine{background:var(--butter-soft)}
@@ -1540,8 +1545,11 @@ function acctHTML(){
  <div class="box" id="acct-list"></div></div>`;
 }
 function walletHTML(){
- return `<div class="w-head"><h3>現金錢包</h3><span>各自手上的日圓</span></div>
- ${PEOPLE.map(p=>{const w=p[0],set=cashIn(w)>0,left=cashLeft(w),mine=!me||w===me,low=set&&left<LOW_CASH;
+ if(!me)return `<div class="w-head"><h3>現金錢包</h3><span>各自手上的日圓</span></div>
+ <p class="w-ask">先選你是誰，之後只能改自己的錢包，首頁也會顯示你的現金。</p>
+ <div class="w-who">${PEOPLE.map(p=>`<button type="button" class="pick" data-wallet-me="${p[0]}"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg>我是${p[1]}</button>`).join("")}</div>`;
+ return `<div class="w-head"><h3>現金錢包</h3><button type="button" class="w-swap" data-wallet-swap>我是${(PEOPLE.find(p=>p[0]===me)||[])[1]}・切換</button></div>
+ ${PEOPLE.map(p=>{const w=p[0],set=cashIn(w)>0,left=cashLeft(w),mine=w===me,low=set&&left<LOW_CASH;
   return `<div class="w-row${mine?" mine":""}"><svg class="w-cat" viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${w==="zhang"?"b":"w"}"/></svg>
    <div class="w-txt"><b>${p[1]}</b><small>${set?`換了 ${yen(cashIn(w))}・花了 ${yen(cashSpent(w))}`:"還沒設定換了多少日圓"}</small></div>
    <div class="w-left${low?" low":""}">${set?`<small>剩</small>${yen(left)}`:"—"}</div></div>
@@ -1846,11 +1854,13 @@ app.addEventListener("click",e=>{
  const pkb=e.target.closest("[data-pack]");if(pkb){const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);if(db)db.doc("checks/"+k).set({done:v}).catch(()=>{});return}
  const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);if(db)db.doc("checks/"+id).set({done:true}).catch(()=>{});return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
- const pk=e.target.closest(".pick");if(pk){const grp=pk.parentElement.dataset.pick;draft[grp]=pk.dataset.v;pk.parentElement.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",b===pk));return}
- const del=e.target.closest("[data-del]");if(del){const id=del.dataset.del;if(pendingDel!==id){pendingDel=id;renderAcct();clearTimeout(window._pd);window._pd=setTimeout(()=>{if(pendingDel===id){pendingDel=null;renderAcct()}},3000);return}pendingDel=null;removeExpense(id);return}
  const we=e.target.closest("[data-wallet-edit]");if(we){walletEdit=we.dataset.walletEdit;walletMode=we.dataset.mode||"set";renderAcct();setTimeout(()=>document.querySelector(".w-form input")?.focus(),30);return}
  const wm=e.target.closest("[data-wmode]");if(wm){walletMode=wm.dataset.wmode;const v=document.querySelector(".w-form input")?.value||"";renderAcct();const i=document.querySelector(".w-form input");if(i){i.value=v;i.focus()}return}
+ const wme=e.target.closest("[data-wallet-me]");if(wme){me=wme.dataset.walletMe;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;walletEdit=null;render(true);return}
+ if(e.target.closest("[data-wallet-swap]")){me=me==="zhang"?"star":"zhang";try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;walletEdit=null;render(true);return}
  if(e.target.closest("[data-wallet-cancel]")){walletEdit=null;renderAcct();return}
+ const pk=e.target.closest(".pick");if(pk){const grp=pk.parentElement.dataset.pick;draft[grp]=pk.dataset.v;pk.parentElement.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",b===pk));return}
+ const del=e.target.closest("[data-del]");if(del){const id=del.dataset.del;if(pendingDel!==id){pendingDel=id;renderAcct();clearTimeout(window._pd);window._pd=setTimeout(()=>{if(pendingDel===id){pendingDel=null;renderAcct()}},3000);return}pendingDel=null;removeExpense(id);return}
  const ed=e.target.closest("[data-edit]");if(ed){startEdit(ed.dataset.edit);return}
  if(e.target.closest("#f-cancel")){stopEdit();return}
 });
