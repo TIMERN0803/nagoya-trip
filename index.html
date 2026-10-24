@@ -318,7 +318,31 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .trip-over .tile.past{opacity:1}
 .trip-over .tile.past .art>svg{filter:none}
 .tile.today .art{outline:3px solid var(--mint-ink);outline-offset:3px}
-.mood-chip .face.xs{width:20px;height:20px}
+.mood-cta,.mood-done{display:flex;align-items:center;gap:12px;width:calc(100% - 40px);margin:0 20px 18px;border:0;border-radius:20px;padding:12px 14px;text-align:left;cursor:pointer;font-family:var(--f-body)}
+.mood-cta{background:#E07A5C;color:#fff;box-shadow:0 4px 0 #B9573C}
+.mood-cta:active{transform:translateY(2px);box-shadow:0 2px 0 #B9573C}
+.mc-faces{display:flex;flex:none}
+.mc-faces .face{width:30px;height:30px;margin-left:-8px;background:#fff;border-radius:50%;padding:1px}
+.mc-faces .face:first-child{margin-left:0}
+.mc-txt,.mood-done span{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.mc-txt b,.mood-done b{font-family:var(--f-display);font-weight:900;font-size:17px}
+.mc-txt small{font-size:13px;opacity:.95}
+.mood-cta .go,.mood-done .go{width:20px;height:20px;flex:none}
+.mood-done{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.mood-done .face{width:40px;height:40px;flex:none}
+.mood-done small{font-size:13px;color:var(--muted)}
+.iam{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;font-size:13px;color:var(--muted);margin:2px 0 4px}
+.iam b{color:var(--ink)}
+.linkbtn{border:0;background:none;padding:6px 2px;color:var(--mint-ink);font-weight:700;font-size:13px;text-decoration:underline;cursor:pointer;font-family:var(--f-body)}
+.pick-row .primary{margin:0;padding:10px;font-size:15px;flex:2}
+.pick-row .ghost{margin:0;flex:1}
+.pick.who[aria-pressed="true"]{background:var(--card);border-color:var(--mint-ink);color:var(--mint-ink);box-shadow:inset 0 0 0 1px var(--mint-ink)}
+.inmap{position:relative;display:block;width:100%;margin-top:10px;padding:0;border:1.5px solid var(--line);border-radius:16px;overflow:hidden;background:#fff;cursor:zoom-in}
+.inmap img{display:block;width:100%;height:auto;aspect-ratio:1}
+.inmap .zoom{position:absolute;right:8px;bottom:8px;display:inline-flex;align-items:center;gap:4px;background:rgba(43,36,32,.82);color:#fff;font-size:12.5px;font-weight:700;border-radius:999px;padding:5px 11px 5px 8px}
+.inmap .zoom svg{width:16px;height:16px}
+.inmap:active{transform:scale(.99)}
+.item.s-done .inmap{opacity:1}
 .mood{margin-top:20px;background:var(--card);border:1.5px solid var(--line);border-radius:24px;padding:16px 16px 6px;box-shadow:var(--shadow);scroll-margin-top:96px}
 .mood.saved{animation:ping .8s ease}
 .mood-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
@@ -605,7 +629,7 @@ const DAYS=[
  {d:"11/18",w:"三",title:"吉卜力公園",place:"吉卜力公園",art:"park",wx:["長久手",16,6],route:["青春之丘","Dondoko 森林","魔法之里","魔女之谷","大倉庫"],
   notes:["公園 10:00 開，最晚 9:20 要到「愛・地球博記念公園站」","大倉庫入場 14:00"],sched:true,items:[
    {k:"move",n:"名古屋車站 4 樓搭名鐵巴士",p:"車程約 1 小時",map:"名鉄バスセンター"},
-   {t:"10:00",k:"go",n:"吉卜力公園",p:"園區時間表在下方",map:"ジブリパーク"},
+   {t:"10:00",k:"go",n:"吉卜力公園",p:"園區時間表在當天最下方",map:"ジブリパーク",img:"ghibli"},
    {t:"19:30",k:"do",l:"晚餐預約",n:"伏見屋 飛騨牛 別邸",jp:"名駅焼肉 Fushimiya Bettei",p:"已預約 19:30",map:"名駅焼肉 伏見屋 別邸"}]},
  {d:"11/19",w:"四",title:"犬山一日",place:"犬山",art:"inuyama",wx:["犬山",16,6],route:["犬山城","城下町","名古屋"],
   notes:["可到名鐵買「犬山城下町套票」：車票、犬山城門票加商家優惠"],items:[
@@ -719,6 +743,28 @@ function moodFace(n,cls=""){
 }
 const emptyFace=`<svg class="face empty" viewBox="0 0 40 40" aria-hidden="true"><path d="M5.5 26 C4.5 17 6 12 8 8.5 L9.5 3.5 L16.5 9.5 Q20 8.6 23.5 9.5 L30.5 3.5 L32 8.5 C34 12 35.5 17 34.5 26 C33 34 26 37 20 37 C14 37 7 34 5.5 26Z" fill="none" stroke="#CDB79F" stroke-width="2.2" stroke-dasharray="4 3"/></svg>`;
 const moodOpen=x=>dayDate(x)<=today;
+let pickingMe=false,pendingMe=null;
+function pickMeHTML(){
+ return `<div class="pickme"><b>${me?"切換成哪一位？":"你是哪一位？"}</b><span>這支手機會記住，之後也能在這裡切換</span>
+  <div class="pick-row">${PEOPLE.map(p=>`<button type="button" class="pick who" data-me="${p[0]}" aria-pressed="${pendingMe===p[0]}"><svg viewBox="0 0 60 70"><use href="#${p[2]}"/></svg>${p[1]}</button>`).join("")}</div>
+  ${pendingMe?`<div class="pick-row"><button type="button" class="primary" data-me-ok>確認，我是${nameOf(pendingMe)}</button>${me?`<button type="button" class="ghost" data-me-cancel>取消</button>`:""}</div>`:(me?`<div class="pick-row"><button type="button" class="ghost" data-me-cancel>取消</button></div>`:"")}
+ </div>`;
+}
+function rerenderMoodSec(){const sec=document.getElementById("mood");if(sec)sec.outerHTML=moodSectionHTML(DAYS[dayIdx])}
+async function deleteMood(d,who){const key=mk(d,who);delete moods[key];store.set("moods",moods);if(db){try{await db.doc("moods/"+key).delete()}catch(_){}}}
+let pendingMoodDel=false;
+function moodHint(x){
+ const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])],h=new Date().getHours();
+ if(ov)return `${other[1]}已經寫好了，換你囉`;
+ if(h<17)return "今天才剛開始，晚上回飯店記得留一句";
+ return "今天過得怎麼樣？選一隻貓、寫一句話";
+}
+function moodCtaHTML(x,i){
+ const mv=me&&moods[mk(x.d,me)];
+ if(mv){const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])];
+  return `<button class="mood-done" type="button" data-mood-day="${i}">${moodFace(mv.score)}<span><b>今天的心情：${MOODS[mv.score-1][1]}</b><small>${ov?`${other[1]}也寫了，點開看看`:`等${other?other[1]:"對方"}寫完就能一起看`}</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
+ return `<button class="mood-cta" type="button" data-mood-day="${i}"><span class="mc-faces">${[1,3,5].map(n=>moodFace(n)).join("")}</span><span class="mc-txt"><b>寫今天的心情</b><small>${moodHint(x)}</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+}
 function moodSectionHTML(x){
  if(!moodOpen(x))return "";
  const mineKey=me?mk(x.d,me):null,mine=mineKey&&moods[mineKey],editing=me&&(moodEdit===x.d||!mine);
@@ -727,11 +773,11 @@ function moodSectionHTML(x){
    return `<form class="mood-form" id="mood-form" data-d="${x.d}" autocomplete="off"><div class="who"><svg class="wc" viewBox="0 0 60 70"><use href="#${(PEOPLE.find(p=>p[0]===who)||[])[2]}"/></svg><b>${nameOf(who)}</b><span>今天過得怎麼樣？</span></div>
     <div class="faces" role="radiogroup" aria-label="心情分數">${MOODS.map(m=>`<button type="button" class="fbtn${dft.score===m[0]?" on":""}" data-score="${m[0]}" role="radio" aria-checked="${dft.score===m[0]}" aria-label="${m[1]}">${moodFace(m[0])}<small>${m[1]}</small></button>`).join("")}</div>
     <textarea class="field" id="mood-note" rows="3" maxlength="200" placeholder="寫一句今天的心得，例如：鰻魚飯超好吃">${esc(dft.note||"")}</textarea>
-    <div class="form-btns"><button class="primary" type="submit"${dft.score?"":" disabled"}>${mine?"更新":"送出"}</button>${mine?`<button class="ghost" type="button" data-mood-cancel>取消</button>`:""}</div></form>`}
+    <div class="form-btns"><button class="primary" type="submit"${dft.score?"":" disabled"}>${mine?"更新":"送出"}</button>${mine?`<button class="ghost" type="button" data-mood-cancel>取消</button><button class="ghost danger${pendingMoodDel?" sure":""}" type="button" data-mood-del="${x.d}">${pendingMoodDel?"確定刪除":"刪除"}</button>`:""}</div></form>`}
   return `<div class="mood-row"><div class="mface">${v?moodFace(v.score):emptyFace}</div><div class="mtxt"><b>${nameOf(who)}${v?`<span class="mlabel">${MOODS[v.score-1][1]}</span>`:""}</b>${v?(v.note?`<p>${esc(v.note)}</p>`:`<p class="dim">沒有留言</p>`):`<p class="dim">${isMe?"還沒填":"還沒填，等等再來看"}</p>`}</div>${isMe&&v?`<button class="edit-btn" type="button" data-mood-edit="${x.d}" aria-label="修改我的心情"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>`:""}</div>`};
  const order=me?[me,...PEOPLE.map(p=>p[0]).filter(w=>w!==me)]:PEOPLE.map(p=>p[0]);
  return `<section class="mood" id="mood"><div class="mood-head"><h3>今天的心情</h3><span>${x.d}（${x.w}）</span></div>
-  ${me?"":`<div class="pickme"><b>先選你是哪一位</b><span>只需要選一次，之後會記住</span><div class="pick-row">${PEOPLE.map(p=>`<button type="button" class="pick who" data-me="${p[0]}"><svg viewBox="0 0 60 70"><use href="#${p[2]}"/></svg>${p[1]}</button>`).join("")}</div></div>`}
+  ${(!me||pickingMe)?pickMeHTML():`<div class="iam">用 <b>${nameOf(me)}</b> 的身分填寫<button type="button" class="linkbtn" data-switch-me>不是${nameOf(me)}？切換</button></div>`}
   ${order.map(row).join("")}</section>`;
 }
 function moodStripHTML(){
@@ -750,7 +796,7 @@ async function saveMood(d,score,note){
  moods[key]=rec;store.set("moods",moods);
  if(db){try{await db.doc("moods/"+key).set(rec)}catch(_){}}
 }
-function gotoMood(i){
+function gotoMood(i){pickingMe=false;pendingMe=null;
  tab="plan";view="day";dayIdx=i;render();
  requestAnimationFrame(()=>{const el=document.getElementById("mood");if(el){const top=el.getBoundingClientRect().top+scrollY-(app.querySelector(".strip")?.offsetHeight||0)-16;scrollTo({top,behavior:reduce()?"auto":"smooth"})}});
 }
@@ -803,7 +849,7 @@ function wxFor(x){
 function updatedText(){if(!forecast||!forecast.updated)return"";const d=new Date(forecast.updated);return isNaN(d)?"":`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} 更新`}
 
 function heroHTML(){
- let big,lbl,sub,foot="",cd="";
+ let big,lbl,sub,foot="",cd="",moodCta="";
  if(cdParts().ms>0){
   const c=cdParts();
   cd=`<div class="cd"><div class="cd-d"><b id="cd-d">${c.d}</b><small>天</small></div><div class="hms" aria-label="時分秒"><span><b id="cd-h">${p2(c.h)}</b><i>時</i></span><span><b id="cd-m">${p2(c.m)}</b><i>分</i></span><span><b id="cd-s">${p2(c.s)}</b><i>秒</i></span></div></div>`;lbl="名古屋，我們來了";
@@ -812,9 +858,9 @@ function heroHTML(){
   foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>行前待辦 ${n} / ${pl.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];big=`D${todayIdx+1}<small>${x.d}</small>`;lbl="今天的行程";sub=esc(x.title);
-  const mv=me&&moods[mk(x.d,me)];foot=`<button class="chip mint" data-day="${todayIdx}">看今天的行程<svg><use href="#i-arrow"/></svg></button><button class="chip ${mv?"":"coral"} mood-chip" data-mood-day="${todayIdx}">${mv?moodFace(mv.score,"xs")+"今天的心情":`<svg><use href="#i-pen"/></svg>寫今天的心情`}</button>`;
+  foot=`<button class="chip mint" data-day="${todayIdx}">看今天的行程<svg><use href="#i-arrow"/></svg></button>`;moodCta=moodCtaHTML(x,todayIdx);
  }else{big="完<small>旅程結束</small>";lbl="下次再一起出發";sub="記帳、清單和心情都還留著";foot=`<button class="chip mint" data-mood-day="0">回顧我們的心情<svg><use href="#i-arrow"/></svg></button>`;}
- return `<section class="hero">${HERO}${cd?`<div class="body col">${cd}<div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${foot?`<div class="foot">${foot}</div>`:""}</section>`;
+ return `<section class="hero">${HERO}${cd?`<div class="body col">${cd}<div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${foot?`<div class="foot">${foot}</div>`:""}${moodCta}</section>`;
 }
 function homeHTML(){
  return `<header class="bar"><svg class="logo" role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg><h1>名古屋看花花</h1><span class="right">11/17 – 11/24</span></header>
@@ -840,7 +886,7 @@ function itemHTML(it,i,stat){
  if(it.map)acts.push(`<a class="chip" href="${mapUrl(it.map)}" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>地圖</a>`);
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card"><div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
-  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
+  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
 function schedHTML(){
  return `<details class="sched"${store.get("schedOpen")?" open":""} id="sched"><summary><svg class="m" aria-hidden="true"><use href="#cats"/></svg><div><b>園區時間表</b><small>10:00 入園，17:00 閉園</small></div></summary><div class="sbody">
@@ -850,7 +896,7 @@ function schedHTML(){
 const chipInner=(d,i)=>`<small>${i===todayIdx?"今天":d.w}</small>${i===dayIdx?`<svg class="dh" aria-hidden="true"><use href="#head-${i%2?"b":"w"}"/></svg>`:`<b>${d.d.split("/")[1]}</b>`}`;
 function nowCardHTML(x,stat){
  if(!stat)return"";
- if(stat.next<0)return `<div class="nowcard done"><svg class="cats" aria-hidden="true"><use href="#cats"/></svg><div><b>今天的行程都走完了</b><span>好好休息，明天見</span></div></div>`;
+ if(stat.next<0){const mv=me&&moods[mk(x.d,me)];return mv?`<div class="nowcard done"><svg class="cats" aria-hidden="true"><use href="#cats"/></svg><div><b>今天的行程都走完了</b><span>好好休息，明天見</span></div></div>`:`<button class="nowcard" type="button" data-scroll-mood><span class="pill">今天</span><div><small>行程都走完了</small><b>寫今天的心情</b><span>${esc(moodHint(x))}</span></div><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
  const it=x.items[stat.next],left=tmin(it.t)-stat.nowM,h=Math.floor(left/60),m=left%60;
  return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="pill">今天</span><div><small>接下來 ${esc(it.t)}</small><b>${esc(it.n)}</b><span>還有 ${h?h+" 小時 ":""}${m} 分鐘</span></div><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
@@ -861,7 +907,7 @@ function dayBodyHTML(){
   <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
 ${nowCardHTML(x,stat)}
  ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="note"><svg><use href="#i-bell"/></svg><span>${esc(n)}</span></div>`).join("")}</div>`:""}
- <ol class="tl">${x.items.map((it,i)=>itemHTML(it,i,stat)).join("")}</ol>${x.sched?`<button class="mapcard" type="button" data-map><img src="ghibli-map-thumb.jpg" alt="" loading="lazy"><span><b>園區地圖</b><small>點開全螢幕，可以縮放</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`+schedHTML():""}${moodSectionHTML(x)}`;
+ <ol class="tl">${x.items.map((it,i)=>itemHTML(it,i,stat)).join("")}</ol>${x.sched?schedHTML():""}${moodSectionHTML(x)}`;
 }
 function dayHTML(){
  return `<header class="bar"><button class="back" data-home><svg><use href="#i-back"/></svg>全部天數</button><span class="right" id="dayCount">第 ${dayIdx+1} 天，共 8 天</span></header>
@@ -1031,10 +1077,15 @@ function refresh(){
 app.addEventListener("click",e=>{
  if(e.target.closest("[data-map]")){openViewer("ghibli-map.jpg","吉卜力公園地圖");return}
  const md=e.target.closest("[data-mood-day]");if(md){gotoMood(+md.dataset.moodDay);return}
- const pm=e.target.closest("[data-me]");if(pm){me=pm.dataset.me;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;const sec=document.getElementById("mood");if(sec)sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
+ const pm=e.target.closest("[data-me]");if(pm){pendingMe=pm.dataset.me;rerenderMoodSec();return}
+ if(e.target.closest("[data-me-ok]")){me=pendingMe;pendingMe=null;pickingMe=false;moodEdit=null;moodDraft=null;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;rerenderMoodSec();return}
+ if(e.target.closest("[data-me-cancel]")){pendingMe=null;pickingMe=false;rerenderMoodSec();return}
+ if(e.target.closest("[data-switch-me]")){pickingMe=true;pendingMe=null;rerenderMoodSec();return}
+ const mdl=e.target.closest("[data-mood-del]");if(mdl){if(!pendingMoodDel){pendingMoodDel=true;rerenderMoodSec();clearTimeout(window._pmd);window._pmd=setTimeout(()=>{if(pendingMoodDel){pendingMoodDel=false;rerenderMoodSec()}},3000);return}pendingMoodDel=false;moodEdit=null;moodDraft=null;deleteMood(mdl.dataset.moodDel,me).then(rerenderMoodSec);return}
+ if(e.target.closest("[data-scroll-mood]")){const el=document.getElementById("mood");if(el){const top=el.getBoundingClientRect().top+scrollY-(app.querySelector(".strip")?.offsetHeight||0)-16;scrollTo({top,behavior:reduce()?"auto":"smooth"})}return}
  const fb=e.target.closest(".fbtn");if(fb){const f=fb.closest("form");moodDraft={d:f.dataset.d,score:+fb.dataset.score,note:f.querySelector("#mood-note").value};f.querySelectorAll(".fbtn").forEach(b=>{const on=b===fb;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});f.querySelector("[type=submit]").disabled=false;return}
  const me_=e.target.closest("[data-mood-edit]");if(me_){moodEdit=me_.dataset.moodEdit;moodDraft=null;const sec=document.getElementById("mood");sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);document.getElementById("mood-note")?.focus({preventScroll:true});return}
- if(e.target.closest("[data-mood-cancel]")){moodEdit=null;moodDraft=null;document.getElementById("mood").outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
+ if(e.target.closest("[data-mood-cancel]")){pendingMoodDel=false;moodEdit=null;moodDraft=null;document.getElementById("mood").outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
  const jp=e.target.closest("[data-jump]");if(jp){const el=document.getElementById("it-"+jp.dataset.jump);if(el){const top=el.getBoundingClientRect().top+scrollY-(app.querySelector(".strip")?.offsetHeight||0)-24;scrollTo({top,behavior:reduce()?"auto":"smooth"});el.classList.remove("ping");void el.offsetWidth;el.classList.add("ping")}return}
  const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);focusItemForm();return}
  const inw=e.target.closest("[data-item-new]");if(inw){editItem="new:"+inw.dataset.itemNew;pendingItemDel=null;render(true);focusItemForm();return}
