@@ -844,7 +844,14 @@ setInterval(()=>{const el=document.getElementById("cd-s");if(!el)return;const c=
  document.getElementById("cd-d").textContent=c.d;document.getElementById("cd-h").textContent=p2(c.h);document.getElementById("cd-m").textContent=p2(c.m);el.textContent=p2(c.s)},1000);
 
 /* ---------- 兩人共用：Firebase Firestore（用旅行代碼當門禁） ---------- */
-const FIREBASE=null; /* 建好 Firebase 專案後把設定貼在這裡 */
+const FIREBASE={
+ apiKey:"AIzaSyBeVs60fjVIy58gFKyL4LT_sv0CaoSu24s",
+ authDomain:"nagoya-trip-4cdde.firebaseapp.com",
+ projectId:"nagoya-trip-4cdde",
+ storageBucket:"nagoya-trip-4cdde.firebasestorage.app",
+ messagingSenderId:"482045372080",
+ appId:"1:482045372080:web:098614fd78475f937dbd75"
+};
 const TRIP_KEY="ngy:code";
 let syncMsg="";
 function getCode(){
