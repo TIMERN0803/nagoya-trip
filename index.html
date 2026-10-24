@@ -409,7 +409,30 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .chk-row .due{margin-right:4px}
 .hud-pill.low b{color:var(--coral-ink)}
 .hp-yen.low .hp-ic{background:var(--coral-soft)}
-.wallet{display:flex;flex-direction:column;gap:6px}
+.bar-r{margin-left:auto;display:flex;align-items:center;gap:8px;min-width:0}
+.bar .bar-r .sync{margin:0}
+.wchip{display:flex;align-items:center;gap:6px;border:2px solid var(--ol);box-shadow:0 2px 0 var(--ol);background:var(--butter-soft);border-radius:999px;padding:2px 12px 2px 4px;cursor:pointer;font:inherit;color:var(--ink);min-height:44px}
+.wchip svg{width:36px;height:36px;flex:none;margin-top:-6px}
+.wchip span{display:flex;flex-direction:column;line-height:1.1;text-align:left}
+.wchip small{font-size:11px;font-weight:700;color:var(--muted)}
+.wchip b{font-family:var(--f-display);font-weight:900;font-size:16px;font-variant-numeric:tabular-nums}
+.wchip b.sm{font-size:14px}
+.wchip.low{background:var(--coral-soft)}
+.wchip.low b{color:var(--coral-ink)}
+.wchip:active{transform:translateY(2px);box-shadow:none}
+.sm-card.ws{gap:12px}
+.ws-hero{display:flex;align-items:center;gap:14px;background:var(--butter-soft);border-radius:22px;padding:14px 16px}
+.ws-hero.low{background:var(--coral-soft)}
+.ws-ill{width:76px;height:76px;flex:none}
+.ws-hero div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.ws-hero small{font-size:13px;color:var(--muted);font-weight:700}
+.ws-hero b{font-family:var(--f-display);font-weight:900;font-size:32px;line-height:1.15;font-variant-numeric:tabular-nums}
+.ws-hero.ask b{font-size:20px}
+.ws-hero.low b{color:var(--coral-ink)}
+.ws-hero em{font-style:normal;font-size:13px;font-weight:700;color:var(--coral-ink)}
+.ws-acts{display:flex;gap:8px}
+.ws-acts button{flex:1;margin:0}
+.ws .w-swap{align-self:center}
 .w-head{display:flex;justify-content:space-between;align-items:baseline}
 .w-head h3{margin:0;font-size:17px}
 .w-ask{margin:2px 0 4px;font-size:14px;color:var(--muted);line-height:1.5}
@@ -1313,7 +1336,7 @@ function hudHTML(){
  const day=cdParts().ms>0?`還有 ${cdParts().d} 天`:todayIdx>=0?`第 ${todayIdx+1} 天`:"旅程完成";
  const pill=(ic,cls,v,attr,lab)=>`<button class="hud-pill ${cls}" type="button" ${attr} aria-label="${lab}"><span class="hp-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${ic}"/></svg></span><b>${v}</b></button>`;
  return `<header class="hud"><span class="hud-badge"><svg role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg></span><div class="hud-t"><h1>名古屋看花花</h1><small>11/17 – 11/24・兩個人的旅行</small></div></header>
- <div class="hud-row">${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("k-buy","hp-buy",`${bl.filter(r=>done[r.id]).length} / ${bl.length}`,'data-go-group="buy"',`要買的已買 ${bl.filter(r=>done[r.id]).length} 項，共 ${bl.length} 項`)}${me&&cashIn(me)>0?pill("i-cash",`hp-yen${cashLeft(me)<LOW_CASH?" low":""}`,yen(cashLeft(me)),'data-go="acct"',`我的現金剩 ${yen(cashLeft(me))}`):pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
+ <div class="hud-row">${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("k-buy","hp-buy",`${bl.filter(r=>done[r.id]).length} / ${bl.length}`,'data-go-group="buy"',`要買的已買 ${bl.filter(r=>done[r.id]).length} 項，共 ${bl.length} 項`)}${me&&cashIn(me)>0?pill("i-cash",`hp-yen${cashLeft(me)<LOW_CASH?" low":""}`,yen(cashLeft(me)),'data-wallet-open',`我的現金剩 ${yen(cashLeft(me))}，打開錢包`):pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
 }
 function tripBarHTML(){
  const done_=cdParts().ms>0?0:todayIdx>=0?todayIdx:DAYS.length;
@@ -1527,9 +1550,9 @@ function moveHTML(){
  </div>`;
 }
 function acctHTML(){
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>記帳</h1>${syncPill()}</header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>記帳</h1><div class="bar-r">${walletChip()}${syncPill()}</div></header>
  ${syncForm()}
- <div class="stack"><div class="box wallet" id="acct-wallet"></div><div class="box" id="acct-sum"></div>
+ <div class="stack"><div class="box" id="acct-sum"></div>
  <form class="box form" id="acct-form" autocomplete="off">
   <div class="amt"><span>¥</span><input id="f-amt" inputmode="numeric" placeholder="0" aria-label="金額（日圓）" value="${esc(draft.amt)}"></div>
   <span class="l">類別</span><div class="picks" data-pick="cat">${ECAT.map(c=>`<button type="button" class="pick ${c[3]}" data-v="${c[0]}" aria-pressed="${draft.cat===c[0]}"><svg><use href="#${c[2]}"/></svg>${c[1]}</button>`).join("")}</div>
@@ -1544,22 +1567,52 @@ function acctHTML(){
  </form>
  <div class="box" id="acct-list"></div></div>`;
 }
-function walletHTML(){
- if(!me)return `<div class="w-head"><h3>現金錢包</h3><span>各自手上的日圓</span></div>
- <p class="w-ask">先選你是誰，之後只能改自己的錢包，首頁也會顯示你的現金。</p>
+/* header 上的「我的現金」入口：錢包插畫＋餘額 */
+function walletChip(){
+ const set=me&&cashIn(me)>0,left=set?cashLeft(me):0,low=set&&left<LOW_CASH;
+ return `<button type="button" class="wchip${low?" low":""}" data-wallet-open aria-label="${set?`我的現金剩 ${yen(left)}，打開錢包`:"設定我的錢包"}"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#t-acct"/></svg>${set?`<span><small>我的現金</small><b>${yen(left)}</b></span>`:`<span><b class="sm">設定錢包</b></span>`}</button>`;
+}
+function walletSheetHTML(){
+ const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
+ if(!me)return `<div class="sm-head"><b>我的錢包</b>${x}</div>
+ <div class="ws-hero ask"><svg class="ws-ill" viewBox="0 0 48 48" aria-hidden="true"><use href="#t-acct"/></svg><div><b>先選你是誰</b><small>之後只能改自己的錢包，首頁也會顯示你的現金</small></div></div>
  <div class="w-who">${PEOPLE.map(p=>`<button type="button" class="pick" data-wallet-me="${p[0]}"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg>我是${p[1]}</button>`).join("")}</div>`;
- return `<div class="w-head"><h3>現金錢包</h3><button type="button" class="w-swap" data-wallet-swap>我是${(PEOPLE.find(p=>p[0]===me)||[])[1]}・切換</button></div>
- ${PEOPLE.map(p=>{const w=p[0],set=cashIn(w)>0,left=cashLeft(w),mine=w===me,low=set&&left<LOW_CASH;
-  return `<div class="w-row${mine?" mine":""}"><svg class="w-cat" viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${w==="zhang"?"b":"w"}"/></svg>
-   <div class="w-txt"><b>${p[1]}</b><small>${set?`換了 ${yen(cashIn(w))}・花了 ${yen(cashSpent(w))}`:"還沒設定換了多少日圓"}</small></div>
-   <div class="w-left${low?" low":""}">${set?`<small>剩</small>${yen(left)}`:"—"}</div></div>
-   ${mine&&canWrite?(walletEdit===w?`<form class="w-form" data-wallet-form="${w}" autocomplete="off"><div class="w-mode"><button type="button" class="pick" data-wmode="add" aria-pressed="${walletMode==="add"}">補錢（領了多少）</button><button type="button" class="pick" data-wmode="set" aria-pressed="${walletMode==="set"}">修改總額</button></div><div class="amt"><span>¥</span><input name="amt" inputmode="numeric" placeholder="${walletMode==="add"?"例如 10000":"一共換了多少"}" aria-label="金額"></div><div class="form-btns"><button class="primary" type="submit">${walletMode==="add"?"加進錢包":"儲存"}</button><button class="ghost" type="button" data-wallet-cancel>取消</button></div></form>`:`<div class="w-acts"><button type="button" class="chip" data-wallet-edit="${w}" data-mode="${set?"add":"set"}">${set?"＋ 補錢":"設定換了多少"}</button>${set?`<button type="button" class="chip" data-wallet-edit="${w}" data-mode="set">修改總額</button>`:""}</div>`):""}`}).join("")}`;
+ const set=cashIn(me)>0,left=cashLeft(me),low=set&&left<LOW_CASH,other=PEOPLE.find(p=>p[0]!==me),ow=other[0],oset=cashIn(ow)>0,oleft=cashLeft(ow);
+ const editing=walletEdit===me||!set;const mode=set?walletMode:"set";
+ return `<div class="sm-head"><b>我的錢包</b>${x}</div>
+ <div class="ws-hero${low?" low":""}${set?"":" ask"}"><svg class="ws-ill" viewBox="0 0 48 48" aria-hidden="true"><use href="#t-acct"/></svg>
+  <div><small>${nameOf(me)}的現金${set?"還剩":""}</small><b>${set?yen(left):"還沒設定"}</b>${set?`<small>換了 ${yen(cashIn(me))}・現金花了 ${yen(cashSpent(me))}</small>`:`<small>輸入你換了多少日圓</small>`}${low?`<em>快用完了，記得去領錢</em>`:""}</div></div>
+ ${canWrite?(editing?`<form class="w-form" data-wallet-form autocomplete="off">${set?`<div class="w-mode"><button type="button" class="pick" data-wmode="add" aria-pressed="${mode==="add"}">補錢（領了多少）</button><button type="button" class="pick" data-wmode="set" aria-pressed="${mode==="set"}">修改總額</button></div>`:""}<div class="amt"><span>¥</span><input name="amt" inputmode="numeric" placeholder="${mode==="add"?"例如 10000":"一共換了多少"}" aria-label="金額"></div><div class="form-btns"><button class="primary" type="submit">${mode==="add"?"加進錢包":"儲存"}</button>${set?`<button class="ghost" type="button" data-wallet-cancel>取消</button>`:""}</div></form>`
+  :`<div class="ws-acts"><button type="button" class="primary" data-wallet-edit data-mode="add">＋ 補錢</button><button type="button" class="ghost" data-wallet-edit data-mode="set">修改總額</button></div>`):""}
+ <div class="w-row"><svg class="w-cat" viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${ow==="zhang"?"b":"w"}"/></svg><div class="w-txt"><b>${other[1]}</b><small>${oset?`換了 ${yen(cashIn(ow))}・花了 ${yen(cashSpent(ow))}`:"還沒設定"}</small></div><div class="w-left${oset&&oleft<LOW_CASH?" low":""}">${oset?`<small>剩</small>${yen(oleft)}`:"—"}</div></div>
+ <button type="button" class="w-swap" data-wallet-swap>不是${nameOf(me)}？切換成${other[1]}</button>`;
+}
+let walletSheet=null;
+function paintWalletSheet(focus){if(!walletSheet)return;walletSheet.querySelector(".sm-card").innerHTML=walletSheetHTML();if(focus)setTimeout(()=>walletSheet&&walletSheet.querySelector(".w-form input")?.focus(),30)}
+function afterWalletChange(){paintWalletSheet();if(tab==="acct"||(tab==="plan"&&view==="home"))render(true)}
+function openWallet(){
+ if(walletSheet)return;walletEdit=null;walletMode="add";
+ const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","我的錢包");
+ v.innerHTML=`<div class="sm-card ws"></div>`;walletSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";paintWalletSheet(!(me&&cashIn(me)>0)&&!!me);
+ const close=()=>{v.remove();walletSheet=null;walletEdit=null;document.body.style.overflow=""};
+ v.addEventListener("click",e=>{
+  if(e.target===v||e.target.closest(".sm-x")){close();return}
+  const wme=e.target.closest("[data-wallet-me]");if(wme){me=wme.dataset.walletMe;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;walletEdit=null;afterWalletChange();paintWalletSheet(!(cashIn(me)>0));return}
+  if(e.target.closest("[data-wallet-swap]")){me=me==="zhang"?"star":"zhang";try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;walletEdit=null;afterWalletChange();return}
+  const we=e.target.closest("[data-wallet-edit]");if(we){walletEdit=me;walletMode=we.dataset.mode||"add";paintWalletSheet(true);return}
+  const wm=e.target.closest("[data-wmode]");if(wm){const val=v.querySelector(".w-form input")?.value||"";walletMode=wm.dataset.wmode;paintWalletSheet(true);const i=v.querySelector(".w-form input");if(i)i.value=val;return}
+  if(e.target.closest("[data-wallet-cancel]")){walletEdit=null;paintWalletSheet();return}
+ });
+ v.addEventListener("submit",async e=>{
+  e.preventDefault();const f=e.target;const val=parseInt((f.amt.value||"").replace(/[^\d]/g,""),10);if(!(val>0)){f.amt.focus();return}
+  const mode=cashIn(me)>0?walletMode:"set";await saveWallet(me,mode==="add"?cashIn(me)+val:val);walletEdit=null;afterWalletChange();
+ });
 }
 let walletMode="set";
 async function saveWallet(w,val){wallet={...wallet,[w]:{...(wallet[w]||{}),cashIn:val,ts:Date.now()}};store.set("wallet",wallet);if(db){try{await db.doc("wallet/"+w).set(wallet[w])}catch(_){}}}
 function renderAcct(){
  const sum=document.getElementById("acct-sum"),list=document.getElementById("acct-list");if(!sum)return;
- const wb=document.getElementById("acct-wallet");if(wb)wb.innerHTML=walletHTML();
+ const wc=document.querySelector(".wchip");if(wc)wc.outerHTML=walletChip();
  const total=expenses.reduce((a,e)=>a+e.amt,0);
  const byCat=ECAT.map(c=>[c,expenses.filter(e=>e.cat===c[0]).reduce((a,e)=>a+e.amt,0)]).filter(x=>x[1]>0);
  let bal=0;expenses.forEach(e=>{if(e.split==="both")bal+=e.who==="zhang"?e.amt/2:-e.amt/2});
@@ -1853,12 +1906,8 @@ app.addEventListener("click",e=>{
  const gi=e.target.closest("[data-go-item]");if(gi){focusItem=gi.dataset.goItem;focusUntil=Date.now()+2500;tab="list";listSub=null;editItem=null;render();return}
  const pkb=e.target.closest("[data-pack]");if(pkb){const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);if(db)db.doc("checks/"+k).set({done:v}).catch(()=>{});return}
  const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);if(db)db.doc("checks/"+id).set({done:true}).catch(()=>{});return}
+ if(e.target.closest("[data-wallet-open]")){openWallet();return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
- const we=e.target.closest("[data-wallet-edit]");if(we){walletEdit=we.dataset.walletEdit;walletMode=we.dataset.mode||"set";renderAcct();setTimeout(()=>document.querySelector(".w-form input")?.focus(),30);return}
- const wm=e.target.closest("[data-wmode]");if(wm){walletMode=wm.dataset.wmode;const v=document.querySelector(".w-form input")?.value||"";renderAcct();const i=document.querySelector(".w-form input");if(i){i.value=v;i.focus()}return}
- const wme=e.target.closest("[data-wallet-me]");if(wme){me=wme.dataset.walletMe;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;walletEdit=null;render(true);return}
- if(e.target.closest("[data-wallet-swap]")){me=me==="zhang"?"star":"zhang";try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;walletEdit=null;render(true);return}
- if(e.target.closest("[data-wallet-cancel]")){walletEdit=null;renderAcct();return}
  const pk=e.target.closest(".pick");if(pk){const grp=pk.parentElement.dataset.pick;draft[grp]=pk.dataset.v;pk.parentElement.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",b===pk));return}
  const del=e.target.closest("[data-del]");if(del){const id=del.dataset.del;if(pendingDel!==id){pendingDel=id;renderAcct();clearTimeout(window._pd);window._pd=setTimeout(()=>{if(pendingDel===id){pendingDel=null;renderAcct()}},3000);return}pendingDel=null;removeExpense(id);return}
  const ed=e.target.closest("[data-edit]");if(ed){startEdit(ed.dataset.edit);return}
@@ -1895,7 +1944,6 @@ app.addEventListener("submit",async e=>{
   const it={...(old||{}),id:id||("i"+Date.now().toString(36)),group:g,title,...(g==="buy"?{place:f.place.value.trim(),what:f.what.value.trim(),note:""}:{note:f.note.value.trim()}),...(g==="pack"?{cat:f.cat?f.cat.value:"etc"}:{}),due:(()=>{const dd=f.dued&&f.dued.value;if(!dd)return "";const[,mo,da]=dd.split("-");const t=f.duet&&f.duet.value;return `${+mo}/${+da}`+(t?` ${t}`:"")})(),links:old?old.links||null:null,order:old?old.order:Math.max(0,...items.filter(x=>x.group===g).map(x=>x.order||0))+1};
   editItem=null;await saveItem(it);render(true);return;
  }
- if(e.target.matches("[data-wallet-form]")){const w=e.target.dataset.walletForm,v=parseInt((e.target.amt.value||"").replace(/[^\d]/g,""),10);if(!(v>0)){e.target.amt.focus();return}await saveWallet(w,walletMode==="add"?cashIn(w)+v:v);walletEdit=null;renderAcct();return}
  if(e.target.id==="code-form"){const v=(document.getElementById("f-code").value||"").trim();if(!v)return;try{localStorage.setItem(TRIP_KEY,v)}catch(_){};syncMsg="connecting";render(true);connect();return}
  const msg=document.getElementById("f-msg"),amt=parseInt(draft.amt,10);
  msg.className="msg";
@@ -1993,8 +2041,8 @@ async function connect(){
   try{await ensureSeeded()}catch(_){}
   db.collection("moods").onSnapshot(snap=>{const n={...moods};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{});
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
-  db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0}});if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
-  db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
+  db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0}});paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
+  db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const v=+(s.data()||{}).jpyTwd;if(v>0){rate=v;store.set("rate",v);if(tab==="acct")renderAcct()}}},()=>{});
   rerenderData();
  }catch(err){
