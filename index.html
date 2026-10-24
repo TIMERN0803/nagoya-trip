@@ -813,8 +813,9 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .src{border-radius:999px}
 .tip{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);background:var(--butter-soft)}
 .sync{border:2px solid var(--ol);box-shadow:0 2px 0 var(--ol)}
-.primary{border:2.5px solid var(--ol);box-shadow:0 4px 0 var(--ol)}
-.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 var(--ol)}
+/* 主按鈕：外框和陰影用深焦糖，跟按鈕本體拉開明暗，才看得出立體感 */
+.primary{border:2.5px solid var(--accent-deep);box-shadow:0 4px 0 var(--accent-deep),inset 0 2px 0 rgba(255,255,255,.18)}
+.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 var(--accent-deep),inset 0 2px 0 rgba(255,255,255,.18)}
 .primary:disabled{border-color:var(--line-strong);box-shadow:none}
 .ghost{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol)}
 .ghost:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
