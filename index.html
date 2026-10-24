@@ -328,6 +328,21 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .chk-row .due{margin-right:4px}
 .chk.editing{display:block;background:var(--accent-soft);cursor:auto}
 .chk-form{display:flex;flex-direction:column;gap:8px}
+.due-row{display:grid;grid-template-columns:1.3fr 1fr;gap:8px}
+.due-row label{display:flex;flex-direction:column;gap:3px;min-width:0}
+.due-row span{font-size:12px;font-weight:700;color:var(--muted)}
+.due-row .field{min-width:0;width:100%;-webkit-appearance:none;appearance:none;min-height:44px;background:var(--card)}
+.due-hint{font-size:12px;color:var(--muted);margin-top:-2px}
+.due-alerts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.due-alert{display:flex;align-items:center;gap:8px;background:var(--coral-soft);border:1.5px solid var(--coral-line);border-radius:20px;padding:6px 8px 6px 4px}
+.da-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:var(--ink);padding:4px 6px}
+.da-ic{width:20px;height:20px;flex:none;color:var(--coral-ink)}
+.da-main span{display:flex;flex-direction:column;min-width:0;line-height:1.35}
+.da-main b{font-weight:700;font-size:15px}
+.due-alert.over .da-main b{color:var(--coral-ink)}
+.da-main small{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.da-done{flex:none;border:1.5px solid var(--coral-line);background:var(--card);color:var(--ink);border-radius:999px;padding:7px 14px;font-family:var(--f-display);font-weight:700;font-size:14px;cursor:pointer}
+.da-done:active{background:var(--sunk)}
 .form-btns{display:flex;gap:8px}
 .form-btns>*{flex:1;margin:0!important;padding:10px!important;font-size:15px!important}
 .ghost.danger{color:var(--coral-ink)}
@@ -832,6 +847,13 @@ const BUY=[
  ["b5","藥妝店 大國","榮"]];
 const DEFAULT_ITEMS=[...PREP.map((r,i)=>({id:r[0],group:"prep",title:r[1],note:r[2],due:r[3]||"",links:r[4]||null,order:i})),...BUY.map((r,i)=>({id:r[0],group:"buy",title:r[1],note:r[2],due:"",links:null,order:100+i}))];
 const itemsOf=g=>items.filter(x=>x.group===g).sort((a,b)=>(a.order??0)-(b.order??0));
+/* 待辦期限：存成「11/15 07:05」；11/17 以前用台灣時間，旅程中（11/17 起）用日本時間 */
+function dueParts(v){const m=String(v||"").match(/^(\d{1,2})\/(\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?$/);return m?{mo:+m[1],da:+m[2],h:m[3]!=null?+m[3]:null,mi:m[4]!=null?+m[4]:null}:null}
+function dueTs(v){const p=dueParts(v);if(!p)return null;const jp=p.mo>11||(p.mo===11&&p.da>=17);const h=p.h==null?23:p.h,mi=p.mi==null?59:p.mi;return Date.UTC(YEAR,p.mo-1,p.da,h-(jp?9:8),mi)}
+const leftText=ms=>{const m=Math.round(Math.abs(ms)/6e4),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return d?`${d} 天${h?` ${h} 小時`:""}`:h?`${h} 小時${mm?` ${mm} 分`:""}`:`${mm} 分`};
+function dueSoon(){const n=Date.now();return itemsOf("prep").filter(r=>!done[r.id]&&r.due).map(r=>({r,ts:dueTs(r.due)})).filter(x=>x.ts!=null&&x.ts-n<=24*3600e3&&n-x.ts<=12*3600e3).sort((a,b)=>a.ts-b.ts)}
+function dueAlertsHTML(){const l=dueSoon();if(!l.length)return"";const n=Date.now();
+ return `<section class="due-alerts" id="due-alerts" aria-label="待辦到期提醒">${l.map(({r,ts})=>`<div class="due-alert${ts<n?" over":""}"><button class="da-main" type="button" data-go="list"><svg class="da-ic" viewBox="0 0 24 24"><use href="#i-bell"/></svg><span><b>${ts<n?`已過期限 ${leftText(n-ts)}`:`還有 ${leftText(ts-n)} 到期`}</b><small>${esc(r.title)}・${esc(r.due)}</small></span></button>${canWrite?`<button class="da-done" type="button" data-done-id="${esc(r.id)}">完成</button>`:""}</div>`).join("")}</section>`}
 let editItem=null,pendingItemDel=null;
 const PEOPLE=[["zhang","阿彰","cat-b"],["star","星星","cat-w"]];
 const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"],["shop","購物","k-buy","c-buy"],["ticket","門票","k-ticket","c-go"],["stay","住宿","k-stay","c-stay"],["etc","其他","k-etc","c-etc"]];
@@ -1005,8 +1027,8 @@ function heroHTML(){
   const c=cdParts();
   cd=`<div class="cd"><div class="cd-d"><b id="cd-d">${c.d}</b><small>天</small></div><div class="hms" aria-label="時分秒"><span><b id="cd-h">${p2(c.h)}</b><i>時</i></span><span><b id="cd-m">${p2(c.m)}</b><i>分</i></span><span><b id="cd-s">${p2(c.s)}</b><i>秒</i></span></div></div>`;lbl="名古屋，我們來了";
   sub="11/17（二）07:05 從台中起飛<br>JX 320，10:40 抵達名古屋";
-  const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,next=pl.find(r=>!done[r.id]&&r.due);
-  foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>行前待辦 ${n} / ${pl.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
+  const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,soon=new Set(dueSoon().map(x=>x.r.id)),next=pl.find(r=>!done[r.id]&&r.due&&!soon.has(r.id));
+  foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>待辦 ${n} / ${pl.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];
   return `<section class="hero trip">${HERO.replace('<svg class="scene"','<svg class="scene" preserveAspectRatio="xMidYMax slice"')}<button class="today-main" type="button" data-day="${todayIdx}"><span class="txt"><span class="lbl">今天的行程</span><span class="ttl">${esc(x.title)}</span><span class="rt">${x.route.map(esc).join(" → ")}</span></span><span class="big">D${todayIdx+1}<small>${x.d}（${x.w}）</small></span></button>${moodLineHTML(x,todayIdx)}</section>`;
@@ -1016,6 +1038,7 @@ function heroHTML(){
 function homeHTML(){
  return `<header class="bar"><svg class="logo" role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg><h1>名古屋看花花</h1><span class="right">11/17 – 11/24</span></header>
  ${heroHTML()}
+ ${dueAlertsHTML()}
  <section class="sheet"><div class="clips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="sheet-head"><h2>8 天的地點</h2><span>點一下看當天</span></div>
   <div class="grid${todayIdx<0&&diff<=0?" trip-over":""}">${DAYS.map((x,i)=>`<button class="tile${dayDate(x)<today?" past":""}${i===todayIdx?" today":""}" data-day="${i}"><span class="art">${svgTile(x.art)}${i===todayIdx?`<span class="tile-pill">今天</span>`:dayDate(x)<today?`<span class="tile-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`:""}</span><b>${esc(x.place)}</b><small>${x.d} 週${x.w}</small></button>`).join("")}
@@ -1259,7 +1282,7 @@ function itemForm(g,it){
  return `<form class="chk-form" data-group="${g}" data-id="${isNew?"":esc(it.id)}" autocomplete="off">
   <input class="field" name="title" placeholder="${g==="buy"?"要買什麼？例如：小倉山莊":"要做什麼？例如：換日圓"}" value="${esc(it.title)}" maxlength="40" aria-label="名稱" required>
   <input class="field" name="note" placeholder="備註（地點、品項…可不填）" value="${esc(it.note||"")}" maxlength="60" aria-label="備註">
-  ${g==="prep"?`<input class="field" name="due" placeholder="期限（例如 11/15 07:05，可不填）" value="${esc(it.due||"")}" maxlength="20" aria-label="期限">`:""}
+  ${g==="prep"?(()=>{const p=dueParts(it.due);return `<div class="due-row"><label><span>期限日期</span><input class="field" type="date" name="dued" min="${YEAR}-10-01" max="${YEAR}-12-31" value="${p?`${YEAR}-${p2(p.mo)}-${p2(p.da)}`:""}"></label><label><span>時間</span><input class="field" type="time" name="duet" value="${p&&p.h!=null?`${p2(p.h)}:${p2(p.mi)}`:""}"></label></div><small class="due-hint">可不填；11/17 前是台灣時間，旅程中是日本時間</small>`})():""}
   <div class="form-btns"><button class="primary" type="submit">${isNew?"新增":"儲存"}</button><button class="ghost" type="button" data-item-cancel>取消</button>
   ${isNew?"":`<button class="ghost danger${pendingItemDel===it.id?" sure":""}" type="button" data-item-del="${esc(it.id)}">${pendingItemDel===it.id?"確定刪除":"刪除"}</button>`}</div>
  </form>`;
@@ -1274,7 +1297,7 @@ function groupHTML(title,g){
 function listHTML(){
  return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>清單</h1></header>
  ${syncHTML()}
- <div class="stack">${groupHTML("行前待辦","prep")}${groupHTML("要買的","buy")}
+ <div class="stack">${groupHTML("待辦清單","prep")}${groupHTML("要買的","buy")}
  ${canWrite&&missingDefaults().length?`<button class="restore${pendingRestore?" sure":""}" type="button" data-restore>${pendingRestore?`確定補回 ${missingDefaults().length} 個原本的項目？`:"補回原本行程文件裡的項目"}</button>`:""}</div>`;
 }
 const missingDefaults=()=>DEFAULT_ITEMS.filter(d=>!items.some(x=>x.id===d.id));
@@ -1379,6 +1402,7 @@ async function toggleNotify(){
  checkReminders();
 }
 setInterval(checkReminders,20000);
+setInterval(()=>{if(tab!=="plan"||view!=="home")return;const cur=document.getElementById("due-alerts"),html=dueAlertsHTML();if(cur){if(html)cur.outerHTML=html;else cur.remove()}else if(html){const h=app.querySelector(".hero");if(h)h.insertAdjacentHTML("afterend",html)}},30000);
 document.addEventListener("visibilitychange",checkReminders);
 
 const scrollMem={};let curKey=null;
@@ -1443,6 +1467,7 @@ app.addEventListener("click",e=>{
  const idl=e.target.closest("[data-item-del]");if(idl){const id=idl.dataset.itemDel;if(pendingItemDel!==id){pendingItemDel=id;render(true);clearTimeout(window._pid);window._pid=setTimeout(()=>{if(pendingItemDel===id){pendingItemDel=null;if(tab==="list")render(true)}},3000);return}pendingItemDel=null;editItem=null;deleteItem(id).then(()=>render(true));render(true);return}
  const d=e.target.closest("[data-day]");if(d){const i=+d.dataset.day;if(tab==="plan"&&view==="day"&&d.classList.contains("day-btn")){switchDay(i);return}tab="plan";view="day";dayIdx=i;render();return}
  if(e.target.closest("[data-home]")){const from=dayIdx;view="home";render(false,true);const t=app.querySelector(`.tile[data-day="${from}"]`);if(t){const r=t.getBoundingClientRect();if(r.top<60||r.bottom>innerHeight-110)t.scrollIntoView({block:"center"});t.classList.add("flash");setTimeout(()=>t.classList.remove("flash"),1300)}return}
+ const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);if(db)db.doc("checks/"+id).set({done:true}).catch(()=>{});return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
  const pk=e.target.closest(".pick");if(pk){const grp=pk.parentElement.dataset.pick;draft[grp]=pk.dataset.v;pk.parentElement.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",b===pk));return}
  const del=e.target.closest("[data-del]");if(del){const id=del.dataset.del;if(pendingDel!==id){pendingDel=id;renderAcct();clearTimeout(window._pd);window._pd=setTimeout(()=>{if(pendingDel===id){pendingDel=null;renderAcct()}},3000);return}pendingDel=null;removeExpense(id);return}
@@ -1477,7 +1502,7 @@ app.addEventListener("submit",async e=>{
  if(e.target.classList.contains("chk-form")){
   const f=e.target,g=f.dataset.group,id=f.dataset.id,title=f.title.value.trim();if(!title){f.title.focus();return}
   const old=items.find(x=>x.id===id);
-  const it={...(old||{}),id:id||("i"+Date.now().toString(36)),group:g,title,note:f.note.value.trim(),due:f.due?f.due.value.trim():"",links:old?old.links||null:null,order:old?old.order:Math.max(0,...items.filter(x=>x.group===g).map(x=>x.order||0))+1};
+  const it={...(old||{}),id:id||("i"+Date.now().toString(36)),group:g,title,note:f.note.value.trim(),due:(()=>{const dd=f.dued&&f.dued.value;if(!dd)return "";const[,mo,da]=dd.split("-");const t=f.duet&&f.duet.value;return `${+mo}/${+da}`+(t?` ${t}`:"")})(),links:old?old.links||null:null,order:old?old.order:Math.max(0,...items.filter(x=>x.group===g).map(x=>x.order||0))+1};
   editItem=null;await saveItem(it);render(true);return;
  }
  if(e.target.id==="code-form"){const v=(document.getElementById("f-code").value||"").trim();if(!v)return;try{localStorage.setItem(TRIP_KEY,v)}catch(_){};syncMsg="connecting";render(true);connect();return}
