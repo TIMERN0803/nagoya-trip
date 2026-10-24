@@ -93,7 +93,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .tile .art svg{display:block;width:100%;height:100%}
 .tile b{font-family:var(--f-display);font-weight:900;font-size:14px;line-height:1.3}
 .tile small{font-family:var(--f-display);font-weight:700;font-size:12px;color:var(--muted);margin-top:-3px;font-variant-numeric:tabular-nums}
-.tile.past{opacity:.55}
+.tile.past{opacity:.6}
 .tile.today .art{outline:3px solid var(--mint);outline-offset:2px}
 
 .strip{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);padding:6px 0 10px}
@@ -206,13 +206,13 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .group h3{margin:0;padding:14px 18px 10px;font-size:17px;display:flex;justify-content:space-between;align-items:center}
 .prog{font-family:var(--f-display);font-size:13px;font-weight:700;color:var(--mint-ink);background:var(--mint-soft);border-radius:999px;padding:1px 10px;font-variant-numeric:tabular-nums}
 .chk{display:flex;gap:12px;align-items:flex-start;padding:12px 18px;border-top:2px dashed var(--line);cursor:pointer}
-.chk input{appearance:none;flex:none;width:26px;height:26px;border:2.5px solid #CDB79F;border-radius:50%;margin:0;display:grid;place-items:center;background:var(--card);cursor:pointer;transition:background .15s,border-color .15s}
-.chk input:checked{background:var(--mint-ink);border-color:var(--mint-ink)}
-.chk input:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
+.chk input[type=checkbox]{appearance:none;flex:none;width:26px;height:26px;border:2.5px solid #CDB79F;border-radius:50%;margin:0;display:grid;place-items:center;background:var(--card);cursor:pointer;transition:background .15s,border-color .15s}
+.chk input[type=checkbox]:checked{background:var(--mint-ink);border-color:var(--mint-ink)}
+.chk input[type=checkbox]:checked::after{content:"";width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) translate(-1px,-1px)}
 .chk .txt{min-width:0;flex:1}
 .chk .txt b{font-weight:700;display:block}
 .chk .txt small{color:var(--muted);font-size:13px}
-.chk input:checked + .txt b{text-decoration:line-through;color:var(--muted)}
+.chk input[type=checkbox]:checked + .txt b{text-decoration:line-through;color:var(--muted)}
 .chk .due{flex:none;font-family:var(--f-display);font-size:12px;font-weight:700;color:var(--coral-ink);background:var(--coral-soft);border-radius:999px;padding:2px 9px;font-variant-numeric:tabular-nums}
 
 .sum{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
@@ -268,6 +268,54 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .code-row{display:flex;gap:8px}
 .code-row .field{flex:1;min-width:0}
 .code-row .primary{width:auto;margin:0;padding:8px 16px;font-size:15px}
+.chk-row{position:relative;border-top:2px dashed var(--line)}
+.chk-row .chk{border-top:0;padding-right:56px}
+.edit-btn{position:absolute;right:8px;top:8px;width:40px;height:40px;border:0;background:none;color:var(--muted);border-radius:12px;display:grid;place-items:center;cursor:pointer}
+.edit-btn svg{width:19px;height:19px}
+.edit-btn:active{background:var(--sunk)}
+.chk-row .due{margin-right:4px}
+.chk.editing{display:block;background:var(--mint-soft);cursor:auto}
+.chk-form{display:flex;flex-direction:column;gap:8px}
+.form-btns{display:flex;gap:8px}
+.form-btns>*{flex:1;margin:0!important;padding:10px!important;font-size:15px!important}
+.ghost.danger{color:var(--coral-ink)}
+.ghost.danger.sure{background:var(--coral-soft);border-color:var(--coral-line)}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 36px);margin:4px 18px 16px;border:2px dashed var(--line);background:none;border-radius:14px;padding:10px;font-family:var(--f-display);font-weight:700;font-size:14.5px;color:var(--brown);cursor:pointer}
+.add-btn svg{width:18px;height:18px}
+.tagrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flag{display:inline-flex;align-items:center;gap:3px;font-size:12px;font-weight:700;border-radius:8px;padding:1px 8px}
+.flag svg{width:13px;height:13px}
+.flag.next{background:var(--mint-ink);color:#fff}
+.flag.now{background:#F4C04A;color:var(--ink)}
+.flag.done{background:var(--sunk);color:var(--muted)}
+.item.s-next .card{border:2.5px solid var(--mint-ink);box-shadow:0 4px 0 #B6E0D3}
+.item.s-next .t{color:var(--mint-ink)}
+.item.s-now .card{border:2.5px solid #E8B93C}
+.item.s-done{opacity:.5}
+.item.s-done .card{box-shadow:none;background:var(--paper)}
+.item.s-done h3{text-decoration:line-through;text-decoration-thickness:1.5px}
+.item.ping .card{animation:ping 1s ease}
+@keyframes ping{30%{transform:scale(1.02)}}
+.nowcard{width:100%;margin-top:12px;display:flex;align-items:center;gap:12px;text-align:left;border:0;cursor:pointer;background:var(--mint-ink);color:#fff;border-radius:22px;padding:14px 16px;font-family:var(--f-body)}
+.nowcard .pill{flex:none;background:#fff;color:var(--mint-ink);font-family:var(--f-display);font-weight:900;font-size:13px;border-radius:999px;padding:3px 10px}
+.nowcard div{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.nowcard small{font-size:12.5px;opacity:.85;font-weight:700}
+.nowcard b{font-family:var(--f-display);font-weight:900;font-size:18px;overflow-wrap:anywhere}
+.nowcard span{font-size:13px;opacity:.9}
+.nowcard .go{width:20px;height:20px;flex:none}
+.nowcard.done{background:var(--mint-soft);color:var(--ink);cursor:default}
+.nowcard.done .cats{width:58px;height:40px;flex:none}
+.today-pill,.past-pill{display:inline-block;margin-left:8px;font-size:12px;border-radius:999px;padding:1px 9px;vertical-align:1px}
+.today-pill{background:var(--mint-ink);color:#fff}
+.past-pill{background:var(--sunk);color:var(--muted)}
+.day-btn.past b,.day-btn.past small{opacity:.45}
+.day-btn.today small{color:var(--mint-ink);font-weight:900}
+.tile .art{position:relative}
+.tile-pill{position:absolute;left:8px;top:8px;background:var(--mint-ink);color:#fff;font-family:var(--f-display);font-weight:900;font-size:12.5px;border-radius:999px;padding:2px 10px;box-shadow:0 2px 0 rgba(0,0,0,.12)}
+.tile-done{position:absolute;right:7px;top:7px;width:24px;height:24px;border-radius:50%;background:#fff;color:var(--mint-ink);display:grid;place-items:center;box-shadow:0 0 0 2px var(--line)}
+.tile .art .tile-done svg{width:15px;height:15px}
+.tile.past .art svg{filter:grayscale(.7)}
+.tile.today .art{outline:3px solid var(--mint-ink);outline-offset:3px}
 .empty{text-align:center;padding:4px 0;color:var(--muted);font-size:14px}
 .empty svg{width:110px;height:70px;display:block;margin:0 auto 6px}
 
@@ -557,11 +605,15 @@ const BUY=[
  ["b3","升半","芳明の白"],
  ["b4","新樂園","榮"],
  ["b5","藥妝店 大國","榮"]];
+const DEFAULT_ITEMS=[...PREP.map((r,i)=>({id:r[0],group:"prep",title:r[1],note:r[2],due:r[3]||"",links:r[4]||null,order:i})),...BUY.map((r,i)=>({id:r[0],group:"buy",title:r[1],note:r[2],due:"",links:null,order:100+i}))];
+const itemsOf=g=>items.filter(x=>x.group===g).sort((a,b)=>(a.order??0)-(b.order??0));
+let editItem=null,pendingItemDel=null;
 const PEOPLE=[["zhang","阿彰","cat-b"],["star","星星","cat-w"]];
 const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"],["shop","購物","k-buy","c-buy"],["ticket","門票","k-ticket","c-go"],["stay","住宿","k-stay","c-stay"],["etc","其他","k-etc","c-etc"]];
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("ngy:"+k,JSON.stringify(v))}catch(e){}}};
+let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
 const mapUrl=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
 const ext=(label,href)=>`<a class="chip" href="${esc(href)}" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg>${esc(label)}</a>`;
 const yen=n=>"¥"+Math.round(n).toLocaleString("en-US");
@@ -601,8 +653,8 @@ function heroHTML(){
   const c=cdParts();
   cd=`<div class="cd"><div class="cd-d"><b id="cd-d">${c.d}</b><small>天</small></div><div class="hms" aria-label="時分秒"><span><b id="cd-h">${p2(c.h)}</b><i>時</i></span><span><b id="cd-m">${p2(c.m)}</b><i>分</i></span><span><b id="cd-s">${p2(c.s)}</b><i>秒</i></span></div></div>`;lbl="名古屋，我們來了";
   sub="11/17（二）07:05 從台中起飛<br>JX 320，10:40 抵達名古屋";
-  const n=PREP.filter(r=>done[r[0]]).length,next=PREP.find(r=>!done[r[0]]&&r[3]);
-  foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>行前待辦 ${n} / ${PREP.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next[3])} ${esc(next[1])}</span>`:""}`;
+  const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,next=pl.find(r=>!done[r.id]&&r.due);
+  foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>行前待辦 ${n} / ${pl.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];big=`D${todayIdx+1}<small>${x.d}</small>`;lbl="今天的行程";sub=esc(x.title);
   foot=`<button class="chip mint" data-day="${todayIdx}">看今天的行程<svg><use href="#i-arrow"/></svg></button>`;
@@ -614,15 +666,24 @@ function homeHTML(){
  ${heroHTML()}
  <section class="sheet"><div class="clips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="sheet-head"><h2>8 天的地點</h2><span>點一下看當天</span></div>
-  <div class="grid">${DAYS.map((x,i)=>`<button class="tile${dayDate(x)<today?" past":""}${i===todayIdx?" today":""}" data-day="${i}"><span class="art">${svgTile(x.art)}</span><b>${esc(x.place)}</b><small>${x.d} 週${x.w}</small></button>`).join("")}
-   <button class="tile" data-go="list"><span class="art"><svg viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)"><rect width="120" height="120" fill="url(#gMint)"/><rect y="94" width="120" height="26" fill="#E7DCCB"/><g class="ol" transform="translate(90 62)"><path d="M-8-10v-6a8 8 0 0 1 16 0v6" fill="none"/><path d="M-18-10h36l-4 40h-28z" fill="#EE9479"/><rect x="-9" y="2" width="18" height="10" rx="3" fill="#fff"/></g></g>${cat("cat-w-wave",6,52,58)}</svg></span><b>要買的</b><small>${BUY.filter(r=>done[r[0]]).length} / ${BUY.length} 已買</small></button></div>
+  <div class="grid">${DAYS.map((x,i)=>`<button class="tile${dayDate(x)<today?" past":""}${i===todayIdx?" today":""}" data-day="${i}"><span class="art">${svgTile(x.art)}${i===todayIdx?`<span class="tile-pill">今天</span>`:dayDate(x)<today?`<span class="tile-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`:""}</span><b>${esc(x.place)}</b><small>${x.d} 週${x.w}</small></button>`).join("")}
+   <button class="tile" data-go="list"><span class="art"><svg viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)"><rect width="120" height="120" fill="url(#gMint)"/><rect y="94" width="120" height="26" fill="#E7DCCB"/><g class="ol" transform="translate(90 62)"><path d="M-8-10v-6a8 8 0 0 1 16 0v6" fill="none"/><path d="M-18-10h36l-4 40h-28z" fill="#EE9479"/><rect x="-9" y="2" width="18" height="10" rx="3" fill="#fff"/></g></g>${cat("cat-w-wave",6,52,58)}</svg></span><b>要買的</b><small>${itemsOf("buy").filter(r=>done[r.id]).length} / ${itemsOf("buy").length} 已買</small></button></div>
  </section>`;
 }
-function itemHTML(it){
- const[kl,ki,kc]=KIND[it.k];const acts=[];
+const tmin=t=>{const m=/(\d{1,2}):(\d{2})/.exec(t||"");return m?+m[1]*60+ +m[2]:null};
+/* 今天的行程狀態：已過的有時間行程反灰，剛開始 90 分鐘內算「進行中」，下一個有時間的行程標「接下來」 */
+function dayStatus(x){
+ const st=x.items.map(()=>""),d=new Date(),nowM=d.getHours()*60+d.getMinutes();
+ let next=-1;
+ x.items.forEach((it,i)=>{const m=tmin(it.t);if(m==null)return;if(m>nowM){if(next<0)next=i}else st[i]=nowM-m<90?"now":"done"});
+ if(next>=0)st[next]="next";
+ return{st,next,nowM};
+}
+function itemHTML(it,i,stat){
+ const[kl,ki,kc]=KIND[it.k];const acts=[];const s=stat?stat.st[i]:"";
  if(it.map)acts.push(`<a class="chip" href="${mapUrl(it.map)}" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>地圖</a>`);
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
- return `<li class="item"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>
+ return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card"><div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
   <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
 function schedHTML(){
@@ -630,18 +691,25 @@ function schedHTML(){
  ${SCHED.map(r=>`<div class="srow${r[3]===1?" move":""}${r[3]===2?" star":""}"><div class="st">${r[0]}</div><div>${r[3]===1?esc(r[2]):`<b>${esc(r[1])}</b><p>${esc(r[2])}</p>`}</div></div>`).join("")}
  <div class="tips"><div><b>青春之丘到 Dondoko 森林：</b>免費巴士剛好就搭，不然直接走</div><div><b>Dondoko 森林到魔法之里：</b>可搭一次 APM 貓巴士，體驗兼省腳力</div><div><b>魔法之里之後：</b>區域集中，直接走比等車快</div></div></div></details>`;
 }
-const chipInner=(d,i)=>`<small>${d.w}</small>${i===dayIdx?`<svg class="dh" aria-hidden="true"><use href="#head-${i%2?"b":"w"}"/></svg>`:`<b>${d.d.split("/")[1]}</b>`}`;
+const chipInner=(d,i)=>`<small>${i===todayIdx?"今天":d.w}</small>${i===dayIdx?`<svg class="dh" aria-hidden="true"><use href="#head-${i%2?"b":"w"}"/></svg>`:`<b>${d.d.split("/")[1]}</b>`}`;
+function nowCardHTML(x,stat){
+ if(!stat)return"";
+ if(stat.next<0)return `<div class="nowcard done"><svg class="cats" aria-hidden="true"><use href="#cats"/></svg><div><b>今天的行程都走完了</b><span>好好休息，明天見</span></div></div>`;
+ const it=x.items[stat.next],left=tmin(it.t)-stat.nowM,h=Math.floor(left/60),m=left%60;
+ return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="pill">今天</span><div><small>接下來 ${esc(it.t)}</small><b>${esc(it.n)}</b><span>還有 ${h?h+" 小時 ":""}${m} 分鐘</span></div><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+}
 function dayBodyHTML(){
- const x=DAYS[dayIdx],w=wxFor(x);
- return `<section class="banner"><div class="top"><svg class="art" viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)">${SCENES[x.art]}</g></svg><div class="ttl"><div class="when">${x.d}（${x.w}）</div><h2>${esc(x.title)}</h2>
+ const x=DAYS[dayIdx],w=wxFor(x),stat=dayIdx===todayIdx?dayStatus(x):null;
+ return `<section class="banner"><div class="top"><svg class="art" viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)">${SCENES[x.art]}</g></svg><div class="ttl"><div class="when">${x.d}（${x.w}）${dayIdx===todayIdx?`<span class="today-pill">今天</span>`:dayDate(x)<today?`<span class="past-pill">已結束</span>`:""}</div><h2>${esc(x.title)}</h2>
   <div class="route">${x.route.map(esc).join('<svg><use href="#i-arrow"/></svg>')}</div></div></div>
   <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
+${nowCardHTML(x,stat)}
  ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="note"><svg><use href="#i-bell"/></svg><span>${esc(n)}</span></div>`).join("")}</div>`:""}
- <ol class="tl">${x.items.map(itemHTML).join("")}</ol>${x.sched?schedHTML():""}`;
+ <ol class="tl">${x.items.map((it,i)=>itemHTML(it,i,stat)).join("")}</ol>${x.sched?schedHTML():""}`;
 }
 function dayHTML(){
  return `<header class="bar"><button class="back" data-home><svg><use href="#i-back"/></svg>全部天數</button><span class="right" id="dayCount">第 ${dayIdx+1} 天，共 8 天</span></header>
- <div class="strip"><div class="days" role="tablist" aria-label="選擇日期"><span class="ind" aria-hidden="true"></span>${DAYS.map((d,i)=>`<button class="day-btn${i===todayIdx?" today":""}" role="tab" aria-selected="${i===dayIdx}" data-day="${i}" aria-label="${d.d}（${d.w}）">${chipInner(d,i)}</button>`).join("")}</div></div>
+ <div class="strip"><div class="days" role="tablist" aria-label="選擇日期"><span class="ind" aria-hidden="true"></span>${DAYS.map((d,i)=>`<button class="day-btn${i===todayIdx?" today":""}${dayDate(d)<today?" past":""}" role="tab" aria-selected="${i===dayIdx}" data-day="${i}" aria-label="${d.d}（${d.w}）">${chipInner(d,i)}</button>`).join("")}</div></div>
  <div id="dayBody">${dayBodyHTML()}</div>`;
 }
 function placeInd(anim){
@@ -740,15 +808,38 @@ function renderAcct(){
   return `<div class="day-group"><h4>${esc(d)}${x?`（${x.w}）`:""}<span>${yen(es.reduce((a,e)=>a+e.amt,0))}</span></h4>${es.map(e=>{const c=ECAT.find(z=>z[0]===e.cat)||ECAT[5];const p=PEOPLE.find(z=>z[0]===e.who)||PEOPLE[0];
    return `<div class="ex${editingId===e.id?" editing":""}"${canWrite?` data-edit="${esc(e.id)}" role="button" tabindex="0"`:""}><span class="ic ${c[3]}"><svg><use href="#${c[2]}"/></svg></span><div class="m"><b>${esc(e.note||c[1])}</b><small>${p[1]}付，${e.split==="both"?"兩人平分":"自己的"}${canWrite?"，點一下修改":""}</small></div><div class="a">${yen(e.amt)}${canWrite?`<button type="button" class="del${pendingDel===e.id?" sure":""}" data-del="${esc(e.id)}">${pendingDel===e.id?"確定刪除":"刪除"}</button>`:""}</div></div>`}).join("")}</div>`}).join('<div class="gap"></div>');
 }
-function groupHTML(title,rows,prep){
- const n=rows.filter(r=>done[r[0]]).length;
- return `<div class="group"><h3>${title}<span class="prog">${n} / ${rows.length}</span></h3>${rows.map(r=>`<label class="chk" for="c-${r[0]}"><input type="checkbox" id="c-${r[0]}"${done[r[0]]?" checked":""}${canWrite?"":" disabled"}><div class="txt"><b>${esc(r[1])}</b><small>${esc(r[2])}</small>${prep&&r[4]?`<div class="acts">${r[4].map(l=>ext(l[0],l[1])).join("")}</div>`:""}</div>${prep&&r[3]?`<span class="due">${esc(r[3])}</span>`:""}</label>`).join("")}</div>`;
+function itemForm(g,it){
+ const isNew=!it;it=it||{title:"",note:"",due:""};
+ return `<form class="chk-form" data-group="${g}" data-id="${isNew?"":esc(it.id)}" autocomplete="off">
+  <input class="field" name="title" placeholder="${g==="buy"?"要買什麼？例如：小倉山莊":"要做什麼？例如：換日圓"}" value="${esc(it.title)}" maxlength="40" aria-label="名稱" required>
+  <input class="field" name="note" placeholder="備註（地點、品項…可不填）" value="${esc(it.note||"")}" maxlength="60" aria-label="備註">
+  ${g==="prep"?`<input class="field" name="due" placeholder="期限（例如 11/15 07:05，可不填）" value="${esc(it.due||"")}" maxlength="20" aria-label="期限">`:""}
+  <div class="form-btns"><button class="primary" type="submit">${isNew?"新增":"儲存"}</button><button class="ghost" type="button" data-item-cancel>取消</button>
+  ${isNew?"":`<button class="ghost danger${pendingItemDel===it.id?" sure":""}" type="button" data-item-del="${esc(it.id)}">${pendingItemDel===it.id?"確定刪除":"刪除"}</button>`}</div>
+ </form>`;
+}
+function groupHTML(title,g){
+ const rows=itemsOf(g),n=rows.filter(r=>done[r.id]).length;
+ return `<div class="group"><h3>${title}<span class="prog">${n} / ${rows.length}</span></h3>
+  ${rows.map(r=>editItem===r.id?`<div class="chk editing">${itemForm(g,r)}</div>`:`<div class="chk-row"><label class="chk" for="c-${esc(r.id)}"><input type="checkbox" id="c-${esc(r.id)}"${done[r.id]?" checked":""}${canWrite?"":" disabled"}><div class="txt"><b>${esc(r.title)}</b>${r.note?`<small>${esc(r.note)}</small>`:""}${r.links?`<div class="acts">${r.links.map(l=>ext(l[0],l[1])).join("")}</div>`:""}</div>${r.due?`<span class="due">${esc(r.due)}</span>`:""}</label>${canWrite?`<button class="edit-btn" type="button" data-item-edit="${esc(r.id)}" aria-label="編輯 ${esc(r.title)}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>`:""}</div>`).join("")}
+  ${editItem==="new:"+g?`<div class="chk editing">${itemForm(g,null)}</div>`:(canWrite?`<button class="add-btn" type="button" data-item-new="${g}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>新增一項</button>`:"")}
+ </div>`;
 }
 function listHTML(){
  return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>清單</h1></header>
  ${syncHTML()}
- <div class="stack">${groupHTML("行前待辦",PREP,true)}${groupHTML("要買的",BUY,false)}</div>`;
+ <div class="stack">${groupHTML("行前待辦","prep")}${groupHTML("要買的","buy")}</div>`;
 }
+async function saveItem(it){
+ const i=items.findIndex(x=>x.id===it.id);if(i>=0)items[i]=it;else items.push(it);
+ store.set("items",items);
+ if(db){const {id,...rec}=it;try{await db.doc("items/"+id).set(rec)}catch(_){}}
+}
+async function deleteItem(id){
+ items=items.filter(x=>x.id!==id);store.set("items",items);delete done[id];store.set("done",done);
+ if(db){try{await db.doc("items/"+id).delete();await db.doc("checks/"+id).delete()}catch(_){}}
+}
+function focusItemForm(){const f=app.querySelector(".chk-form input[name=title]");if(f){f.focus({preventScroll:true});f.closest(".chk").scrollIntoView({block:"center",behavior:reduce()?"auto":"smooth"})}}
 
 const scrollMem={};let curKey=null;
 const viewKey=()=>tab==="plan"?"plan-"+view:tab;
@@ -777,11 +868,16 @@ function bindSched(){
 }
 function refresh(){
  if(tab==="acct"){renderAcct();return}
- if(tab==="list"){app.querySelectorAll(".chk input").forEach(i=>{i.checked=!!done[i.id.slice(2)];i.disabled=!canWrite});app.querySelectorAll(".group").forEach((g,k)=>{const rows=k?BUY:PREP;g.querySelector(".prog").textContent=`${rows.filter(r=>done[r[0]]).length} / ${rows.length}`});return}
+ if(tab==="list"){if(editItem)return;render(true);return}
  if(tab==="plan"&&view==="home")render(true);
 }
 
 app.addEventListener("click",e=>{
+ const jp=e.target.closest("[data-jump]");if(jp){const el=document.getElementById("it-"+jp.dataset.jump);if(el){const top=el.getBoundingClientRect().top+scrollY-(app.querySelector(".strip")?.offsetHeight||0)-24;scrollTo({top,behavior:reduce()?"auto":"smooth"});el.classList.remove("ping");void el.offsetWidth;el.classList.add("ping")}return}
+ const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);focusItemForm();return}
+ const inw=e.target.closest("[data-item-new]");if(inw){editItem="new:"+inw.dataset.itemNew;pendingItemDel=null;render(true);focusItemForm();return}
+ if(e.target.closest("[data-item-cancel]")){editItem=null;pendingItemDel=null;render(true);return}
+ const idl=e.target.closest("[data-item-del]");if(idl){const id=idl.dataset.itemDel;if(pendingItemDel!==id){pendingItemDel=id;render(true);clearTimeout(window._pid);window._pid=setTimeout(()=>{if(pendingItemDel===id){pendingItemDel=null;if(tab==="list")render(true)}},3000);return}pendingItemDel=null;editItem=null;deleteItem(id).then(()=>render(true));render(true);return}
  const d=e.target.closest("[data-day]");if(d){const i=+d.dataset.day;if(tab==="plan"&&view==="day"&&d.classList.contains("day-btn")){switchDay(i);return}tab="plan";view="day";dayIdx=i;render();return}
  if(e.target.closest("[data-home]")){const from=dayIdx;view="home";render(false,true);const t=app.querySelector(`.tile[data-day="${from}"]`);if(t){const r=t.getBoundingClientRect();if(r.top<60||r.bottom>innerHeight-110)t.scrollIntoView({block:"center"});t.classList.add("flash");setTimeout(()=>t.classList.remove("flash"),1300)}return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
@@ -801,12 +897,18 @@ app.addEventListener("change",async e=>{
  const t=e.target;
  if(t.id==="f-day"){draft.day=t.value;return}
  if(t.id==="f-rate"){const v=parseFloat(t.value);if(v>0&&v<10){rate=v;store.set("rate",rate);renderAcct();if(db&&canWrite){try{await db.doc("settings/rate").set({jpyTwd:v})}catch(_){}}}else{t.value=rate}return}
- if(!t.matches(".chk input"))return;
+ if(!t.matches(".chk input[type=checkbox]"))return;
  const id=t.id.slice(2);done[id]=t.checked;store.set("done",done);refresh();
  if(db){try{await db.doc("checks/"+id).set({done:t.checked})}catch(err){if(err&&err.code==="invalid_argument"){canWrite=false;render(true)}}}
 });
 app.addEventListener("submit",async e=>{
  e.preventDefault();
+ if(e.target.classList.contains("chk-form")){
+  const f=e.target,g=f.dataset.group,id=f.dataset.id,title=f.title.value.trim();if(!title){f.title.focus();return}
+  const old=items.find(x=>x.id===id);
+  const it={...(old||{}),id:id||("i"+Date.now().toString(36)),group:g,title,note:f.note.value.trim(),due:f.due?f.due.value.trim():"",links:old?old.links||null:null,order:old?old.order:Math.max(0,...items.filter(x=>x.group===g).map(x=>x.order||0))+1};
+  editItem=null;await saveItem(it);render(true);return;
+ }
  if(e.target.id==="code-form"){const v=(document.getElementById("f-code").value||"").trim();if(!v)return;try{localStorage.setItem(TRIP_KEY,v)}catch(_){};syncMsg="connecting";render(true);connect();return}
  const msg=document.getElementById("f-msg"),amt=parseInt(draft.amt,10);
  msg.className="msg";
@@ -840,6 +942,7 @@ if(["wx","move","acct","list"].includes(h))tab=h;
 if(todayIdx>=0){view="day";dayIdx=todayIdx}
 render();
 
+setInterval(()=>{if(tab==="plan"&&view==="day"&&dayIdx===todayIdx){const b=document.getElementById("dayBody");const k=JSON.stringify(dayStatus(DAYS[dayIdx]));if(b&&b.dataset.k!==k){b.dataset.k=k;b.innerHTML=dayBodyHTML();bindSched()}}},30000);
 setInterval(()=>{const el=document.getElementById("cd-s");if(!el)return;const c=cdParts();if(c.ms<=0){render(true);return}
  document.getElementById("cd-d").textContent=c.d;document.getElementById("cd-h").textContent=p2(c.h);document.getElementById("cd-m").textContent=p2(c.m);el.textContent=p2(c.s)},1000);
 
@@ -880,7 +983,7 @@ async function connect(){
   const fbApp=initializeApp(FIREBASE);
   let fs;try{fs=F.initializeFirestore(fbApp,{localCache:F.persistentLocalCache()})}catch(_){fs=F.getFirestore(fbApp)}
   const base=`trips/${code}`;
-  const wrap=r=>({id:r.id,set:d=>F.setDoc(r,d),delete:()=>F.deleteDoc(r),onSnapshot:(n,e)=>F.onSnapshot(r,s=>n({id:s.id,exists:s.exists(),data:()=>s.data()}),e)});
+  const wrap=r=>({id:r.id,get:()=>F.getDoc(r).then(x=>({exists:x.exists(),data:()=>x.data()})),set:d=>F.setDoc(r,d),delete:()=>F.deleteDoc(r),onSnapshot:(n,e)=>F.onSnapshot(r,s=>n({id:s.id,exists:s.exists(),data:()=>s.data()}),e)});
   const fdb={doc:p=>wrap(F.doc(fs,base+"/"+p)),collection:p=>{const c=F.collection(fs,base+"/"+p);return{doc:()=>wrap(F.doc(c)),onSnapshot:(n,e)=>F.onSnapshot(c,s=>n({docs:s.docs.map(d=>({id:d.id,exists:true,data:()=>d.data()}))}),e)}}};
   // 先確認代碼可用
   await F.getDocFromServer(F.doc(fs,base+"/settings/rate")).catch(err=>{if(err&&err.code==="permission-denied")throw err});
@@ -889,6 +992,8 @@ async function connect(){
   const locals=expenses.filter(x=>String(x.id).startsWith("l"));
   for(const x of locals){const {id,...rec}=x;try{await db.collection("expenses").doc().set(rec)}catch(_){}}
   if(locals.length){try{localStorage.removeItem("ngy:exp")}catch(_){}}
+  try{const meta=await db.doc("settings/meta").get();if(!meta.exists||!(meta.data()||{}).itemsSeeded){for(const it of items){const {id,...rec}=it;await db.doc("items/"+id).set(rec)}await db.doc("settings/meta").set({itemsSeeded:true})}}catch(_){}
+  db.collection("items").onSnapshot(snap=>{if(!snap.docs.length)return;items=snap.docs.map(d=>({id:d.id,...d.data()}));store.set("items",items);if(tab!=="acct")refresh()},()=>{});
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
   db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,day:v.day,note:v.note||"",ts:v.ts||0}});if(tab==="acct")renderAcct()},()=>{});
   db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const v=+(s.data()||{}).jpyTwd;if(v>0){rate=v;store.set("rate",v);if(tab==="acct")renderAcct()}}},()=>{});
