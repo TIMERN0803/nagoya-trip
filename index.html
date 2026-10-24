@@ -63,6 +63,16 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .hero .big{flex:none;text-align:right;font-family:var(--f-display);font-weight:900;line-height:.85;font-size:72px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .hero .big small{display:block;font-size:14px;letter-spacing:0;color:var(--brown);margin-top:8px;line-height:1}
 .hero .body.col{flex-direction:column;align-items:stretch;gap:12px}
+.hero.trip .today-row{display:flex;align-items:center;gap:14px;width:100%;padding:14px 16px;border:0;background:none;text-align:left;cursor:pointer;font:inherit;color:inherit}
+.today-row .ta{width:76px;height:76px;flex:none;border-radius:16px;overflow:hidden;display:block}
+.today-row .ta svg{width:100%;height:100%;display:block}
+.today-row .tt{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.today-row small{font-family:var(--f-display);font-weight:700;font-size:13px;color:var(--brown)}
+.today-row .today-pill{margin-left:6px}
+.today-row b{font-family:var(--f-display);font-weight:900;font-size:22px;line-height:1.25}
+.today-row .rt{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.today-row .go{width:18px;height:18px;flex:none;color:var(--brown)}
+.hero.trip .mood-cta,.hero.trip .mood-done{width:calc(100% - 32px);margin:0 16px 16px}
 .cd{display:flex;align-items:flex-end;justify-content:space-between;gap:10px}
 .cd-d{display:flex;align-items:baseline;gap:4px;font-family:var(--f-display);font-weight:900;line-height:.85}
 .cd-d b{font-size:72px;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
@@ -128,7 +138,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .wx .w-meta b{color:var(--ink);font-weight:700}
 
 .notes{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.note{display:flex;gap:10px;align-items:flex-start;background:var(--coral-soft);border:1.5px solid var(--coral-line);border-radius:20px;padding:10px 14px;font-size:14px;color:var(--ink)}
+.note{display:flex;gap:10px;align-items:flex-start;background:var(--coral-soft);border:1.5px solid var(--coral-line);border-radius:20px;padding:10px 14px;font-size:14px;font-weight:700;color:var(--ink)}
 .note svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--coral-ink)}
 
 .tl{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
@@ -165,13 +175,15 @@ a.pic:active{transform:scale(.96)}
 .c-stay{--tb:var(--c-stay-bg);--tc:var(--c-stay)} .c-do{--tb:var(--c-do-bg);--tc:var(--c-do)} .c-buy{--tb:var(--c-buy-bg);--tc:var(--c-buy)} .c-etc{--tb:var(--c-etc-bg);--tc:var(--c-etc)}
 
 .sched-pin{height:0}
-details.sched{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--strip-h,76px));z-index:4;margin:16px 0 18px;background:var(--card);border-radius:20px;overflow:hidden;border:1.5px solid var(--line);box-shadow:var(--shadow);transition:box-shadow .25s ease,border-radius .25s ease}
+details.sched{position:sticky;top:calc(env(safe-area-inset-top,0px) + var(--strip-h,76px));z-index:4;margin:16px 0 18px;background:var(--card);border-radius:20px;border:1.5px solid var(--line);box-shadow:var(--shadow);transition:box-shadow .25s ease}
 details.sched.stuck{border-radius:20px;box-shadow:var(--shadow-float)}
 details.sched summary{transition:padding .25s ease}
 details.sched.stuck summary{padding-block:7px}
 details.sched summary svg.m{transition:width .25s ease,height .25s ease}
 details.sched.stuck summary svg.m{width:42px;height:30px}
-details.sched .sbody{max-height:calc(100dvh - env(safe-area-inset-top,0px) - var(--strip-h,76px) - 200px);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+details.sched[open]{border-bottom-left-radius:0;border-bottom-right-radius:0;box-shadow:var(--shadow-float)}
+details.sched .sbody{position:absolute;left:-1.5px;right:-1.5px;top:100%;background:var(--card);border:1.5px solid var(--line);border-top:0;border-radius:0 0 20px 20px;box-shadow:var(--shadow-float);max-height:60vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+details.sched .sbody>.srow:first-child{border-top-style:solid;border-top-width:1.5px}
 details.sched small.cur{color:var(--mint-ink);font-weight:700}
 .srow.now{box-shadow:inset 4px 0 0 var(--st-now);background:var(--st-now-soft)}
 .srow .flag{margin:0 6px 2px 0;vertical-align:2px}
@@ -307,7 +319,7 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .edit-btn svg{width:19px;height:19px}
 .edit-btn:active{background:var(--sunk)}
 .chk-row .due{margin-right:4px}
-.chk.editing{display:block;background:var(--mint-soft);cursor:auto}
+.chk.editing{display:block;background:var(--accent-soft);cursor:auto}
 .chk-form{display:flex;flex-direction:column;gap:8px}
 .form-btns{display:flex;gap:8px}
 .form-btns>*{flex:1;margin:0!important;padding:10px!important;font-size:15px!important}
@@ -331,15 +343,16 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .item.s-done h3{text-decoration:line-through;text-decoration-thickness:1.5px}
 .item.ping .card{animation:ping 1s ease}
 @keyframes ping{30%{transform:scale(1.02)}}
-.nowcard{width:100%;margin-top:12px;display:flex;align-items:center;gap:12px;text-align:left;border:0;cursor:pointer;background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep);border-radius:20px;padding:14px 16px;font-family:var(--f-body)}
-.nowcard .pill{flex:none;background:#fff;color:var(--accent);font-family:var(--f-display);font-weight:900;font-size:13px;border-radius:8px;padding:3px 10px}
-.nowcard div{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
-.nowcard small{font-size:13px;opacity:.85;font-weight:700}
-.nowcard b{font-family:var(--f-display);font-weight:900;font-size:18px;overflow-wrap:anywhere}
-.nowcard span{font-size:13px;opacity:.9}
-.nowcard .go{width:20px;height:20px;flex:none}
-.nowcard.done{background:var(--mint-soft);color:var(--ink);box-shadow:none;cursor:default}
-.nowcard.done .cats{width:58px;height:40px;flex:none}
+.nowcard{width:100%;margin-top:12px;display:flex;align-items:center;gap:10px;text-align:left;cursor:pointer;background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:16px;padding:9px 12px;font-family:var(--f-body);font-size:14px}
+.nowcard:active{background:var(--sunk)}
+.nowcard .flag{flex:none}
+.nowcard .nt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nowcard .nt b{font-weight:700}
+.nowcard .nl{flex:none;font-size:13px;color:var(--muted)}
+.nowcard .go{width:14px;height:14px;flex:none;color:var(--brown)}
+.nowcard.done{cursor:default;color:var(--muted)}
+.nowcard.done .nt b{color:var(--ink)}
+.nowcard.done .cats{width:40px;height:28px;flex:none}
 .today-pill,.past-pill{display:inline-block;margin-left:8px;font-size:12px;border-radius:8px;padding:1px 9px;vertical-align:1px}
 .today-pill{background:var(--mint-ink);color:#fff}
 .past-pill{background:var(--sunk);color:var(--muted)}
@@ -975,8 +988,8 @@ function heroHTML(){
   const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,next=pl.find(r=>!done[r.id]&&r.due);
   foot=`<button class="chip mint" data-go="list"><svg><use href="#i-check"/></svg>行前待辦 ${n} / ${pl.length}</button>${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
  }else if(todayIdx>=0){
-  const x=DAYS[todayIdx];big=`D${todayIdx+1}<small>${x.d}</small>`;lbl="今天的行程";sub=esc(x.title);
-  foot=`<button class="chip mint" data-day="${todayIdx}">看今天的行程<svg><use href="#i-arrow"/></svg></button>`;moodCta=moodCtaHTML(x,todayIdx);
+  const x=DAYS[todayIdx];
+  return `<section class="hero trip"><button class="today-row" type="button" data-day="${todayIdx}"><span class="ta">${svgTile(x.art)}</span><span class="tt"><small>D${todayIdx+1}・${x.d}（${x.w}）<span class="today-pill">今天</span></small><b>${esc(x.title)}</b><span class="rt">${x.route.map(esc).join(" → ")}</span></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>${moodCtaHTML(x,todayIdx)}</section>`;
  }else{big="完<small>旅程結束</small>";lbl="下次再一起出發";sub="記帳、清單和心情都還留著";foot=`<button class="chip mint" data-mood-day="0">回顧我們的心情<svg><use href="#i-arrow"/></svg></button>`;}
  return `<section class="hero">${HERO}${cd?`<div class="body col">${cd}<div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="lbl">${lbl}</div><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${foot?`<div class="foot">${foot}</div>`:""}${moodCta}</section>`;
 }
@@ -1107,9 +1120,9 @@ function schedHTML(stat){
 const chipInner=(d,i)=>`<small>${i===todayIdx?"今天":d.w}</small>${i===dayIdx?`<svg class="dh" aria-hidden="true"><use href="#head-${i%2?"b":"w"}"/></svg>`:`<b>${d.d.split("/")[1]}</b>`}`;
 function nowCardHTML(x,stat){
  if(!stat)return"";
- if(stat.next<0){const mv=me&&moods[mk(x.d,me)];return mv?`<div class="nowcard done"><svg class="cats" aria-hidden="true"><use href="#cats"/></svg><div><b>今天的行程都走完了</b><span>好好休息，明天見</span></div></div>`:`<button class="nowcard" type="button" data-scroll-mood><span class="pill">今天</span><div><small>行程都走完了</small><b>寫今天的心情</b><span>${esc(moodHint(x))}</span></div><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
+ if(stat.next<0){const mv=me&&moods[mk(x.d,me)];return mv?`<div class="nowcard done"><svg class="cats" aria-hidden="true"><use href="#cats"/></svg><span class="nt"><b>今天的行程都走完了</b>，好好休息</span></div>`:`<button class="nowcard" type="button" data-scroll-mood><span class="flag next">都走完了</span><span class="nt"><b>寫今天的心情</b></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
  const it=x.items[stat.next],left=tmin(it.t)-stat.nowM,h=Math.floor(left/60),m=left%60;
- return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="pill">今天</span><div><small>接下來 ${esc(it.t)}</small><b>${esc(it.n)}</b><span>還有 ${h?h+" 小時 ":""}${m} 分鐘</span></div><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+ return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="flag next">接下來</span><span class="nt"><b>${esc(it.t)} ${esc(it.n)}</b></span><span class="nl">${h?h+" 小時 ":""}${m} 分後</span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 function dayBodyHTML(){
  const x=DAYS[dayIdx],w=wxFor(x),stat=dayIdx===todayIdx?dayStatus(x):null;
@@ -1366,14 +1379,18 @@ function topGap(){const st=app.querySelector(".strip")?.offsetHeight||0,d=docume
 function syncStrip(){const st=app.querySelector(".strip");if(st)document.documentElement.style.setProperty("--strip-h",st.offsetHeight+"px");pinCheck()}
 function pinCheck(){const d=document.getElementById("sched"),pin=app.querySelector(".sched-pin");if(!d||!pin)return;const top=parseFloat(getComputedStyle(d).top)||0;d.classList.toggle("stuck",pin.getBoundingClientRect().top+16<top)}
 let pinRaf=0;addEventListener("scroll",()=>{if(!pinRaf)pinRaf=requestAnimationFrame(()=>{pinRaf=0;pinCheck()})},{passive:true});addEventListener("resize",syncStrip);
+function fitSched(d,body){const nav=document.querySelector("nav.tabs .in");const bottom=nav?nav.getBoundingClientRect().top:innerHeight;body.style.maxHeight=Math.max(220,bottom-d.getBoundingClientRect().bottom-12)+"px"}
+function closeSched(){const d=document.getElementById("sched");if(d&&d.open&&!d.dataset.busy)d.querySelector("summary").click()}
+document.addEventListener("pointerdown",e=>{const d=document.getElementById("sched");if(d&&d.open&&!d.contains(e.target)&&!e.target.closest("nav.tabs"))closeSched()},true);
 function bindSched(){
  const d=document.getElementById("sched");if(!d)return;const sum=d.querySelector("summary"),body=d.querySelector(".sbody");
  sum.addEventListener("click",e=>{
   e.preventDefault();if(d.dataset.busy)return;
   const opening=!d.open;store.set("schedOpen",opening);
-  if(reduce()||!body.animate){d.open=opening;const nw=opening&&body.querySelector(".srow.now");if(nw)body.scrollTop=Math.max(0,nw.offsetTop-body.offsetTop-44);return}
+  if(opening){const top=parseFloat(getComputedStyle(d).top)||0,dt=d.getBoundingClientRect().top;if(dt>top+2)scrollTo(0,scrollY+dt-top);pinCheck();fitSched(d,body)}
+  if(reduce()||!body.animate){d.open=opening;if(opening){const nw=body.querySelector(".srow.now");if(nw)body.scrollTop=Math.max(0,nw.getBoundingClientRect().top-body.getBoundingClientRect().top-44)}return}
   d.dataset.busy=1;
-  if(opening){d.open=true;const nw=body.querySelector(".srow.now");if(nw)body.scrollTop=Math.max(0,nw.offsetTop-body.offsetTop-44);const h=body.offsetHeight;body.animate([{height:"0px",opacity:0},{height:h+"px",opacity:1}],{duration:260,easing:"cubic-bezier(.2,.8,.2,1)"}).finished.then(()=>delete d.dataset.busy)}
+  if(opening){d.open=true;const nw=body.querySelector(".srow.now");if(nw)body.scrollTop=Math.max(0,nw.getBoundingClientRect().top-body.getBoundingClientRect().top-44);const h=body.offsetHeight;body.animate([{height:"0px",opacity:0},{height:h+"px",opacity:1}],{duration:260,easing:"cubic-bezier(.2,.8,.2,1)"}).finished.then(()=>delete d.dataset.busy)}
   else{const h=body.offsetHeight;body.animate([{height:h+"px",opacity:1},{height:"0px",opacity:0}],{duration:200,easing:"ease-in"}).finished.then(()=>{d.open=false;delete d.dataset.busy})}
  });
 }
