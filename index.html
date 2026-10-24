@@ -16,7 +16,7 @@
 /* ===== 遊戲化首頁：粗外框、貼紙陰影、收藏卡片（先套用在首頁） ===== */
 :root{--ol:#8C6D55;--butter:#F6D58A;--butter-soft:#FCEFC6;--pop:0 4px 0 var(--ol);--lift:0 3px 0 var(--ol)}
 .g-home{--olw:2.5px;position:relative}
-.g-home::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.55;background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23E3D3BE' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M14 22q6-8 12 0t12 0'/%3E%3Ccircle cx='92' cy='26' r='5'/%3E%3Cpath d='M70 92l6 6m0-6l-6 6'/%3E%3Cpath d='M18 88q4 10 14 4'/%3E%3C/g%3E%3Cg fill='%23E9DBC8'%3E%3Ccircle cx='96' cy='78' r='5'/%3E%3Ccircle cx='89' cy='70' r='2.6'/%3E%3Ccircle cx='96' cy='67' r='2.6'/%3E%3Ccircle cx='103' cy='70' r='2.6'/%3E%3Ccircle cx='50' cy='56' r='2.4'/%3E%3C/g%3E%3C/svg%3E") repeat}
+
 /* HUD */
 .g-home .hud{display:flex;align-items:center;gap:10px;min-height:56px;padding-top:2px}
 .hud-badge{width:52px;height:52px;flex:none;border-radius:50%;background:var(--butter);border:var(--olw) solid var(--ol);box-shadow:0 3px 0 var(--ol);display:grid;place-items:center;overflow:hidden}
@@ -66,16 +66,16 @@
 .g-home .sheet-head h2{font-size:20px}
 /* 內層選項：不加外框，用底色區分（外層卡片才有粗外框） */
 .g-home .grid{gap:10px 8px}
-.g-home .tile{background:var(--sunk);border-radius:18px;padding:6px 6px 8px;gap:5px;transition:transform .08s,background .15s}
+.g-home .tile{background:none;padding:0;gap:4px;transition:transform .08s}
 .g-home .tile:active{transform:scale(.96)}
-.g-home .tile .art{border-radius:13px}
+.g-home .tile .art{border-radius:16px}
 .g-home .tile:active .art{transform:none}
 .g-home .tile b{font-size:13.5px;line-height:1.25}
 .g-home .tile small{margin-top:-4px}
-.g-home .tile.today{background:var(--butter)}
-.g-home .tile.today .art{outline:0}
+.g-home .tile.today{background:none}
+.g-home .tile.today .art{outline:3.5px solid var(--butter);outline-offset:2px}
 .g-home .tile.today small{color:var(--ol)}
-.g-home .tile.past{opacity:1;background:#F4EEE6}
+.g-home .tile.past{opacity:1}
 .g-home .tile.past b,.g-home .tile.past small{color:var(--muted)}
 .g-home .tile-pill{left:6px;top:6px}
 .g-home .tile-done{box-shadow:none;background:var(--card)}
@@ -88,6 +88,7 @@
 .g-home .rm-row.cal:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
 .g-home .rm-ic{background:var(--card)}
 .g-home .rm-row.cal .rm-ic{background:rgba(255,255,255,.2)}
+
 /* 浮動按鈕跟著首頁風格 */
 .fab{border:2.5px solid var(--ol);box-shadow:0 4px 0 var(--ol),0 10px 20px -6px rgba(63,49,39,.35)}
 .fab .fh{border:2px solid var(--ol);background:var(--butter)}
@@ -671,6 +672,54 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
 @keyframes flash{0%,100%{outline-color:transparent}30%{outline-color:var(--accent)}}
 .tile.flash .art{outline:3px solid transparent;outline-offset:2px;animation:flash 1.2s ease}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+/* ===== 全站遊戲風格：外層卡片淺棕外框＋同色陰影；能按的加厚；內層選項只用底色 ===== */
+body{background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23E3D3BE' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M14 22q6-8 12 0t12 0'/%3E%3Ccircle cx='92' cy='26' r='5'/%3E%3Cpath d='M70 92l6 6m0-6l-6 6'/%3E%3Cpath d='M18 88q4 10 14 4'/%3E%3C/g%3E%3Cg fill='%23E9DBC8'%3E%3Ccircle cx='96' cy='78' r='5'/%3E%3Ccircle cx='89' cy='70' r='2.6'/%3E%3Ccircle cx='96' cy='67' r='2.6'/%3E%3Ccircle cx='103' cy='70' r='2.6'/%3E%3Ccircle cx='50' cy='56' r='2.4'/%3E%3C/g%3E%3C/svg%3E") repeat;background-size:120px 120px}
+.bar{min-height:52px}
+.bar .logo{width:44px;height:44px;padding:9px 4px 3px;border-radius:50%;background:var(--butter);border:2.5px solid var(--ol);box-shadow:0 3px 0 var(--ol);box-sizing:border-box}
+.bar h1{font-size:22px}
+.bar .back{border:2.5px solid var(--ol);box-shadow:0 3px 0 var(--ol);transition:transform .08s,box-shadow .08s}
+.bar .back:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+.days{border:2.5px solid var(--ol);box-shadow:0 3px 0 var(--ol)}
+.days .ind{background:var(--butter);box-shadow:none}
+.day-btn[aria-selected="true"] small,.day-btn[aria-selected="true"] b{color:var(--ink)}
+.banner,.box,.group,.mood,.item .card,details.sched,.sheet{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol)}
+.banner{border-radius:26px}
+.item.s-done .card{border-color:var(--line-strong);box-shadow:none}
+.item.s-next .card{border:2.5px solid var(--mint-ink);box-shadow:0 3px 0 var(--mint-ink)}
+.item.s-now .card{border:2.5px solid var(--st-now);box-shadow:0 3px 0 #D9A52C}
+details.sched[open]{box-shadow:0 3px 0 var(--ol)}
+details.sched .sbody{border:2px solid var(--ol);border-top:0;left:-2px;right:-2px;box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
+details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
+.nowcard{border:2.5px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:18px;transition:transform .08s,box-shadow .08s}
+.nowcard:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol);background:var(--card)}
+.nowcard.done{border-color:var(--line-strong);box-shadow:none}
+.note,.alert{border-width:2px}
+.illo{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:26px}
+.src{border-radius:999px}
+.tip{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);background:var(--butter-soft)}
+.sync{border:2px solid var(--ol);box-shadow:0 2px 0 var(--ol)}
+.primary{border:2.5px solid var(--ol);box-shadow:0 4px 0 var(--ol)}
+.primary:active:not(:disabled){transform:translateY(2px);box-shadow:0 2px 0 var(--ol)}
+.primary:disabled{border-color:var(--line-strong);box-shadow:none}
+.ghost{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol)}
+.ghost:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+.ghost.danger{border-color:var(--coral-ink);box-shadow:0 3px 0 var(--coral-ink)}
+.add-btn{border:2px dashed var(--line-strong);background:var(--sunk);border-radius:16px}
+.pick{border:0;background:var(--sunk)}
+.pick[aria-pressed="true"]{background:var(--tb,var(--butter));color:var(--tc,var(--ink));box-shadow:inset 0 0 0 2px var(--tc,var(--ol))}
+.pick.who[aria-pressed="true"]{background:var(--butter);color:var(--ink);border:0;box-shadow:inset 0 0 0 2px var(--ol)}
+.form .amt{border:2px solid var(--line-strong);background:var(--sunk)}
+.field{border:1.5px solid var(--line-strong)}
+.fbtn.on{background:var(--butter);border-color:transparent}
+.chip{background:var(--sunk)}
+.chip.coral{box-shadow:inset 0 0 0 2px var(--coral-line)}
+.sm-card{border:2.5px solid var(--ol);border-bottom:0}
+.sm-opt{border:0;background:var(--sunk)}
+.sm-opt.main{border:2.5px solid var(--ol);box-shadow:0 3px 0 var(--ol)}
+.toast{border:2.5px solid var(--ol);box-shadow:0 4px 0 var(--ol),0 12px 24px -8px rgba(63,49,39,.35)}
+.leg a:active{background:var(--sunk)}
+.chk.editing,.ex.editing{background:var(--butter-soft)}
+.switch.on{background:var(--accent)}
 </style>
 </head>
 <body>
