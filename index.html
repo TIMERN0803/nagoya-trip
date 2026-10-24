@@ -1554,7 +1554,7 @@ function packRowHTML(r){
   <span class="pk-btns">${PEOPLE.map(p=>{const on=!!done[packKey(r.id,p[0])],mine=!me||p[0]===me;return `<button type="button" class="pk${on?" on":""}${mine?"":" other"}" ${mine&&canWrite?`data-pack="${esc(r.id)}" data-who="${p[0]}"`:"disabled"} aria-pressed="${on}" aria-label="${p[1]}${on?"已裝好":"還沒裝"}：${esc(r.title)}"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg><i></i></button>`}).join("")}</span></div>
   ${canWrite?`<button class="edit-btn" type="button" data-item-edit="${esc(r.id)}" aria-label="編輯 ${esc(r.title)}">${EDIT_SVG}</button>`:""}</div>`;
 }
-let listSub=null,packTodo=(()=>{try{return localStorage.getItem("ngy:packTodo")==="1"}catch(_){return false}})();
+let focusItem=null,focusUntil=0,listSub=null,packTodo=(()=>{try{return localStorage.getItem("ngy:packTodo")==="1"}catch(_){return false}})();
 function packPageHTML(){
  const rows=itemsOf("pack"),mineDone=r=>me&&done[packKey(r.id,me)];
  const groups=PCATS.map(([c,n])=>[c,n,rows.filter(r=>(r.cat||"etc")===c)]).filter(g=>g[2].length);
@@ -1723,6 +1723,7 @@ function render(keep,restore){
  placeInd(false);
  if(tab==="acct")renderAcct();
  bindSched();syncStrip();updateFab();
+ if(tab==="list"&&focusItem&&Date.now()<focusUntil){const id=focusItem;requestAnimationFrame(()=>{const cb=document.getElementById("c-"+id),row=cb&&cb.closest(".chk-row");if(!row)return;const rt=row.getBoundingClientRect().top;if(rt<100||rt>innerHeight*.45)scrollTo(0,rt+scrollY-110);row.classList.add("ping")})}
  scrollTo(0,keep?y:(restore?(scrollMem[curKey]||0):0));
 }
 function topGap(){const st=app.querySelector(".strip")?.offsetHeight||0,d=document.getElementById("sched");if(!d)return st;if(d.open){d.open=false;store.set("schedOpen",false)}return st+d.querySelector("summary").offsetHeight}
@@ -1776,7 +1777,7 @@ app.addEventListener("click",e=>{
  if(e.target.closest("[data-pack-open]")){listSub="pack";editItem=null;render();return}
  if(e.target.closest("[data-pack-close]")){listSub=null;editItem=null;render(false,true);return}
  if(e.target.closest("[data-pack-todo]")){packTodo=!packTodo;try{localStorage.setItem("ngy:packTodo",packTodo?"1":"0")}catch(_){};render(true);return}
- const gi=e.target.closest("[data-go-item]");if(gi){const id=gi.dataset.goItem;tab="list";listSub=null;editItem=null;render();requestAnimationFrame(()=>{const cb=document.getElementById("c-"+id),row=cb&&cb.closest(".chk-row");if(!row)return;const top=row.getBoundingClientRect().top+scrollY-110;scrollTo({top,behavior:reduce()?"auto":"smooth"});row.classList.remove("ping");void row.offsetWidth;row.classList.add("ping")});return}
+ const gi=e.target.closest("[data-go-item]");if(gi){focusItem=gi.dataset.goItem;focusUntil=Date.now()+2500;tab="list";listSub=null;editItem=null;render();return}
  const pkb=e.target.closest("[data-pack]");if(pkb){const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);if(db)db.doc("checks/"+k).set({done:v}).catch(()=>{});return}
  const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);if(db)db.doc("checks/"+id).set({done:true}).catch(()=>{});return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
