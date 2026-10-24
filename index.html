@@ -36,7 +36,7 @@
 .g-home .hero{border:2px solid var(--ol);border-radius:26px;box-shadow:var(--lift);margin-top:12px;overflow:visible}
 .g-home .scene-wrap{position:relative;border-bottom:2px solid var(--ol);border-radius:24px 24px 0 0;overflow:hidden}
 .g-home .hero .scene{border-radius:0}
-.g-home .plaque{position:absolute;left:50%;bottom:10px;transform:translateX(-50%) rotate(-1.5deg);max-width:86%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--card);border:var(--olw) solid var(--ol);border-radius:14px;box-shadow:0 3px 0 var(--ol);padding:5px 16px 6px;font-family:var(--f-display);font-weight:900;font-size:17px;color:var(--ink)}
+.g-home .plaque{position:absolute;left:14px;bottom:10px;transform:rotate(-2deg);max-width:58%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--card);border:var(--olw) solid var(--ol);border-radius:14px;box-shadow:0 3px 0 var(--ol);padding:5px 16px 6px;font-family:var(--f-display);font-weight:900;font-size:17px;color:var(--ink)}
 .g-home .plaque::before,.g-home .plaque::after{content:"";position:absolute;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:var(--butter);border:1.5px solid var(--ol)}
 .g-home .plaque::before{left:6px}.g-home .plaque::after{right:6px}
 .g-home .hero .body{padding:16px 18px 6px}
@@ -652,6 +652,12 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
 .anim .tail.l{transform-origin:100% 100%;animation-name:tailL;animation-duration:3.2s}
 .anim .arm{transform-box:fill-box;transform-origin:0% 100%;animation:wave 4.8s ease-in-out infinite}
 .drift{animation:drift 14s ease-in-out infinite alternate}
+.stars .tw{animation:twinkle 2.6s ease-in-out infinite}.stars .t1{animation-delay:-.9s}.stars .t2{animation-delay:-1.7s}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.35}}
+.zzz text{animation:zz 3s ease-in-out infinite}.zzz .z2{animation-delay:-1.5s}
+@keyframes zz{0%{opacity:0;transform:translateY(4px)}30%,70%{opacity:1}100%{opacity:0;transform:translateY(-8px)}}
+.hero-cats.sleeping .cat-a,.hero-cats.sleeping .cat-b{animation-duration:5s}
+@media (prefers-reduced-motion:reduce){.stars .tw,.zzz text{animation:none}}
 .drift.d2{animation-duration:18s;animation-direction:alternate-reverse}
 .hero-cats.hop .cat-a{animation:hop .55s cubic-bezier(.3,1.5,.5,1)}
 .hero-cats.hop .cat-b{animation:hop .55s .08s cubic-bezier(.3,1.5,.5,1)}
@@ -727,7 +733,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
   <defs id="defs">
-    <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFE2F0"/><stop offset="1" stop-color="#EEF8FB"/></linearGradient>
+    <linearGradient id="gSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#BFE2F0"/><stop offset="1" stop-color="#EEF8FB"/></linearGradient><linearGradient id="gNoon" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A9DAF0"/><stop offset="1" stop-color="#FFF4D8"/></linearGradient><linearGradient id="gNight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2E3A66"/><stop offset="1" stop-color="#6D7BA8"/></linearGradient>
     <linearGradient id="gWarm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBDDB7"/><stop offset="1" stop-color="#FFF4E4"/></linearGradient>
     <linearGradient id="gPink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7D3CB"/><stop offset="1" stop-color="#FFF1EC"/></linearGradient>
     <linearGradient id="gMint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CDEBE2"/><stop offset="1" stop-color="#F1FAF6"/></linearGradient>
@@ -782,7 +788,9 @@ document.getElementById("defs").insertAdjacentHTML("beforeend",`<filter id="roug
 function headM(o){
  const s=`stroke="${LN}" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"`;
  const look=o.look||2.4;
- const eye=(x)=>`<ellipse cx="${x}" cy="25" rx="7" ry="6.6" fill="#fff" ${s}/><circle class="pupil" cx="${x+look}" cy="25.6" r="3.4" fill="${LN}"/>`;
+ const eye=o.eyes==="happy"?(x)=>`<path d="M${x-5.5} 27 Q${x} 19.5 ${x+5.5} 27" fill="none" stroke="${LN}" stroke-width="3.2" stroke-linecap="round"/>`
+  :o.eyes==="sleep"?(x)=>`<path d="M${x-5.5} 25 Q${x} 30.5 ${x+5.5} 25" fill="none" stroke="${LN}" stroke-width="3.2" stroke-linecap="round"/>`
+  :(x)=>`<ellipse cx="${x}" cy="25" rx="7" ry="6.6" fill="#fff" ${s}/><circle class="pupil" cx="${x+look}" cy="25.6" r="3.4" fill="${LN}"/>`;
  return `<path d="M15 40 C9 32 10 20 13.5 11 L17.5 1.5 L29.5 12.5 Q35 10.8 40.5 12.5 L52.5 1.5 L56.5 11 C60 20 61 32 55 40 C49 45.5 21 45.5 15 40 Z" fill="${o.fur}" ${s}/>
   <g class="eyes">${eye(27)}${eye(43)}</g>
   <circle cx="${35+look*.5}" cy="33" r="1.8" fill="${o.nose}"/>
@@ -819,12 +827,12 @@ function catInner(o){
   <path d="M20.5 47.5 C15 46.5 10.5 46.5 8.8 49.6 C7.6 52.6 10 55.6 13.2 55 C16 54.4 18.8 53.8 21 53.6" fill="${o.fur}" ${s}/>
   <path d="M48.5 47.5 C54 46 58.5 46 60.4 49.2 C61.8 52.2 59.4 55.4 56.2 54.9 C53.4 54.4 50.6 53.8 48.6 53.6" fill="${o.fur}" ${s}/>`;
  }else{
-  const armR=o.wave?`<g class="arm">${dbl("M47 50 Q55 47 57 37")}</g>`:`<path d="M47 51 Q54 56 52 62 Q48 64 45 59" fill="${o.fur}" ${s}/>`;
+  const armR=o.wave?`<g class="arm">${dbl("M47 50 Q55 47 57 37")}</g>`:o.eat?"":`<path d="M47 51 Q54 56 52 62 Q48 64 45 59" fill="${o.fur}" ${s}/>`;
   bodyPart=`<g class="tail${o.tailL?" l":""}">${dbl(o.tailL?"M19 66 Q4 65 7 49":"M51 66 Q66 65 63 49")}</g>
   <path d="M22 42 C19 52 18 61 20 67 Q35 71 50 67 C52 61 51 52 48 42 Z" fill="${o.fur}" ${s}/>
   <path d="M21.5 63 C17 66 17 74 22.5 75.5 C27.5 76.8 31.5 73.5 32 68.5" fill="${o.fur}" ${s}/><path d="M48.5 63 C53 66 53 74 47.5 75.5 C42.5 76.8 38.5 73.5 38 68.5" fill="${o.fur}" ${s}/>
   <path d="M21.5 72.5 v-2 M25.5 74 v-2 M48.5 72.5 v-2 M44.5 74 v-2" stroke="${LN}" stroke-width="1.8" stroke-linecap="round"/>
-  <path d="M23 51 Q16 56 18 62 Q22 64 25 59" fill="${o.fur}" ${s}/>${armR}`;
+  ${o.eat?"":`<path d="M23 51 Q16 56 18 62 Q22 64 25 59" fill="${o.fur}" ${s}/>`}${armR}`;
  }
  return `<g filter="url(#rough)"${o.walk?` transform="rotate(3 35 70)"`:""}${o.anim?` class="anim ${o.anim}"`:""}>
   <ellipse cx="36" cy="${o.walk?75:77}" rx="${o.walk?27:25}" ry="2.6" fill="#000" opacity=".1"/>
@@ -832,8 +840,14 @@ function catInner(o){
   <path d="M21.5 41 Q35 47 48.5 41 L49 46.5 Q35 52.5 21 46.5 Z" fill="${o.scarf}" ${s} stroke-width="2.6"/>
   <circle cx="35" cy="50.5" r="3" fill="#F4C04A" ${s} stroke-width="2.4"/>
   ${headM(o)}
+  ${o.eat?FOOD[o.eat](s)+`<path d="M22 50 Q20 57 29 57.5" fill="${o.fur}" ${s}/><path d="M48 50 Q50 57 41 57.5" fill="${o.fur}" ${s}/>`:""}
  </g>`;
 }
+/* 中午吃的：天むす飯糰、名古屋炸蝦 */
+const FOOD={
+ onigiri:s=>`<path d="M35 43 L45 58 Q35 61 25 58 Z" fill="#fff" ${s} stroke-width="2.6"/><rect x="29.5" y="53" width="11" height="6" rx="1.5" fill="#2F3B33"/><path d="M33 44 q2-3 5-1" fill="none" stroke="#E98A5B" stroke-width="2.6" stroke-linecap="round"/>`,
+ ebi:s=>`<path d="M26 56 Q34 44 46 44 Q49 46 46 49 Q38 50 31 58 Z" fill="#E7A953" ${s} stroke-width="2.6"/><path d="M46 44 l5-4 M47 47 l6-1" stroke="#E2603F" stroke-width="2.6" stroke-linecap="round"/><path d="M31 53 l2 2 M35 50 l2 2 M39 48 l2 2" stroke="#B9762E" stroke-width="1.6" stroke-linecap="round"/>`
+};
 const W={fur:"#FBFAF5",scarf:"#7CC8B4",nose:LN,tailL:1};
 const B={fur:"#3A3133",scarf:"#EE9479",nose:"#F2A79C",whisk:LN};
 document.getElementById("defs").insertAdjacentHTML("beforeend",
@@ -896,14 +910,28 @@ const SCENES={
   <rect y="98" width="120" height="22" fill="#B5AEBB"/>${use("cats",26,60,68,45)}`
 };
 const svgTile=k=>`<svg viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)">${SCENES[k]}</g></svg>`;
-const HERO=`<svg class="scene" viewBox="2 2 316 166" aria-hidden="true"><g filter="url(#rough)">
-  <rect width="320" height="170" fill="url(#gSky)"/><circle class="ol sun" cx="282" cy="30" r="14" fill="#FCE4A0"/><g class="drift d1">${cloud(60,34,1.2)}</g><g class="drift d2">${cloud(196,24,.9)}</g>
-  <g fill="#D5E3E8"><rect x="14" y="78" width="26" height="60"/><rect x="44" y="64" width="20" height="74"/><rect x="226" y="80" width="22" height="58"/><rect x="290" y="84" width="24" height="54"/></g>
-  <g class="ol" transform="translate(268 24)"><rect x="-2" y="0" width="4" height="14" fill="#C8CED0"/><path d="M-10 14h20l-4 58H-6z" fill="#E1E5E6"/><rect x="-13" y="36" width="26" height="7" rx="1.5" fill="#C8CED0"/><path d="M-16 72h32l8 46h-48z" fill="#D6DCDE"/></g>
-  <path d="M0 132q80-18 160-6t160-4v48H0z" fill="#CFE6BE"/>${castle(112,98,1.3)}
-  ${maple(26,142,"#F2A877",1.1)}${maple(196,146,"#EF8E74",.85)}
-  <rect y="152" width="320" height="18" fill="#B7D9A3"/>
-  </g><g class="hero-cats" data-hop><g class="cat-a"><svg x="188" y="80.7" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible">${catInner({...W,wave:1,anim:"aw"})}</svg></g><g class="cat-b"><svg x="243.4" y="80.7" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible">${catInner({...B,look:-2.4,anim:"ab"})}</svg></g></g></svg>`;
+/* 首頁插圖：早上（原本）、中午（野餐吃天むす和炸蝦）、晚上（蓋被子睡覺） */
+const heroPeriod=()=>{const q=new URLSearchParams(location.search).get("scene");if(q)return q;const h=new Date().getHours();return h>=5&&h<11?"morning":h>=11&&h<17?"noon":"night"};
+function heroSVG(p){
+ const night=p==="night",noon=p==="noon";
+ const sky=night?`<rect width="320" height="170" fill="url(#gNight)"/>`:noon?`<rect width="320" height="170" fill="url(#gNoon)"/>`:`<rect width="320" height="170" fill="url(#gSky)"/>`;
+ const sun=night?`<g class="ol" transform="translate(222 30) rotate(-25)"><path d="M0 -15 A15 15 0 1 0 0 15 A4 15 0 1 1 0 -15 Z" fill="#FCE9A8"/></g><g class="stars" fill="#FCE9A8">${[[40,22],[92,14],[150,30],[178,18],[250,44],[120,48],[20,56],[300,62]].map(([x,y],i)=>`<path class="tw t${i%3}" d="M${x} ${y-3.2}l1 2.2 2.2 1-2.2 1-1 2.2-1-2.2-2.2-1 2.2-1z"/>`).join("")}</g>`
+  :`<circle class="ol sun" cx="${noon?160:282}" cy="${noon?20:30}" r="14" fill="#FCE4A0"/>`;
+ const clouds=night?"":`<g class="drift d1">${cloud(60,34,1.2)}</g><g class="drift d2">${cloud(noon?236:196,24,.9)}</g>`;
+ const city=`<g fill="${night?"#55628A":"#D5E3E8"}"><rect x="14" y="78" width="26" height="60"/><rect x="44" y="64" width="20" height="74"/><rect x="226" y="80" width="22" height="58"/><rect x="290" y="84" width="24" height="54"/></g>${night?`<g fill="#F6D58A">${[[19,86],[29,96],[19,108],[49,72],[55,90],[49,104],[231,90],[239,104],[295,94],[305,108]].map(([x,y])=>`<rect x="${x}" y="${y}" width="4" height="5" rx="1"/>`).join("")}</g>`:""}`;
+ const tower=`<g class="ol" transform="translate(268 24)"><rect x="-2" y="0" width="4" height="14" fill="#C8CED0"/><path d="M-10 14h20l-4 58H-6z" fill="#E1E5E6"/><rect x="-13" y="36" width="26" height="7" rx="1.5" fill="#C8CED0"/><path d="M-16 72h32l8 46h-48z" fill="#D6DCDE"/>${night?`<circle cy="-1" r="2.6" fill="#F28B6B" stroke="none"/><rect x="-11" y="37.5" width="22" height="4" rx="1" fill="#F6D58A" stroke="none"/>`:""}</g>`;
+ const land=`<path d="M0 132q80-18 160-6t160-4v48H0z" fill="#CFE6BE"/>${castle(112,98,1.3)}${maple(26,142,"#F2A877",1.1)}${maple(196,146,"#EF8E74",.85)}<rect y="152" width="320" height="18" fill="#B7D9A3"/>`;
+ const dim=night?`<rect width="320" height="170" fill="#2A3560" opacity=".38"/><g fill="#F6D58A" opacity=".9"><rect x="102" y="106" width="5" height="6" rx="1"/><rect x="114" y="106" width="5" height="6" rx="1"/><rect x="104" y="83" width="4.5" height="5" rx="1"/></g>`:"";
+ const mat=noon?`<g class="ol"><path d="M178 150 Q244 140 314 150 L318 166 Q244 172 174 166 Z" fill="#F6D0C4"/><path d="M196 147v21 M218 145v24 M240 144v25 M262 144v25 M284 145v24 M178 156 Q244 148 316 156 M176 162 Q244 156 317 162" stroke="#E98C76" stroke-width="2.2" fill="none" opacity=".75"/><g transform="translate(244 151)"><rect x="-12" y="-6" width="24" height="12" rx="3" fill="#F4C04A"/><path d="M-12 -1h24" stroke="${LN}" stroke-width="2"/><circle cx="-6" cy="-3" r="2" fill="#E2603F" stroke="none"/><circle cx="1" cy="-3.4" r="2" fill="#8DBF6A" stroke="none"/></g><g transform="translate(298 146)"><path d="M-5 -6h10l-1.5 11h-7z" fill="#B7D9A3"/></g></g>`:"";
+ const cats=night
+  ?`<g class="hero-cats sleeping" data-hop><g class="cat-a"><svg x="194" y="82" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible"><g transform="rotate(9 35 76)">${catInner({...W,eyes:"sleep"})}</g></svg></g><g class="cat-b"><svg x="238" y="82" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible"><g transform="rotate(-9 35 76)">${catInner({...B,eyes:"sleep",look:-2.4})}</g></svg></g>
+    <g class="ol"><path d="M182 172 Q182 136 206 131 Q246 124 290 131 Q316 136 316 172 Z" fill="#F6D58A"/><path d="M190 140 Q246 130 308 140" fill="none" stroke="#FFF3CF" stroke-width="5" stroke-linecap="round"/></g><g fill="#F0BD5A">${[[204,152],[226,146],[250,156],[272,147],[296,155],[238,164],[284,165],[214,165]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="3"/>`).join("")}</g>
+    <g class="zzz" font-family="Zen Maru Gothic,sans-serif" font-weight="900" fill="#FCE9A8" stroke="${LN}" stroke-width="1.2" paint-order="stroke"><text class="z1" x="300" y="86" font-size="13">Z</text><text class="z2" x="310" y="72" font-size="10">z</text></g></g>`
+  :noon
+  ?`<g class="hero-cats" data-hop><g class="cat-a"><svg x="190" y="80.7" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible">${catInner({...W,eyes:"happy",eat:"onigiri",anim:"aw"})}</svg></g><g class="cat-b"><svg x="245" y="80.7" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible">${catInner({...B,eyes:"happy",eat:"ebi",anim:"ab"})}</svg></g></g>`
+  :`<g class="hero-cats" data-hop><g class="cat-a"><svg x="188" y="80.7" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible">${catInner({...W,wave:1,anim:"aw"})}</svg></g><g class="cat-b"><svg x="243.4" y="80.7" width="62.6" height="71.5" viewBox="-4 -6 78 88" overflow="visible">${catInner({...B,look:-2.4,anim:"ab"})}</svg></g></g>`;
+ return `<svg class="scene" viewBox="2 2 316 166" aria-hidden="true" data-period="${p}"><g filter="url(#rough)">${sky}${night?"":sun}${clouds}${city}${tower}${land}${dim}${night?sun:""}${mat}</g>${cats}</svg>`;
+}
 
 const KIND={move:["交通","k-move","c-move"],fly:["航班","k-fly","c-move"],go:["景點","k-go","c-go"],eat:["餐廳","k-eat","c-eat"],stay:["住宿","k-stay","c-stay"],do:["預約","k-do","c-do"],remind:["提醒","k-do","c-do"],buy:["外帶","k-buy","c-buy"]};
 const DAYS=[
@@ -1173,9 +1201,9 @@ function heroHTML(){
   foot=`${next?`<span class="chip coral"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</span>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];
-  return `<section class="hero trip"><div class="scene-wrap">${HERO.replace('<svg class="scene"','<svg class="scene" preserveAspectRatio="xMidYMax slice"')}<div class="plaque">今天的行程</div></div><button class="today-main" type="button" data-day="${todayIdx}"><span class="txt"><span class="ttl">${esc(x.title)}</span><span class="rt">${x.route.map(esc).join(" → ")}</span></span><span class="big">D${todayIdx+1}<small>${x.d}（${x.w}）</small></span></button>${tripBarHTML()}${moodLineHTML(x,todayIdx)}</section>`;
+  return `<section class="hero trip"><div class="scene-wrap">${heroSVG(heroPeriod()).replace('<svg class="scene"','<svg class="scene" preserveAspectRatio="xMidYMax slice"')}<div class="plaque">今天的行程</div></div><button class="today-main" type="button" data-day="${todayIdx}"><span class="txt"><span class="ttl">${esc(x.title)}</span><span class="rt">${x.route.map(esc).join(" → ")}</span></span><span class="big">D${todayIdx+1}<small>${x.d}（${x.w}）</small></span></button>${tripBarHTML()}${moodLineHTML(x,todayIdx)}</section>`;
  }else{big="完<small>旅程結束</small>";lbl="下次再一起出發";sub="記帳、清單和心情都還留著";foot=`<button class="chip mint" data-mood-day="0">回顧我們的心情<svg><use href="#i-arrow"/></svg></button>`;}
- return `<section class="hero"><div class="scene-wrap">${HERO}<div class="plaque">${lbl}</div></div>${cd?`<div class="body col">${cd}<div class="txt"><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${tripBarHTML()}${foot?`<div class="foot">${foot}</div>`:""}${moodCta}</section>`;
+ return `<section class="hero"><div class="scene-wrap">${heroSVG(heroPeriod())}<div class="plaque">${lbl}</div></div>${cd?`<div class="body col">${cd}<div class="txt"><div class="sub">${sub}</div></div></div>`:`<div class="body"><div class="txt"><div class="sub">${sub}</div></div><div class="big">${big}</div></div>`}${tripBarHTML()}${foot?`<div class="foot">${foot}</div>`:""}${moodCta}</section>`;
 }
 function hudHTML(){
  const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,spent=expenses.reduce((a,e)=>a+e.amt,0);
@@ -1555,7 +1583,7 @@ async function toggleNotify(){
  checkReminders();
 }
 setInterval(checkReminders,20000);
-setInterval(()=>{updateFab();if(tab!=="plan"||view!=="home")return;const cur=document.getElementById("due-alerts"),html=dueAlertsHTML();if(cur){if(html)cur.outerHTML=html;else cur.remove()}else if(html){const h=app.querySelector(".hero");if(h)h.insertAdjacentHTML("afterend",html)}},30000);
+setInterval(()=>{updateFab();if(tab!=="plan"||view!=="home")return;const sc=app.querySelector(".hero .scene");if(sc&&sc.dataset.period!==heroPeriod()){render(true);return}const cur=document.getElementById("due-alerts"),html=dueAlertsHTML();if(cur){if(html)cur.outerHTML=html;else cur.remove()}else if(html){const h=app.querySelector(".hero");if(h)h.insertAdjacentHTML("afterend",html)}},30000);
 document.addEventListener("visibilitychange",checkReminders);
 
 const scrollMem={};let curKey=null;
