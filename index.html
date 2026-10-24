@@ -280,6 +280,8 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .form-btns>*{flex:1;margin:0!important;padding:10px!important;font-size:15px!important}
 .ghost.danger{color:var(--coral-ink)}
 .ghost.danger.sure{background:var(--coral-soft);border-color:var(--coral-line)}
+.restore{border:0;background:none;color:var(--muted);font-size:13.5px;font-weight:700;text-decoration:underline;padding:10px;cursor:pointer;font-family:var(--f-body)}
+.restore.sure{color:var(--coral-ink)}
 .add-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:calc(100% - 36px);margin:4px 18px 16px;border:2px dashed var(--line);background:none;border-radius:14px;padding:10px;font-family:var(--f-display);font-weight:700;font-size:14.5px;color:var(--brown);cursor:pointer}
 .add-btn svg{width:18px;height:18px}
 .tagrow{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
@@ -1073,8 +1075,12 @@ function groupHTML(title,g){
 function listHTML(){
  return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>清單</h1></header>
  ${syncHTML()}
- <div class="stack">${groupHTML("行前待辦","prep")}${groupHTML("要買的","buy")}</div>`;
+ <div class="stack">${groupHTML("行前待辦","prep")}${groupHTML("要買的","buy")}
+ ${canWrite&&missingDefaults().length?`<button class="restore${pendingRestore?" sure":""}" type="button" data-restore>${pendingRestore?`確定補回 ${missingDefaults().length} 個原本的項目？`:"補回原本行程文件裡的項目"}</button>`:""}</div>`;
 }
+const missingDefaults=()=>DEFAULT_ITEMS.filter(d=>!items.some(x=>x.id===d.id));
+async function restoreDefaults(){for(const d of missingDefaults())await saveItem({...d})}
+let pendingRestore=false;
 async function saveItem(it){
  const i=items.findIndex(x=>x.id===it.id);if(i>=0)items[i]=it;else items.push(it);
  store.set("items",items);
@@ -1131,6 +1137,7 @@ app.addEventListener("click",e=>{
  const me_=e.target.closest("[data-mood-edit]");if(me_){moodEdit=me_.dataset.moodEdit;moodDraft=null;const sec=document.getElementById("mood");sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);document.getElementById("mood-note")?.focus({preventScroll:true});return}
  if(e.target.closest("[data-mood-cancel]")){pendingMoodDel=false;moodEdit=null;moodDraft=null;document.getElementById("mood").outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
  const jp=e.target.closest("[data-jump]");if(jp){const el=document.getElementById("it-"+jp.dataset.jump);if(el){const top=el.getBoundingClientRect().top+scrollY-(app.querySelector(".strip")?.offsetHeight||0)-24;scrollTo({top,behavior:reduce()?"auto":"smooth"});el.classList.remove("ping");void el.offsetWidth;el.classList.add("ping")}return}
+ if(e.target.closest("[data-restore]")){if(!pendingRestore){pendingRestore=true;render(true);clearTimeout(window._pr);window._pr=setTimeout(()=>{if(pendingRestore){pendingRestore=false;if(tab==="list")render(true)}},3000);return}pendingRestore=false;restoreDefaults().then(()=>render(true));return}
  const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);focusItemForm();return}
  const inw=e.target.closest("[data-item-new]");if(inw){editItem="new:"+inw.dataset.itemNew;pendingItemDel=null;render(true);focusItemForm();return}
  if(e.target.closest("[data-item-cancel]")){editItem=null;pendingItemDel=null;render(true);return}
@@ -1258,8 +1265,10 @@ async function connect(){
   const locals=expenses.filter(x=>String(x.id).startsWith("l"));
   for(const x of locals){const {id,...rec}=x;try{await db.collection("expenses").doc().set(rec)}catch(_){}}
   if(locals.length){try{localStorage.removeItem("ngy:exp")}catch(_){}}
-  try{const meta=await db.doc("settings/meta").get();if(!meta.exists||!(meta.data()||{}).itemsSeeded){for(const it of items){const {id,...rec}=it;await db.doc("items/"+id).set(rec)}await db.doc("settings/meta").set({itemsSeeded:true})}}catch(_){}
-  db.collection("items").onSnapshot(snap=>{if(!snap.docs.length)return;items=snap.docs.map(d=>({id:d.id,...d.data()}));store.set("items",items);if(tab!=="acct")refresh()},()=>{});
+  let firstItems;const gotItems=new Promise(r=>firstItems=r);
+  db.collection("items").onSnapshot(snap=>{items=snap.docs.map(d=>({id:d.id,...d.data()}));store.set("items",items);firstItems();if(tab!=="acct")refresh()},()=>firstItems());
+  /* 一次性：把原本行程文件裡的清單項目補回去（只補缺少的，不動自己新增的） */
+  try{await Promise.race([gotItems,new Promise(r=>setTimeout(r,4000))]);const meta=await db.doc("settings/meta").get();const m=meta.exists?meta.data()||{}:{};if((m.itemsRestore||0)<1){await restoreDefaults();await db.doc("settings/meta").set({...m,itemsSeeded:true,itemsRestore:1})}}catch(_){}
   db.collection("moods").onSnapshot(snap=>{const n={...moods};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{});
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
   db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,day:v.day,note:v.note||"",ts:v.ts||0}});if(tab==="acct")renderAcct()},()=>{});
