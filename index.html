@@ -1131,6 +1131,64 @@ async function deleteItem(id){
 }
 function focusItemForm(){const f=app.querySelector(".chk-form input[name=title]");if(f){f.focus({preventScroll:true});f.closest(".chk").scrollIntoView({block:"center",behavior:reduce()?"auto":"smooth"})}}
 
+/* ---------- 行程提醒：App 開著時，行程前 30 分鐘通知；另提供行事曆檔 ---------- */
+const NOTIFY_KEY="ngy:notify";
+let notifyOn=(()=>{try{return localStorage.getItem(NOTIFY_KEY)==="1"}catch(_){return false}})();
+let notified=store.get("notified")||{};
+const canNotify=()=>"Notification" in window;
+const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent);
+const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+function tzNow(tz){const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date()).map(x=>[x.type,x.value]));return{md:`${+p.month}/${+p.day}`,m:+p.hour*60+ +p.minute,y:+p.year}}
+/* 行程時間以日本時間為準，去程航班以台灣時間為準 */
+function upcoming(){
+ const out=[];
+ DAYS.forEach(x=>x.items.forEach((it,i)=>{const t=tmin(it.t);if(t==null)return;const tz=/^JX 320/.test(it.n)?"Asia/Taipei":"Asia/Tokyo";const n=tzNow(tz);if(n.y!==YEAR||n.md!==x.d)return;const left=t-n.m;if(left>0&&left<=30)out.push({key:`${x.d}-${i}`,it,left,d:x.d,idx:DAYS.indexOf(x)})}));
+ return out;
+}
+function notifyStatus(){
+ if(!notifyOn)return "關閉中";
+ if(!canNotify())return isIOS&&!standalone?"iPhone 要先加到主畫面才能跳通知，目前改用 App 內提示":"這支手機不支援通知，改用 App 內提示";
+ if(Notification.permission==="denied")return "通知被封鎖了，請到手機設定開啟；目前改用 App 內提示";
+ if(Notification.permission!=="granted")return "還沒允許通知，再點一次開啟";
+ return "已開啟：App 開著時，行程前 30 分鐘會跳通知";
+}
+function remindHTML(){
+ return `<section class="sheet remind"><div class="sheet-head"><h2>行程提醒</h2></div>
+  <button class="rm-row" type="button" data-notify><span class="rm-ic"><svg viewBox="0 0 24 24"><use href="#i-bell"/></svg></span><span class="rm-txt"><b>App 內提醒</b><small>${esc(notifyStatus())}</small></span><span class="switch${notifyOn?" on":""}" role="switch" aria-checked="${notifyOn}" aria-label="App 內提醒"><i></i></span></button>
+  <a class="rm-row cal" href="nagoya-trip.ics" target="_blank" rel="noopener"><span class="rm-ic"><svg viewBox="0 0 24 24"><use href="#k-do"/></svg></span><span class="rm-txt"><b>加到手機行事曆</b><small>匯入一次，關掉 App、沒網路也會在 30 分鐘前提醒</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+ </section>`;
+}
+async function showNote(title,body,tag){
+ try{if(canNotify()&&Notification.permission==="granted"){const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg){await reg.showNotification(title,{body,tag,icon:"icon-192.png",badge:"icon-192.png"});return true}new Notification(title,{body,tag,icon:"icon-192.png"});return true}}catch(_){}
+ return false;
+}
+function toast(title,body,idx){
+ let t=document.getElementById("toast");if(t)t.remove();
+ t=document.createElement("button");t.id="toast";t.className="toast";t.type="button";
+ t.innerHTML=`<svg viewBox="0 0 24 24"><use href="#i-bell"/></svg><span><b>${esc(title)}</b><small>${esc(body)}</small></span>`;
+ t.onclick=()=>{t.remove();if(idx!=null){tab="plan";view="day";dayIdx=idx;render()}};
+ document.body.appendChild(t);setTimeout(()=>{t.classList.add("out");setTimeout(()=>t.remove(),300)},9000);
+}
+async function checkReminders(){
+ if(!notifyOn)return;
+ for(const u of upcoming()){
+  if(notified[u.key])continue;notified[u.key]=1;store.set("notified",notified);
+  const title=`${u.left} 分鐘後：${u.it.n}`,body=[u.it.t,u.it.p].filter(Boolean).join("・");
+  const sys=document.visibilityState!=="visible"?await showNote(title,body,u.key):false;
+  if(!sys&&document.visibilityState==="visible")toast(title,body,u.idx);
+ }
+}
+async function toggleNotify(){
+ if(notifyOn){notifyOn=false}
+ else{notifyOn=true;if(canNotify()&&Notification.permission==="default"){try{await Notification.requestPermission()}catch(_){}}
+  if(canNotify()&&Notification.permission==="granted")showNote("行程提醒已開啟","App 開著時，行程前 30 分鐘會通知你","ngy-on");else toast("行程提醒已開啟","App 開著時會在畫面上方提醒",null)}
+ try{localStorage.setItem(NOTIFY_KEY,notifyOn?"1":"0")}catch(_){}
+ const r=app.querySelector(".remind");if(r)r.outerHTML=remindHTML();
+ checkReminders();
+}
+setInterval(checkReminders,20000);
+document.addEventListener("visibilitychange",checkReminders);
+
 const scrollMem={};let curKey=null;
 const viewKey=()=>tab==="plan"?"plan-"+view:tab;
 function render(keep,restore){
@@ -1255,63 +1313,6 @@ if(["wx","move","acct","list"].includes(h))tab=h;
 if(todayIdx>=0){view="day";dayIdx=todayIdx}
 render();
 
-/* ---------- 行程提醒：App 開著時，行程前 30 分鐘通知；另提供行事曆檔 ---------- */
-const NOTIFY_KEY="ngy:notify";
-let notifyOn=(()=>{try{return localStorage.getItem(NOTIFY_KEY)==="1"}catch(_){return false}})();
-let notified=store.get("notified")||{};
-const canNotify=()=>"Notification" in window;
-const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent);
-const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
-function tzNow(tz){const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date()).map(x=>[x.type,x.value]));return{md:`${+p.month}/${+p.day}`,m:+p.hour*60+ +p.minute,y:+p.year}}
-/* 行程時間以日本時間為準，去程航班以台灣時間為準 */
-function upcoming(){
- const out=[];
- DAYS.forEach(x=>x.items.forEach((it,i)=>{const t=tmin(it.t);if(t==null)return;const tz=/^JX 320/.test(it.n)?"Asia/Taipei":"Asia/Tokyo";const n=tzNow(tz);if(n.y!==YEAR||n.md!==x.d)return;const left=t-n.m;if(left>0&&left<=30)out.push({key:`${x.d}-${i}`,it,left,d:x.d,idx:DAYS.indexOf(x)})}));
- return out;
-}
-function notifyStatus(){
- if(!notifyOn)return "關閉中";
- if(!canNotify())return isIOS&&!standalone?"iPhone 要先加到主畫面才能跳通知，目前改用 App 內提示":"這支手機不支援通知，改用 App 內提示";
- if(Notification.permission==="denied")return "通知被封鎖了，請到手機設定開啟；目前改用 App 內提示";
- if(Notification.permission!=="granted")return "還沒允許通知，再點一次開啟";
- return "已開啟：App 開著時，行程前 30 分鐘會跳通知";
-}
-function remindHTML(){
- return `<section class="sheet remind"><div class="sheet-head"><h2>行程提醒</h2></div>
-  <button class="rm-row" type="button" data-notify><span class="rm-ic"><svg viewBox="0 0 24 24"><use href="#i-bell"/></svg></span><span class="rm-txt"><b>App 內提醒</b><small>${esc(notifyStatus())}</small></span><span class="switch${notifyOn?" on":""}" role="switch" aria-checked="${notifyOn}" aria-label="App 內提醒"><i></i></span></button>
-  <a class="rm-row cal" href="nagoya-trip.ics" target="_blank" rel="noopener"><span class="rm-ic"><svg viewBox="0 0 24 24"><use href="#k-do"/></svg></span><span class="rm-txt"><b>加到手機行事曆</b><small>匯入一次，關掉 App、沒網路也會在 30 分鐘前提醒</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
- </section>`;
-}
-async function showNote(title,body,tag){
- try{if(canNotify()&&Notification.permission==="granted"){const reg=navigator.serviceWorker&&await navigator.serviceWorker.getRegistration();if(reg){await reg.showNotification(title,{body,tag,icon:"icon-192.png",badge:"icon-192.png"});return true}new Notification(title,{body,tag,icon:"icon-192.png"});return true}}catch(_){}
- return false;
-}
-function toast(title,body,idx){
- let t=document.getElementById("toast");if(t)t.remove();
- t=document.createElement("button");t.id="toast";t.className="toast";t.type="button";
- t.innerHTML=`<svg viewBox="0 0 24 24"><use href="#i-bell"/></svg><span><b>${esc(title)}</b><small>${esc(body)}</small></span>`;
- t.onclick=()=>{t.remove();if(idx!=null){tab="plan";view="day";dayIdx=idx;render()}};
- document.body.appendChild(t);setTimeout(()=>{t.classList.add("out");setTimeout(()=>t.remove(),300)},9000);
-}
-async function checkReminders(){
- if(!notifyOn)return;
- for(const u of upcoming()){
-  if(notified[u.key])continue;notified[u.key]=1;store.set("notified",notified);
-  const title=`${u.left} 分鐘後：${u.it.n}`,body=[u.it.t,u.it.p].filter(Boolean).join("・");
-  const sys=document.visibilityState!=="visible"?await showNote(title,body,u.key):false;
-  if(!sys&&document.visibilityState==="visible")toast(title,body,u.idx);
- }
-}
-async function toggleNotify(){
- if(notifyOn){notifyOn=false}
- else{notifyOn=true;if(canNotify()&&Notification.permission==="default"){try{await Notification.requestPermission()}catch(_){}}
-  if(canNotify()&&Notification.permission==="granted")showNote("行程提醒已開啟","App 開著時，行程前 30 分鐘會通知你","ngy-on");else toast("行程提醒已開啟","App 開著時會在畫面上方提醒",null)}
- try{localStorage.setItem(NOTIFY_KEY,notifyOn?"1":"0")}catch(_){}
- const r=app.querySelector(".remind");if(r)r.outerHTML=remindHTML();
- checkReminders();
-}
-setInterval(checkReminders,20000);
-document.addEventListener("visibilitychange",checkReminders);
 
 setInterval(()=>{if(tab==="plan"&&view==="day"&&dayIdx===todayIdx){const b=document.getElementById("dayBody");const k=JSON.stringify(dayStatus(DAYS[dayIdx]));if(b&&b.dataset.k!==k){b.dataset.k=k;b.innerHTML=dayBodyHTML();bindSched()}}},30000);
 setInterval(()=>{const el=document.getElementById("cd-s");if(!el)return;const c=cdParts();if(c.ms<=0){render(true);return}
