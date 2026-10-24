@@ -840,7 +840,12 @@ let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
 const mapUrl=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
 const ext=(label,href)=>`<a class="chip" href="${esc(href)}" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg>${esc(label)}</a>`;
 const yen=n=>"¥"+Math.round(n).toLocaleString("en-US");
-const YEAR=2026,start=new Date(YEAR,10,17),now=new Date(),today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+/* 旅程日期一律用日本時間判斷（手機沒切時區也不會錯）；App 開著跨日時自動重新整理 */
+const jpDay=()=>{const p=tzNow("Asia/Tokyo"),[mo,da]=p.md.split("/").map(Number);return new Date(p.y,mo-1,da)};
+const YEAR=2026,start=new Date(YEAR,10,17),today=jpDay();
+const LOADED_DAY=today.getTime();
+function dayCheck(){if(jpDay().getTime()===LOADED_DAY)return false;const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.value)return false;location.reload();return true}
+setInterval(dayCheck,30000);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")dayCheck()});
 const dayDate=x=>{const[m,d]=x.d.split("/").map(Number);return new Date(YEAR,m-1,d)};
 const DEPART=Date.parse("2026-11-17T07:05:00+08:00");
 const diff=Math.round((start-today)/864e5);
@@ -884,7 +889,7 @@ function rerenderMoodSec(){const sec=document.getElementById("mood");if(sec)sec.
 async function deleteMood(d,who){const key=mk(d,who);delete moods[key];store.set("moods",moods);if(db){try{await db.doc("moods/"+key).delete()}catch(_){}}}
 let pendingMoodDel=false;
 function moodHint(x){
- const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])],h=new Date().getHours();
+ const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])],h=Math.floor(tzNow("Asia/Tokyo").m/60);
  if(ov)return `${other[1]}已經寫好了，換你囉`;
  if(h<17)return "今天才剛開始，晚上回飯店記得留一句";
  return "今天過得怎麼樣？選一隻貓、寫一句話";
@@ -1109,7 +1114,7 @@ function picHTML(it){
 const tmin=t=>{const m=/(\d{1,2}):(\d{2})/.exec(t||"");return m?+m[1]*60+ +m[2]:null};
 /* 今天的行程狀態：已過的有時間行程反灰，剛開始 90 分鐘內算「進行中」，下一個有時間的行程標「接下來」 */
 function dayStatus(x){
- const st=x.items.map(()=>""),d=new Date(),nowM=d.getHours()*60+d.getMinutes();
+ const st=x.items.map(()=>""),nowM=tzNow("Asia/Tokyo").m;
  let next=-1;
  x.items.forEach((it,i)=>{const m=tmin(it.t);if(m==null)return;if(m>nowM){if(next<0)next=i}else st[i]=nowM-m<90?"now":"done"});
  if(next>=0)st[next]="next";
@@ -1509,7 +1514,7 @@ render();
 
 
 setInterval(()=>{if(tab==="plan"&&view==="day"&&dayIdx===todayIdx){const b=document.getElementById("dayBody");const k=JSON.stringify(dayStatus(DAYS[dayIdx]));if(b&&b.dataset.k!==k){b.dataset.k=k;b.innerHTML=dayBodyHTML();bindSched();pinCheck()}}},30000);
-setInterval(()=>{const el=document.getElementById("cd-s");if(!el)return;const c=cdParts();if(c.ms<=0){render(true);return}
+setInterval(()=>{const el=document.getElementById("cd-s");if(!el)return;const c=cdParts();if(c.ms<=0){if(todayIdx<0&&jpDay()>=start){location.reload();return}render(true);return}
  document.getElementById("cd-d").textContent=c.d;document.getElementById("cd-h").textContent=p2(c.h);document.getElementById("cd-m").textContent=p2(c.m);el.textContent=p2(c.s)},1000);
 
 /* ---------- 兩人共用：Firebase Firestore（用旅行代碼當門禁） ---------- */
