@@ -1080,11 +1080,26 @@ function listHTML(){
 }
 const missingDefaults=()=>DEFAULT_ITEMS.filter(d=>!items.some(x=>x.id===d.id));
 async function restoreDefaults(){for(const d of missingDefaults())await saveItem({...d})}
+/* 確保原本行程文件裡的項目已經上傳到共用清單：成功寫入後才標記完成，失敗會在下次打開或下次新增時重試 */
+let seededOk=false,seeding=null,itemsReady,serverIds=new Set();const itemsLoaded=new Promise(r=>itemsReady=r);
+function ensureSeeded(){
+ if(!db||seededOk)return Promise.resolve();
+ if(seeding)return seeding;
+ seeding=(async()=>{
+  const meta=await db.doc("settings/meta").get(),m=meta.exists?meta.data()||{}:{};
+  if((m.itemsRestore||0)>=1){seededOk=true;return}
+  await Promise.race([itemsLoaded,new Promise(r=>setTimeout(r,4000))]);
+  for(const d of DEFAULT_ITEMS){if(serverIds.has(d.id))continue;const cur=items.find(x=>x.id===d.id)||d;const {id,...rec}=cur;await db.doc("items/"+id).set(rec)}
+  await db.doc("settings/meta").set({...m,itemsSeeded:true,itemsRestore:1});
+  seededOk=true;
+ })().finally(()=>{seeding=null});
+ return seeding;
+}
 let pendingRestore=false;
 async function saveItem(it){
  const i=items.findIndex(x=>x.id===it.id);if(i>=0)items[i]=it;else items.push(it);
  store.set("items",items);
- if(db){const {id,...rec}=it;try{await db.doc("items/"+id).set(rec)}catch(_){}}
+ if(db){try{await ensureSeeded()}catch(_){};const {id,...rec}=it;try{await db.doc("items/"+id).set(rec)}catch(_){}}
 }
 async function deleteItem(id){
  items=items.filter(x=>x.id!==id);store.set("items",items);delete done[id];store.set("done",done);
@@ -1265,10 +1280,13 @@ async function connect(){
   const locals=expenses.filter(x=>String(x.id).startsWith("l"));
   for(const x of locals){const {id,...rec}=x;try{await db.collection("expenses").doc().set(rec)}catch(_){}}
   if(locals.length){try{localStorage.removeItem("ngy:exp")}catch(_){}}
-  let firstItems;const gotItems=new Promise(r=>firstItems=r);
-  db.collection("items").onSnapshot(snap=>{items=snap.docs.map(d=>({id:d.id,...d.data()}));store.set("items",items);firstItems();if(tab!=="acct")refresh()},()=>firstItems());
-  /* 一次性：把原本行程文件裡的清單項目補回去（只補缺少的，不動自己新增的） */
-  try{await Promise.race([gotItems,new Promise(r=>setTimeout(r,4000))]);const meta=await db.doc("settings/meta").get();const m=meta.exists?meta.data()||{}:{};if((m.itemsRestore||0)<1){await restoreDefaults();await db.doc("settings/meta").set({...m,itemsSeeded:true,itemsRestore:1})}}catch(_){}
+  db.collection("items").onSnapshot(snap=>{
+   /* 原本項目還沒確認上傳前，不讓「伺服器上比較少的清單」蓋掉手機上的清單 */
+   serverIds=new Set(snap.docs.map(d=>d.id));
+   if(!seededOk&&snap.docs.length<items.length){const srv=snap.docs.map(d=>({id:d.id,...d.data()}));items=[...items.filter(x=>!srv.some(y=>y.id===x.id)),...srv]}
+   else items=snap.docs.map(d=>({id:d.id,...d.data()}));
+   store.set("items",items);itemsReady();if(tab!=="acct")refresh()},()=>itemsReady());
+  try{await ensureSeeded()}catch(_){}
   db.collection("moods").onSnapshot(snap=>{const n={...moods};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{});
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
   db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,day:v.day,note:v.note||"",ts:v.ts||0}});if(tab==="acct")renderAcct()},()=>{});
