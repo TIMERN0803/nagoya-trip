@@ -979,6 +979,34 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .coach-next{border:0;border-radius:12px;background:var(--accent);color:#fff;box-shadow:0 2px 0 var(--accent-deep);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14px;height:38px;padding:0 16px;cursor:pointer}
 .su-tour{align-self:center;border:0;background:none;color:var(--accent);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14px;padding:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 @media (prefers-reduced-motion:reduce){.coach-hole,.coach-tip{transition:none;animation:none}}
+
+/* ===== 免稅與退稅清單 ===== */
+.tf-row{margin-top:4px}
+.tf-sw{width:100%;display:flex;align-items:center;gap:10px;padding:10px 12px;border:0;border-radius:16px;background:var(--butter-soft);font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.tf-sw>span:first-child{flex:1;display:flex;flex-direction:column;line-height:1.4}
+.tf-sw b{font-family:var(--f-display);font-weight:900;font-size:15px}
+.tf-sw small{font-size:12.5px;color:var(--muted)}
+.tf-badge{display:inline-block;margin-left:6px;padding:0 7px;border-radius:7px;background:var(--butter);color:var(--ink);font-size:11.5px;font-weight:900;vertical-align:2px;font-family:var(--f-display)}
+.tf-tip{display:flex;gap:8px;align-items:flex-start;margin:0 18px 10px;padding:9px 12px;border-radius:14px;background:var(--butter-soft);font-size:13px;line-height:1.5;color:var(--muted)}
+.tf-tip svg{width:16px;height:16px;flex:none;margin-top:2px;color:var(--brown)}
+.tf-tip b{color:var(--ink)}
+.tf-box h3{margin:0 0 4px;font-size:17px;display:flex;justify-content:space-between;align-items:baseline}
+.tf-box h3 span{font-size:13px;color:var(--muted);font-family:var(--f-display);font-weight:700}
+.tf-sum{display:flex;gap:8px;margin:6px 0 8px}
+.tf-sum div{flex:1;background:var(--paper);border-radius:14px;padding:8px 10px;display:flex;flex-direction:column}
+.tf-sum small{font-size:12px;color:var(--muted)}
+.tf-sum b{font-family:var(--f-display);font-weight:900;font-size:19px;font-variant-numeric:tabular-nums}
+.tf-sum .left b{color:var(--coral-ink)}
+.tf-note{margin:0 0 8px;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tf-item{display:flex;align-items:center;gap:10px;padding:10px 4px;border-top:2px dashed var(--line)}
+.tf-item .m{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
+.tf-item .m b{font-family:var(--f-display);font-weight:900;font-size:15px}
+.tf-item .m small{font-size:12.5px;color:var(--muted)}
+.tf-carry{flex:none;display:flex;align-items:center;gap:6px;height:36px;padding:0 10px 0 6px;border:0;border-radius:12px;background:var(--sunk);font:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer}
+.tf-carry i{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--line-strong);background:var(--card);display:grid;place-items:center}
+.tf-carry[aria-pressed="true"]{background:var(--mint-soft);color:var(--mint-ink)}
+.tf-carry[aria-pressed="true"] i{background:var(--mint-ink);border-color:var(--mint-ink)}
+.tf-carry[aria-pressed="true"] i::after{content:"";width:9px;height:5px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
 </style>
 </head>
 <body>
@@ -1245,7 +1273,8 @@ const DAYS=[
  {d:"11/24",w:"二",title:"回家",place:"回家",art:"home",wx:["名古屋",16,7],route:["名古屋車站","中部國際機場","台中"],
   notes:["06:30 要搭車，07:40 到機場"],items:[
    {t:"06:30",k:"move",n:"名古屋車站搭名鐵往機場"},
-   {t:"07:40",k:"fly",n:"抵達中部國際機場",p:"辦理登機",map:"中部国際空港"},
+   {t:"07:40",k:"fly",n:"抵達中部國際機場",p:"先辦退稅，再辦登機和託運",map:"中部国際空港"},
+   {t:"07:45",k:"remind",n:"先辦退稅，再託運",p:"免稅品帶在身上，到退稅機出示護照",tf:1},
    {t:"11:40",k:"fly",n:"JX 321 名古屋 → 台中",p:"14:20 抵達，結束開心的旅程"}]}
 ];
 const SCHED=[
@@ -1300,6 +1329,8 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("ngy:"+k,JSON.stringify(v))}catch(e){}}};
 let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
 let setupSheet=null,suRunning=false;
+const TF_MIN=5000,tfRefund=a=>Math.floor(a*10/110);
+const TF_TIP=`<div class="tf-tip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="7.5" cy="8.5" r="1.6" fill="currentColor"/></svg><span><b>免稅</b>：同一家店同一天稅前滿 ¥5,000，要帶護照。記帳時打開「免稅」就會列進退稅清單。</span></div>`;
 const SETUP=[
  ["home","加到主畫面","iPhone：Safari 分享 → 加入主畫面；Android：Chrome 選單 → 安裝應用程式。之後從主畫面圖示打開","auto"],
  ["me","選好「我是誰」","記帳、錢包和心情才會記在對的人身上","auto"],
@@ -1466,12 +1497,12 @@ function openViewer(src,alt){
 let pendingDel=null,editingId=null;
 function startEdit(id){
  const e=expenses.find(x=>x.id===id);if(!e)return;editingId=id;pendingDel=null;
- draft={amt:String(e.amt),cat:e.cat||"etc",who:e.who||"zhang",split:e.split||"both",pay:e.pay||"card",day:e.day||"11/17",note:e.note||""};
+ draft={amt:String(e.amt),cat:e.cat||"etc",who:e.who||"zhang",split:e.split||"both",pay:e.pay||"card",day:e.day||"11/17",note:e.note||"",tf:!!e.tf};
  render(true);
  document.getElementById("acct-form").scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});
  document.getElementById("f-msg").textContent="正在修改這筆，改好後按「更新這筆」";
 }
-function stopEdit(){editingId=null;draft.amt="";draft.note="";render(true)}
+function stopEdit(){editingId=null;draft.amt="";draft.note="";draft.tf=false;render(true)}
 const app=document.getElementById("app");
 
 function wxFor(x){
@@ -1621,6 +1652,7 @@ function itemHTML(it,i,stat){
  const[kl,ki,kc]=KIND[it.k];const acts=[];const s=stat?stat.st[i]:"";
  if(it.map&&it.img)acts.push(`<a class="chip" href="${mapUrl(it.map)}" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>地圖</a>`);
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
+ if(it.tf)acts.push(`<button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button>`);
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
   <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
@@ -1738,10 +1770,12 @@ function acctHTML(){
   <span class="l">怎麼付</span><div class="picks" data-pick="pay"><button type="button" class="pick" data-v="cash" aria-pressed="${draft.pay==="cash"}"><svg><use href="#i-cash"/></svg>現金</button><button type="button" class="pick" data-v="card" aria-pressed="${draft.pay==="card"}"><svg><use href="#i-card"/></svg>刷卡</button></div>
   <div class="row2"><div><label class="l" for="f-day">日期</label><select class="field" id="f-day">${DAYS.map(x=>`<option value="${x.d}"${draft.day===x.d?" selected":""}>${x.d}（${x.w}）</option>`).join("")}</select></div>
    <div><label class="l" for="f-note">備註</label><input class="field" id="f-note" placeholder="例如：鰻魚飯" value="${esc(draft.note)}" maxlength="40"></div></div>
+  <div class="tf-row" id="f-tf-row"${(+draft.amt||0)>=TF_MIN?"":" hidden"}><button type="button" class="tf-sw" data-tf-toggle aria-pressed="${!!draft.tf}"><span><b>這筆要辦免稅</b><small>同一家店、同一天，稅前滿 ¥5,000。店名記在備註</small></span><span class="switch${draft.tf?" on":""}" aria-hidden="true"><i></i></span></button></div>
   <button class="primary" id="f-save" type="submit"${canWrite?"":" disabled"}>${editingId?"更新這筆":"記下這筆"}</button>
   <button class="ghost" id="f-cancel" type="button"${editingId?"":" hidden"}>取消修改</button>
   <div class="msg${canWrite?"":" err"}" id="f-msg" role="status">${canWrite?"":"你可以看，但沒有記帳權限"}</div>
  </form>
+ <div class="box tf-box" id="tf-list" hidden></div>
  <div class="box" id="acct-list"></div></div>`;
 }
 /* header 上的「我的現金」入口：錢包插畫＋餘額 */
@@ -1788,7 +1822,7 @@ function openWallet(){
 let walletMode="set";
 async function saveWallet(w,val){wallet={...wallet,[w]:{...(wallet[w]||{}),cashIn:val,ts:Date.now()}};store.set("wallet",wallet);if(db){try{await db.doc("wallet/"+w).set(wallet[w])}catch(_){}}}
 function renderAcct(){
- const sum=document.getElementById("acct-sum"),list=document.getElementById("acct-list");if(!sum)return;
+ const sum=document.getElementById("acct-sum"),list=document.getElementById("acct-list");if(!sum)return;renderTf();
  const wc=document.querySelector(".wchip");if(wc)wc.outerHTML=walletChip();
  const total=expenses.reduce((a,e)=>a+e.amt,0);
  const byCat=ECAT.map(c=>[c,expenses.filter(e=>e.cat===c[0]).reduce((a,e)=>a+e.amt,0)]).filter(x=>x[1]>0);
@@ -1804,7 +1838,7 @@ function renderAcct(){
  const days=[...new Set(expenses.map(e=>e.day))].sort((a,b)=>b.localeCompare(a));
  list.innerHTML=days.map(d=>{const es=expenses.filter(e=>e.day===d).sort((a,b)=>(b.ts||0)-(a.ts||0));const x=DAYS.find(z=>z.d===d);
   return `<div class="day-group"><h4>${esc(d)}${x?`（${x.w}）`:""}<span>${yen(es.reduce((a,e)=>a+e.amt,0))}</span></h4>${es.map(e=>{const c=ECAT.find(z=>z[0]===e.cat)||ECAT[5];const p=PEOPLE.find(z=>z[0]===e.who)||PEOPLE[0];
-   return `<div class="ex${editingId===e.id?" editing":""}"${canWrite?` data-edit="${esc(e.id)}" role="button" tabindex="0"`:""}><span class="ic ${c[3]}"><svg><use href="#${c[2]}"/></svg></span><div class="m"><b>${esc(e.note||c[1])}</b><small>${p[1]}${e.pay==="cash"?"付現":e.pay==="card"?"刷卡":"付"}，${e.split==="both"?"兩人平分":"自己的"}${canWrite?"，點一下修改":""}</small></div><div class="a">${yen(e.amt)}${canWrite?`<button type="button" class="del${pendingDel===e.id?" sure":""}" data-del="${esc(e.id)}">${pendingDel===e.id?"確定刪除":"刪除"}</button>`:""}</div></div>`}).join("")}</div>`}).join('<div class="gap"></div>');
+   return `<div class="ex${editingId===e.id?" editing":""}"${canWrite?` data-edit="${esc(e.id)}" role="button" tabindex="0"`:""}><span class="ic ${c[3]}"><svg><use href="#${c[2]}"/></svg></span><div class="m"><b>${esc(e.note||c[1])}${e.tf?`<span class="tf-badge">免稅</span>`:""}</b><small>${p[1]}${e.pay==="cash"?"付現":e.pay==="card"?"刷卡":"付"}，${e.split==="both"?"兩人平分":"自己的"}${canWrite?"，點一下修改":""}</small></div><div class="a">${yen(e.amt)}${canWrite?`<button type="button" class="del${pendingDel===e.id?" sure":""}" data-del="${esc(e.id)}">${pendingDel===e.id?"確定刪除":"刪除"}</button>`:""}</div></div>`}).join("")}</div>`}).join('<div class="gap"></div>');
 }
 function itemForm(g,it){
  const isNew=!it;it=it||{title:"",note:"",due:""};
@@ -1879,6 +1913,7 @@ function groupHTML(title,g){
   <div class="sort-list">${rows.map(r=>`<div class="chk-row sort-row" data-sort-id="${esc(r.id)}"><div class="chk"><span class="drag-h" aria-label="拖曳 ${esc(r.title)}" role="button" tabindex="0"><svg viewBox="0 0 24 24"><path d="M5 8h14M5 12h14M5 16h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span><div class="txt"><b>${esc(r.title)}</b>${(t=>t?`<small>${esc(t)}</small>`:"")(sortSub(g,r))}</div></div></div>`).join("")}</div>
  </div>`;
  return `<div class="group" data-group-id="${g}"><h3>${title}<span class="h-r">${can?`<button type="button" class="sort-btn" data-sort-toggle="${g}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M8 4L4.5 7.5M8 4l3.5 3.5M16 20V4M16 20l-3.5-3.5M16 20l3.5-3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>排序</button>`:""}<span class="prog">${n} / ${rows.length}</span></span></h3>
+  ${g==="buy"?TF_TIP:""}
   ${rows.map(r=>editItem===r.id?`<div class="chk editing">${itemForm(g,r)}</div>`:`<div class="chk-row"><label class="chk" for="c-${esc(r.id)}"><input type="checkbox" id="c-${esc(r.id)}"${done[r.id]?" checked":""}${canWrite?"":" disabled"}><div class="txt"><b>${esc(r.title)}</b>${g==="buy"?buyInfoHTML(r):r.note?`<small>${esc(r.note)}</small>`:""}${r.links?`<div class="acts">${r.links.map(l=>ext(l[0],l[1])).join("")}</div>`:""}</div>${r.due?`<span class="due">${esc(r.due)}</span>`:""}</label>${canWrite?`<button class="edit-btn" type="button" data-item-edit="${esc(r.id)}" aria-label="編輯 ${esc(r.title)}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>`:""}</div>`).join("")}
   ${editItem==="new:"+g?`<div class="chk editing">${itemForm(g,null)}</div>`:(canWrite?`<button class="add-btn" type="button" data-item-new="${g}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>新增一項</button>`:"")}
  </div>`;
@@ -2109,7 +2144,7 @@ app.addEventListener("keydown",e=>{const ed=e.target.closest&&e.target.closest("
 app.addEventListener("input",e=>{
  const t=e.target;
  if(t.id==="mood-note"){const f=t.closest("form");const on=f.querySelector(".fbtn.on");moodDraft={d:f.dataset.d,score:on?+on.dataset.score:0,note:t.value}}
- if(t.id==="f-amt"){t.value=t.value.replace(/[^\d]/g,"").slice(0,8);draft.amt=t.value}
+ if(t.id==="f-amt"){t.value=t.value.replace(/[^\d]/g,"").slice(0,8);draft.amt=t.value;const r=document.getElementById("f-tf-row");if(r)r.hidden=(+draft.amt||0)<TF_MIN}
  if(t.id==="f-note")draft.note=t.value;
  if(t.id==="f-day")draft.day=t.value;
 });
@@ -2141,18 +2176,19 @@ app.addEventListener("submit",async e=>{
  msg.className="msg";
  if(!amt||amt<=0){msg.className="msg err";msg.textContent="請先輸入金額";document.getElementById("f-amt").focus();return}
  const rec={amt,cat:draft.cat,who:draft.who,split:draft.split,pay:draft.pay||"cash",day:draft.day,note:draft.note.trim(),ts:Date.now()};
+ if(draft.tf&&amt>=TF_MIN){rec.tf=true;const o=editingId&&expenses.find(x=>x.id===editingId);if(o&&o.carry)rec.carry=true}
  const btn=document.getElementById("f-save");btn.disabled=true;
  try{
   if(editingId){
    const id=editingId,old=expenses.find(x=>x.id===id);rec.ts=old?old.ts:rec.ts;
    if(db&&!id.startsWith("l"))await db.doc("expenses/"+id).set(rec);
    expenses=expenses.map(x=>x.id===id?{...rec,id}:x);if(!db)store.set("exp",expenses);
-   editingId=null;draft.amt="";draft.note="";render(true);
+   editingId=null;draft.amt="";draft.note="";draft.tf=false;render(true);
    const m=document.getElementById("f-msg");m.className="msg";m.textContent=`已更新為 ${yen(amt)}`;return;
   }
   if(db){const ref=db.collection("expenses").doc();await ref.set(rec);if(!expenses.some(x=>x.id===ref.id))expenses.push({...rec,id:ref.id})}
   else{expenses.push({...rec,id:"l"+rec.ts});store.set("exp",expenses)}
-  draft.amt="";draft.note="";
+  draft.amt="";draft.note="";draft.tf=false;const tr=document.getElementById("f-tf-row");if(tr){tr.hidden=true;tr.querySelector("[data-tf-toggle]").setAttribute("aria-pressed","false");tr.querySelector(".switch").classList.remove("on")}
   document.getElementById("f-amt").value="";document.getElementById("f-note").value="";
   msg.textContent=`已記下 ${yen(amt)}`;renderAcct();
  }catch(err){msg.className="msg err";msg.textContent=err&&err.code==="invalid_argument"?"你沒有記帳權限，請擁有者分享時選 Contributor":"沒有存到，請確認網路後再按一次"}
@@ -2240,7 +2276,7 @@ async function connect(){
   try{await ensureSeeded()}catch(_){}
   db.collection("moods").onSnapshot(snap=>{const n={...moods};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{});
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(setupSheet)paintSetup();if(tab!=="acct")refresh()},()=>{});
-  db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0}});paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
+  db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0,...(v.tf?{tf:true}:{}),...(v.carry?{carry:true}:{})}});paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home"&&!stayEditing)render(true)}},()=>{});
   db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const v=+(s.data()||{}).jpyTwd;if(v>0){rate=v;store.set("rate",v);if(tab==="acct")renderAcct()}}},()=>{});
@@ -2377,6 +2413,25 @@ function openTour(){
 }
 (()=>{let seen=false;try{seen=localStorage.getItem(TOUR_KEY)==="1"}catch(_){seen=true}if(!seen)setTimeout(openTour,900)})();
 document.addEventListener("click",e=>{if(e.target.closest("[data-tour-open]")){if(setupSheet){setupSheet.remove();setupSheet=null;document.body.style.overflow=""}openTour()}});
+
+/* ===== 退稅清單：記帳打開「免稅」的每一筆，回國那天逐筆確認放進隨身行李 ===== */
+function renderTf(){
+ const box=document.getElementById("tf-list");if(!box)return;
+ const l=expenses.filter(e=>e.tf).sort((a,b)=>a.day.localeCompare(b.day)||(a.ts||0)-(b.ts||0));
+ if(!l.length){box.hidden=true;box.innerHTML="";return}
+ const tot=l.reduce((a,e)=>a+tfRefund(e.amt),0),c=l.filter(e=>e.carry).length,left=l.length-c;
+ box.hidden=false;
+ box.innerHTML=`<h3>退稅清單<span>${l.length} 筆</span></h3>
+ <div class="tf-sum"><div><small>預估可退（以 10% 計）</small><b>約 ${yen(tot)}</b></div><div class="${left?"left":""}"><small>放進隨身行李</small><b>${c} / ${l.length}</b></div></div>
+ <p class="tf-note"><b>託運前</b>到機場退稅機出示護照。同一張收據的東西都要帶在身上，吃掉、用掉的不能退。</p>
+ ${l.map(e=>`<div class="tf-item"><div class="m"><b>${esc(e.note||"（沒寫店名）")}</b><small>${esc(e.day)}・${yen(e.amt)}・可退約 ${yen(tfRefund(e.amt))}</small></div>${canWrite?`<button type="button" class="tf-carry" data-carry="${esc(e.id)}" aria-pressed="${!!e.carry}"><i></i>隨身</button>`:""}</div>`).join("")}`;
+}
+document.addEventListener("click",async e=>{
+ const tg=e.target.closest("[data-tf-toggle]");if(tg){draft.tf=!draft.tf;tg.setAttribute("aria-pressed",String(draft.tf));tg.querySelector(".switch").classList.toggle("on",draft.tf);return}
+ const cy=e.target.closest("[data-carry]");if(cy){const id=cy.dataset.carry,ex=expenses.find(x=>x.id===id);if(!ex)return;ex.carry=!ex.carry;renderTf();
+  const {id:_i,...rec}=ex;if(db&&!id.startsWith("l")){try{await db.doc("expenses/"+id).set(rec)}catch(_){}}else store.set("exp",expenses);return}
+ if(e.target.closest("[data-go-tf]")){tab="acct";render();setTimeout(()=>{const b=document.getElementById("tf-list");if(b&&!b.hidden)b.scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});else scrollTo(0,0)},60);return}
+});
 </script>
 
 <script>

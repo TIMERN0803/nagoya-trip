@@ -363,8 +363,8 @@ DTSTAMP:20261024T000000Z
 DTSTART;TZID=Asia/Tokyo:20261124T074000
 DTEND;TZID=Asia/Tokyo:20261124T084000
 SUMMARY:抵達中部國際機場
-DESCRIPTION:航班\n辦理登機\n名古屋看花花 https://timern0803.g
- ithub.io/nagoya-trip/
+DESCRIPTION:航班\n先辦退稅，再辦登機和託運\n名古屋看花
+ 花 https://timern0803.github.io/nagoya-trip/
 LOCATION:中部国際空港
 URL:https://www.google.com/maps/search/?api=1&query=%E4%B8%AD%E9%83%A8%E5
  %9B%BD%E9%9A%9B%E7%A9%BA%E6%B8%AF
@@ -376,6 +376,20 @@ END:VALARM
 END:VEVENT
 BEGIN:VEVENT
 UID:ngy-20261124-2@nagoya-trip
+DTSTAMP:20261024T000000Z
+DTSTART;TZID=Asia/Tokyo:20261124T074500
+DTEND;TZID=Asia/Tokyo:20261124T084500
+SUMMARY:先辦退稅，再託運
+DESCRIPTION:提醒\n免稅品帶在身上，到退稅機出示護照\n名
+ 古屋看花花 https://timern0803.github.io/nagoya-trip/
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:30 分鐘後：先辦退稅，再託運
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:ngy-20261124-3@nagoya-trip
 DTSTAMP:20261024T000000Z
 DTSTART;TZID=Asia/Tokyo:20261124T114000
 DTEND;TZID=Asia/Taipei:20261124T142000
