@@ -902,6 +902,15 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sos-show .s-mid{font-size:clamp(20px,6vw,28px);font-weight:700;line-height:1.5}
 .sos-show .s-zh{font-size:15px;color:var(--muted);border-top:1.5px dashed var(--line);padding-top:12px}
 .sos-show .sm-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:48px;height:48px}
+
+/* ===== 刪除後復原 ===== */
+.undo-bar{position:fixed;z-index:62;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(104px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:18px;background:var(--ink);color:#fff;box-shadow:var(--shadow-float);font-family:var(--f-body);animation:toastin .25s cubic-bezier(.2,.9,.3,1.2);overflow:hidden}
+.undo-bar span{flex:1;min-width:0;font-size:14.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.undo-bar button{flex:none;height:40px;padding:0 16px;border:0;border-radius:12px;background:var(--butter);color:var(--ink);font:inherit;font-family:var(--f-display);font-weight:900;font-size:15px;cursor:pointer}
+.undo-bar button:active{transform:translateY(1px)}
+.undo-bar i{position:absolute;left:0;bottom:0;height:3px;background:var(--butter);width:100%;animation:undoshrink 5s linear forwards}
+@keyframes undoshrink{to{width:0}}
+@media (prefers-reduced-motion:reduce){.undo-bar,.undo-bar i{animation:none}}
 </style>
 </head>
 <body>
@@ -1278,7 +1287,8 @@ function pickMeHTML(){
  </div>`;
 }
 function rerenderMoodSec(){const sec=document.getElementById("mood");if(sec)sec.outerHTML=moodSectionHTML(DAYS[dayIdx])}
-async function deleteMood(d,who){const key=mk(d,who);delete moods[key];store.set("moods",moods);if(db){try{await db.doc("moods/"+key).delete()}catch(_){}}}
+async function deleteMood(d,who){const key=mk(d,who),old=moods[key];
+ if(old)undoSnack(`已刪除 ${d} 的心情`,async()=>{moods[key]=old;store.set("moods",moods);if(db){try{await db.doc("moods/"+key).set(old)}catch(_){}}if(typeof rerenderMoodSec==="function")rerenderMoodSec();if(tab==="plan"&&view==="home")render(true)});delete moods[key];store.set("moods",moods);if(db){try{await db.doc("moods/"+key).delete()}catch(_){}}}
 let pendingMoodDel=false;
 function moodHint(x){
  const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])],h=Math.floor(tzNow("Asia/Tokyo").m/60);
@@ -1816,6 +1826,13 @@ async function saveItem(it){
  if(db){try{await ensureSeeded()}catch(_){};const {id,...rec}=it;try{await db.doc("items/"+id).set(rec)}catch(_){}}
 }
 async function deleteItem(id){
+ const at=items.findIndex(x=>x.id===id),it=items[at],dk=Object.keys(done).filter(k=>k===id||k.startsWith(id+"@")),dv=Object.fromEntries(dk.map(k=>[k,done[k]]));
+ if(it)undoSnack(`已刪除「${it.title||"項目"}」`,async()=>{
+  if(!items.some(x=>x.id===id))items.splice(Math.min(at,items.length),0,{...it});
+  Object.assign(done,dv);store.set("done",done);await saveItem({...it});
+  if(db){for(const k of dk){try{await db.doc("checks/"+k).set({done:dv[k]})}catch(_){}}}
+  render(true);
+ });
  items=items.filter(x=>x.id!==id);store.set("items",items);delete done[id];store.set("done",done);
  if(db){try{await db.doc("items/"+id).delete();await db.doc("checks/"+id).delete()}catch(_){}}
 }
@@ -1973,7 +1990,7 @@ app.addEventListener("click",e=>{
  if(e.target.closest("[data-me-ok]")){me=pendingMe;pendingMe=null;pickingMe=false;moodEdit=null;moodDraft=null;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;rerenderMoodSec();return}
  if(e.target.closest("[data-me-cancel]")){pendingMe=null;pickingMe=false;rerenderMoodSec();return}
  if(e.target.closest("[data-switch-me]")){pickingMe=true;pendingMe=null;rerenderMoodSec();return}
- const mdl=e.target.closest("[data-mood-del]");if(mdl){if(!pendingMoodDel){pendingMoodDel=true;rerenderMoodSec();clearTimeout(window._pmd);window._pmd=setTimeout(()=>{if(pendingMoodDel){pendingMoodDel=false;rerenderMoodSec()}},3000);return}pendingMoodDel=false;moodEdit=null;moodDraft=null;deleteMood(mdl.dataset.moodDel,me).then(rerenderMoodSec);return}
+ const mdl=e.target.closest("[data-mood-del]");if(mdl){pendingMoodDel=false;moodEdit=null;moodDraft=null;deleteMood(mdl.dataset.moodDel,me).then(rerenderMoodSec);return}
  if(e.target.closest("[data-scroll-mood]")){const el=document.getElementById("mood");if(el){const top=el.getBoundingClientRect().top+scrollY-topGap()-16;scrollTo({top,behavior:reduce()?"auto":"smooth"})}return}
  const fb=e.target.closest(".fbtn");if(fb){const f=fb.closest("form");moodDraft={d:f.dataset.d,score:+fb.dataset.score,note:f.querySelector("#mood-note").value};f.querySelectorAll(".fbtn").forEach(b=>{const on=b===fb;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});f.querySelector("[type=submit]").disabled=false;return}
  const me_=e.target.closest("[data-mood-edit]");if(me_){moodEdit=me_.dataset.moodEdit;moodDraft=null;const sec=document.getElementById("mood");sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);document.getElementById("mood-note")?.focus({preventScroll:true});return}
@@ -1983,7 +2000,7 @@ app.addEventListener("click",e=>{
  const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);focusItemForm();return}
  const inw=e.target.closest("[data-item-new]");if(inw){editItem="new:"+inw.dataset.itemNew;pendingItemDel=null;render(true);focusItemForm();return}
  if(e.target.closest("[data-item-cancel]")){editItem=null;pendingItemDel=null;render(true);return}
- const idl=e.target.closest("[data-item-del]");if(idl){const id=idl.dataset.itemDel;if(pendingItemDel!==id){pendingItemDel=id;render(true);clearTimeout(window._pid);window._pid=setTimeout(()=>{if(pendingItemDel===id){pendingItemDel=null;if(tab==="list")render(true)}},3000);return}pendingItemDel=null;editItem=null;deleteItem(id).then(()=>render(true));render(true);return}
+ const idl=e.target.closest("[data-item-del]");if(idl){const id=idl.dataset.itemDel;pendingItemDel=null;editItem=null;deleteItem(id).then(()=>render(true));render(true);return}
  const d=e.target.closest("[data-day]");if(d){const i=+d.dataset.day;if(tab==="plan"&&view==="day"&&d.classList.contains("day-btn")){switchDay(i);return}tab="plan";view="day";dayIdx=i;render();return}
  if(e.target.closest("[data-home]")){const from=dayIdx;view="home";render(false,true);const t=app.querySelector(`.tile[data-day="${from}"]`);if(t){const r=t.getBoundingClientRect();if(r.top<60||r.bottom>innerHeight-110)t.scrollIntoView({block:"center"});t.classList.add("flash");setTimeout(()=>t.classList.remove("flash"),1300)}return}
  if(e.target.closest("[data-pack-open]")){listSub="pack";editItem=null;render();return}
@@ -1996,7 +2013,7 @@ app.addEventListener("click",e=>{
  if(e.target.closest("[data-wallet-open]")){openWallet();return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
  const pk=e.target.closest(".pick");if(pk){const grp=pk.parentElement.dataset.pick;draft[grp]=pk.dataset.v;pk.parentElement.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",b===pk));return}
- const del=e.target.closest("[data-del]");if(del){const id=del.dataset.del;if(pendingDel!==id){pendingDel=id;renderAcct();clearTimeout(window._pd);window._pd=setTimeout(()=>{if(pendingDel===id){pendingDel=null;renderAcct()}},3000);return}pendingDel=null;removeExpense(id);return}
+ const del=e.target.closest("[data-del]");if(del){const id=del.dataset.del;pendingDel=null;removeExpense(id);return}
  const ed=e.target.closest("[data-edit]");if(ed){startEdit(ed.dataset.edit);return}
  if(e.target.closest("#f-cancel")){stopEdit();return}
 });
@@ -2054,8 +2071,15 @@ app.addEventListener("submit",async e=>{
  btn.disabled=false;
 });
 async function removeExpense(id){
+ const ex=expenses.find(e=>e.id===id);
+ if(ex)undoSnack(`已刪除 ${yen(ex.amt)}${ex.note?`「${ex.note}」`:""}`,async()=>{
+  const {id:_i,...rec}=ex;
+  if(!expenses.some(e=>e.id===id))expenses.push({...ex});
+  if(db&&!id.startsWith("l")){try{await db.doc("expenses/"+id).set(rec)}catch(_){}}else store.set("exp",expenses);
+  renderAcct();if(tab==="plan"&&view==="home")render(true);
+ });
  if(db&&!id.startsWith("l")){try{await db.doc("expenses/"+id).delete()}catch(_){}}
- expenses=expenses.filter(e=>e.id!==id);if(!db)store.set("exp",expenses);renderAcct();
+ expenses=expenses.filter(e=>e.id!==id);if(!db)store.set("exp",expenses);if(editingId===id){stopEdit();return}renderAcct();
 }
 (()=>{let last=0;document.querySelector("nav.tabs").addEventListener("touchend",e=>{const now=Date.now();if(now-last<350){e.preventDefault();const b=e.target.closest("button");if(b)b.click()}last=now},{passive:false})})();
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(t==="plan"){const same=tab==="plan"&&view==="home";tab="plan";view="home";if(same){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}render();scrollTo(0,0);return}if(t==="list"&&tab==="list"&&listSub){listSub=null;render(false,true);return}if(t===tab&&!(t==="plan"&&view==="day")){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}tab=t;render();scrollTo(0,0)});
@@ -2232,6 +2256,17 @@ function openSos(){
  });
 }
 document.addEventListener("click",e=>{if(e.target.closest("[data-sos]"))openSos()});
+
+/* ===== 刪除後復原：5 秒內可以把剛刪掉的那一筆寫回去（雲端也會寫回，對方手機跟著回來） ===== */
+let undoEl=null,undoTimer=null;
+function undoSnack(label,restore){
+ if(undoEl)undoEl.remove();clearTimeout(undoTimer);
+ const v=document.createElement("div");v.className="undo-bar";v.setAttribute("role","status");v.setAttribute("aria-live","polite");
+ v.innerHTML=`<span></span><button type="button">復原</button><i aria-hidden="true"></i>`;v.querySelector("span").textContent=label;
+ const done=()=>{clearTimeout(undoTimer);v.remove();if(undoEl===v)undoEl=null};
+ v.querySelector("button").addEventListener("click",async()=>{done();try{await restore()}catch(_){}});
+ document.body.appendChild(v);undoEl=v;undoTimer=setTimeout(done,5000);
+}
 </script>
 </body>
 </html>
