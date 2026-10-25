@@ -168,9 +168,9 @@ async def E_acct(b):
     await pg.click('.ex[data-edit] >> nth=0');await pg.wait_for_timeout(300)
     dels=await pg.query_selector_all('[data-del]')
     if dels:
-        await dels[0].click();await pg.wait_for_timeout(200);await (await pg.query_selector('[data-del]')).click();await pg.wait_for_timeout(500)
+        await dels[0].click();await pg.wait_for_timeout(500)
     n1=await pg.evaluate('document.querySelectorAll(".ex[data-edit]").length')
-    rec("E 記帳","刪除一筆（點兩次確認）",n1==n0-1,f"{n0}→{n1}")
+    rec("E 記帳","刪除一筆（按一次＋可復原）",n1==n0-1 and await pg.query_selector('.undo-bar'),f"{n0}→{n1}")
     srv=await pg.evaluate('Object.keys(JSON.parse(localStorage.getItem("mockdb")||"{}")).filter(k=>k.includes("/expenses/")).length')
     rec("E 記帳","有寫到雲端（共用）",srv==n1,f"雲端 {srv} 筆")
     rec("E 記帳","沒有錯誤",not pg.errs,pg.errs[:2])
