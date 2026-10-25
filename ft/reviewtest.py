@@ -30,8 +30,8 @@ async def main():
         ft.rec("R 旅程回顧","點左邊回上一頁",await cur(pg)==0)
         await pg.click('.st-tap.next');await pg.click('.st-tap.next');await pg.wait_for_timeout(300)
         ft.rec("R 旅程回顧","心情曲線：兩條線、7 個點",len(await pg.query_selector_all('.pg-mood svg.ln path'))==2 and len(await pg.query_selector_all('.pg-mood .pt'))==7)
-        inside=await pg.evaluate('(()=>{const c=document.querySelector(".curve").getBoundingClientRect();return [...document.querySelectorAll(".pg-mood .pt")].every(p=>{const r=p.getBoundingClientRect();return r.left>=c.left&&r.right<=c.right&&r.top>=c.top&&r.bottom<=c.bottom})})()')
-        ft.rec("R 旅程回顧","心情的點都在圖表框內",inside)
+        inside=await pg.evaluate('(()=>{const c=document.querySelector(".note").getBoundingClientRect();return [...document.querySelectorAll(".pg-mood .pt")].every(p=>{const r=p.getBoundingClientRect();return r.left>=c.left&&r.right<=c.right&&r.top>=c.top&&r.bottom<=c.bottom})})()')
+        ft.rec("R 旅程回顧","心情的點都在筆記本紙內",inside)
         await pg.click('.st-tap.next');await pg.wait_for_timeout(200)
         t=await pg.inner_text('.pg-best')
         ft.rec("R 旅程回顧","最開心的一天：11/18 吉卜力公園＋兩人留言","吉卜力公園" in t and "龍貓巴士超可愛" in t and "魔女之谷" in t)
@@ -68,10 +68,10 @@ async def main():
         await sm.click('[data-story-open]');await sm.wait_for_timeout(300)
         bad=[]
         for i in range(7):
-            ov=await sm.evaluate('(()=>{const s=document.querySelector(".st-page.on");return s.scrollHeight<=s.clientHeight+2&&document.documentElement.scrollWidth<=innerWidth})()')
+            ov=await sm.evaluate('(()=>{const s=document.querySelector(".st-page.on");if(document.documentElement.scrollWidth>innerWidth)return false;if(s.classList.contains("pg-sum")){s.scrollTop=9999;const b=s.querySelector("[data-story-save]").getBoundingClientRect();return getComputedStyle(s).overflowY==="auto"&&b.bottom<=innerHeight}return s.scrollHeight<=s.clientHeight+2})()')
             if not ov:bad.append(i+1)
             if i<6:await sm.click('.st-tap.next');await sm.wait_for_timeout(250)
-        ft.rec("R 旅程回顧","小手機（320×568）每一頁都放得下",not bad,bad)
+        ft.rec("R 旅程回顧","小手機（320×568）每一頁都放得下，總結頁捲得到存圖按鈕",not bad,bad)
         errs+=sm.errs
         ft.rec("R 旅程回顧","沒有錯誤",not errs,errs[:3])
         await b.close()
