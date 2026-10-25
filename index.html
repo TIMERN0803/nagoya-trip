@@ -1188,6 +1188,12 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sum-acts .again{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line-strong)}
 .st-msg{font-size:13px;color:var(--brown);font-weight:700;min-height:1em}
 @media (prefers-reduced-motion:reduce){.st-page,.stamp .sc,.curve .pt,.rcpt,.curve svg.ln path,.paid,.stamp .sl{transition:none!important}.stamp .sc{opacity:1;transform:rotate(var(--r))}.curve .pt{opacity:1;transform:none}.rcpt{transform:none}.curve svg.ln path{opacity:1}.stamp .sl{opacity:1}.paid{opacity:.9;transform:rotate(-14deg)}}
+
+/* ===== 匯率自動更新 ===== */
+.rate-note{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;font-size:12px;color:var(--muted);line-height:1.4}
+.rate-note a{color:var(--muted)}
+.rate-note button{flex:none;border:0;border-radius:10px;background:var(--sunk);color:var(--brown);font:inherit;font-family:var(--f-display);font-weight:900;font-size:12.5px;padding:6px 10px;cursor:pointer}
+.rate-note .live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--mint);margin-right:5px;vertical-align:1px}
 </style>
 </head>
 <body>
@@ -1509,7 +1515,7 @@ const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("ngy:"+k,JSON.stringify(v))}catch(e){}}};
 let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
-let setupSheet=null,suRunning=false;
+let setupSheet=null,suRunning=false,rateMeta=store.get("rateMeta")||{auto:true,ts:0,src:""},rateBusy=false;
 const TF_MIN=5000,tfRefund=a=>Math.floor(a*10/110);
 const TF_TIP=`<div class="tf-tip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="7.5" cy="8.5" r="1.6" fill="currentColor"/></svg><span><b>免稅</b>：同一家店同一天稅前滿 ¥5,000，要帶護照。記帳時打開「免稅」就會列進退稅清單。</span></div>`;
 const SETUP=[
@@ -2015,7 +2021,7 @@ function renderAcct(){
   <div class="r"><div class="k">${per.map(p=>`${p[0]}付 ${yen(p[1])}`).join("<br>")}</div></div></div>
   ${total?`<div class="bar-cat">${byCat.map(([c,v])=>`<i class="${c[3]}" style="width:${(v/total*100).toFixed(2)}%"></i>`).join("")}</div><div class="legend">${byCat.map(([c,v])=>`<span class="${c[3]}"><i></i>${c[1]} ${yen(v)}</span>`).join("")}</div>`:""}
   <div class="settle"><svg aria-hidden="true"><use href="#cats"/></svg><span>${settle}</span></div>
-  <label class="rate" for="f-rate">匯率 1 日圓 ＝ <input id="f-rate" inputmode="decimal" value="${rate}"> 台幣</label>`;
+  <label class="rate" for="f-rate">匯率 1 日圓 ＝ <input id="f-rate" inputmode="decimal" value="${rate}"> 台幣</label>${rateNoteHTML()}`;
  if(!expenses.length){list.innerHTML=`<div class="empty"><svg viewBox="0 0 110 70" aria-hidden="true"><use href="#cats"/></svg>還沒有記帳。輸入金額後按「記下這筆」，就會出現在這裡。</div>`;return}
  const days=[...new Set(expenses.map(e=>e.day))].sort((a,b)=>b.localeCompare(a));
  list.innerHTML=days.map(d=>{const es=expenses.filter(e=>e.day===d).sort((a,b)=>(b.ts||0)-(a.ts||0));const x=DAYS.find(z=>z.d===d);
@@ -2333,7 +2339,7 @@ app.addEventListener("input",e=>{
 app.addEventListener("change",async e=>{
  const t=e.target;
  if(t.id==="f-day"){draft.day=t.value;return}
- if(t.id==="f-rate"){const v=parseFloat(t.value);if(v>0&&v<10){rate=v;store.set("rate",rate);renderAcct();if(db&&canWrite){try{await db.doc("settings/rate").set({jpyTwd:v})}catch(_){}}}else{t.value=rate}return}
+ if(t.id==="f-rate"){const v=parseFloat(t.value);if(v>0&&v<10){rate=v;store.set("rate",rate);rateMeta={auto:false,ts:Date.now(),src:""};store.set("rateMeta",rateMeta);renderAcct();if(db&&canWrite){try{await db.doc("settings/rate").set({jpyTwd:v,auto:false,ts:rateMeta.ts})}catch(_){}}}else{t.value=rate}return}
  if(!t.matches(".chk input[type=checkbox]"))return;
  const id=t.id.slice(2);done[id]=t.checked;store.set("done",done);refresh();
  if(db){try{await db.doc("checks/"+id).set({done:t.checked})}catch(err){if(err&&err.code==="invalid_argument"){canWrite=false;render(true)}}}
@@ -2461,7 +2467,7 @@ async function connect(){
   db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0,...(v.tf?{tf:true}:{}),...(v.carry?{carry:true}:{})}});paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home"&&!stayEditing)render(true)}},()=>{});
-  db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const v=+(s.data()||{}).jpyTwd;if(v>0){rate=v;store.set("rate",v);if(tab==="acct")renderAcct()}}},()=>{});
+  db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const d=s.data()||{},v=+d.jpyTwd;if(v>0){rate=v;store.set("rate",v);rateMeta={auto:d.auto!==false,ts:+d.ts||0,src:d.src||""};store.set("rateMeta",rateMeta);if(tab==="acct")renderAcct()}}fetchRate()},()=>{});
   rerenderData();
  }catch(err){
   if(err&&err.code==="permission-denied"){try{localStorage.removeItem(TRIP_KEY)}catch(_){};syncMsg="bad"}else syncMsg="offline";
@@ -2741,6 +2747,34 @@ async function rvSaveImage(D){
  if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"我們的名古屋回顧"});return "shared"}
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="名古屋回顧.png";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);return "saved";
 }
+
+/* ===== 匯率自動更新：每 6 小時最多抓一次，主來源 ExchangeRate-API，備用 currency-api；手動改過就停止自動 ===== */
+const RATE_SRC=[["ExchangeRate-API","https://open.er-api.com/v6/latest/JPY",j=>j&&j.result==="success"&&j.rates&&j.rates.TWD,"https://www.exchangerate-api.com"],["currency-api","https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/jpy.json",j=>j&&j.jpy&&j.jpy.twd,"https://github.com/fawazahmed0/exchange-api"]];
+const RATE_EVERY=6*3600e3;
+function rateNoteHTML(){
+ const t=rateMeta.ts?new Date(rateMeta.ts):null,when=t?`${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`:"";
+ if(!rateMeta.auto)return `<div class="rate-note"><span>手動設定${when?`・${when}`:""}</span>${canWrite?`<button type="button" data-rate-auto>改回自動</button>`:""}</div>`;
+ const src=RATE_SRC.find(r=>r[0]===rateMeta.src);
+ return `<div class="rate-note"><span>${rateMeta.ts?`<i class="live" aria-hidden="true"></i>自動更新・${when}`:"自動更新・等待連線"}</span>${src?`<span>匯率來源：<a href="${src[3]}" target="_blank" rel="noopener">${src[0]}</a></span>`:""}</div>`;
+}
+async function fetchRate(force){
+ if(rateBusy||!rateMeta.auto)return;if(!force&&rateMeta.ts&&Date.now()-rateMeta.ts<RATE_EVERY)return;if(!navigator.onLine)return;
+ rateBusy=true;
+ try{
+  for(const [name,url,pick] of RATE_SRC){
+   try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),8000);const r=await fetch(url,{cache:"no-store",signal:ctl.signal});clearTimeout(to);if(!r.ok)continue;
+    const v=+pick(await r.json());if(!(v>0.1&&v<0.5))continue;
+    rate=Math.round(v*10000)/10000;rateMeta={auto:true,ts:Date.now(),src:name};store.set("rate",rate);store.set("rateMeta",rateMeta);
+    if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home"&&todayIdx<0&&diff<=0)render(true);
+    if(db&&canWrite){try{await db.doc("settings/rate").set({jpyTwd:rate,auto:true,ts:rateMeta.ts,src:name})}catch(_){}}
+    return}catch(_){}
+  }
+ }finally{rateBusy=false}
+}
+document.addEventListener("click",e=>{if(e.target.closest("[data-rate-auto]")){rateMeta={auto:true,ts:0,src:""};store.set("rateMeta",rateMeta);renderAcct();fetchRate(true)}});
+setTimeout(()=>fetchRate(),2500);
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")fetchRate()});
+addEventListener("online",()=>fetchRate());
 </script>
 
 <script>
