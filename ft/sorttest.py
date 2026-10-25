@@ -10,7 +10,8 @@ async def drag(pg,id,steps,to_id=None):
     x,y=bb['x']+bb['width']/2,bb['y']+bb['height']/2
     dy=rh*steps
     if to_id:
-        t=await (await pg.query_selector(f'[data-sort-id="{to_id}"]')).bounding_box();dy=(t['y']+8)-(y-bb['height']/2-(rh/2-bb['height']/2))
+        t=await (await pg.query_selector(f'[data-sort-id="{to_id}"]')).bounding_box();me=await (await pg.query_selector(f'[data-sort-id="{id}"]')).bounding_box()
+        dy=(t['y']+8-me['y']) if t['y']<me['y'] else (t['y']+t['height']-8-(me['y']+me['height']))
     await pg.mouse.move(x,y);await pg.mouse.down()
     for k in range(1,11):await pg.mouse.move(x,y+dy*k/10)
     await pg.mouse.up();await pg.wait_for_timeout(500)
@@ -24,9 +25,8 @@ async def main():
         ft.rec("O 排序","待辦有排序按鈕",await a.query_selector('[data-group-id=prep] [data-sort-toggle]'))
         ft.rec("O 排序","要買的、行李沒有排序按鈕（這次只做待辦）",not await a.query_selector('[data-group-id=buy] [data-sort-toggle]'))
         await a.click('[data-sort-toggle=prep]');await a.wait_for_timeout(300)
-        ft.rec("O 排序","進入排序模式：每列有把手和編號",len(await a.query_selector_all('[data-group-id=prep] .drag-h'))==len(o0) and await a.inner_text('[data-group-id=prep] .sort-n >> nth=0')=="1")
+        ft.rec("O 排序","進入排序模式：每列左側有把手，沒有數字和箭頭",len(await a.query_selector_all('[data-group-id=prep] .drag-h'))==len(o0) and not await a.query_selector('.sort-n,[data-sort-up]') and await a.evaluate('(()=>{const r=document.querySelector(".sort-row");return r.querySelector(".drag-h").getBoundingClientRect().left<r.querySelector(".txt").getBoundingClientRect().left})()'))
         ft.rec("O 排序","排序模式沒有勾選框、不會誤觸打勾",not await a.query_selector('[data-group-id=prep] input[type=checkbox]'))
-        ft.rec("O 排序","第一列的上移、最後一列的下移是停用的",await a.evaluate('document.querySelector("[data-sort-up]").disabled && [...document.querySelectorAll("[data-sort-down]")].pop().disabled'))
         # 把最後一項拖到第一個
         await drag(a,o0[-1],0,to_id=o0[0])
         o1=await order(a)
@@ -36,12 +36,12 @@ async def main():
         ft.rec("O 排序","新順序存進雲端",ords==list(range(1,len(o1)+1)),ords)
         await s.wait_for_timeout(500)
         ft.rec("O 排序","星星的手機也是新順序",await order(s)==o1,await order(s))
-        # ▲▼
-        await a.click(f'[data-sort-down="{o1[0]}"]');await a.wait_for_timeout(400)
+        # 往下拖一格
+        await drag(a,o1[0],0,to_id=o1[1])
         o2=await order(a)
-        ft.rec("O 排序","▼ 下移一格",o2==[o1[1],o1[0]]+o1[2:],o2)
-        await a.click(f'[data-sort-up="{o1[0]}"]');await a.wait_for_timeout(400)
-        ft.rec("O 排序","▲ 上移一格",await order(a)==o1)
+        ft.rec("O 排序","往下拖一格",o2==[o1[1],o1[0]]+o1[2:],o2)
+        await drag(a,o1[0],0,to_id=o1[1])
+        ft.rec("O 排序","再拖回第一個",await order(a)==o1,await order(a))
         # 拖一下但沒移動位置：不改順序
         await drag(a,o1[1],0.2)
         ft.rec("O 排序","拖一點點沒越過一半，順序不變",await order(a)==o1)
