@@ -1,0 +1,65 @@
+# 緊急與日文資訊卡測試
+import asyncio,json
+import fulltest as ft
+from playwright.async_api import async_playwright
+async def main():
+    async with async_playwright() as p:
+        b=await p.chromium.launch()
+        pg=await ft.newpage(b,ft.twt(10,25,11,0),tz="Asia/Taipei")
+        if not await pg.query_selector('.g-home'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
+        ft.rec("S 求助","首頁有求助按鈕",await pg.query_selector('.hud [data-sos]'))
+        await pg.click('[data-sos]');await pg.wait_for_timeout(300)
+        t=await pg.inner_text('.sos')
+        for k in ["ランプライトブックスホテル名古屋","〒460-0003","052-231-7011","伏見站","110","119","050-3816-2787","090-8794-4568","+886-800-085-095","この住所までお願いします"]:
+            ft.rec("S 求助",f"面板含 {k}",k in t)
+        hrefs=await pg.eval_on_selector_all('.sos a[href^="tel:"]','a=>a.map(x=>x.getAttribute("href"))')
+        ft.rec("S 求助","電話都能撥（tel: 連結）",all(h[4:].replace('+','').isdigit() for h in hrefs) and len(hrefs)>=7,hrefs)
+        ft.rec("S 求助","沒填時顯示「還沒填」",t.count("還沒填")>=5)
+        ft.rec("S 求助","程式碼裡沒有訂單編號",not __import__("re").search(r"IN\d{8,}",ft.SRC))
+        await pg.click('[data-sos-edit]');await pg.wait_for_timeout(200)
+        await pg.fill('[data-sos-f=order]','TEST-123');await pg.fill('[data-sos-f=insTel]','0800-000-111');await pg.fill('[data-sos-f=ins]','測試產險')
+        await pg.click('[data-sos-save]');await pg.wait_for_timeout(400)
+        t=await pg.inner_text('.sos')
+        ft.rec("S 求助","編輯後顯示訂單編號","TEST-123" in t)
+        ft.rec("S 求助","填了旅平險後出現可撥號電話",await pg.query_selector('.sos a[href="tel:0800000111"]'))
+        db=await pg.evaluate('localStorage.getItem("mockdb")')
+        ft.rec("S 求助","訂房資料寫進雲端 settings/sos","TEST-123" in (db or ""))
+        await pg.click('[data-sos-show="hotel"]');await pg.wait_for_timeout(200)
+        sh=await pg.inner_text('.sos-show')
+        ft.rec("S 求助","給司機看：全螢幕顯示日文地址","錦1丁目13-18" in sh and "この住所までお願いします" in sh)
+        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(200)
+        ft.rec("S 求助","全螢幕可以關閉",not await pg.query_selector('.sos-show'))
+        await pg.click('.sos-ph button:nth-child(2)');await pg.wait_for_timeout(200)
+        ft.rec("S 求助","點日文句子會放大","救急車" in await pg.inner_text('.sos-show'))
+        await pg.click('.sos-show');await pg.click('.sos .sm-head .sm-x');await pg.wait_for_timeout(200)
+        ft.rec("S 求助","面板可以關閉、頁面恢復捲動",not await pg.query_selector('.sos') and await pg.evaluate('document.body.style.overflow')=="")
+        # 重新整理後還記得
+        await pg.reload();await pg.wait_for_timeout(900)
+        if not await pg.query_selector('.g-home'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
+        await pg.click('[data-sos]');await pg.wait_for_timeout(300)
+        ft.rec("S 求助","重新整理後資料還在","TEST-123" in await pg.inner_text('.sos'))
+        await pg.click('.sos .sm-head .sm-x');await pg.wait_for_timeout(200)
+        # 對方手機同步
+        pg2=await ft.newpage(b,ft.twt(10,25,11,0),tz="Asia/Taipei",me="star",ctx=pg.ctx)
+        if not await pg2.query_selector('.g-home'):await pg2.click('[data-home]');await pg2.wait_for_timeout(300)
+        await pg2.click('[data-sos]');await pg2.wait_for_timeout(300)
+        ft.rec("S 求助","另一人手機也看得到","TEST-123" in await pg2.inner_text('.sos'))
+        # 第一天入住行程
+        await pg.click('[data-day="0"]');await pg.wait_for_timeout(400)
+        st=await pg.query_selector('.stay-ord')
+        txt=await st.inner_text() if st else ""
+        ft.rec("S 求助","11/17 入住行程顯示訂房資料","TEST-123" in txt,txt[:60])
+        box=await pg.evaluate('(()=>{const o=document.querySelector(".stay-ord").getBoundingClientRect(),c=document.querySelector(".stay-ord").closest(".card").getBoundingClientRect();return [o.width,c.width]})()')
+        ft.rec("S 求助","訂房資料橫跨整張卡片",box[0]>box[1]-60,box)
+        await pg.click('.stay-sos');await pg.wait_for_timeout(300)
+        ft.rec("S 求助","入住行程按鈕可打開求助面板",await pg.query_selector('.sos'))
+        await pg.click('.sos .sm-head .sm-x');await pg.wait_for_timeout(200)
+        # 離線
+        await pg.ctx.set_offline(True)
+        # 出發當天直接開到 11/17
+        pg3=await ft.newpage(b,ft.jst(11,17,9,0),me="zhang",ctx=pg.ctx)
+        ft.rec("S 求助","11/17 當天開啟不報錯、入住卡片在",await pg3.query_selector('.stay-ord') and not pg3.errs,pg3.errs)
+        ft.rec("S 求助","沒有錯誤",not pg.errs and not pg2.errs,pg.errs+pg2.errs)
+        await b.close()
+    bad=[r for r in ft.R if not r[2]];print("TOTAL",len(ft.R),"FAIL",len(bad))
+asyncio.run(main())

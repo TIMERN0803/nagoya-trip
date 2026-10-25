@@ -1,0 +1,4 @@
+.sos-private.json
+*.png
+__pycache__/
+ft/results.json
