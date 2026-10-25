@@ -1007,6 +1007,44 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .tf-carry[aria-pressed="true"]{background:var(--mint-soft);color:var(--mint-ink)}
 .tf-carry[aria-pressed="true"] i{background:var(--mint-ink);border-color:var(--mint-ink)}
 .tf-carry[aria-pressed="true"] i::after{content:"";width:9px;height:5px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
+
+/* ===== 旅程回顧（旅程結束後出現在首頁） ===== */
+.review .rv-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px}
+.rv-stat.total{grid-column:1/-1;flex-direction:row;align-items:baseline;justify-content:center;gap:10px;padding:12px}
+.rv-stat.total b{font-size:28px}
+.rv-stat{background:var(--paper);border-radius:16px;padding:10px 8px;text-align:center;display:flex;flex-direction:column;gap:2px;min-width:0}
+.rv-stat small{font-size:12px;color:var(--muted);font-weight:700}
+.rv-stat b{font-family:var(--f-display);font-weight:900;font-size:20px;font-variant-numeric:tabular-nums;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rv-stat i{font-style:normal;font-size:11.5px;color:var(--muted)}
+.rv-sec{padding:14px 16px 0;display:flex;flex-direction:column;gap:8px}
+.rv-sec h3{margin:0;font-size:15px;display:flex;justify-content:space-between;align-items:baseline}
+.rv-sec h3 span{font-size:12.5px;color:var(--muted);font-weight:700}
+.rv-bar{display:flex;height:16px;border-radius:9px;overflow:hidden;background:var(--sunk)}
+.rv-bar i{display:block;height:100%;background:var(--tc)}
+.rv-bar i+i{box-shadow:inset 2px 0 0 var(--card)}
+.rv-leg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px}
+.rv-leg span{display:inline-flex;align-items:center;gap:5px}
+.rv-leg span::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--tc)}
+.rv-leg b{font-variant-numeric:tabular-nums}
+.rv-ppl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rv-p{display:flex;align-items:center;gap:8px;background:var(--paper);border-radius:14px;padding:8px 10px}
+.rv-p svg{width:30px;height:35px;flex:none}
+.rv-p span{display:flex;flex-direction:column;line-height:1.3;min-width:0}
+.rv-p small{font-size:12px;color:var(--muted)}
+.rv-p b{font-family:var(--f-display);font-weight:900;font-size:16px;font-variant-numeric:tabular-nums}
+.rv-settle{font-size:13.5px;color:var(--muted);text-align:center}
+.rv-settle b{color:var(--ink)}
+.rv-best{display:flex;gap:12px;align-items:stretch;width:100%;padding:0;border:0;background:none;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.rv-best .art{width:96px;height:96px;flex:none;border-radius:16px;overflow:hidden;border:2px solid var(--ol)}
+.rv-best .art svg{width:100%;height:100%;display:block}
+.rv-best .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;justify-content:center}
+.rv-best .tx>b{font-family:var(--f-display);font-weight:900;font-size:16px}
+.rv-best .tx>small{font-size:12.5px;color:var(--muted)}
+.rv-q{display:flex;gap:6px;align-items:flex-start;font-size:13px;line-height:1.4}
+.rv-q .face{width:22px;height:22px;flex:none}
+.rv-q span{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.review .rv-foot{display:flex;gap:8px;padding:14px 16px 16px}
+.review .rv-foot button{flex:1;height:42px;border:0;border-radius:13px;background:var(--sunk);color:var(--ink);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -1542,6 +1580,7 @@ function homeHTML(){
  ${heroHTML()}
  ${dueAlertsHTML()}
  ${setupCardHTML()}
+ ${reviewHTML()}
  <section class="sheet"><div class="clips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="sheet-head"><h2>8 天的地點</h2><span>點一下看當天</span></div>
   <div class="grid${todayIdx<0&&diff<=0?" trip-over":""}">${DAYS.map((x,i)=>`<button class="tile${dayDate(x)<today?" past":""}${i===todayIdx?" today":""}" data-day="${i}"><span class="art">${svgTile(x.art)}${i===todayIdx?`<span class="tile-pill">今天</span>`:dayDate(x)<today?`<span class="tile-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`:""}</span><b>${esc(x.place)}</b><small>${x.d} 週${x.w}</small></button>`).join("")}
@@ -2432,6 +2471,26 @@ document.addEventListener("click",async e=>{
   const {id:_i,...rec}=ex;if(db&&!id.startsWith("l")){try{await db.doc("expenses/"+id).set(rec)}catch(_){}}else store.set("exp",expenses);return}
  if(e.target.closest("[data-go-tf]")){tab="acct";render();setTimeout(()=>{const b=document.getElementById("tf-list");if(b&&!b.hidden)b.scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});else scrollTo(0,0)},60);return}
 });
+
+/* ===== 旅程回顧：旅程結束後在首頁顯示總花費、去過的地方、兩人分帳、最開心的一天 ===== */
+function reviewHTML(){
+ if(!(todayIdx<0&&diff<=0))return "";
+ const total=expenses.reduce((a,e)=>a+e.amt,0);
+ const pids=new Set();DAYS.forEach(x=>x.items.forEach(it=>{if(it.pid&&["go","eat","buy","do"].includes(it.k))pids.add(it.pid)}));
+ const nMood=DAYS.reduce((a,x)=>a+PEOPLE.filter(p=>moods[mk(x.d,p[0])]).length,0);
+ const cats=ECAT.map(c=>[c,expenses.filter(e=>e.cat===c[0]).reduce((a,e)=>a+e.amt,0)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
+ let bal=0;expenses.forEach(e=>{if(e.split==="both")bal+=e.who==="zhang"?e.amt/2:-e.amt/2});
+ const settle=Math.abs(bal)<1?"兩個人互不相欠":bal>0?`星星要給阿彰 <b>${yen(bal)}</b>`:`阿彰要給星星 <b>${yen(-bal)}</b>`;
+ let best=null;DAYS.forEach((x,i)=>{const sc=PEOPLE.map(p=>moods[mk(x.d,p[0])]).filter(Boolean);if(!sc.length)return;const avg=sc.reduce((a,v)=>a+v.score,0)/sc.length;if(!best||avg>best.avg)best={x,i,avg}});
+ const stat=(k,v,sub,cls="")=>`<div class="rv-stat${cls?" "+cls:""}"><small>${k}</small><b>${v}</b>${sub?`<i>${sub}</i>`:""}</div>`;
+ return `<section class="sheet review" id="review"><div class="sheet-head"><h2>8 天的回顧</h2><span>11/17 – 11/24</span></div>
+ <div class="rv-stats">${stat("總花費",yen(total),total?`約 NT$ ${Math.round(total*rate).toLocaleString("en-US")}`:"","total")}${stat("去過的地方",`${pids.size} 個`,"")}${stat("心情",`${nMood} 則`,"")}</div>
+ ${cats.length?`<div class="rv-sec"><h3>花在哪裡</h3><div class="rv-bar" role="img" aria-label="${cats.map(([c,v])=>`${c[1]} ${yen(v)}`).join("、")}">${cats.map(([c,v])=>`<i class="${c[3]}" style="width:${(v/total*100).toFixed(2)}%"></i>`).join("")}</div><div class="rv-leg">${cats.slice(0,3).map(([c,v])=>`<span class="${c[3]}">${c[1]} <b>${yen(v)}</b></span>`).join("")}</div></div>
+ <div class="rv-sec"><h3>兩個人</h3><div class="rv-ppl">${PEOPLE.map(p=>{const paid=expenses.filter(e=>e.who===p[0]).reduce((a,e)=>a+e.amt,0),ci=cashIn(p[0]);return `<div class="rv-p"><svg viewBox="0 0 60 70" aria-hidden="true"><use href="#${p[2]}"/></svg><span><small>${p[1]}付了</small><b>${yen(paid)}</b>${ci>0?`<small>現金用掉 ${yen(ci-cashLeft(p[0]))}</small>`:""}</span></div>`}).join("")}</div><div class="rv-settle">${settle}</div></div>`:""}
+ ${best?`<div class="rv-sec"><h3>最開心的一天<span>${best.x.d}（${best.x.w}）</span></h3><button type="button" class="rv-best" data-day="${best.i}"><span class="art">${svgTile(best.x.art)}</span><span class="tx"><b>${esc(best.x.place)}</b>${PEOPLE.map(p=>{const v=moods[mk(best.x.d,p[0])];return v?`<span class="rv-q">${moodFace(v.score)}<span>${esc(v.note||MOODS[v.score-1][1])}</span></span>`:""}).join("")}</span></button></div>`:""}
+ <div class="rv-foot"><button type="button" data-go="acct">看完整記帳</button>${best?`<button type="button" data-scroll-strip>看每天的心情</button>`:""}</div></section>`;
+}
+document.addEventListener("click",e=>{if(e.target.closest("[data-scroll-strip]")){const el=document.querySelector(".mood-strip");if(el)el.scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"})}});
 </script>
 
 <script>
