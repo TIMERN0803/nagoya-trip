@@ -15,6 +15,8 @@ async def newpage(b,t,tz="Asia/Tokyo",me="zhang",code="neko-test",init="",perm=N
         await ctx.route("**/firebasejs/**/firebase-firestore.js",lambda r:r.fulfill(body=FS,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))
         await ctx.route("**/api.open-meteo.com/**",lambda r:r.abort())
         await ctx.route("**/fonts.googleapis.com/**",lambda r:r.abort())
+        await ctx.route("**/open.er-api.com/**",lambda r:r.abort())
+        await ctx.route("**/currency-api*/**",lambda r:r.abort())
     pg=await ctx.new_page();pg.errs=[];pg.on('pageerror',lambda e:pg.errs.append(str(e)))
     pg.on('console',lambda m:pg.errs.append("console:"+m.text) if m.type=="error" and "net::" not in m.text and "Failed to load" not in m.text else None)
     await pg.clock.install(time=t)
