@@ -851,7 +851,8 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .stay-ord .mono{white-space:nowrap}
 .stay-ord{display:flex;flex-direction:column;gap:8px;margin-top:8px}
 .stay-ord .sos-ord{font-size:13.5px;padding:9px 12px}
-.stay-sos{align-self:flex-start;border:0;border-radius:12px;background:var(--sunk);color:var(--ink);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13.5px;padding:8px 12px;cursor:pointer}
+.stay-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.stay-sos{border:0;border-radius:12px;background:var(--sunk);color:var(--ink);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13.5px;padding:8px 12px;cursor:pointer}
 .hud-sos{margin-left:auto;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:52px;height:52px;border-radius:18px;border:var(--olw,2.5px) solid var(--ol);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:11.5px;cursor:pointer;transition:transform .08s,box-shadow .08s}
 .hud-sos svg{width:22px;height:22px}
 .hud-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
@@ -1220,7 +1221,7 @@ const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("ngy:"+k,JSON.stringify(v))}catch(e){}}};
 let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
-let sosInfo=store.get("sos")||{},sosSheet=null,sosEditing=false;
+let sosInfo=store.get("sos")||{},sosSheet=null,sosEditing=false,stayEditing=false;
 const sosEsc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mapUrl=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
 const ext=(label,href)=>`<a class="chip" href="${esc(href)}" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg>${esc(label)}</a>`;
@@ -1531,10 +1532,17 @@ function itemHTML(it,i,stat){
   <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
 function stayOrdHTML(){
- const v=k=>(sosInfo[k]||"").trim(),row=(l,k,c)=>v(k)?`<dt>${l}</dt><dd${c?` class="${c}"`:""}>${sosEsc(v(k))}</dd>`:"";
- const body=row("訂單編號","order","mono")+row("訂房平台","via")+row("房型","room")+row("付款","pay");
- return `<div class="stay-ord">${body?`<dl class="sos-ord">${body}${v("payNote")?`<div class="warn">${sosEsc(v("payNote"))}</div>`:""}</dl>`:""}<button type="button" class="stay-sos" data-sos>${body?"":"訂房資料・"}日文地址給司機看</button></div>`;
+ if(stayEditing)return `<div class="stay-ord" data-stay-form>${sosFormHTML(BOOK_FIELDS,"data-stay-save")}</div>`;
+ const v=k=>(sosInfo[k]||"").trim(),row=(l,k,c)=>`<dt>${l}</dt>${v(k)?`<dd${c?` class="${c}"`:""}>${sosEsc(v(k))}</dd>`:`<dd class="sos-empty">還沒填</dd>`}`;
+ return `<div class="stay-ord"><dl class="sos-ord">${row("訂單編號","order","mono")}${row("訂房平台","via")}${row("訂房人","guest")}${row("房型","room")}${row("付款","pay")}${v("payNote")?`<div class="warn">${sosEsc(v("payNote"))}</div>`:""}</dl><div class="stay-row"><button type="button" class="stay-sos" data-sos-hotel>日文地址給司機看</button><button type="button" class="sos-edit" data-stay-edit>編輯訂房資料</button></div></div>`;
 }
+document.addEventListener("click",async e=>{
+ if(e.target.closest("[data-sos-hotel]")){sosShow("hotel");return}
+ if(e.target.closest("[data-stay-edit]")){stayEditing=true;render(true);setTimeout(()=>document.querySelector("[data-stay-form] input")?.focus(),30);return}
+ const f=e.target.closest("[data-stay-form]");if(!f)return;
+ if(e.target.closest("[data-sos-cancel]")){stayEditing=false;render(true);return}
+ if(e.target.closest("[data-stay-save]")){await sosSave(f);stayEditing=false;render(true)}
+});
 const smin=t=>{const[h,m]=t.split(":");return h*60+ +m};
 function schedNow(stat){if(!stat)return -1;return SCHED.findIndex(r=>{const[a,b]=r[0].split("–");return stat.nowM>=smin(a)&&stat.nowM<smin(b)})}
 function schedHTML(stat){
@@ -2122,7 +2130,7 @@ async function connect(){
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
   db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0}});paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
-  db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home")render(true)}},()=>{});
+  db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home"&&!stayEditing)render(true)}},()=>{});
   db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const v=+(s.data()||{}).jpyTwd;if(v>0){rate=v;store.set("rate",v);if(tab==="acct")renderAcct()}}},()=>{});
   rerenderData();
  }catch(err){
@@ -2159,7 +2167,9 @@ if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWo
 
 /* ===== 緊急與日文資訊卡（離線可用；訂房細節只存在雲端，不寫進公開程式碼） ===== */
 const SOS_HOTEL={jp:"ランプライトブックスホテル名古屋",zh:"名古屋燈光圖書飯店",zip:"〒460-0003",ad:"愛知県名古屋市中区錦1丁目13-18",tel:"052-231-7011",telI:"+81522317011",ac:"地下鐵東山線・鶴舞線「伏見站」10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋"};
-const SOS_FIELDS=[["order","訂單編號"],["via","訂房平台"],["guest","訂房人"],["room","房型"],["pay","付款"],["ins","旅平險公司"],["insTel","旅平險急難電話"]];
+const BOOK_FIELDS=[["order","訂單編號"],["via","訂房平台"],["guest","訂房人"],["room","房型"],["pay","付款"],["payNote","提醒"]],INS_FIELDS=[["ins","旅平險公司"],["insTel","旅平險急難電話"]];
+const sosFormHTML=(fs,save)=>`<div class="sos-form">${fs.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${sosEsc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" ${save}>儲存</button></div></div>`;
+async function sosSave(root){const n={...sosInfo};root.querySelectorAll("[data-sos-f]").forEach(i=>{n[i.dataset.sosF]=i.value.trim()});sosInfo=n;store.set("sos",sosInfo);if(db&&canWrite){try{await db.doc("settings/sos").set(sosInfo)}catch(_){}}}
 const SOS_PHRASES=[
  ["請帶我到這個地址","この住所までお願いします。","kono jūsho made onegaishimasu","hotel"],
  ["請幫我叫救護車","救急車を呼んでください。","kyūkyūsha o yonde kudasai"],
@@ -2178,12 +2188,9 @@ const SOS_TELS=[
  {n:"090-8794-4568",l:"台北駐大阪辦事處・急難",s:"負責愛知縣。護照遺失、重大意外",tel:"+819087944568",wide:1},
  {n:"06-6227-8623",l:"台北駐大阪辦事處・上班時間",s:"一般護照、文件問題",tel:"+81662278623",wide:1},
  {n:"+886-800-085-095",l:"外交部緊急聯絡中心",s:"24 小時，從日本撥回台灣",tel:"+886800085095",wide:1}];
-function sosVal(k){const v=(sosInfo[k]||"").trim();return v?`<dd class="${k==="order"?"mono":""}">${sosEsc(v)}</dd>`:`<dd class="sos-empty">還沒填</dd>`}
 function sosHTML(){
  const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
  const H=SOS_HOTEL;
- const ord=sosEditing?`<div class="sos-form">${SOS_FIELDS.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${sosEsc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" data-sos-save>儲存</button></div></div>`
-  :`<dl class="sos-ord">${SOS_FIELDS.slice(0,5).map(([k,l])=>`<dt>${l}</dt>${sosVal(k)}`).join("")}${sosInfo.payNote?`<div class="warn">${sosEsc(sosInfo.payNote)}</div>`:""}</dl>`;
  const ins=(sosInfo.insTel||"").trim();
  return `<div class="sm-head"><b>緊急與日文資訊</b>${x}</div>
  <h3>我們住這裡<small>11/17–11/24・7 晚</small></h3>
@@ -2193,11 +2200,10 @@ function sosHTML(){
   <div class="ac">${H.ac}</div>
   <div class="sos-acts"><button type="button" class="main" data-sos-show="hotel">給司機看</button><a href="tel:${H.telI}">打給飯店</a><a href="${mapUrl(H.map)}" target="_blank" rel="noopener">地圖</a></div>
  </div>
- <h3>訂房資料<button type="button" class="sos-edit" data-sos-edit>${sosEditing?"":"編輯"}</button></h3>
- ${ord}
  <h3>緊急電話<small>點一下直接撥</small></h3>
+${sosEditing?sosFormHTML(INS_FIELDS,"data-sos-save"):""}
  <div class="sos-tels">${SOS_TELS.map(t=>t.wide?`<a class="sos-tel wide" href="tel:${t.tel}"><div><span>${t.l}</span><small>${t.s}</small></div><b>${t.n}</b></a>`:`<a class="sos-tel${t.hot?" hot":""}" href="tel:${t.tel}"><b>${t.n}</b><span>${t.l}</span><small>${t.s}</small></a>`).join("")}
-  ${ins?`<a class="sos-tel wide" href="tel:${sosEsc(ins.replace(/[^\d+]/g,""))}"><div><span>旅平險・${sosEsc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${sosEsc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡到「訂房資料・編輯」填寫</small></div></button>`}
+  ${ins?`<a class="sos-tel wide" href="tel:${sosEsc(ins.replace(/[^\d+]/g,""))}"><div><span>旅平險・${sosEsc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${sosEsc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡填寫</small></div></button>`}${ins&&!sosEditing?`<button type="button" class="sos-edit" data-sos-edit style="grid-column:1/-1;justify-self:end">修改旅平險</button>`:""}
  </div>
  <h3>常用日文<small>點一句放大給對方看</small></h3>
  <div class="sos-ph">${SOS_PHRASES.map((p,i)=>`<button type="button" data-sos-show="${i}"><span class="p-zh">${p[0]}</span><span class="p-jp">${p[1]}</span><span class="p-rd">${p[2]}</span></button>`).join("")}</div>
@@ -2222,11 +2228,7 @@ function openSos(){
   const sh=e.target.closest("[data-sos-show]");if(sh){const p=SOS_PHRASES[+sh.dataset.sosShow];sosShow(p&&p[3]==="hotel"?"hotel":sh.dataset.sosShow);return}
   if(e.target.closest("[data-sos-edit]")){sosEditing=true;paintSos();setTimeout(()=>v.querySelector(".sos-form input")?.focus(),30);return}
   if(e.target.closest("[data-sos-cancel]")){sosEditing=false;paintSos();return}
-  if(e.target.closest("[data-sos-save]")){
-   const n={...sosInfo};v.querySelectorAll("[data-sos-f]").forEach(i=>{n[i.dataset.sosF]=i.value.trim()});
-   sosInfo=n;store.set("sos",sosInfo);sosEditing=false;paintSos();
-   if(db&&canWrite){try{await db.doc("settings/sos").set(sosInfo)}catch(_){}}
-  }
+  if(e.target.closest("[data-sos-save]")){sosEditing=false;await sosSave(v);paintSos()}
  });
 }
 document.addEventListener("click",e=>{if(e.target.closest("[data-sos]"))openSos()});
