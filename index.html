@@ -959,6 +959,28 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .su-other svg{width:20px;height:17px}
 .su-other.ok{color:var(--mint-ink)}
 .su-other:not(.ok) svg{opacity:.45}
+
+/* ===== 使用教學（第一次打開） ===== */
+.tour{position:fixed;inset:0;z-index:66;background:rgba(43,36,32,.5);display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));animation:fadein .2s ease}
+.tour-card{width:100%;max-width:400px;max-height:100%;display:flex;flex-direction:column;background:var(--card);border:2.5px solid var(--ol);border-radius:28px;box-shadow:0 5px 0 var(--ol);overflow:hidden;animation:sheetup .3s cubic-bezier(.2,.9,.3,1)}
+.tour-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.tour-track::-webkit-scrollbar{display:none}
+.tour-slide{flex:0 0 100%;scroll-snap-align:center;display:flex;flex-direction:column}
+.tour-art{display:block;width:100%;height:auto;aspect-ratio:2/1;border-bottom:2px solid var(--ol)}
+.tour-txt{padding:18px 20px 6px;display:flex;flex-direction:column;gap:8px}
+.tour-txt h2{margin:0;font-size:21px;line-height:1.3}
+.tour-txt p{margin:0;font-size:15px;line-height:1.6;color:var(--muted)}
+.tour-txt p b{color:var(--ink)}
+.tour-foot{display:flex;align-items:center;gap:10px;padding:12px 16px 16px}
+.tour-dots{flex:1;display:flex;justify-content:center;gap:7px}
+.tour-dots i{width:8px;height:8px;border-radius:50%;background:var(--line-strong);transition:width .2s,background .2s}
+.tour-dots i.on{width:22px;border-radius:5px;background:var(--accent)}
+.tour-skip{flex:none;min-width:64px;height:44px;border:0;background:none;color:var(--muted);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14.5px;cursor:pointer;text-align:left;padding:0 4px}
+.tour-next{flex:none;min-width:96px;height:46px;padding:0 18px;border:0;border-radius:15px;background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep);font:inherit;font-family:var(--f-display);font-weight:900;font-size:15.5px;cursor:pointer}
+.tour-next:active{transform:translateY(2px);box-shadow:0 1px 0 var(--accent-deep)}
+.tour-next.wide{flex:1}
+.su-tour{align-self:center;border:0;background:none;color:var(--accent);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14px;padding:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+@media (prefers-reduced-motion:reduce){.tour,.tour-card{animation:none}.tour-track{scroll-behavior:auto}}
 </style>
 </head>
 <body>
@@ -2285,7 +2307,7 @@ function setupSheetHTML(){
  const other=PEOPLE.find(p=>p[0]!==me);
  return head+`<p class="su-intro">這是<b>${nameOf(me)}</b>這支手機的設定，兩個人要各自完成。能偵測的項目會自動打勾。</p>
  <div class="su-list">${SETUP.map(([k,t,d,auto,act])=>{const ok=!!done[suKey(k,me)],oo=other&&!!done[suKey(k,other[0])];
-  return `<div class="su-row${ok?" done":""}"><button type="button" class="su-ck" data-setup-ck="${k}" role="checkbox" aria-checked="${ok}" aria-label="${esc(t)}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="su-txt"><b>${esc(t)}</b><small>${esc(d)}</small>${auto&&ok&&suDetect(k)?`<span class="auto">App 已自動確認</span>`:""}</span><span class="su-side">${act&&!ok?`<button type="button" class="su-act" data-setup-act="${k}">${act}</button>`:""}${other?`<span class="su-other${oo?" ok":""}"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${other[0]==="zhang"?"b":"w"}"/></svg>${oo?"好了":"還沒"}</span>`:""}</span></div>`}).join("")}</div>`;
+  return `<div class="su-row${ok?" done":""}"><button type="button" class="su-ck" data-setup-ck="${k}" role="checkbox" aria-checked="${ok}" aria-label="${esc(t)}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="su-txt"><b>${esc(t)}</b><small>${esc(d)}</small>${auto&&ok&&suDetect(k)?`<span class="auto">App 已自動確認</span>`:""}</span><span class="su-side">${act&&!ok?`<button type="button" class="su-act" data-setup-act="${k}">${act}</button>`:""}${other?`<span class="su-other${oo?" ok":""}"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${other[0]==="zhang"?"b":"w"}"/></svg>${oo?"好了":"還沒"}</span>`:""}</span></div>`}).join("")}</div><button type="button" class="su-tour" data-tour-open>看使用教學</button>`;
 }
 function paintSetup(){if(setupSheet)setupSheet.querySelector(".sm-card").innerHTML=setupSheetHTML()}
 function openSetup(){
@@ -2305,6 +2327,40 @@ function openSetup(){
 }
 document.addEventListener("click",e=>{if(e.target.closest("[data-setup-open]"))openSetup()});
 setTimeout(setupAuto,1500);setInterval(setupAuto,15000);
+
+/* ===== 使用教學：每支手機第一次打開出現一次，可略過；出發前手機設定清單最下面可以再打開 ===== */
+const TOUR_KEY="ngy:tour";
+const TOL=`stroke="#3F3127" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
+const TOUR=[
+ {t:"歡迎來到名古屋看花花",p:"這是<b>阿彰和星星</b>兩個人的旅行 App。行程、清單、記帳都會在兩支手機之間同步。",
+  art:`<rect width="300" height="150" fill="#FCEFC6"/><path d="M0 120h300v30H0z" fill="#E7DCCB"/><g ${TOL}><rect x="30" y="38" width="44" height="74" rx="9" fill="#fff"/><rect x="36" y="48" width="32" height="44" rx="4" fill="#BFE2F0"/><rect x="226" y="38" width="44" height="74" rx="9" fill="#fff"/><rect x="232" y="48" width="32" height="44" rx="4" fill="#F6D58A"/><path d="M90 58q60-30 120 0" fill="none" stroke-dasharray="2 7"/><path d="M200 50l10 8-12 4" fill="none"/><path d="M210 92q-60 30-120 0" fill="none" stroke-dasharray="2 7"/><path d="M100 100l-10-8 12-4" fill="none"/></g><svg x="96" y="56" width="108" height="66" viewBox="0 0 132 80"><use href="#cats-hi"/></svg>`},
+ {t:"首頁看行程",p:"出發前看倒數，旅途中會<b>自動跳到今天</b>，右下角的按鈕會帶你看<b>下一站</b>。點 8 天的地點可以看每天的行程。",
+  art:`<rect width="300" height="150" fill="#DDF0E2"/><path d="M0 122h300v28H0z" fill="#E7DCCB"/><g ${TOL}><rect x="150" y="22" width="122" height="96" rx="14" fill="#fff"/><path d="M150 46h122" /><path d="M176 14v16M246 14v16"/><rect x="164" y="58" width="26" height="22" rx="6" fill="#F6D58A"/><rect x="198" y="58" width="26" height="22" rx="6" fill="#fff"/><rect x="232" y="58" width="26" height="22" rx="6" fill="#fff"/><rect x="164" y="88" width="26" height="22" rx="6" fill="#fff"/><rect x="198" y="88" width="26" height="22" rx="6" fill="#fff"/><rect x="232" y="88" width="26" height="22" rx="6" fill="#fff"/><rect x="150" y="6" width="44" height="18" rx="9" fill="#7CC8B4" stroke-width="2"/></g><text x="172" y="19" font-size="11" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">今天</text><svg x="10" y="54" width="132" height="80" viewBox="0 0 132 80"><use href="#cats-walk"/></svg>`},
+ {t:"遇到狀況，按「求助」",p:"首頁右上角的<b>求助</b>有飯店的日文地址（可以全螢幕給司機看）、緊急電話和常用日文，<b>沒網路也能打開</b>。",
+  art:`<rect width="300" height="150" fill="#FDE6DC"/><path d="M0 122h300v28H0z" fill="#E7DCCB"/><g ${TOL}><rect x="164" y="16" width="62" height="108" rx="12" fill="#fff"/><rect x="172" y="30" width="46" height="70" rx="5" fill="#fff"/><path d="M178 42h34M178 54h26M178 66h34M178 78h20"/><circle cx="238" cy="30" r="20" fill="#EE9479"/><path d="M238 20v13M238 40v.1" stroke="#fff" stroke-width="3.6"/></g><svg x="14" y="50" width="132" height="80" viewBox="0 0 132 80"><use href="#cats"/></svg>`},
+ {t:"兩個小技巧",p:"刪錯了不用怕，下方會出現<b>「復原」</b>可以救回來。待辦和要買的可以按<b>「排序」</b>，按住左邊的把手上下拖。",
+  art:`<rect width="300" height="150" fill="#EBE2F6"/><path d="M0 122h300v28H0z" fill="#E7DCCB"/><g ${TOL}><rect x="30" y="34" width="112" height="40" rx="12" fill="#3F3127"/><rect x="96" y="42" width="38" height="24" rx="8" fill="#F6D58A" stroke="none"/><path d="M42 54h40" stroke="#fff"/><rect x="160" y="26" width="112" height="28" rx="9" fill="#fff"/><rect x="160" y="60" width="112" height="28" rx="9" fill="#FCEFC6" transform="rotate(-3 216 74)"/><rect x="160" y="94" width="112" height="28" rx="9" fill="#fff"/><path d="M170 36h12M170 40h12M170 44h12M170 104h12M170 108h12M170 112h12" stroke-width="2"/><path d="M168 68h12M168 72h12M168 76h12" stroke-width="2" transform="rotate(-3 216 74)"/></g><text x="115" y="58" font-size="12" font-weight="900" fill="#3F3127" text-anchor="middle" font-family="sans-serif">復原</text><svg x="30" y="80" width="74" height="45" viewBox="0 0 132 80"><use href="#cats-hi"/></svg>`},
+ {t:"最後，設定這支手機",p:"加到主畫面、選好你是誰、連上同步、打開提醒。<b>兩個人的手機要各自設定</b>，能偵測的項目 App 會自動幫你打勾。",
+  art:`<rect width="300" height="150" fill="#FCEFC6"/><path d="M0 122h300v28H0z" fill="#E7DCCB"/><svg x="168" y="14" width="96" height="111" viewBox="0 0 52 60">${PHONE_SVG.replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg><svg x="22" y="54" width="132" height="80" viewBox="0 0 132 80"><use href="#cats-hi"/></svg>`}];
+let tourEl=null;
+function openTour(){
+ if(tourEl)return;const pre=Date.now()<DEPART,n=TOUR.length;
+ const v=document.createElement("div");v.className="tour";v.setAttribute("role","dialog");v.setAttribute("aria-modal","true");v.setAttribute("aria-label","使用教學");
+ v.innerHTML=`<div class="tour-card"><div class="tour-track">${TOUR.map((c,i)=>`<section class="tour-slide" aria-label="第 ${i+1} 頁，共 ${n} 頁"><svg class="tour-art" viewBox="0 0 300 150" aria-hidden="true">${c.art}</svg><div class="tour-txt"><h2>${c.t}</h2><p>${c.p}</p></div></section>`).join("")}</div>
+  <div class="tour-foot"><button type="button" class="tour-skip" data-tour-skip>略過</button><span class="tour-dots" aria-hidden="true">${TOUR.map((_,i)=>`<i${i?"":' class="on"'}></i>`).join("")}</span><button type="button" class="tour-next" data-tour-next>下一步</button></div></div>`;
+ tourEl=v;document.body.appendChild(v);document.body.style.overflow="hidden";
+ const track=v.querySelector(".tour-track"),dots=[...v.querySelectorAll(".tour-dots i")],next=v.querySelector("[data-tour-next]"),skip=v.querySelector("[data-tour-skip]");
+ let cur=0;
+ const sync=()=>{cur=Math.round(track.scrollLeft/Math.max(1,track.clientWidth));dots.forEach((d,i)=>d.classList.toggle("on",i===cur));const last=cur===n-1;next.textContent=last?(pre?"開始設定這支手機":"開始使用"):"下一步";next.classList.toggle("wide",last);skip.hidden=last};
+ track.addEventListener("scroll",()=>{clearTimeout(track._t);track._t=setTimeout(sync,60)},{passive:true});
+ const close=()=>{try{localStorage.setItem(TOUR_KEY,"1")}catch(_){};v.remove();tourEl=null;document.body.style.overflow=""};
+ skip.addEventListener("click",close);
+ next.addEventListener("click",()=>{if(cur<n-1){track.scrollTo({left:(cur+1)*track.clientWidth,behavior:reduce()?"auto":"smooth"});setTimeout(sync,reduce()?0:380);return}close();if(pre)openSetup()});
+ v.addEventListener("keydown",e=>{if(e.key==="Escape")close();if(e.key==="ArrowRight")next.click()});
+ setTimeout(()=>next.focus({preventScroll:true}),50);
+}
+(()=>{let seen=false;try{seen=localStorage.getItem(TOUR_KEY)==="1"}catch(_){seen=true}if(!seen)setTimeout(openTour,700)})();
+document.addEventListener("click",e=>{if(e.target.closest("[data-tour-open]")){if(setupSheet){setupSheet.remove();setupSheet=null;document.body.style.overflow=""}openTour()}});
 </script>
 
 <script>
