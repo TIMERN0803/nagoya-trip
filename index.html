@@ -1008,43 +1008,121 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .tf-carry[aria-pressed="true"] i{background:var(--mint-ink);border-color:var(--mint-ink)}
 .tf-carry[aria-pressed="true"] i::after{content:"";width:9px;height:5px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
 
-/* ===== 旅程回顧（旅程結束後出現在首頁） ===== */
-.review .rv-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px}
-.rv-stat.total{grid-column:1/-1;flex-direction:row;align-items:baseline;justify-content:center;gap:10px;padding:12px}
-.rv-stat.total b{font-size:28px}
-.rv-stat{background:var(--paper);border-radius:16px;padding:10px 8px;text-align:center;display:flex;flex-direction:column;gap:2px;min-width:0}
-.rv-stat small{font-size:12px;color:var(--muted);font-weight:700}
-.rv-stat b{font-family:var(--f-display);font-weight:900;font-size:20px;font-variant-numeric:tabular-nums;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rv-stat i{font-style:normal;font-size:11.5px;color:var(--muted)}
-.rv-sec{padding:14px 16px 0;display:flex;flex-direction:column;gap:8px}
-.rv-sec h3{margin:0;font-size:15px;display:flex;justify-content:space-between;align-items:baseline}
-.rv-sec h3 span{font-size:12.5px;color:var(--muted);font-weight:700}
-.rv-bar{display:flex;height:16px;border-radius:9px;overflow:hidden;background:var(--sunk)}
-.rv-bar i{display:block;height:100%;background:var(--tc)}
-.rv-bar i+i{box-shadow:inset 2px 0 0 var(--card)}
-.rv-leg{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:13px}
-.rv-leg span{display:inline-flex;align-items:center;gap:5px}
-.rv-leg span::before{content:"";width:10px;height:10px;border-radius:3px;background:var(--tc)}
-.rv-leg b{font-variant-numeric:tabular-nums}
-.rv-ppl{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.rv-p{display:flex;align-items:center;gap:8px;background:var(--paper);border-radius:14px;padding:8px 10px}
-.rv-p svg{width:30px;height:35px;flex:none}
-.rv-p span{display:flex;flex-direction:column;line-height:1.3;min-width:0}
-.rv-p small{font-size:12px;color:var(--muted)}
-.rv-p b{font-family:var(--f-display);font-weight:900;font-size:16px;font-variant-numeric:tabular-nums}
-.rv-settle{font-size:13.5px;color:var(--muted);text-align:center}
-.rv-settle b{color:var(--ink)}
-.rv-best{display:flex;gap:12px;align-items:stretch;width:100%;padding:0;border:0;background:none;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
-.rv-best .art{width:96px;height:96px;flex:none;border-radius:16px;overflow:hidden;border:2px solid var(--ol)}
-.rv-best .art svg{width:100%;height:100%;display:block}
-.rv-best .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px;justify-content:center}
-.rv-best .tx>b{font-family:var(--f-display);font-weight:900;font-size:16px}
-.rv-best .tx>small{font-size:12.5px;color:var(--muted)}
-.rv-q{display:flex;gap:6px;align-items:flex-start;font-size:13px;line-height:1.4}
-.rv-q .face{width:22px;height:22px;flex:none}
-.rv-q span{overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-.review .rv-foot{display:flex;gap:8px;padding:14px 16px 16px}
-.review .rv-foot button{flex:1;height:42px;border:0;border-radius:13px;background:var(--sunk);color:var(--ink);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14px;cursor:pointer}
+/* ===== 旅程回顧：首頁電影票入口＋全螢幕故事 ===== */
+.rv-ticket{position:relative;display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;padding:14px 16px 14px 12px;border:2.5px solid var(--ol);border-radius:22px;background:linear-gradient(120deg,#FCEFC6,#FDE3D2);box-shadow:0 4px 0 var(--ol);font:inherit;color:var(--ink);text-align:left;cursor:pointer;overflow:hidden}
+.rv-ticket:active{transform:translateY(2px);box-shadow:0 2px 0 var(--ol)}
+.rv-ticket::before,.rv-ticket::after{content:"";position:absolute;right:86px;width:20px;height:20px;border-radius:50%;background:var(--paper);border:2.5px solid var(--ol)}
+.rv-ticket::before{top:-12px}.rv-ticket::after{bottom:-12px}
+.rv-ticket .tk-cats{width:84px;height:51px;flex:none}
+.rv-ticket .tk-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.rv-ticket .tk-t small{font-family:var(--f-display);font-weight:900;font-size:11.5px;letter-spacing:.12em;color:var(--brown)}
+.rv-ticket .tk-t b{font-family:var(--f-display);font-weight:900;font-size:19px;line-height:1.25}
+.rv-ticket .tk-t i{font-style:normal;font-size:12.5px;color:var(--muted)}
+.rv-ticket .tk-play{flex:none;width:52px;height:52px;margin-left:14px;border-radius:50%;background:var(--accent);box-shadow:0 3px 0 var(--accent-deep);display:grid;place-items:center;color:#fff}
+.rv-ticket .tk-play svg{width:22px;height:22px;margin-left:3px}
+.story{position:fixed;inset:0;z-index:70;background:#2B2420;display:flex;justify-content:center;animation:fadein .2s ease;color:var(--ink);-webkit-user-select:none;user-select:none}
+.st-frame{position:relative;width:100%;max-width:480px;height:100%;overflow:hidden}
+.st-bars{position:absolute;z-index:3;left:12px;right:12px;top:calc(10px + env(safe-area-inset-top,0px));display:flex;gap:4px}
+.st-bars i{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.35);overflow:hidden}
+.st-bars i.done{background:#fff}
+.st-bars i.on{background:linear-gradient(90deg,#fff 60%,rgba(255,255,255,.35) 60%)}
+.st-x{position:absolute;z-index:4;right:10px;top:calc(22px + env(safe-area-inset-top,0px));width:44px;height:44px;border:0;border-radius:50%;background:rgba(43,36,32,.35);color:#fff;display:grid;place-items:center;cursor:pointer}
+.st-x svg{width:18px;height:18px}
+.st-page{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:calc(76px + env(safe-area-inset-top,0px)) 24px calc(40px + env(safe-area-inset-bottom,0px));text-align:center;opacity:0;pointer-events:none;transition:opacity .25s}
+.st-page.on{opacity:1;pointer-events:auto}
+.st-page h2{margin:0;font-size:26px;line-height:1.3}
+.st-page .st-k{font-family:var(--f-display);font-weight:900;font-size:13px;letter-spacing:.18em;color:var(--brown)}
+.st-page .st-big{font-family:var(--f-display);font-weight:900;font-size:64px;line-height:1;font-variant-numeric:tabular-nums}
+.st-page .st-big small{font-size:22px;margin-left:4px}
+.st-page p{margin:0;font-size:15px;line-height:1.6;color:var(--muted)}
+.st-hint{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:12px;color:var(--muted);opacity:.8}
+.st-tap{position:absolute;z-index:2;top:0;bottom:0;width:34%;border:0;background:none;padding:0;cursor:pointer}
+.st-tap.prev{left:0}.st-tap.next{right:0;width:66%}
+.st-page .st-act{position:relative;z-index:3}
+/* 1 開場 */
+.pg-open{background:radial-gradient(circle at 50% 38%,#FCEFC6 0 40%,#F6D58A 100%)}
+.pg-open .op-cats{width:220px;height:133px}
+.pg-open h2{font-size:30px}
+.pg-open .op-n{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.pg-open .op-n span{padding:6px 14px;border:2.5px solid var(--ol);border-radius:999px;background:var(--card);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:17px}
+.stamp-date{display:inline-block;padding:4px 12px;border:2.5px dashed var(--coral-ink);border-radius:10px;color:var(--coral-ink);font-family:var(--f-display);font-weight:900;font-size:15px;transform:rotate(-6deg)}
+/* 2 集章冊 */
+.pg-stamp{background:#F3EBDD;background-image:radial-gradient(#E3D6C4 1.2px,transparent 1.3px);background-size:18px 18px}
+.stamps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 10px;width:100%;max-width:360px}
+.stamp{display:flex;flex-direction:column;align-items:center;gap:4px}
+.stamp .sc{width:100%;aspect-ratio:1;border-radius:50%;padding:4px;border:3px dashed var(--coral-ink);background:var(--card);opacity:0;transform:scale(1.6) rotate(var(--r));transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s}
+.stamp .sc>svg{width:100%;height:100%;border-radius:50%;display:block}
+.stamp small{font-family:var(--f-display);font-weight:900;font-size:11.5px;color:var(--brown)}
+.pg-stamp.on .stamp .sc{opacity:1;transform:scale(1) rotate(var(--r));transition-delay:var(--d)}
+/* 3 心情曲線 */
+.pg-mood{background:linear-gradient(180deg,#EBE2F6,#FDE6DC)}
+.curve{position:relative;width:100%;max-width:380px;aspect-ratio:16/10;background:var(--card);border:2.5px solid var(--ol);border-radius:22px;box-shadow:0 4px 0 var(--ol);padding:14px 12px 26px}
+.curve svg.ln{position:absolute;inset:26px 26px 36px;width:calc(100% - 52px);height:calc(100% - 62px);overflow:visible}
+.curve svg.ln path{fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .6s ease .2s}
+.pg-mood.on .curve svg.ln path{opacity:1}
+.curve .pt{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;box-shadow:0 0 0 3px var(--pc);background:var(--card);opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
+.curve .pt .face{width:30px;height:30px;display:block}
+.pg-mood.on .curve .pt{opacity:1;transform:none;transition-delay:var(--d)}
+.curve .dx{position:absolute;bottom:6px;font-size:11px;font-weight:700;color:var(--muted);transform:translateX(-50%)}
+.mood-leg{display:flex;gap:16px;justify-content:center;font-size:13.5px;font-weight:700}
+.mood-leg span{display:inline-flex;align-items:center;gap:6px}
+.mood-leg i{width:18px;height:4px;border-radius:2px}
+/* 4 拍立得 */
+.pg-best{background:linear-gradient(180deg,#DDF0E2,#FCEFC6)}
+.polaroid{width:min(250px,70vw);padding:12px 12px 14px;background:#fff;border-radius:6px;box-shadow:0 10px 26px rgba(63,49,39,.25),0 0 0 2px var(--ol);transform:rotate(-4deg)}
+.polaroid svg{width:100%;aspect-ratio:1;display:block;border-radius:3px}
+.polaroid b{display:block;margin-top:10px;font-family:var(--f-display);font-weight:900;font-size:17px}
+.polaroid small{font-size:12.5px;color:var(--muted)}
+.bubbles{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px}
+.bub{display:flex;align-items:flex-end;gap:8px;text-align:left}
+.bub.r{flex-direction:row-reverse;text-align:right}
+.bub>svg{width:46px;height:38px;flex:none}
+.bub span{position:relative;padding:9px 13px;background:var(--card);border:2.5px solid var(--ol);border-radius:16px;font-size:14.5px;font-weight:700;line-height:1.45}
+/* 5 對戰卡 */
+.pg-vs{background:linear-gradient(135deg,#3F3127 0 50%,#FCEFC6 50% 100%)}
+.pg-vs .st-k{color:#F6D58A;background:#3F3127;padding:4px 12px;border-radius:999px}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;width:100%;max-width:380px}
+.vs-p{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px;background:var(--card);border:2.5px solid var(--ol);border-radius:22px;box-shadow:0 4px 0 var(--ol)}
+.vs-p>svg{width:64px;height:75px}
+.vs-p b{font-family:var(--f-display);font-weight:900;font-size:18px}
+.vs-row{display:flex;flex-direction:column;line-height:1.25}
+.vs-row small{font-size:11.5px;color:var(--muted);font-weight:700}
+.vs-row em{font-style:normal;font-family:var(--f-display);font-weight:900;font-size:19px;font-variant-numeric:tabular-nums}
+.vs-mid{width:46px;height:46px;border-radius:50%;background:var(--coral-ink);color:#fff;display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:17px;border:3px solid #fff;box-shadow:0 0 0 2.5px var(--ol)}
+/* 6 收據 */
+.pg-rcpt{background:#E7DCCB}
+.rcpt-wrap{width:100%;max-width:330px;overflow:hidden}
+.rcpt{background:#FFFDF8;padding:22px 20px 26px;text-align:left;font-variant-numeric:tabular-nums;-webkit-mask:conic-gradient(from -45deg at bottom,transparent 90deg,#000 0) bottom/16px 12px repeat-x,linear-gradient(#000,#000) top/100% calc(100% - 11px) no-repeat;mask:conic-gradient(from -45deg at bottom,transparent 90deg,#000 0) bottom/16px 12px repeat-x,linear-gradient(#000,#000) top/100% calc(100% - 11px) no-repeat;transform:translateY(-100%);transition:transform 1s cubic-bezier(.3,.8,.4,1) .15s;box-shadow:0 6px 18px rgba(63,49,39,.18)}
+.pg-rcpt.on .rcpt{transform:none}
+.rcpt h3{margin:0;text-align:center;font-size:17px;letter-spacing:.08em}
+.rcpt .rc-sub{text-align:center;font-size:12px;color:var(--muted);margin:2px 0 12px}
+.rcpt .rl{display:flex;align-items:baseline;gap:6px;font-size:14.5px;padding:4px 0}
+.rcpt .rl span{flex:none}
+.rcpt .rl i{flex:1;border-bottom:2px dotted var(--line-strong);transform:translateY(-4px)}
+.rcpt .rl b{flex:none;font-family:var(--f-display);font-weight:900}
+.rcpt hr{border:0;border-top:2px dashed var(--line-strong);margin:10px 0}
+.rcpt .tot b{font-size:22px}
+.rcpt .tot span{font-weight:900}
+.rcpt .rc-tw{text-align:right;font-size:12.5px;color:var(--muted)}
+.rcpt .rc-settle{margin-top:10px;text-align:center;font-size:13.5px;font-weight:700}
+.rcpt .rc-thx{margin-top:14px;text-align:center;font-family:var(--f-display);font-weight:900;font-size:12px;letter-spacing:.2em;color:var(--muted)}
+/* 7 總結 */
+.pg-sum{background:radial-gradient(circle at 50% 30%,#FFF9EA,#F6D58A)}
+.sum-card{width:100%;max-width:340px;padding:18px 16px;background:var(--card);border:2.5px solid var(--ol);border-radius:26px;box-shadow:0 5px 0 var(--ol);display:flex;flex-direction:column;gap:12px}
+.sum-card .sc-h{display:flex;align-items:center;gap:10px;text-align:left}
+.sum-card .sc-h svg{width:70px;height:42px;flex:none}
+.sum-card .sc-h b{font-family:var(--f-display);font-weight:900;font-size:19px;display:block}
+.sum-card .sc-h small{font-size:12.5px;color:var(--muted)}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sum-grid div{background:var(--paper);border-radius:14px;padding:9px 8px;display:flex;flex-direction:column;gap:1px}
+.sum-grid small{font-size:11.5px;color:var(--muted);font-weight:700}
+.sum-grid b{font-family:var(--f-display);font-weight:900;font-size:19px;font-variant-numeric:tabular-nums}
+.sum-acts{display:flex;gap:10px;width:100%;max-width:340px}
+.sum-acts button{flex:1;height:48px;border:0;border-radius:15px;font:inherit;font-family:var(--f-display);font-weight:900;font-size:15px;cursor:pointer}
+.sum-acts .save{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep)}
+.sum-acts .again{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line-strong)}
+.st-msg{font-size:13px;color:var(--brown);font-weight:700;min-height:1em}
+@media (prefers-reduced-motion:reduce){.st-page,.stamp .sc,.curve .pt,.rcpt,.curve svg.ln path{transition:none!important}.stamp .sc,.curve .pt{opacity:1;transform:rotate(var(--r,0deg))}.rcpt{transform:none}.curve svg.ln path{opacity:1}}
 </style>
 </head>
 <body>
@@ -2472,25 +2550,93 @@ document.addEventListener("click",async e=>{
  if(e.target.closest("[data-go-tf]")){tab="acct";render();setTimeout(()=>{const b=document.getElementById("tf-list");if(b&&!b.hidden)b.scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});else scrollTo(0,0)},60);return}
 });
 
-/* ===== 旅程回顧：旅程結束後在首頁顯示總花費、去過的地方、兩人分帳、最開心的一天 ===== */
-function reviewHTML(){
- if(!(todayIdx<0&&diff<=0))return "";
+/* ===== 旅程回顧：首頁電影票入口，點開是一頁一個主題的全螢幕故事（點擊換頁），最後總結可存成圖片 ===== */
+const RV_PEOPLE_COLOR={zhang:"#3F3127",star:"#E07A5F"};
+function rvData(){
  const total=expenses.reduce((a,e)=>a+e.amt,0);
  const pids=new Set();DAYS.forEach(x=>x.items.forEach(it=>{if(it.pid&&["go","eat","buy","do"].includes(it.k))pids.add(it.pid)}));
- const nMood=DAYS.reduce((a,x)=>a+PEOPLE.filter(p=>moods[mk(x.d,p[0])]).length,0);
  const cats=ECAT.map(c=>[c,expenses.filter(e=>e.cat===c[0]).reduce((a,e)=>a+e.amt,0)]).filter(x=>x[1]>0).sort((a,b)=>b[1]-a[1]);
  let bal=0;expenses.forEach(e=>{if(e.split==="both")bal+=e.who==="zhang"?e.amt/2:-e.amt/2});
- const settle=Math.abs(bal)<1?"兩個人互不相欠":bal>0?`星星要給阿彰 <b>${yen(bal)}</b>`:`阿彰要給星星 <b>${yen(-bal)}</b>`;
+ const settle=Math.abs(bal)<1?"兩個人互不相欠":bal>0?`星星要給阿彰 ${yen(bal)}`:`阿彰要給星星 ${yen(-bal)}`;
+ const ppl=PEOPLE.map(p=>({id:p[0],name:p[1],sym:p[2],paid:expenses.filter(e=>e.who===p[0]).reduce((a,e)=>a+e.amt,0),moods:DAYS.filter(x=>moods[mk(x.d,p[0])]).length,cash:cashIn(p[0])>0?cashIn(p[0])-cashLeft(p[0]):null}));
+ const nMood=ppl.reduce((a,p)=>a+p.moods,0);
  let best=null;DAYS.forEach((x,i)=>{const sc=PEOPLE.map(p=>moods[mk(x.d,p[0])]).filter(Boolean);if(!sc.length)return;const avg=sc.reduce((a,v)=>a+v.score,0)/sc.length;if(!best||avg>best.avg)best={x,i,avg}});
- const stat=(k,v,sub,cls="")=>`<div class="rv-stat${cls?" "+cls:""}"><small>${k}</small><b>${v}</b>${sub?`<i>${sub}</i>`:""}</div>`;
- return `<section class="sheet review" id="review"><div class="sheet-head"><h2>8 天的回顧</h2><span>11/17 – 11/24</span></div>
- <div class="rv-stats">${stat("總花費",yen(total),total?`約 NT$ ${Math.round(total*rate).toLocaleString("en-US")}`:"","total")}${stat("去過的地方",`${pids.size} 個`,"")}${stat("心情",`${nMood} 則`,"")}</div>
- ${cats.length?`<div class="rv-sec"><h3>花在哪裡</h3><div class="rv-bar" role="img" aria-label="${cats.map(([c,v])=>`${c[1]} ${yen(v)}`).join("、")}">${cats.map(([c,v])=>`<i class="${c[3]}" style="width:${(v/total*100).toFixed(2)}%"></i>`).join("")}</div><div class="rv-leg">${cats.slice(0,3).map(([c,v])=>`<span class="${c[3]}">${c[1]} <b>${yen(v)}</b></span>`).join("")}</div></div>
- <div class="rv-sec"><h3>兩個人</h3><div class="rv-ppl">${PEOPLE.map(p=>{const paid=expenses.filter(e=>e.who===p[0]).reduce((a,e)=>a+e.amt,0),ci=cashIn(p[0]);return `<div class="rv-p"><svg viewBox="0 0 60 70" aria-hidden="true"><use href="#${p[2]}"/></svg><span><small>${p[1]}付了</small><b>${yen(paid)}</b>${ci>0?`<small>現金用掉 ${yen(ci-cashLeft(p[0]))}</small>`:""}</span></div>`}).join("")}</div><div class="rv-settle">${settle}</div></div>`:""}
- ${best?`<div class="rv-sec"><h3>最開心的一天<span>${best.x.d}（${best.x.w}）</span></h3><button type="button" class="rv-best" data-day="${best.i}"><span class="art">${svgTile(best.x.art)}</span><span class="tx"><b>${esc(best.x.place)}</b>${PEOPLE.map(p=>{const v=moods[mk(best.x.d,p[0])];return v?`<span class="rv-q">${moodFace(v.score)}<span>${esc(v.note||MOODS[v.score-1][1])}</span></span>`:""}).join("")}</span></button></div>`:""}
- <div class="rv-foot"><button type="button" data-go="acct">看完整記帳</button>${best?`<button type="button" data-scroll-strip>看每天的心情</button>`:""}</div></section>`;
+ return{total,pids:pids.size,cats,settle,ppl,nMood,best};
 }
-document.addEventListener("click",e=>{if(e.target.closest("[data-scroll-strip]")){const el=document.querySelector(".mood-strip");if(el)el.scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"})}});
+function reviewHTML(){
+ if(!(todayIdx<0&&diff<=0))return "";
+ return `<button type="button" class="rv-ticket" data-story-open id="review"><svg class="tk-cats" viewBox="0 0 132 80" aria-hidden="true"><use href="#cats-hi"/></svg><span class="tk-t"><small>NAGOYA 2026</small><b>我們的名古屋回顧</b><i>8 天的故事，點開播放</i></span><span class="tk-play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z" fill="currentColor"/></svg></span></button>`;
+}
+function rvCount(el,to,fmt){
+ if(!el)return;if(reduce()){el.textContent=fmt(to);return}
+ const t0=performance.now(),dur=900;const f=t=>{const k=Math.min(1,(t-t0)/dur),v=Math.round(to*(1-Math.pow(1-k,3)));el.textContent=fmt(v);if(k<1&&el.isConnected)requestAnimationFrame(f)};requestAnimationFrame(f);
+}
+function rvPages(D){
+ const pages=[];const face=n=>moodFace(n);
+ pages.push({cls:"pg-open",html:`<span class="stamp-date">2026.11.17 – 11.24</span><svg class="op-cats" viewBox="0 0 132 80" aria-hidden="true"><use href="#cats-walk"/></svg><h2>我們的名古屋</h2><div class="op-n"><span>8 天</span><span>2 隻貓</span><span>1 趟旅行</span></div><p>點右邊看下一頁</p>`});
+ pages.push({cls:"pg-stamp",html:`<span class="st-k">STAMP BOOK</span><div class="stamps">${DAYS.map((x,i)=>`<div class="stamp" style="--d:${i*.12}s;--r:${[-8,6,-4,9,-6,4,-10,7][i]}deg"><span class="sc"><svg viewBox="2 2 116 116" aria-hidden="true">${svgTile(x.art).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg></span><small>${x.d}</small></div>`).join("")}</div><div><div class="st-big"><span data-count="${D.pids}">0</span><small>個地方</small></div><p>8 天蓋滿 8 個章</p></div>`,count:true});
+ if(D.nMood){
+  const W=100,H=100,xs=i=>i/(DAYS.length-1)*W,ys=n=>H-(n-1)/4*H;
+  const lines=PEOPLE.map(p=>{const pts=DAYS.map((x,i)=>{const v=moods[mk(x.d,p[0])];return v?[xs(i),ys(v.score),v.score,i]:null}).filter(Boolean);return{p,pts}});
+  const path=pts=>pts.map((q,j)=>(j?"L":"M")+q[0].toFixed(2)+" "+q[1].toFixed(2)).join(" ");
+  pages.push({cls:"pg-mood",html:`<span class="st-k">MOOD</span><h2>心情曲線</h2><div class="curve"><svg class="ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines.map(l=>l.pts.length>1?`<path d="${path(l.pts)}" stroke="${RV_PEOPLE_COLOR[l.p[0]]}" vector-effect="non-scaling-stroke"/>`:"").join("")}</svg>${lines.map((l,li)=>l.pts.map(q=>{const other=lines[1-li]&&lines[1-li].pts.find(z=>z[3]===q[3]&&z[2]===q[2]),off=other?(li?9:-9):0;return `<span class="pt" style="left:calc(26px + (100% - 52px) * ${q[0]/100} + ${off}px);top:calc(26px + (100% - 62px) * ${q[1]/100});--d:${.25+q[3]*.12}s;--pc:${RV_PEOPLE_COLOR[l.p[0]]}">${face(q[2])}</span>`}).join("")).join("")}${DAYS.map((x,i)=>`<span class="dx" style="left:calc(26px + (100% - 52px) * ${i/(DAYS.length-1)})">${x.d.split("/")[1]}</span>`).join("")}</div><div class="mood-leg">${PEOPLE.map(p=>`<span><i style="background:${RV_PEOPLE_COLOR[p[0]]}"></i>${p[1]}</span>`).join("")}</div><p>兩個人一共寫了 <b>${D.nMood}</b> 則心情</p>`});
+ }
+ if(D.best){const x=D.best.x;
+  pages.push({cls:"pg-best",html:`<span class="st-k">BEST DAY</span><div class="polaroid"><svg viewBox="2 2 116 116" aria-hidden="true">${svgTile(x.art).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg><b>${esc(x.place)}</b><small>${x.d}（${x.w}）・最開心的一天</small></div><div class="bubbles">${PEOPLE.map((p,j)=>{const v=moods[mk(x.d,p[0])];return v?`<div class="bub${j?" r":""}"><svg viewBox="3 -3 64 51" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg><span>${esc(v.note||MOODS[v.score-1][1])}</span></div>`:""}).join("")}</div>`});
+ }
+ if(D.total||D.nMood){
+  pages.push({cls:"pg-vs",html:`<span class="st-k">阿彰 VS 星星</span><div class="vs">${D.ppl.map((p,j)=>`${j?`<span class="vs-mid">VS</span>`:""}<div class="vs-p"><svg viewBox="0 0 60 70" aria-hidden="true"><use href="#${p.sym}"/></svg><b>${p.name}</b><span class="vs-row"><small>付了</small><em>${yen(p.paid)}</em></span>${p.cash!=null?`<span class="vs-row"><small>現金用掉</small><em>${yen(p.cash)}</em></span>`:""}<span class="vs-row"><small>心情</small><em>${p.moods} 則</em></span></div>`).join("")}</div>`});
+ }
+ if(D.total){
+  pages.push({cls:"pg-rcpt",html:`<span class="st-k">RECEIPT</span><div class="rcpt-wrap"><div class="rcpt"><h3>名古屋看花花</h3><div class="rc-sub">2026.11.17 – 11.24・2 名</div>${D.cats.map(([c,v])=>`<div class="rl"><span>${c[1]}</span><i></i><b>${yen(v)}</b></div>`).join("")}<hr><div class="rl tot"><span>合計</span><i></i><b>${yen(D.total)}</b></div><div class="rc-tw">約 NT$ ${Math.round(D.total*rate).toLocaleString("en-US")}</div><div class="rc-settle">${esc(D.settle)}</div><div class="rc-thx">ありがとう 名古屋</div></div></div>`});
+ }
+ pages.push({cls:"pg-sum",html:`<div class="sum-card" id="sum-card"><div class="sc-h"><svg viewBox="0 0 132 80" aria-hidden="true"><use href="#cats-hi"/></svg><span><b>我們的名古屋</b><small>2026.11.17 – 11.24・阿彰 & 星星</small></span></div><div class="sum-grid"><div><small>去過的地方</small><b>${D.pids} 個</b></div><div><small>心情</small><b>${D.nMood} 則</b></div><div><small>最開心的一天</small><b>${D.best?esc(D.best.x.place):"—"}</b></div><div><small>總花費</small><b>${yen(D.total)}</b></div></div></div><div class="sum-acts st-act"><button type="button" class="again" data-story-again>再看一次</button><button type="button" class="save" data-story-save>存成圖片</button></div><div class="st-msg st-act" aria-live="polite"></div>`});
+ return pages;
+}
+let storyEl=null;
+function openStory(){
+ if(storyEl)return;const D=rvData(),pages=rvPages(D),n=pages.length;let cur=0;
+ const v=document.createElement("div");v.className="story";v.setAttribute("role","dialog");v.setAttribute("aria-modal","true");v.setAttribute("aria-label","名古屋回顧");
+ v.innerHTML=`<div class="st-frame"><div class="st-bars" aria-hidden="true">${pages.map(()=>"<i></i>").join("")}</div>${pages.map((p,i)=>`<section class="st-page ${p.cls}" data-pg="${i}" aria-label="第 ${i+1} 頁，共 ${n} 頁">${p.html}</section>`).join("")}<button type="button" class="st-tap prev" aria-label="上一頁"></button><button type="button" class="st-tap next" aria-label="下一頁"></button><button type="button" class="st-x" aria-label="關閉回顧"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button></div>`;
+ storyEl=v;document.body.appendChild(v);document.body.style.overflow="hidden";
+ const secs=[...v.querySelectorAll(".st-page")],bars=[...v.querySelectorAll(".st-bars i")];
+ const go=i=>{cur=Math.max(0,Math.min(n-1,i));secs.forEach((s,k)=>s.classList.toggle("on",k===cur));bars.forEach((b,k)=>{b.classList.toggle("done",k<cur);b.classList.toggle("on",k===cur)});const last=cur===n-1;v.querySelector(".st-tap.next").hidden=last;v.querySelector(".st-tap.prev").style.width=last?"0":"";const c=secs[cur].querySelector("[data-count]");if(c)rvCount(c,+c.dataset.count,x=>String(x))};
+ const close=()=>{v.remove();storyEl=null;document.body.style.overflow=""};
+ v.querySelector(".st-x").addEventListener("click",close);
+ v.querySelector(".st-tap.next").addEventListener("click",()=>go(cur+1));
+ v.querySelector(".st-tap.prev").addEventListener("click",()=>go(cur-1));
+ v.addEventListener("keydown",e=>{if(e.key==="Escape")close();if(e.key==="ArrowRight")go(cur+1);if(e.key==="ArrowLeft")go(cur-1)});
+ let sx=null;v.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});v.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>50){e.preventDefault();go(cur+(dx<0?1:-1))}});
+ v.addEventListener("click",async e=>{
+  if(e.target.closest("[data-story-again]")){go(0);return}
+  if(e.target.closest("[data-story-save]")){const m=v.querySelector(".st-msg");m.textContent="製作圖片中…";try{const r=await rvSaveImage(D);m.textContent=r==="shared"?"已分享":"已存成圖片"}catch(err){m.textContent=err&&err.name==="AbortError"?"":"存圖失敗，可以改用手機截圖"}}
+ });
+ go(0);setTimeout(()=>v.querySelector(".st-tap.next").focus({preventScroll:true}),50);
+}
+document.addEventListener("click",e=>{if(e.target.closest("[data-story-open]"))openStory()});
+/* 存成圖片：用 canvas 畫一張 1080×1350 的總結卡（插圖用 SVG 轉圖），手機可以直接分享，不能分享就下載 */
+function rvSvgImg(inner,vb,w,h){
+ return new Promise((res,rej)=>{const defs=document.getElementById("defs").outerHTML;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="${vb}" width="${w}" height="${h}">${defs}${inner}</svg>`;
+  const img=new Image();img.onload=()=>res(img);img.onerror=rej;img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)});
+}
+async function rvSaveImage(D){
+ const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+ const F=getComputedStyle(document.body).getPropertyValue("--f-display")||"sans-serif",B=getComputedStyle(document.body).fontFamily;
+ const OL="#8C6D55",INK="#3F3127",MUT="#6E5E52";
+ const rr=(x,y,w,h,r)=>{g.beginPath();g.roundRect?g.roundRect(x,y,w,h,r):g.rect(x,y,w,h)};
+ const grd=g.createRadialGradient(W/2,H*.3,50,W/2,H*.3,H);grd.addColorStop(0,"#FFF9EA");grd.addColorStop(1,"#F6D58A");g.fillStyle=grd;g.fillRect(0,0,W,H);
+ g.fillStyle=OL;rr(90,150,W-180,H-300,64);g.fill();g.fillStyle="#fff";rr(90,138,W-180,H-300,64);g.fill();g.lineWidth=7;g.strokeStyle=OL;g.stroke();
+ const cats=await rvSvgImg('<use href="#cats-hi" xlink:href="#cats-hi"/>',"0 0 132 80",440,267);g.drawImage(cats,W/2-220,190,440,267);
+ g.fillStyle=INK;g.textAlign="center";g.font=`900 72px ${F}`;g.fillText("我們的名古屋",W/2,540);
+ g.fillStyle=MUT;g.font=`500 36px ${B}`;g.fillText("2026.11.17 – 11.24・阿彰 & 星星",W/2,600);
+ const cells=[["去過的地方",`${D.pids} 個`],["心情",`${D.nMood} 則`],["最開心的一天",D.best?D.best.x.place:"—"],["總花費",yen(D.total)]];
+ cells.forEach(([k,val],i)=>{const x=150+(i%2)*400,y=660+Math.floor(i/2)*230;g.fillStyle="#F8F3EC";rr(x,y,380,200,36);g.fill();g.textAlign="left";g.fillStyle=MUT;g.font=`700 32px ${B}`;g.fillText(k,x+36,y+66);g.fillStyle=INK;let fs=64;g.font=`900 ${fs}px ${F}`;while(g.measureText(val).width>320&&fs>30){fs-=4;g.font=`900 ${fs}px ${F}`}g.fillText(val,x+36,y+150)});
+ g.textAlign="center";g.fillStyle=OL;g.font=`900 30px ${F}`;g.fillText("名古屋看花花",W/2,1150);
+ const blob=await new Promise(r=>c.toBlob(r,"image/png"));const file=new File([blob],"名古屋回顧.png",{type:"image/png"});
+ if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"我們的名古屋回顧"});return "shared"}
+ const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="名古屋回顧.png";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);return "saved";
+}
 </script>
 
 <script>
