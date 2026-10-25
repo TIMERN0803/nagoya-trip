@@ -2,7 +2,7 @@ import asyncio
 import fulltest as ft
 from playwright.async_api import async_playwright
 CASES=[("11/21 10:20",ft.jst(11,21,10,20),"現在","熱田神宮"),("11/18 13:20",ft.jst(11,18,13,20),"現在","吉卜力公園"),("11/18 18:45",ft.jst(11,18,18,45),"接下來 19:30","伏見屋"),
-("11/19 08:20",ft.jst(11,19,8,20),"現在","コンパル"),("11/17 21:00",ft.jst(11,17,21,0),"現在","すゞ家"),("11/17 23:30",ft.jst(11,17,23,30),None,None),("11/10 出發前",ft.jst(11,10,12),None,None),("11/25 結束",ft.jst(11,25,12),None,None)]
+("11/19 08:20",ft.jst(11,19,8,20),"現在","コンパル"),("11/17 21:00",ft.jst(11,17,21,0),"現在","すゞ家"),("11/17 23:30 行程結束變回家",ft.jst(11,17,23,30),"今天行程結束","回家"),("11/10 出發前",ft.jst(11,10,12),None,None),("11/25 結束",ft.jst(11,25,12),None,None)]
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch()
