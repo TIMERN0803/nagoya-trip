@@ -24,3 +24,6 @@ cd /home/claude/qa/scripts && python3 t_offline.py   # 每支都可以單獨執�
 - `qa_common.py` 有防呆，不能使用正式旅程代碼：只存代碼的雜湊值，代碼本身不寫進 repo。
 - 截圖寫到 `qa/claude/shots/`，網站複本寫到 `qa/claude/site_*`，這兩個都在 `.gitignore` 裡，不會被提交。
 - 修完第一批後，`t_slowserver`、`t_slowlib`、`t_offline`、`t_coldcash`、`t_swlib` 原本 FAIL 的項目應該要變成 PASS。修好後請整理成正式回歸測試，放進 `ft/`。
+- **第一批已修好（ngy-v45）**：上面五支和 Codex 的 mood_sync 全部 PASS，回歸測試是 `ft/synctest.py`。
+  - 之後重跑 `t_sw.py` 會有 2 項顯示 FAIL：它要求快取清單「只有」新版本，但現在多了刻意保留的 `ngy-lib`（程式庫快取），屬於預期變化。
+  - 腳本會覆寫 `claude/scripts/out_*.json`（當初的基準結果），跑完請用 `git checkout -- qa/claude/scripts/` 還原。
