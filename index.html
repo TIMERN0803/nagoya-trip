@@ -408,6 +408,11 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .code-row{display:flex;gap:8px}
 .code-row .field{flex:1;min-width:0}
 .code-row .primary{width:auto;margin:0;padding:8px 16px;font-size:15px}
+.code-row .ghost{width:auto;margin:0;padding:8px 14px}
+.code p{margin:0;color:var(--muted);line-height:1.5}
+.code .code-err{color:var(--coral-ink);font-weight:700}
+button.sync{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.code-now{font-family:var(--f-display);font-weight:900;letter-spacing:.04em}
 .chk-row{position:relative;border-top:2px dashed var(--line)}
 .chk-row .chk{border-top:0;padding-right:56px}
 .edit-btn{position:absolute;right:8px;top:8px;width:40px;height:40px;border:0;background:none;color:var(--muted);border-radius:12px;display:grid;place-items:center;cursor:pointer}
@@ -462,6 +467,8 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .w-mode{display:flex;gap:6px}
 .w-form .amt{display:flex;align-items:center;gap:6px;border:2px solid var(--line-strong);border-radius:16px;padding:4px 12px;background:var(--card)}
 .w-form .amt span{font-family:var(--f-display);font-weight:900;font-size:20px;color:var(--brown)}
+.w-form .msg{font-size:13px;font-weight:700;color:var(--coral-ink);margin:0}
+.w-form .msg:empty{display:none}
 .w-form .amt input{flex:1;min-width:0;border:0;background:none;font-size:20px;font-family:var(--f-display);font-weight:900;padding:6px 0;outline:none}
 .hp-buy .hp-ic{background:var(--butter);color:var(--ol)}
 .bi{display:flex;flex-wrap:wrap;align-items:flex-start;gap:2px 12px;margin-top:3px}
@@ -1224,6 +1231,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 /* ===== 匯率自動更新 ===== */
 .rate-note{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px;font-size:12px;color:var(--muted);line-height:1.4}
 .rate-note a{color:var(--muted)}
+.rate-note.err{color:var(--coral-ink);font-weight:700}
 .rate-note button{flex:none;border:0;border-radius:10px;background:var(--sunk);color:var(--brown);font:inherit;font-family:var(--f-display);font-weight:900;font-size:12.5px;padding:6px 10px;cursor:pointer}
 .rate-note .live{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--mint);margin-right:5px;vertical-align:1px}
 </style>
@@ -1444,7 +1452,7 @@ function heroSVG(p){
 const KIND={move:["交通","k-move","c-move"],fly:["航班","k-fly","c-move"],go:["景點","k-go","c-go"],eat:["餐廳","k-eat","c-eat"],stay:["住宿","k-stay","c-stay"],do:["預約","k-do","c-do"],remind:["提醒","k-do","c-do"],buy:["外帶","k-buy","c-buy"]};
 const DAYS=[
  {d:"11/17",w:"二",title:"抵達名古屋",place:"名古屋城",art:"castle",wx:["名古屋",17,8],route:["台中","名古屋","名古屋城","榮"],items:[
-   {t:"07:05",k:"fly",n:"JX 320 台中 → 名古屋",p:"10:40 抵達中部國際機場"},
+   {t:"07:05",tz:"Asia/Taipei",k:"fly",n:"JX 320 台中 → 名古屋",p:"10:40 抵達中部國際機場"},
    {t:"10:40",k:"move",n:"搭名鐵到名古屋車站",p:"μSKY 約 28 分鐘，詳見交通分頁"},
    {k:"stay",n:"名古屋燈光圖書飯店",jp:"ランプライトブックスホテル名古屋",p:"入住 15:00 起・11/24 退房 10:00 前・伏見站 10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋",stay:1,pid:"ChIJ74aBvtd2A2AR8TRTA-QLXZM"},
    {k:"eat",l:"午餐",n:"つばめパン＆Milk 名駅店",p:"天然酵母吐司專門店",map:"つばめパン＆Milk 名駅店",pid:"ChIJJX5mDJx3A2ARRkSisgKVHXU"},
@@ -1542,7 +1550,7 @@ const itemsOf=g=>items.filter(x=>x.group===g).sort((a,b)=>(a.order??0)-(b.order?
 function dueParts(v){const m=String(v||"").match(/^(\d{1,2})\/(\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?$/);return m?{mo:+m[1],da:+m[2],h:m[3]!=null?+m[3]:null,mi:m[4]!=null?+m[4]:null}:null}
 function dueTs(v){const p=dueParts(v);if(!p)return null;const jp=p.mo>11||(p.mo===11&&p.da>=17);const h=p.h==null?23:p.h,mi=p.mi==null?59:p.mi;return Date.UTC(YEAR,p.mo-1,p.da,h-(jp?9:8),mi)}
 const leftText=ms=>{const m=Math.round(Math.abs(ms)/6e4),d=Math.floor(m/1440),h=Math.floor(m%1440/60),mm=m%60;return d?`${d} 天${h?` ${h} 小時`:""}`:h?`${h} 小時${mm?` ${mm} 分`:""}`:`${mm} 分`};
-function dueSoon(){const n=Date.now();return itemsOf("prep").filter(r=>!done[r.id]&&r.due).map(r=>({r,ts:dueTs(r.due)})).filter(x=>x.ts!=null&&x.ts-n<=24*3600e3&&n-x.ts<=12*3600e3).sort((a,b)=>a.ts-b.ts)}
+function dueSoon(){const n=Date.now();return itemsOf("prep").filter(r=>!done[r.id]&&r.due).map(r=>({r,ts:dueTs(r.due)})).filter(x=>x.ts!=null&&x.ts-n<=24*3600e3).sort((a,b)=>a.ts-b.ts)}/* 過期還沒勾的一直留著，直到勾掉為止 */
 function dueAlertsHTML(){const l=dueSoon();if(!l.length)return"";const n=Date.now();
  return `<section class="due-alerts" id="due-alerts" aria-label="待辦到期提醒">${l.map(({r,ts})=>`<div class="due-alert${ts<n?" over":""}"><button class="da-main" type="button" data-go-item="${esc(r.id)}"><svg class="da-ic" viewBox="0 0 24 24"><use href="#i-bell"/></svg><span><b>${ts<n?`已過期限 ${leftText(n-ts)}`:`還有 ${leftText(ts-n)} 到期`}</b><small>${esc(r.title)}・${esc(r.due)}</small></span></button>${canWrite?`<button class="da-done" type="button" data-done-id="${esc(r.id)}">完成</button>`:""}</div>`).join("")}</section>`}
 let editItem=null,pendingItemDel=null;
@@ -1557,8 +1565,14 @@ const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(
 const OB_KEY="ngy:outbox";
 let outbox=(()=>{try{return JSON.parse(localStorage.getItem(OB_KEY))||{}}catch(_){return {}}})(),obSeq=Date.now();
 const obSave=()=>{try{localStorage.setItem(OB_KEY,JSON.stringify(outbox))}catch(_){}};
-/* data 為 null 代表刪除 */
-function put(path,data){const s=++obSeq;outbox[path]={d:data==null?null:data,s};obSave();send(path,s)}
+/* data 為 null 代表刪除；opt.merge＝只寫這幾個欄位（不整筆覆蓋，兩人同時改同一筆時不會蓋掉對方改的欄位） */
+function put(path,data,opt){
+ const s=++obSeq,o=outbox[path];let e={d:data==null?null:data,s};
+ if(opt&&opt.merge&&data!=null){
+  /* 還沒送出的同一筆：整筆新增＋修改＝新的整筆；修改＋修改＝合併成一次修改 */
+  if(o&&o.d)e={d:{...o.d,...data},s,...(o.m?{m:1}:{})};else e={d:data,s,m:1};
+ }
+ outbox[path]=e;obSave();send(path,s)}
 function putMany(list){
  const sent=list.map(([p,d])=>{const s=++obSeq;outbox[p]={d,s};return[p,s]});obSave();
  if(!db)return;
@@ -1568,7 +1582,7 @@ function putMany(list){
 function send(path,s){
  const e=outbox[path];if(!db||!e||e.s!==s)return;
  const r=db.doc(path);
- (e.d===null?r.delete():r.set(e.d)).then(()=>{obDone(path,s);srvOk()},err=>{
+ (e.d===null?r.delete():e.m?r.set(e.d,{merge:true}):r.set(e.d)).then(()=>{obDone(path,s);srvOk()},err=>{
   const c=err&&err.code;
   if(c==="invalid_argument"){canWrite=false;obDone(path,s);render(true)}
   /* 權限錯誤：先確認是代碼錯了（整個旅程都讀不到，保留變更等換對代碼），還是只有這筆寫不進去（丟掉，不然會一直重送） */
@@ -1582,13 +1596,27 @@ function flushOutbox(){
  for(const[p,v]of all)send(p,v.s);
 }
 /* 某個集合裡還沒送達的變更：[[id, 資料或 null]] */
-const pendingIn=col=>Object.entries(outbox).filter(([p])=>p.startsWith(col+"/")&&p.indexOf("/",col.length+1)<0).map(([p,v])=>[p.slice(col.length+1),v.d]);
+const pendingIn=col=>Object.entries(outbox).filter(([p])=>p.startsWith(col+"/")&&p.indexOf("/",col.length+1)<0).map(([p,v])=>[p.slice(col.length+1),v.d,!!v.m]);
 const pendingCount=()=>Object.keys(outbox).length;
 /* 本機產生的文件 id（和 Firestore 自動 id 同格式）：重複按也只會寫同一筆 */
 function newId(){const c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";let s="";const a=new Uint8Array(20);try{crypto.getRandomValues(a)}catch(_){for(let i=0;i<20;i++)a[i]=Math.random()*256}for(const x of a)s+=c[x%62];return s}
 let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
 let setupSheet=null,suRunning=false,rateMeta=store.get("rateMeta")||{auto:true,ts:0,src:""},rateBusy=false;
 const TF_MIN=5000,tfRefund=a=>Math.floor(a*10/110);
+/* 金額：保留使用者打的原樣，送出時才檢查。只收 1～99,999,999 的整數日圓（可以有千分位、全形數字、前面的 ¥）
+   不合法就不寫入，回傳原因；不會把 1.5 默默變成 15 */
+const YEN_MAX=99999999;
+function parseYen(raw){
+ const s=String(raw||"").normalize("NFKC").replace(/\s+/g,"").replace(/^[¥￥]/,"").replace(/(円|日圓|日元)$/,"");
+ if(!s)return{err:"請先輸入金額"};
+ if(/^\d+$/.test(s)||/^\d{1,3}(,\d{3})+$/.test(s)){const v=parseInt(s.replace(/,/g,""),10);
+  if(!(v>0))return{err:"請先輸入金額"};if(v>YEN_MAX)return{err:"金額最多 ¥99,999,999"};return{v}}
+ if(/^-/.test(s))return{err:"金額不能是負數"};
+ if(/[萬万千]/.test(s))return{err:"請直接輸入數字，例如 15000"};
+ if(/^[\d,]*\.\d*$/.test(s))return{err:"日圓沒有小數，請輸入整數"};
+ if(/,/.test(s)&&/^[\d,]+$/.test(s))return{err:"千分位逗號的位置不對"};
+ return{err:"只能輸入數字"};
+}
 const TF_TIP=`<div class="tf-tip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="7.5" cy="8.5" r="1.6" fill="currentColor"/></svg><span><b>免稅</b>：同一家店同一天稅前滿 ¥5,000，要帶護照。記帳時打開「免稅」就會列進退稅清單。</span></div>`;
 const SETUP=[
  ["home","加到主畫面","iPhone：Safari 分享 → 加入主畫面；Android：Chrome 選單 → 安裝應用程式。之後從主畫面圖示打開","auto"],
@@ -1606,7 +1634,9 @@ let sosInfo=store.get("sos")||{},sosSheet=null,sosEditing=false,stayEditing=fals
 const sosEsc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mapUrl=(q,pid)=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q)+(pid?"&query_place_id="+encodeURIComponent(pid):"");
 const ext=(label,href)=>`<a class="chip" href="${esc(href)}" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg>${esc(label)}</a>`;
-const yen=n=>"¥"+Math.round(n).toLocaleString("en-US");
+const yen=n=>(Math.round(n)<0?"-":"")+"¥"+Math.abs(Math.round(n)).toLocaleString("en-US");
+/* 現金餘額：變成負數時寫「超支 ¥2,500」（珊瑚色），不寫 ¥-2,500 */
+const cashTxt=n=>n<0?`超支 ${yen(-n)}`:yen(n);
 /* 旅程日期一律用日本時間判斷（手機沒切時區也不會錯）；App 開著跨日時自動重新整理 */
 const jpDay=()=>{const p=tzNow("Asia/Tokyo"),[mo,da]=p.md.split("/").map(Number);return new Date(p.y,mo-1,da)};
 const YEAR=2026,start=new Date(YEAR,10,17),today=jpDay();
@@ -1632,7 +1662,7 @@ const cashIn=w=>+((wallet[w]||{}).cashIn)||0;
 const cashSpent=w=>expenses.filter(e=>e.who===w&&e.pay==="cash").reduce((a,e)=>a+e.amt,0);
 const cashLeft=w=>cashIn(w)-cashSpent(w);
 const LOW_CASH=5000;
-let draft={amt:"",cat:"food",who:(()=>{try{return localStorage.getItem("ngy:me")||"zhang"}catch(_){return "zhang"}})(),split:"both",pay:"cash",day:todayIdx>=0?DAYS[todayIdx].d:"11/17",note:""};
+let draft={amt:"",cat:"food",who:(()=>{try{return localStorage.getItem("ngy:me")||""}catch(_){return ""}})(),split:"both",pay:"cash",day:todayIdx>=0?DAYS[todayIdx].d:"11/17",note:""};
 /* ---------- 心情日記 ---------- */
 const MOODS=[[1,"很糟","#C9C3E6"],[2,"不太好","#BFDCEB"],[3,"普通","#EDE3D3"],[4,"開心","#F8D778"],[5,"超開心","#F4A68C"]];
 const ME_KEY="ngy:me";
@@ -1668,6 +1698,7 @@ let pendingMoodDel=false;
 function moodHint(x){
  const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])],h=Math.floor(tzNow("Asia/Tokyo").m/60);
  if(ov)return `${other[1]}已經寫好了，換你囉`;
+ if(x===DAYS[DAYS.length-1])return "回到家後，留一句這趟旅程的最後一天";
  if(h<17)return "今天才剛開始，晚上回飯店記得留一句";
  return "今天過得怎麼樣？選一隻貓、寫一句話";
 }
@@ -1755,15 +1786,30 @@ function openViewer(src,alt){
  v.querySelector(".vclose").addEventListener("click",close);
  v.querySelector(".vclose").focus({preventScroll:true});
 }
-let pendingDel=null,editingId=null;
+let pendingDel=null,editingId=null,editBase=null,lastSave=0;
+/* 新帳的預設值：自己付、兩人平分、付現、今天。修改完舊帳或取消修改後都回到這裡，不沿用舊帳 */
+const freshDraft=()=>({amt:"",cat:"food",who:me||"",split:"both",pay:"cash",day:todayIdx>=0?DAYS[todayIdx].d:"11/17",note:"",tf:false});
+/* 一筆帳在表單裡的樣子（用來比對哪些欄位被改過） */
+const expForm=e=>({amt:+e.amt||0,cat:e.cat||"etc",who:e.who||"zhang",split:e.split||"both",pay:e.pay||"card",day:e.day||"11/17",note:e.note||"",tf:!!e.tf});
+const draftVal=k=>k==="amt"?(parseYen(draft.amt).v||0):k==="tf"?!!draft.tf:k==="note"?draft.note.trim():draft[k];
 function startEdit(id){
- const e=expenses.find(x=>x.id===id);if(!e)return;editingId=id;pendingDel=null;
- draft={amt:String(e.amt),cat:e.cat||"etc",who:e.who||"zhang",split:e.split||"both",pay:e.pay||"card",day:e.day||"11/17",note:e.note||"",tf:!!e.tf};
+ const e=expenses.find(x=>x.id===id);if(!e)return;editingId=id;pendingDel=null;editBase=expForm(e);
+ draft={...editBase,amt:String(e.amt)};
  render(true);
  document.getElementById("acct-form").scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});
  document.getElementById("f-msg").textContent="正在修改這筆，改好後按「更新這筆」";
 }
-function stopEdit(){editingId=null;draft.amt="";draft.note="";draft.tf=false;render(true)}
+function stopEdit(){editingId=null;editBase=null;draft=freshDraft();render(true)}
+/* 對方的快照進來時，正在修改的那筆：被刪掉就退出修改；被改過就把自己沒動的欄位換成最新內容 */
+function editSync(){
+ if(!editingId)return "";
+ const cur=expenses.find(x=>x.id===editingId);
+ if(!cur){editingId=null;editBase=null;draft=freshDraft();return "對方刪掉了這筆帳，已取消修改"}
+ if(!editBase)return "";
+ const nb=expForm(cur);let changed=false;
+ for(const k of Object.keys(nb)){if(nb[k]!==editBase[k]){changed=true;if(draftVal(k)===editBase[k])draft[k]=k==="amt"?String(nb[k]):nb[k]}}
+ if(!changed)return "";editBase=nb;return "對方剛改過這筆，已帶入最新內容";
+}
 const app=document.getElementById("app");
 
 function wxFor(x){
@@ -1792,7 +1838,7 @@ function hudHTML(){
  const day=cdParts().ms>0?`還有 ${cdParts().d} 天`:todayIdx>=0?`第 ${todayIdx+1} 天`:"旅程完成";
  const pill=(ic,cls,v,attr,lab)=>`<button class="hud-pill ${cls}" type="button" ${attr} aria-label="${lab}"><span class="hp-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${ic}"/></svg></span><b>${v}</b></button>`;
  return `<header class="hud"><span class="hud-badge"><svg role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg></span><div class="hud-t"><h1>名古屋看花花</h1><small>11/17 – 11/24・兩個人的旅行</small></div><button type="button" class="hud-sos" data-sos aria-label="緊急與日文資訊"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/></svg>求助</button></header>
- <div class="hud-row">${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("k-buy","hp-buy",`${bl.filter(r=>done[r.id]).length} / ${bl.length}`,'data-go-group="buy"',`要買的已買 ${bl.filter(r=>done[r.id]).length} 項，共 ${bl.length} 項`)}${me&&cashIn(me)>0?pill("i-cash",`hp-yen${cashLeft(me)<LOW_CASH?" low":""}`,yen(cashLeft(me)),'data-wallet-open',`我的現金剩 ${yen(cashLeft(me))}，打開錢包`):pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
+ <div class="hud-row">${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("k-buy","hp-buy",`${bl.filter(r=>done[r.id]).length} / ${bl.length}`,'data-go-group="buy"',`要買的已買 ${bl.filter(r=>done[r.id]).length} 項，共 ${bl.length} 項`)}${me&&cashIn(me)>0?pill("i-cash",`hp-yen${cashLeft(me)<LOW_CASH?" low":""}`,cashTxt(cashLeft(me)),'data-wallet-open',`我的現金${cashLeft(me)<0?cashTxt(cashLeft(me)):`剩 ${yen(cashLeft(me))}`}，打開錢包`):pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
 }
 function tripBarHTML(){
  const done_=cdParts().ms>0?0:todayIdx>=0?todayIdx:DAYS.length;
@@ -1903,10 +1949,13 @@ function picHTML(it){
 
 const tmin=t=>{const m=/(\d{1,2}):(\d{2})/.exec(t||"");return m?+m[1]*60+ +m[2]:null};
 /* 今天的行程狀態：已過的有時間行程反灰，剛開始 90 分鐘內算「進行中」，下一個有時間的行程標「接下來」 */
+/* 行程時間換算成日本時間的分鐘數。去程航班（tz:"Asia/Taipei"）寫的是台灣時間，台灣比日本慢 1 小時 */
+const TZ_LAG={"Asia/Taipei":60};
+const itemM=it=>{const m=tmin(it.t);return m==null?null:m+(TZ_LAG[it.tz]||0)};
 function dayStatus(x){
  const st=x.items.map(()=>""),nowM=tzNow("Asia/Tokyo").m;
  let next=-1;
- x.items.forEach((it,i)=>{const m=tmin(it.t);if(m==null)return;if(m>nowM){if(next<0)next=i}else st[i]=nowM-m<90?"now":"done"});
+ x.items.forEach((it,i)=>{const m=itemM(it);if(m==null)return;if(m>nowM){if(next<0)next=i}else st[i]=nowM-m<90?"now":"done"});
  if(next>=0)st[next]="next";
  return{st,next,nowM};
 }
@@ -1941,8 +1990,12 @@ function schedHTML(stat){
 const chipInner=(d,i)=>`<small>${i===todayIdx?"今天":d.w}</small>${i===dayIdx?`<svg class="dh" aria-hidden="true"><use href="#head-${i%2?"b":"w"}"/></svg>`:`<b>${d.d.split("/")[1]}</b>`}`;
 function nowCardHTML(x,stat){
  if(!stat)return"";
+ const GO_=`<svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+ /* 最後一個行程還在進行中（例如晚餐），還不算「都走完了」 */
+ const cur=stat.st.lastIndexOf("now");
+ if(stat.next<0&&cur>=0){const it=x.items[cur];return `<button class="nowcard" type="button" data-jump="${cur}"><span class="flag now">進行中</span><span class="nt"><b>${esc(it.t)} ${esc(it.n)}</b><small>今天最後一站</small></span>${GO_}</button>`}
  if(stat.next<0){const mv=me&&moods[mk(x.d,me)];return mv?`<div class="nowcard done"><svg class="cats" aria-hidden="true"><use href="#cats"/></svg><span class="nt"><b>今天的行程都走完了</b>，好好休息</span></div>`:`<button class="nowcard" type="button" data-scroll-mood><span class="flag next">都走完了</span><span class="nt"><b>寫今天的心情</b></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
- const it=x.items[stat.next],left=tmin(it.t)-stat.nowM,h=Math.floor(left/60),m=left%60;
+ const it=x.items[stat.next],left=itemM(it)-stat.nowM,h=Math.floor(left/60),m=left%60;
  return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="flag next">接下來</span><span class="nt"><b>${esc(it.t)} ${esc(it.n)}</b><small>${h?h+" 小時 ":""}${m} 分後${(L=>L?`・${LEG_TXT[L[0]]}約 ${L[1]} 分`:"")(LEGS[x.d+"|"+it.n])}</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 function dayBodyHTML(){
@@ -2032,7 +2085,7 @@ function acctHTML(){
   <span class="l">怎麼付</span><div class="picks" data-pick="pay"><button type="button" class="pick" data-v="cash" aria-pressed="${draft.pay==="cash"}"><svg><use href="#i-cash"/></svg>現金</button><button type="button" class="pick" data-v="card" aria-pressed="${draft.pay==="card"}"><svg><use href="#i-card"/></svg>刷卡</button></div>
   <div class="row2"><div><label class="l" for="f-day">日期</label><select class="field" id="f-day">${DAYS.map(x=>`<option value="${x.d}"${draft.day===x.d?" selected":""}>${x.d}（${x.w}）</option>`).join("")}</select></div>
    <div><label class="l" for="f-note">備註</label><input class="field" id="f-note" placeholder="例如：鰻魚飯" value="${esc(draft.note)}" maxlength="40"></div></div>
-  <div class="tf-row" id="f-tf-row"${(+draft.amt||0)>=TF_MIN?"":" hidden"}><button type="button" class="tf-sw" data-tf-toggle aria-pressed="${!!draft.tf}"><span><b>這筆要辦免稅</b><small>同一家店、同一天，稅前滿 ¥5,000。店名記在備註</small></span><span class="switch${draft.tf?" on":""}" aria-hidden="true"><i></i></span></button></div>
+  <div class="tf-row" id="f-tf-row"${(parseYen(draft.amt).v||0)>=TF_MIN?"":" hidden"}><button type="button" class="tf-sw" data-tf-toggle aria-pressed="${!!draft.tf}"><span><b>這筆要辦免稅</b><small>同一家店、同一天，稅前滿 ¥5,000。店名記在備註</small></span><span class="switch${draft.tf?" on":""}" aria-hidden="true"><i></i></span></button></div>
   <button class="primary" id="f-save" type="submit"${canWrite?"":" disabled"}>${editingId?"更新這筆":"記下這筆"}</button>
   <button class="ghost" id="f-cancel" type="button"${editingId?"":" hidden"}>取消修改</button>
   <div class="msg${canWrite?"":" err"}" id="f-msg" role="status">${canWrite?"":"你可以看，但沒有記帳權限"}</div>
@@ -2043,7 +2096,7 @@ function acctHTML(){
 /* header 上的「我的現金」入口：錢包插畫＋餘額 */
 function walletChip(){
  const set=me&&cashIn(me)>0,left=set?cashLeft(me):0,low=set&&left<LOW_CASH;
- return `<button type="button" class="wchip${low?" low":""}" data-wallet-open aria-label="${set?`我的現金剩 ${yen(left)}，打開錢包`:"設定我的錢包"}"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#t-acct"/></svg>${set?`<span><small>我的現金</small><b>${yen(left)}</b></span>`:`<span><b class="sm">設定錢包</b></span>`}</button>`;
+ return `<button type="button" class="wchip${low?" low":""}" data-wallet-open aria-label="${set?`我的現金${left<0?cashTxt(left):`剩 ${yen(left)}`}，打開錢包`:"設定我的錢包"}"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#t-acct"/></svg>${set?`<span><small>我的現金</small><b>${cashTxt(left)}</b></span>`:`<span><b class="sm">設定錢包</b></span>`}</button>`;
 }
 function walletSheetHTML(){
  const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
@@ -2054,10 +2107,10 @@ function walletSheetHTML(){
  const editing=walletEdit===me||!set;const mode=set?walletMode:"set";
  return `<div class="sm-head"><b>我的錢包</b>${x}</div>
  <div class="ws-hero${low?" low":""}${set?"":" ask"}"><svg class="ws-ill" viewBox="0 0 48 48" aria-hidden="true"><use href="#t-acct"/></svg>
-  <div><small>${nameOf(me)}的現金${set?"還剩":""}</small><b>${set?yen(left):"還沒設定"}</b>${set?`<small>換了 ${yen(cashIn(me))}・現金花了 ${yen(cashSpent(me))}</small>`:`<small>輸入你換了多少日圓</small>`}${low?`<em>快用完了，記得去領錢</em>`:""}</div></div>
- ${canWrite?(editing?`<form class="w-form" data-wallet-form autocomplete="off">${set?`<div class="w-mode"><button type="button" class="pick" data-wmode="add" aria-pressed="${mode==="add"}">補錢（領了多少）</button><button type="button" class="pick" data-wmode="set" aria-pressed="${mode==="set"}">修改總額</button></div>`:""}<div class="amt"><span>¥</span><input name="amt" inputmode="numeric" placeholder="${mode==="add"?"例如 10000":"一共換了多少"}" aria-label="金額"></div><div class="form-btns"><button class="primary" type="submit">${mode==="add"?"加進錢包":"儲存"}</button>${set?`<button class="ghost" type="button" data-wallet-cancel>取消</button>`:""}</div></form>`
+  <div><small>${nameOf(me)}的現金${set&&left>=0?"還剩":""}</small><b>${set?cashTxt(left):"還沒設定"}</b>${set?`<small>換了 ${yen(cashIn(me))}・現金花了 ${yen(cashSpent(me))}</small>`:`<small>輸入你換了多少日圓</small>`}${low?`<em>${left<0?"現金不夠付這些帳，可能有一筆記錯付款方式，或補錢還沒記":"快用完了，記得去領錢"}</em>`:""}</div></div>
+ ${canWrite?(editing?`<form class="w-form" data-wallet-form autocomplete="off">${set?`<div class="w-mode"><button type="button" class="pick" data-wmode="add" aria-pressed="${mode==="add"}">補錢（領了多少）</button><button type="button" class="pick" data-wmode="set" aria-pressed="${mode==="set"}">修改總額</button></div>`:""}<div class="amt"><span>¥</span><input name="amt" inputmode="numeric" placeholder="${mode==="add"?"例如 10000":"一共換了多少"}" aria-label="金額" aria-describedby="w-err"></div><p class="msg err" id="w-err" aria-live="polite"></p><div class="form-btns"><button class="primary" type="submit">${mode==="add"?"加進錢包":"儲存"}</button>${set?`<button class="ghost" type="button" data-wallet-cancel>取消</button>`:""}</div></form>`
   :`<div class="ws-acts"><button type="button" class="primary" data-wallet-edit data-mode="add">＋ 補錢</button><button type="button" class="ghost" data-wallet-edit data-mode="set">修改總額</button></div>`):""}
- <div class="w-row"><svg class="w-cat" viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${ow==="zhang"?"b":"w"}"/></svg><div class="w-txt"><b>${other[1]}</b><small>${oset?`換了 ${yen(cashIn(ow))}・花了 ${yen(cashSpent(ow))}`:"還沒設定"}</small></div><div class="w-left${oset&&oleft<LOW_CASH?" low":""}">${oset?`<small>剩</small>${yen(oleft)}`:"—"}</div></div>
+ <div class="w-row"><svg class="w-cat" viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${ow==="zhang"?"b":"w"}"/></svg><div class="w-txt"><b>${other[1]}</b><small>${oset?`換了 ${yen(cashIn(ow))}・花了 ${yen(cashSpent(ow))}`:"還沒設定"}</small></div><div class="w-left${oset&&oleft<LOW_CASH?" low":""}">${oset?(oleft<0?cashTxt(oleft):`<small>剩</small>${yen(oleft)}`):"—"}</div></div>
  <button type="button" class="w-swap" data-wallet-swap>不是${nameOf(me)}？切換成${other[1]}</button>`;
 }
 let walletSheet=null;
@@ -2076,9 +2129,13 @@ function openWallet(){
   const wm=e.target.closest("[data-wmode]");if(wm){const val=v.querySelector(".w-form input")?.value||"";walletMode=wm.dataset.wmode;paintWalletSheet(true);const i=v.querySelector(".w-form input");if(i)i.value=val;return}
   if(e.target.closest("[data-wallet-cancel]")){walletEdit=null;paintWalletSheet();return}
  });
+ v.addEventListener("input",e=>{const er=v.querySelector("#w-err");if(er&&e.target.name==="amt")er.textContent=""});
  v.addEventListener("submit",async e=>{
-  e.preventDefault();const f=e.target;const val=parseInt((f.amt.value||"").replace(/[^\d]/g,""),10);if(!(val>0)){f.amt.focus();return}
-  const mode=cashIn(me)>0?walletMode:"set";saveWallet(me,mode==="add"?cashIn(me)+val:val);walletEdit=null;afterWalletChange();
+  e.preventDefault();const f=e.target,er=f.querySelector("#w-err"),py=parseYen(f.amt.value);
+  const mode=cashIn(me)>0?walletMode:"set",total=py.err?0:(mode==="add"?cashIn(me)+py.v:py.v);
+  const bad=py.err||(total>YEN_MAX?"錢包總額最多 ¥99,999,999":"");
+  if(bad){if(er)er.textContent=bad;f.amt.focus();return}
+  saveWallet(me,total);walletEdit=null;afterWalletChange();
  });
 }
 let walletMode="set";
@@ -2206,7 +2263,7 @@ function ensureSeeded(){
  })().finally(()=>{seeding=null});
  return seeding;
 }
-let pendingRestore=false;
+let pendingRestore=false,lastItemSig="",lastItemAt=0;
 function saveItem(it){
  const i=items.findIndex(x=>x.id===it.id);if(i>=0)items[i]=it;else items.push(it);
  store.set("items",items);
@@ -2233,10 +2290,10 @@ const canNotify=()=>"Notification" in window;
 const isIOS=/iP(hone|ad|od)/.test(navigator.userAgent);
 const standalone=matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
 function tzNow(tz){const p=Object.fromEntries(new Intl.DateTimeFormat("en-CA",{timeZone:tz,year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date()).map(x=>[x.type,x.value]));return{md:`${+p.month}/${+p.day}`,m:+p.hour*60+ +p.minute,y:+p.year}}
-/* 行程時間以日本時間為準，去程航班以台灣時間為準 */
+/* 行程時間以日本時間為準；有 tz 欄位的（去程航班）以那個時區為準 */
 function upcoming(){
  const out=[];
- DAYS.forEach(x=>x.items.forEach((it,i)=>{const t=tmin(it.t);if(t==null)return;const tz=/^JX 320/.test(it.n)?"Asia/Taipei":"Asia/Tokyo";const n=tzNow(tz);if(n.y!==YEAR||n.md!==x.d)return;const left=t-n.m;if(left>0&&left<=30)out.push({key:`${x.d}-${i}`,it,left,d:x.d,idx:DAYS.indexOf(x)})}));
+ DAYS.forEach(x=>x.items.forEach((it,i)=>{const t=tmin(it.t);if(t==null)return;const tz=it.tz||"Asia/Tokyo";const n=tzNow(tz);if(n.y!==YEAR||n.md!==x.d)return;const left=t-n.m;if(left>0&&left<=30)out.push({key:`${x.d}-${i}`,it,left,d:x.d,idx:DAYS.indexOf(x)})}));
  return out;
 }
 function notifyStatus(){
@@ -2307,12 +2364,12 @@ function jumpToItem(i,instant){const el=document.getElementById("it-"+i);if(!el)
 /* 首頁右下的「現在行程」浮動按鈕：旅程中才出現，點了跳到當天正在進行的行程 */
 function curItem(x){
  const st=dayStatus(x),nowM=st.nowM;let last=-1;
- x.items.forEach((it,i)=>{const m=tmin(it.t);if(m!=null&&m<=nowM)last=i});
+ x.items.forEach((it,i)=>{const m=itemM(it);if(m!=null&&m<=nowM)last=i});
  if(last>=0&&st.st[last]==="now")return{i:last,lbl:"現在"};
  const j=last+1;if(j>=x.items.length)return null;
  const it=x.items[j];if(!it.t)return{i:j,lbl:"現在"};
  /* 下一個有時間的行程還早（超過 1 小時），就還算在上一個行程裡，例如整天在吉卜力公園 */
- if(last>=0&&tmin(it.t)-nowM>60)return{i:last,lbl:"現在"};
+ if(last>=0&&itemM(it)-nowM>60)return{i:last,lbl:"現在"};
  return{i:j,lbl:`接下來 ${it.t}`};
 }
 const fab=document.createElement("button");fab.type="button";fab.className="fab";fab.hidden=true;document.body.appendChild(fab);
@@ -2339,7 +2396,8 @@ function updateFab(){
  if(fab.hidden){fab.hidden=false;fab.classList.remove("in");void fab.offsetWidth;fab.classList.add("in")}
  document.body.classList.add("has-fab");
 }
-fab.addEventListener("click",()=>{if(fab.dataset.mode==="home"){window.open(homeUrl(),"_blank","noopener");return}const i=fab.dataset.i;tab="plan";view="day";dayIdx=todayIdx;render();requestAnimationFrame(()=>jumpToItem(i))});
+let homeAt=0;
+fab.addEventListener("click",()=>{if(fab.dataset.mode==="home"){/* 連點只開一次地圖 */const t=Date.now();if(t-homeAt<1500)return;homeAt=t;window.open(homeUrl(),"_blank","noopener");return}const i=fab.dataset.i;tab="plan";view="day";dayIdx=todayIdx;render();requestAnimationFrame(()=>jumpToItem(i))});
 function render(keep,restore){
  const y=scrollY;
  if(!keep&&curKey)scrollMem[curKey]=y;
@@ -2419,14 +2477,17 @@ app.addEventListener("keydown",e=>{const ed=e.target.closest&&e.target.closest("
 app.addEventListener("input",e=>{
  const t=e.target;
  if(t.id==="mood-note"){const f=t.closest("form");const on=f.querySelector(".fbtn.on");moodDraft={d:f.dataset.d,score:on?+on.dataset.score:0,note:t.value}}
- if(t.id==="f-amt"){t.value=t.value.replace(/[^\d]/g,"").slice(0,8);draft.amt=t.value;const r=document.getElementById("f-tf-row");if(r)r.hidden=(+draft.amt||0)<TF_MIN}
+ if(t.id==="f-amt"){/* 全形數字、全形逗號直接轉半形（意思不變） */if(/[０-９，]/.test(t.value))t.value=t.value.replace(/[０-９，]/g,c=>c.normalize("NFKC"));draft.amt=t.value;const r=document.getElementById("f-tf-row");if(r)r.hidden=(parseYen(draft.amt).v||0)<TF_MIN;const m=document.getElementById("f-msg");if(m&&m.classList.contains("err")){m.className="msg";m.textContent=""}}
  if(t.id==="f-note")draft.note=t.value;
  if(t.id==="f-day")draft.day=t.value;
 });
 app.addEventListener("change",async e=>{
  const t=e.target;
  if(t.id==="f-day"){draft.day=t.value;return}
- if(t.id==="f-rate"){const v=parseFloat(t.value);if(v>0&&v<10){rate=v;store.set("rate",rate);rateMeta={auto:false,ts:Date.now(),src:""};store.set("rateMeta",rateMeta);renderAcct();if(canWrite)put("settings/rate",{jpyTwd:v,auto:false,ts:rateMeta.ts})}else{t.value=rate}return}
+ if(t.id==="f-rate"){const v=parseFloat(String(t.value).normalize("NFKC"));
+  /* 手動匯率和自動抓取一樣只收 0.1～0.5（1 日圓約 0.2 台幣），打錯會讓所有台幣換算差很多倍 */
+  if(!(v>=0.1&&v<=0.5)){t.value=rate;rateErr="匯率要在 0.1～0.5 之間（1 日圓約 0.2 台幣）";renderAcct();return}
+  rateErr="";if(v>0){rate=v;store.set("rate",rate);rateMeta={auto:false,ts:Date.now(),src:""};store.set("rateMeta",rateMeta);renderAcct();if(canWrite)put("settings/rate",{jpyTwd:v,auto:false,ts:rateMeta.ts})}else{t.value=rate}return}
  if(!t.matches(".chk input[type=checkbox]"))return;
  const id=t.id.slice(2);done[id]=t.checked;store.set("done",done);refresh();
  put("checks/"+id,{done:t.checked});
@@ -2442,25 +2503,36 @@ app.addEventListener("submit",async e=>{
  }
  if(e.target.classList.contains("chk-form")){
   const f=e.target,g=f.dataset.group,id=f.dataset.id,title=f.title.value.trim();if(!title){f.title.focus();return}
+  /* 連點「新增」：同一個標題 1 秒內只存一次 */
+  const sig=g+"|"+(id||"")+"|"+title;if(sig===lastItemSig&&Date.now()-lastItemAt<1000)return;lastItemSig=sig;lastItemAt=Date.now();
   const old=items.find(x=>x.id===id);
   const it={...(old||{}),id:id||("i"+Date.now().toString(36)),group:g,title,...(g==="buy"?{place:f.place.value.trim(),what:f.what.value.trim(),note:""}:{note:f.note.value.trim()}),...(g==="pack"?{cat:f.cat?f.cat.value:"etc"}:{}),due:(()=>{const dd=f.dued&&f.dued.value;if(!dd)return "";const[,mo,da]=dd.split("-");const t=f.duet&&f.duet.value;return `${+mo}/${+da}`+(t?` ${t}`:"")})(),links:old?old.links||null:null,order:old?old.order:Math.max(0,...items.filter(x=>x.group===g).map(x=>x.order||0))+1};
   editItem=null;await saveItem(it);render(true);return;
  }
- if(e.target.id==="code-form"){const v=(document.getElementById("f-code").value||"").trim();if(!v)return;try{localStorage.setItem(TRIP_KEY,v)}catch(_){};syncMsg="connecting";render(true);connect();return}
- const msg=document.getElementById("f-msg"),amt=parseInt(draft.amt,10);
+ if(e.target.id==="code-form"){const v=(document.getElementById("f-code").value||"").normalize("NFKC").trim();if(!v)return;
+  if(!/^[\w-]+$/.test(v)){syncMsg="fmt";render(true);const i=document.getElementById("f-code");if(i){i.value=v;i.focus()}return}
+  /* 手動輸入的代碼：第一次連上時確認旅程存在，打錯不會默默變成新的空旅程 */
+  newCheck=v;try{localStorage.setItem(TRIP_KEY,v)}catch(_){};syncMsg="connecting";render(true);connect();return}
+ const msg=document.getElementById("f-msg"),py=parseYen(draft.amt),amt=py.v;
+ /* 剛記下後馬上又按一次（連點）：表單已清空，不要把「已記下」換成「請先輸入金額」 */
+ if(!draft.amt.trim()&&Date.now()-lastSave<600)return;
  msg.className="msg";
- if(!amt||amt<=0){msg.className="msg err";msg.textContent="請先輸入金額";document.getElementById("f-amt").focus();return}
+ if(py.err){msg.className="msg err";msg.textContent=py.err;document.getElementById("f-amt").focus();return}
+ /* 還沒選身分時不預設誰付的，避免星星的第一筆被記成阿彰付 */
+ if(!draft.who){msg.className="msg err";msg.textContent="請先選「誰付的」";document.querySelector('[data-pick="who"] button')?.focus();return}
  const rec={amt,cat:draft.cat,who:draft.who,split:draft.split,pay:draft.pay||"cash",day:draft.day,note:draft.note.trim(),ts:Date.now()};
  if(draft.tf&&amt>=TF_MIN){rec.tf=true;const o=editingId&&expenses.find(x=>x.id===editingId);if(o&&o.carry)rec.carry=true}
  /* 先在手機上記好、清空表單（不等雲端回應）；寫入交給同步佇列，網路慢或離線時恢復後自動送出 */
  if(editingId){
-  const id=editingId,old=expenses.find(x=>x.id===id);rec.ts=old?old.ts:rec.ts;
-  put("expenses/"+id,rec);
-  expenses=expenses.map(x=>x.id===id?{...rec,id}:x);store.set("exp",expenses);
-  editingId=null;draft.amt="";draft.note="";draft.tf=false;render(true);
+  /* 只寫有改的欄位：對方同時改了別的欄位也不會被蓋掉 */
+  const id=editingId,old=expenses.find(x=>x.id===id)||{},base=editBase||expForm(old),ch={};
+  for(const k of ["amt","cat","who","split","pay","day","note"])if(rec[k]!==base[k])ch[k]=rec[k];
+  if(!!rec.tf!==base.tf){ch.tf=!!rec.tf;if(!rec.tf&&old.carry)ch.carry=false}
+  if(Object.keys(ch).length){put("expenses/"+id,ch,{merge:true});expenses=expenses.map(x=>x.id===id?{...x,...ch}:x);store.set("exp",expenses)}
+  editingId=null;editBase=null;draft=freshDraft();render(true);lastSave=Date.now();
   const m=document.getElementById("f-msg");m.className="msg";m.textContent=`已更新為 ${yen(amt)}${syncLater()}`;return;
  }
- const id=newId();put("expenses/"+id,rec);expenses.push({...rec,id});store.set("exp",expenses);
+ const id=newId();put("expenses/"+id,rec);expenses.push({...rec,id});store.set("exp",expenses);lastSave=Date.now();
  draft.amt="";draft.note="";draft.tf=false;const tr=document.getElementById("f-tf-row");if(tr){tr.hidden=true;tr.querySelector("[data-tf-toggle]").setAttribute("aria-pressed","false");tr.querySelector(".switch").classList.remove("on")}
  document.getElementById("f-amt").value="";document.getElementById("f-note").value="";
  msg.textContent=`已記下 ${yen(amt)}${syncLater()}`;renderAcct();
@@ -2506,17 +2578,29 @@ let srv="?";
 const netDown=()=>!navigator.onLine||srv==="down";
 const syncIsPill=()=>live||!FIREBASE||syncMsg==="connecting"||syncMsg==="offline";
 const syncPill=()=>syncIsPill()?syncHTML():"";
-const syncForm=()=>syncIsPill()?"":syncHTML();
+const syncForm=()=>syncIsPill()?(syncOpen&&live?syncInfoHTML():""):syncHTML();
 /* 標題列空間小，只寫「離線中」；完整說明放在讀螢幕的標籤和存檔訊息裡 */
 const OFFLINE_TXT="離線中";
+/* 點同步膠囊：看目前的旅行代碼（只顯示後 4 碼）、換一個代碼 */
+let syncOpen=false,pendingNew=null,newCheck=null;
+const codeTail=c=>{c=String(c||"");return c.length>4?"••••"+c.slice(-4):c};
+function syncInfoHTML(){
+ const n=pendingCount();
+ return `<div class="box code" id="code-info"><b>目前的旅行代碼：<span class="code-now">${esc(codeTail(getCode()))}</span></b>
+  <p>${n?`還有 ${n} 筆變更還沒同步，等網路恢復、同步完再換代碼`:"換代碼後，會改成和那個代碼的旅伴共用"}</p>
+  <div class="code-row">${n?"":`<button class="ghost" type="button" data-code-change>換一個代碼</button>`}<button class="primary" type="button" data-sync-close>好</button></div></div>`;
+}
 function syncHTML(){
- if(live&&netDown())return `<div class="sync off" aria-label="離線中，恢復網路後自動同步"><i></i><span>${OFFLINE_TXT}</span></div>`;
- if(live&&srv==="ok")return `<div class="sync on"><i></i><span>同步中</span></div>`;
- if(live)return `<div class="sync"><i></i><span>連線中…</span></div>`;
+ const btn=(cls,txt,lbl)=>`<button type="button" class="sync${cls}" data-sync-info aria-expanded="${syncOpen}"${lbl?` aria-label="${lbl}"`:""}><i></i><span>${txt}</span></button>`;
+ if(live&&netDown())return btn(" off",OFFLINE_TXT,"離線中，恢復網路後自動同步");
+ if(live&&srv==="ok")return btn(" on","同步中");
+ if(live)return btn("","連線中…");
  if(!FIREBASE)return `<div class="sync"><i></i><span>記在這支手機上</span></div>`;
  if(syncMsg==="connecting")return `<div class="sync"><i></i><span>連線中…</span></div>`;
  if(syncMsg==="offline")return `<div class="sync off" aria-label="離線中，恢復網路後自動同步"><i></i><span>${OFFLINE_TXT}</span></div>`;
- return `<form class="box code" id="code-form" autocomplete="off"><b>${syncMsg==="bad"?"旅行代碼不對，請再確認一次":"輸入旅行代碼，就能和同行者共用記帳與清單"}</b>
+ if(syncMsg==="new")return `<div class="box code" id="new-trip"><b>找不到「${esc(pendingNew)}」這個旅程</b><p>代碼可能打錯了（大小寫、少一個字）。確定要用這個代碼開一個新的空旅程嗎？</p>
+  <div class="code-row"><button class="ghost" type="button" data-newtrip-no>重新輸入</button><button class="primary" type="button" data-newtrip-ok>開新旅程</button></div></div>`;
+ return `<form class="box code" id="code-form" autocomplete="off"><b>${syncMsg==="bad"?"旅行代碼不對，請再確認一次":"輸入旅行代碼，就能和同行者共用記帳與清單"}</b>${syncMsg==="fmt"?`<p class="code-err" role="alert">代碼只能有英文、數字、- 和 _，不能有空白</p>`:""}
   <div class="code-row"><input class="field" id="f-code" placeholder="旅行代碼" aria-label="旅行代碼" autocapitalize="off" spellcheck="false"><button class="primary" type="submit">開啟共用</button></div></form>`;
 }
 /* 只換掉狀態小膠囊；膠囊和代碼表單要互換時才整頁重畫 */
@@ -2550,13 +2634,17 @@ function connect(){
   libFailed=false;
   const {F,fs}=fbInst,base=`trips/${code}`,ref=p=>F.doc(fs,base+"/"+p);
   /* 快照疊上還沒送達的變更（同步佇列），雲端的舊資料不會蓋掉手機上剛做的事 */
-  const wrap=(r,p)=>({id:r.id,get:()=>F.getDoc(r).then(x=>({exists:x.exists(),data:()=>x.data()})),set:d=>F.setDoc(r,d),delete:()=>F.deleteDoc(r),
-   onSnapshot:(n,e)=>F.onSnapshot(r,s=>{const o=p&&outbox[p];if(o)n({id:s.id,exists:o.d!==null,data:()=>o.d});else n({id:s.id,exists:s.exists(),data:()=>s.data()})},e)});
+  const wrap=(r,p)=>({id:r.id,get:()=>F.getDoc(r).then(x=>({exists:x.exists(),data:()=>x.data()})),set:(d,o)=>o?F.setDoc(r,d,o):F.setDoc(r,d),delete:()=>F.deleteDoc(r),
+   onSnapshot:(n,e)=>F.onSnapshot(r,s=>{const o=p&&outbox[p];if(o){const d=o.m?{...(s.exists()?s.data():{}),...o.d}:o.d;n({id:s.id,exists:d!==null,data:()=>d})}else n({id:s.id,exists:s.exists(),data:()=>s.data()})},e)});
   const fdb={setMany:async list=>{if(F.writeBatch){const b=F.writeBatch(fs);for(const[p,d]of list)b.set(ref(p),d);await b.commit()}else{for(const[p,d]of list)await F.setDoc(ref(p),d)}},
    doc:p=>wrap(ref(p),p),
    collection:p=>{const c=F.collection(fs,base+"/"+p);return{doc:()=>wrap(F.doc(c)),onSnapshot:(n,e)=>F.onSnapshot(c,s=>{
-    const m=new Map(s.docs.map(d=>[d.id,d.data()]));for(const[id,d]of pendingIn(p)){if(d===null)m.delete(id);else m.set(id,d)}
+    const m=new Map(s.docs.map(d=>[d.id,d.data()]));for(const[id,d,mg]of pendingIn(p)){if(d===null)m.delete(id);else m.set(id,mg?{...(m.get(id)||{}),...d}:d)}
     n({docs:[...m].map(([id,d])=>({id,exists:true,data:()=>d}))})},e)}}};
+  if(newCheck===code){
+   newCheck=null;let exists=true;try{exists=(await F.getDoc(ref("settings/meta"))).exists()}catch(_){}
+   if(!exists){pendingNew=code;try{localStorage.removeItem(TRIP_KEY)}catch(_){};syncMsg="new";clearTimeout(connTimer);render(true);return}
+  }
   /* Firestore 程式庫一準備好就開始用（它自己會排隊處理離線寫入）；代碼能不能用改在背景確認 */
   db=fdb;live=true;syncMsg="";srv="?";clearTimeout(connTimer);
   probe=()=>F.getDocFromServer(ref("settings/rate"));
@@ -2571,7 +2659,7 @@ function connect(){
   /* 心情：用快照重建整份（對方刪掉的會消失），不和舊的合併 */
   sub(()=>db.collection("moods").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{}));
   sub(()=>db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(setupSheet)paintSetup();if(tab!=="acct")refresh()},()=>{}));
-  sub(()=>db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0,...(v.tf?{tf:true}:{}),...(v.carry?{carry:true}:{})}});store.set("exp",expenses);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{}));
+  sub(()=>db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0,...(v.tf?{tf:true}:{}),...(v.carry?{carry:true}:{})}});store.set("exp",expenses);paintWalletSheet();const en=editSync();if(tab==="acct"){if(en){render(true);const m=document.getElementById("f-msg");if(m){m.className="msg err";m.textContent=en}}else renderAcct()}else if(tab==="plan"&&view==="home")render(true)},()=>{}));
   sub(()=>db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{}));
   sub(()=>db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home"&&!stayEditing)render(true)}},()=>{}));
   sub(()=>db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const d=s.data()||{},v=+d.jpyTwd;if(v>0){rate=v;store.set("rate",v);rateMeta={auto:d.auto!==false,ts:+d.ts||0,src:d.src||""};store.set("rateMeta",rateMeta);if(tab==="acct")renderAcct()}}fetchRate()},()=>{}));
@@ -2616,6 +2704,17 @@ function retrySync(){
  if(!libFailed){connect();return}
  libReachable().then(ok=>{if(!ok)return;connect().then(()=>{if(!live&&libFailed)reloadSoon()})});
 }
+document.addEventListener("click",e=>{
+ if(e.target.closest("[data-sync-info]")){syncOpen=!syncOpen;render(true);return}
+ if(e.target.closest("[data-sync-close]")){syncOpen=false;render(true);return}
+ if(e.target.closest("[data-newtrip-ok]")){const c=pendingNew;pendingNew=null;try{localStorage.setItem(TRIP_KEY,c)}catch(_){};syncMsg="connecting";render(true);connect();return}
+ if(e.target.closest("[data-newtrip-no]")){pendingNew=null;syncMsg="";render(true);setTimeout(()=>document.getElementById("f-code")?.focus(),30);return}
+ if(e.target.closest("[data-code-change]")){
+  if(pendingCount())return;
+  /* 離開目前的旅程：停止同步，回到輸入代碼。手機上的資料先留著，連上新的旅程後會換成那邊的資料 */
+  unsubs.forEach(u=>{try{u()}catch(_){}});unsubs=[];db=null;live=false;probe=null;srv="?";syncOpen=false;seededOk=false;
+  try{localStorage.removeItem(TRIP_KEY)}catch(_){};syncMsg="";render(true);setTimeout(()=>document.getElementById("f-code")?.focus(),30);return}
+});
 addEventListener("online",()=>{paintSync();retrySync()});
 addEventListener("offline",()=>paintSync());
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&navigator.onLine)retrySync()});
@@ -2905,7 +3004,9 @@ async function rvSaveImage(D){
 /* ===== 匯率自動更新：每 6 小時最多抓一次，主來源 ExchangeRate-API，備用 currency-api；手動改過就停止自動 ===== */
 const RATE_SRC=[["ExchangeRate-API","https://open.er-api.com/v6/latest/JPY",j=>j&&j.result==="success"&&j.rates&&j.rates.TWD,"https://www.exchangerate-api.com"],["currency-api","https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/jpy.json",j=>j&&j.jpy&&j.jpy.twd,"https://github.com/fawazahmed0/exchange-api"]];
 const RATE_EVERY=6*3600e3;
+let rateErr="";
 function rateNoteHTML(){
+ if(rateErr)return `<div class="rate-note err" role="alert"><span>${rateErr}</span></div>`;
  const t=rateMeta.ts?new Date(rateMeta.ts):null,when=t?`${t.getMonth()+1}/${t.getDate()} ${String(t.getHours()).padStart(2,"0")}:${String(t.getMinutes()).padStart(2,"0")}`:"";
  if(!rateMeta.auto)return `<div class="rate-note"><span>手動設定${when?`・${when}`:""}</span>${canWrite?`<button type="button" data-rate-auto>改回自動</button>`:""}</div>`;
  const src=RATE_SRC.find(r=>r[0]===rateMeta.src);
@@ -2925,7 +3026,8 @@ async function fetchRate(force){
   }
  }finally{rateBusy=false}
 }
-document.addEventListener("click",e=>{if(e.target.closest("[data-rate-auto]")){rateMeta={auto:true,ts:0,src:""};store.set("rateMeta",rateMeta);renderAcct();fetchRate(true)}});
+/* 改回自動也寫回雲端（進同步佇列）：離線時按也算數，重開後不會又被雲端的「手動」蓋回去 */
+document.addEventListener("click",e=>{if(e.target.closest("[data-rate-auto]")){rateErr="";rateMeta={auto:true,ts:0,src:""};store.set("rateMeta",rateMeta);if(canWrite)put("settings/rate",{jpyTwd:rate,auto:true,ts:0,src:""});renderAcct();fetchRate(true)}});
 setTimeout(()=>fetchRate(),2500);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")fetchRate()});
 addEventListener("online",()=>fetchRate());
@@ -2935,6 +3037,12 @@ addEventListener("online",()=>fetchRate());
 if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
 
 /* ===== 緊急與日文資訊卡（離線可用；訂房細節只存在雲端，不寫進公開程式碼） ===== */
+/* 電話號碼轉 tel:。分機（#、轉、分機、ext、x）不黏在主號後面，用「,」隔開（撥通後停一下再按分機） */
+function telHref(raw){
+ const t=String(raw||"").normalize("NFKC"),m=t.split(/#|＃|轉|分機|ext\.?|\bx(?=\s*\d)/i);
+ const main=(m[0]||"").replace(/[^\d+]/g,""),ext=(m[1]||"").replace(/\D/g,"");
+ return main+(ext?","+ext:"");
+}
 const SOS_HOTEL={pid:"ChIJ74aBvtd2A2AR8TRTA-QLXZM",jp:"ランプライトブックスホテル名古屋",zh:"名古屋燈光圖書飯店",zip:"〒460-0003",ad:"愛知県名古屋市中区錦1丁目13-18",tel:"052-231-7011",telI:"+81522317011",ac:"地下鐵東山線・鶴舞線「伏見站」10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋"};
 const BOOK_FIELDS=[["order","訂單編號"],["via","訂房平台"],["guest","訂房人"],["room","房型"],["pay","付款"],["payNote","提醒"]],INS_FIELDS=[["ins","旅平險公司"],["insTel","旅平險急難電話"]];
 const sosFormHTML=(fs,save)=>`<div class="sos-form">${fs.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${sosEsc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" ${save}>儲存</button></div></div>`;
@@ -3009,7 +3117,7 @@ function sosHTML(){
  <h3>緊急電話<small>點一下直接撥</small></h3>
 ${sosEditing?sosFormHTML(INS_FIELDS,"data-sos-save"):""}
  <div class="sos-tels">${SOS_TELS.map(t=>t.wide?`<a class="sos-tel wide" href="tel:${t.tel}"><div><span>${t.l}</span><small>${t.s}</small></div><b>${t.n}</b></a>`:`<a class="sos-tel${t.hot?" hot":""}" href="tel:${t.tel}"><b>${t.n}</b><span>${t.l}</span><small>${t.s}</small></a>`).join("")}
-  ${ins?`<a class="sos-tel wide" href="tel:${sosEsc(ins.replace(/[^\d+]/g,""))}"><div><span>旅平險・${sosEsc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${sosEsc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡填寫</small></div></button>`}${ins&&!sosEditing?`<button type="button" class="sos-edit" data-sos-edit style="grid-column:1/-1;justify-self:end">修改旅平險</button>`:""}
+  ${ins?`<a class="sos-tel wide" href="tel:${sosEsc(telHref(ins))}"><div><span>旅平險・${sosEsc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${sosEsc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡填寫</small></div></button>`}${ins&&!sosEditing?`<button type="button" class="sos-edit" data-sos-edit style="grid-column:1/-1;justify-self:end">修改旅平險</button>`:""}
  </div>
  <h3>緊急時用的日文<small>點一句放大・可播放日文</small></h3>
  ${sosPhBtns(sosPh("emg"))}
