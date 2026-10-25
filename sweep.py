@@ -18,7 +18,7 @@ async def main():
             ctx=await b.new_context(viewport={'width':390,'height':844},timezone_id=tz)
             pg=await ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
             await pg.clock.install(time=t)
-            await pg.add_init_script('try{localStorage.setItem("ngy:me","zhang")}catch(e){}')
+            await pg.add_init_script('try{localStorage.setItem("ngy:me","zhang");localStorage.setItem("ngy:tour","1")}catch(e){}')
             await pg.goto('http://localhost:8766/'); await pg.wait_for_timeout(700)
             first=await pg.evaluate('document.querySelector(".hero")?"首頁":"當天行程 "+(document.querySelector(".banner .when")?.textContent||"")')
             if not await pg.query_selector('.hero'):

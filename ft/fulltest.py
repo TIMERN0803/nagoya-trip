@@ -18,7 +18,7 @@ async def newpage(b,t,tz="Asia/Tokyo",me="zhang",code="neko-test",init="",perm=N
     pg=await ctx.new_page();pg.errs=[];pg.on('pageerror',lambda e:pg.errs.append(str(e)))
     pg.on('console',lambda m:pg.errs.append("console:"+m.text) if m.type=="error" and "net::" not in m.text and "Failed to load" not in m.text else None)
     await pg.clock.install(time=t)
-    s='try{if(!sessionStorage.getItem("s")){'+(f'localStorage.setItem("ngy:me",{json.dumps(me)});' if me else '')+(f'localStorage.setItem("ngy:code",{json.dumps(code)});' if code else '')+init+'sessionStorage.setItem("s",1)}}catch(e){}'
+    s='try{if(!sessionStorage.getItem("s")){localStorage.setItem("ngy:tour","1");'+(f'localStorage.setItem("ngy:me",{json.dumps(me)});' if me else '')+(f'localStorage.setItem("ngy:code",{json.dumps(code)});' if code else '')+init+'sessionStorage.setItem("s",1)}}catch(e){}'
     await pg.add_init_script(s)
     await pg.goto('http://localhost:8766/'); await pg.wait_for_timeout(900)
     pg.ctx=ctx;pg.own=own
@@ -210,6 +210,7 @@ async def H_offline(b):
     ctx=await b.new_context(viewport={'width':390,'height':844},timezone_id="Asia/Tokyo")
     await ctx.route("**/firebasejs/**",lambda r:r.abort())
     pg=await ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
+    await pg.add_init_script('try{localStorage.setItem("ngy:tour","1")}catch(e){}')
     await pg.goto('http://localhost:8766/');await pg.wait_for_timeout(2500)
     await pg.reload();await pg.wait_for_timeout(1500)
     ready=await pg.evaluate('navigator.serviceWorker.controller?1:0')

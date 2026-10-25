@@ -6,7 +6,7 @@ async def run(b,label,server,local_items=None):
     await ctx.route("**/firebasejs/**/firebase-app.js",lambda r:r.fulfill(body=APP,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))
     await ctx.route("**/firebasejs/**/firebase-firestore.js",lambda r:r.fulfill(body=FS,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))
     pg=await ctx.new_page();errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
-    init='try{if(!sessionStorage.getItem("s")){localStorage.clear();localStorage.setItem("ngy:code","neko-test");localStorage.setItem("mockdb",%s);%s sessionStorage.setItem("s",1)}}catch(e){}'%(json.dumps(json.dumps(server)),('localStorage.setItem("ngy:items",%s);'%json.dumps(json.dumps(local_items))) if local_items is not None else '')
+    init='try{if(!sessionStorage.getItem("s")){localStorage.clear();localStorage.setItem("ngy:tour","1");localStorage.setItem("ngy:code","neko-test");localStorage.setItem("mockdb",%s);%s sessionStorage.setItem("s",1)}}catch(e){}'%(json.dumps(json.dumps(server)),('localStorage.setItem("ngy:items",%s);'%json.dumps(json.dumps(local_items))) if local_items is not None else '')
     await pg.add_init_script(init)
     await pg.goto('http://localhost:8766/'); await pg.wait_for_timeout(1500)
     srv=await pg.evaluate('Object.keys(JSON.parse(localStorage.getItem("mockdb"))).filter(k=>k.includes("/items/")).length')
