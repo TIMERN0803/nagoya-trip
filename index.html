@@ -1065,21 +1065,26 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .bp-stub svg{width:80px;height:48px}
 .bp-stub small{font-family:var(--f-display);font-weight:900;font-size:12px;color:var(--brown)}
 .pg-open h2{font-size:28px;margin-top:6px}
-/* 2 護照入境章 */
-.pg-stamp{background:#F3EBDD;background-image:repeating-radial-gradient(circle at 50% 120%,transparent 0 14px,rgba(148,102,69,.07) 14px 15px)}
-.pp-head{display:flex;justify-content:space-between;width:100%;max-width:360px;font-family:var(--f-display);font-weight:900;font-size:14px;color:var(--brown);border-bottom:2px solid var(--line-strong);padding-bottom:6px}
-.stamps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;width:100%;max-width:360px}
-.stamp{display:flex;justify-content:center}
-.stamp .sc{position:relative;width:100%;aspect-ratio:1;padding:5px;border:3px solid var(--ink-c);color:var(--ink-c);border-radius:50%;background:rgba(255,255,255,.55);opacity:0;transform:scale(1.7) rotate(var(--r));transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s;mix-blend-mode:multiply}
-.stamp.sq .sc{border-radius:12px;border-style:double;border-width:5px}
+/* 2 護照入境章：整頁護照內頁，戳章兩欄交錯 */
+.pg-stamp{background:#E7DCCB;justify-content:stretch;padding-left:16px;padding-right:16px}
+.passport{position:relative;flex:1;width:100%;max-width:400px;min-height:0;display:flex;flex-direction:column;gap:10px;padding:16px 18px 14px;background:#FBF6EC;background-image:repeating-radial-gradient(circle at 50% 115%,transparent 0 13px,rgba(148,102,69,.06) 13px 14px),repeating-radial-gradient(circle at 0 0,transparent 0 22px,rgba(36,105,90,.04) 22px 23px);border:2.5px solid var(--ol);border-radius:18px;box-shadow:0 5px 0 var(--ol);text-align:left}
+.pp-head{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--f-display);font-weight:900;font-size:16px;color:var(--brown);border-bottom:2px solid var(--line-strong);padding-bottom:8px}
+.pp-head small{font-size:12.5px;color:var(--muted)}
+.stamps{flex:1;min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);column-gap:14px;padding-bottom:44px}
+.stamp{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:0;color:var(--ink-c)}
+.stamp:nth-child(even){transform:translateY(34%)}
+.stamp .sc{position:relative;flex:1 1 0;height:0;max-height:min(30vw,96px);width:auto;aspect-ratio:1;min-height:0;padding:5px;border:3px solid var(--ink-c);border-radius:50%;background:rgba(255,255,255,.5);opacity:0;transform:scale(1.7) rotate(var(--r));transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s;mix-blend-mode:multiply}
+.stamp.sq .sc{border-radius:14px;border-style:double;border-width:5px}
 .stamp .sc>svg{width:100%;height:100%;display:block;border-radius:inherit;opacity:.88}
-.stamp .sc small{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);background:#F3EBDD;padding:0 5px;font-family:var(--f-display);font-weight:900;font-size:11px;white-space:nowrap}
+.stamp .sl{font-family:var(--f-display);font-weight:900;font-size:12.5px;line-height:1.2;text-align:center;opacity:0;transform:rotate(calc(var(--r) * .5));transition:opacity .2s;white-space:nowrap}
+.stamp .sl small{display:block;font-size:11px;opacity:.8}
 .pg-stamp.on .stamp .sc{opacity:1;transform:scale(1) rotate(var(--r));transition-delay:var(--d)}
-.big-stamp{display:inline-flex;flex-direction:column;align-items:center;padding:10px 22px;border:4px double var(--coral-ink);border-radius:14px;color:var(--coral-ink);transform:rotate(-7deg) scale(1.5);opacity:0;transition:transform .35s cubic-bezier(.3,1.6,.5,1) 1.1s,opacity .2s 1.1s;mix-blend-mode:multiply}
-.pg-stamp.on .big-stamp{transform:rotate(-7deg);opacity:1}
-.big-stamp b{font-family:var(--f-display);font-weight:900;font-size:46px;line-height:1}
-.big-stamp b small{font-size:18px;margin-left:3px}
-.big-stamp span{font-weight:900;font-size:13px;letter-spacing:.06em}
+.pg-stamp.on .stamp .sl{opacity:1;transition-delay:var(--d)}
+.pp-foot{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;border-top:2px dashed var(--line-strong);padding-top:10px}
+.pp-sum{font-size:15px;font-weight:700;color:var(--muted);line-height:1.2}
+.pp-sum b{font-family:var(--f-display);font-weight:900;font-size:48px;color:var(--coral-ink);margin:0 4px;font-variant-numeric:tabular-nums}
+.pp-no{font-family:var(--f-display);font-weight:900;font-size:12px;color:var(--muted)}
+@media (max-height:640px){.stamp .sl small{display:none}.pp-sum b{font-size:36px}.stamps{padding-bottom:30px}}
 /* 3 方格筆記本 */
 .pg-mood{background:#EBE2F6}
 .note{position:relative;width:100%;max-width:370px;padding:22px 16px 16px;background:#FFFDF8;background-image:linear-gradient(rgba(148,102,69,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,102,69,.12) 1px,transparent 1px);background-size:16px 16px;border-radius:6px;box-shadow:0 8px 20px rgba(63,49,39,.18),0 0 0 2px var(--ol);transform:rotate(1.5deg);display:flex;flex-direction:column;gap:10px}
@@ -1182,7 +1187,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sum-acts .save{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep)}
 .sum-acts .again{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line-strong)}
 .st-msg{font-size:13px;color:var(--brown);font-weight:700;min-height:1em}
-@media (prefers-reduced-motion:reduce){.st-page,.stamp .sc,.curve .pt,.rcpt,.curve svg.ln path,.big-stamp,.paid{transition:none!important}.stamp .sc{opacity:1;transform:rotate(var(--r))}.curve .pt{opacity:1;transform:none}.rcpt{transform:none}.curve svg.ln path{opacity:1}.big-stamp{opacity:1;transform:rotate(-7deg)}.paid{opacity:.9;transform:rotate(-14deg)}}
+@media (prefers-reduced-motion:reduce){.st-page,.stamp .sc,.curve .pt,.rcpt,.curve svg.ln path,.paid,.stamp .sl{transition:none!important}.stamp .sc{opacity:1;transform:rotate(var(--r))}.curve .pt{opacity:1;transform:none}.rcpt{transform:none}.curve svg.ln path{opacity:1}.stamp .sl{opacity:1}.paid{opacity:.9;transform:rotate(-14deg)}}
 </style>
 </head>
 <body>
@@ -2647,7 +2652,7 @@ function rvPages(D){
  const pages=[];const tile=x=>`<svg viewBox="2 2 116 116" aria-hidden="true">${svgTile(x.art).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg>`;
  pages.push({cls:"pg-open",html:`<div class="bpass"><div class="bp-main"><div class="bp-top"><span>登機證</span><b>JX 320</b></div><div class="bp-route"><span><b>TXG</b><small>台中</small></span><svg viewBox="0 0 120 26" aria-hidden="true"><path d="M4 18 Q60 -4 110 16" fill="none" stroke="#946645" stroke-width="2.4" stroke-dasharray="3 6" stroke-linecap="round"/><path d="M96 9l14 7-15 4 4-5z" fill="#946645"/></svg><span><b>NGO</b><small>名古屋</small></span></div><div class="bp-meta"><div><small>乘客</small><b>阿彰・星星</b></div><div><small>日期</small><b>11/17–11/24</b></div><div><small>天數</small><b>8 天</b></div></div></div><div class="bp-stub"><svg viewBox="0 0 132 80" aria-hidden="true"><use href="#cats-hi"/></svg><small>NGO</small></div></div><h2>我們的名古屋</h2><p class="st-cap">點右邊看下一頁</p>`});
  const inks=["#A64A2E","#6B4730","#24695A","#A64A2E","#6B4730","#24695A","#A64A2E","#6B4730"];
- pages.push({cls:"pg-stamp",html:`<div class="pp-head"><span>入境紀錄</span><span>名古屋・愛知</span></div><div class="stamps">${DAYS.map((x,i)=>`<div class="stamp${i%3===1?" sq":""}" style="--d:${i*.12}s;--r:${[-8,6,-4,9,-6,4,-10,7][i]}deg;--ink-c:${inks[i]}"><span class="sc">${tile(x)}<small>${x.d}</small></span></div>`).join("")}</div><div class="big-stamp"><b><span data-count="${D.pids}">0</span><small>個地方</small></b><span>8 天・全部入境</span></div>`,count:true});
+ pages.push({cls:"pg-stamp",html:`<div class="passport"><div class="pp-head"><span>入境紀錄</span><small>名古屋・愛知</small></div><div class="stamps">${DAYS.map((x,i)=>`<div class="stamp${i%3===1?" sq":""}" style="--d:${i*.12}s;--r:${[-8,6,-4,9,-6,4,-10,7][i]}deg;--ink-c:${inks[i]}"><span class="sc">${tile(x)}</span><span class="sl">${x.d}<small>${esc(x.place)}</small></span></div>`).join("")}</div><div class="pp-foot"><div class="pp-sum">8 天，去了<b data-count="${D.pids}">0</b>個地方</div><span class="pp-no">P. 08</span></div></div>`,count:true});
  if(D.nMood){
   const W=100,H=100,xs=i=>i/(DAYS.length-1)*W,ys=n=>H-(n-1)/4*H;
   const lines=PEOPLE.map(p=>({p,pts:DAYS.map((x,i)=>{const v=moods[mk(x.d,p[0])];return v?[xs(i),ys(v.score),v.score,i]:null}).filter(Boolean)}));
