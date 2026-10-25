@@ -926,9 +926,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .drag-h svg{width:22px;height:22px}
 .sort-row.dragging{z-index:3;transition:none;box-shadow:0 10px 24px rgba(63,49,39,.22),0 0 0 2px var(--ol);border-radius:16px;border-top-color:transparent}
 .sort-row.dragging .drag-h{cursor:grabbing;background:var(--butter)}
-.sort-row.saved{animation:sortflash .6s ease}
-@keyframes sortflash{from{background:var(--butter-soft)}to{background:var(--card)}}
-@media (prefers-reduced-motion:reduce){.sort-row{transition:none}.sort-row.saved{animation:none}}
+@media (prefers-reduced-motion:reduce){.sort-row{transition:none}}
 </style>
 </head>
 <body>
@@ -2159,7 +2157,7 @@ async function connect(){
   let fs;try{fs=F.initializeFirestore(fbApp,{localCache:F.persistentLocalCache()})}catch(_){fs=F.getFirestore(fbApp)}
   const base=`trips/${code}`;
   const wrap=r=>({id:r.id,get:()=>F.getDoc(r).then(x=>({exists:x.exists(),data:()=>x.data()})),set:d=>F.setDoc(r,d),delete:()=>F.deleteDoc(r),onSnapshot:(n,e)=>F.onSnapshot(r,s=>n({id:s.id,exists:s.exists(),data:()=>s.data()}),e)});
-  const fdb={doc:p=>wrap(F.doc(fs,base+"/"+p)),collection:p=>{const c=F.collection(fs,base+"/"+p);return{doc:()=>wrap(F.doc(c)),onSnapshot:(n,e)=>F.onSnapshot(c,s=>n({docs:s.docs.map(d=>({id:d.id,exists:true,data:()=>d.data()}))}),e)}}};
+  const fdb={setMany:async list=>{if(F.writeBatch){const b=F.writeBatch(fs);for(const[p,d]of list)b.set(F.doc(fs,base+"/"+p),d);await b.commit()}else{for(const[p,d]of list)await F.setDoc(F.doc(fs,base+"/"+p),d)}},doc:p=>wrap(F.doc(fs,base+"/"+p)),collection:p=>{const c=F.collection(fs,base+"/"+p);return{doc:()=>wrap(F.doc(c)),onSnapshot:(n,e)=>F.onSnapshot(c,s=>n({docs:s.docs.map(d=>({id:d.id,exists:true,data:()=>d.data()}))}),e)}}};
   // 先確認代碼可用
   await F.getDocFromServer(F.doc(fs,base+"/settings/rate")).catch(err=>{if(err&&err.code==="permission-denied")throw err});
   db=fdb;live=true;syncMsg="";
@@ -2293,12 +2291,14 @@ function undoSnack(label,restore){
 }
 
 /* ===== 待辦自訂排序：拖曳把手或 ▲▼，存成 order（雲端同步） ===== */
-async function applyOrder(g,ids,movedId){
+async function applyOrder(g,ids,redraw){
  const list=itemsOf(g),byId=Object.fromEntries(list.map(x=>[x.id,x]));const changed=[];
  ids.forEach((id,i)=>{const it=byId[id];if(it&&it.order!==i+1){it.order=i+1;changed.push(it)}});
- store.set("items",items);render(true);
- if(movedId){const el=document.querySelector(`[data-sort-id="${CSS.escape(movedId)}"]`);if(el){el.classList.add("saved");el.scrollIntoView({block:"nearest"})}}
- for(const it of changed)await saveItem({...it});
+ store.set("items",items);if(redraw)render(true);
+ if(!changed.length||!db)return;
+ try{await ensureSeeded()}catch(_){}
+ /* 一次寫入全部順序：雲端只回傳一次完整的新順序，不會出現一半新一半舊的中間狀態 */
+ try{await db.setMany(changed.map(it=>{const{id,...rec}=it;return["items/"+id,rec]}))}catch(_){}
 }
 document.addEventListener("click",e=>{
  const t=e.target.closest("[data-sort-toggle]");if(t){const g=t.dataset.sortToggle;sortGroup=sortGroup===g?null:g;editItem=null;render(true);const el=document.querySelector(`[data-group-id="${g}"]`);if(el)el.scrollIntoView({block:"nearest"});return}
@@ -2317,8 +2317,13 @@ document.addEventListener("pointerdown",e=>{
  };
  const up=()=>{
   h.removeEventListener("pointermove",move);h.removeEventListener("pointerup",up);h.removeEventListener("pointercancel",up);
-  rows.forEach(r=>{r.style.transform=""});row.classList.remove("dragging");
-  if(to!==from){const ids=rows.map(r=>r.dataset.sortId);ids.splice(to,0,ids.splice(from,1)[0]);applyOrder(sortGroup,ids,row.dataset.sortId)}
+  /* 直接在畫面上把那一列放到新位置，不重畫整個清單，也不讓其他列先滑回原位 */
+  const was=row.getBoundingClientRect().top;
+  rows.forEach(r=>{r.style.transition="none";r.style.transform=""});row.classList.remove("dragging");
+  if(to!==from){list.insertBefore(row,to>from?rows[to].nextSibling:rows[to]);const ids=[...list.children].map(r=>r.dataset.sortId);applyOrder(sortGroup,ids,false)}
+  /* 被拖的那一列從放手的位置滑進格子（0.15 秒），其他列不動 */
+  const off=was-row.getBoundingClientRect().top;if(Math.abs(off)>1&&!reduce()){row.style.transform=`translateY(${off}px)`;row.offsetHeight;row.style.transition="transform .15s ease-out";row.style.transform=""}
+  list.offsetHeight;rows.forEach(r=>{if(r!==row)r.style.transition=""});setTimeout(()=>{row.style.transition=""},200);
  };
  h.addEventListener("pointermove",move);h.addEventListener("pointerup",up);h.addEventListener("pointercancel",up);
 });
