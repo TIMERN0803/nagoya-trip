@@ -473,6 +473,9 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .fld-ic .field{padding-left:36px}
 .bar .sync{margin:0 0 0 auto}
 .pk-title{font-size:20px!important;margin-left:4px!important}
+/* 行李頁是子頁面：標題列（含返回）固定在上方 */
+.pk-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--paper);margin:0 -16px;padding:4px 16px;transition:box-shadow .15s}
+.pk-bar.shade{box-shadow:0 8px 12px -10px rgba(63,49,39,.45)}
 .pack-entry{position:relative;display:flex;align-items:center;gap:10px;width:100%;padding:8px 14px 8px 8px;border:2.5px solid var(--ol);border-radius:24px;background:linear-gradient(135deg,var(--butter-soft),#FFF9EA 60%);box-shadow:0 4px 0 var(--ol);cursor:pointer;text-align:left;font:inherit;color:var(--ink);transition:transform .08s,box-shadow .08s;overflow:hidden}
 .pack-entry::after{content:"";position:absolute;right:-26px;top:-26px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#fff 0 2px,transparent 2.5px) 0 0/12px 12px;opacity:.7}
 .pack-entry:active{transform:translateY(2px);box-shadow:0 2px 0 var(--ol)}
@@ -692,6 +695,10 @@ body.has-fab .shell{padding-bottom:190px}
 .sm-card{width:100%;max-width:520px;background:var(--card);border-radius:28px 28px 0 0;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px;animation:sheetup .28s cubic-bezier(.2,.9,.3,1)}
 @keyframes sheetup{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
 .sm-head{display:flex;align-items:center;justify-content:space-between}
+/* 所有彈出面板：不超過畫面高度、內容可捲；標題列（求助是標題＋分頁）固定在面板頂端，捲動後下緣出現淡陰影 */
+.sm-card{max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
+.sm-card>.sm-head,.sm-card>.sos-top{position:sticky;top:-16px;z-index:3;margin:-16px -16px 0;padding:16px 16px 10px;background:var(--card);transition:box-shadow .15s}
+.sm-card>.sm-head.shade,.sm-card>.sos-top.shade{box-shadow:0 8px 12px -10px rgba(63,49,39,.45)}
 .sm-head b{font-family:var(--f-display);font-weight:900;font-size:20px}
 .sm-x{width:40px;height:40px;border:0;border-radius:50%;background:var(--sunk);display:grid;place-items:center;cursor:pointer}
 .sm-x svg{width:18px;height:18px}
@@ -867,8 +874,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .hud-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
 .sos{max-height:92vh;overflow-y:auto;overscroll-behavior:contain;gap:14px}
 /* 標題＋分頁固定在面板頂端，只捲下面的內容；捲動後下緣出現淡陰影 */
-.sos-top{position:sticky;top:-16px;z-index:3;margin:-16px -16px 0;padding:16px 16px 10px;background:var(--card);display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s}
-.sos-top.shade{box-shadow:0 8px 12px -10px rgba(63,49,39,.45)}
+.sos-top{display:flex;flex-direction:column;gap:12px}
 .sos h3{margin:2px 2px 0;font-size:16px;display:flex;align-items:baseline;justify-content:space-between}
 .sos h3 small{font-size:12.5px;color:var(--muted);font-weight:700}
 .sos-box{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:22px;background:var(--card);padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -917,6 +923,10 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sos-ph .p-rd{font-size:12px;color:var(--muted)}
 .sos-note{font-size:12px;color:var(--muted);text-align:center;margin:0}
 .sos-show{position:fixed;inset:0;z-index:70;background:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));animation:fadein .15s ease;color:#2B2420}
+.sos-show .s-say{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:0 22px 0 18px;border:2.5px solid var(--accent-deep);border-radius:999px;background:var(--accent);box-shadow:0 4px 0 var(--accent-deep);color:#fff;font:inherit;font-family:var(--f-display);font-weight:900;font-size:17px;cursor:pointer}
+.sos-show .s-say svg{width:24px;height:24px}
+.sos-show .s-say:active{transform:translateY(2px);box-shadow:0 2px 0 var(--accent-deep)}
+.sos-show .s-say.on{background:var(--accent-deep)}
 .sos-show .s-lead{font-size:22px;font-weight:900;line-height:1.4;color:var(--coral-ink)}
 .sos-show .s-big{font-size:clamp(30px,9vw,44px);font-weight:900;line-height:1.3;font-family:var(--f-display);word-break:break-word}
 .sos-show .s-mid{font-size:clamp(20px,6vw,28px);font-weight:700;line-height:1.5}
@@ -2109,7 +2119,7 @@ function packPageHTML(){
  const groups=PCATS.map(([c,n])=>[c,n,rows.filter(r=>(r.cat||"etc")===c)]).filter(g=>g[2].length);
  const vis=list=>packTodo&&me?list.filter(r=>!mineDone(r)||editItem===r.id):list;
  const left=me?rows.length-packCnt(rows,me):0;
- return `<header class="bar"><button class="back" data-pack-close><svg><use href="#i-back"/></svg>清單</button><h1 class="pk-title">行李準備</h1>${syncPill()}</header>
+ return `<header class="bar pk-bar"><button class="back" data-pack-close><svg><use href="#i-back"/></svg>清單</button><h1 class="pk-title">行李準備</h1>${syncPill()}</header>
  <div class="stack">
   <div class="box pack-sum">${SUITCASE}<div class="ps-body">${PEOPLE.map(p=>{const n=packCnt(rows,p[0]);return `<span class="pe-row"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg><b>${p[1]}</b><span class="pe-bar"><i style="width:${rows.length?(n/rows.length*100).toFixed(1):0}%"></i></span><small>${n}/${rows.length}</small></span>`}).join("")}
    ${me?`<button class="pt-toggle" type="button" data-pack-todo aria-pressed="${packTodo}"><span class="switch${packTodo?" on":""}"><i></i></span>只看我還沒裝的${left?`（${left}）`:""}</button>`:""}</div></div>
@@ -2877,7 +2887,7 @@ function sosHTML(){
   const gs=sosGrp==="all"?SOS_GROUPS:SOS_GROUPS.filter(g=>g[0]===sosGrp);
   return `<div class="sos-top"><div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}</div>
  <div class="sos-grps" role="group" aria-label="情境">${[["all","全部","全部"],...SOS_GROUPS].map(([k,l,sl])=>`<button type="button" aria-pressed="${sosGrp===k}" data-sos-grp="${k}" aria-label="${l}">${sl}</button>`).join("")}</div>
- ${gs.map(([k,l])=>`<h3>${l}${k===gs[0][0]?`<small>點一句放大給對方看</small>`:""}</h3>${sosPhBtns(sosPh(k))}`).join("")}
+ ${gs.map(([k,l])=>`<h3>${l}${k===gs[0][0]?`<small>點一句放大・可播放日文</small>`:""}</h3>${sosPhBtns(sosPh(k))}`).join("")}
  <p class="sos-note">〇〇 的地方指著地圖或店名給對方看・這一頁沒有網路也能打開</p>`;
  }
  return `<div class="sos-top"><div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}</div>
@@ -2893,25 +2903,42 @@ ${sosEditing?sosFormHTML(INS_FIELDS,"data-sos-save"):""}
  <div class="sos-tels">${SOS_TELS.map(t=>t.wide?`<a class="sos-tel wide" href="tel:${t.tel}"><div><span>${t.l}</span><small>${t.s}</small></div><b>${t.n}</b></a>`:`<a class="sos-tel${t.hot?" hot":""}" href="tel:${t.tel}"><b>${t.n}</b><span>${t.l}</span><small>${t.s}</small></a>`).join("")}
   ${ins?`<a class="sos-tel wide" href="tel:${sosEsc(ins.replace(/[^\d+]/g,""))}"><div><span>旅平險・${sosEsc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${sosEsc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡填寫</small></div></button>`}${ins&&!sosEditing?`<button type="button" class="sos-edit" data-sos-edit style="grid-column:1/-1;justify-self:end">修改旅平險</button>`:""}
  </div>
- <h3>緊急時用的日文<small>點一句放大給對方看</small></h3>
+ <h3>緊急時用的日文<small>點一句放大・可播放日文</small></h3>
  ${sosPhBtns(sosPh("emg"))}
  <p class="sos-note">這一頁沒有網路也能打開</p>`;
 }
-function sosShade(v){const c=v.querySelector(".sm-card"),t=c.querySelector(".sos-top");if(t)t.classList.toggle("shade",c.scrollTop>4)}
+function smShade(c){const t=c&&c.querySelector(":scope>.sm-head,:scope>.sos-top");if(t)t.classList.toggle("shade",c.scrollTop>4)}
+const sosShade=v=>smShade(v.querySelector(".sm-card"));
+addEventListener("scroll",()=>{const b=document.querySelector(".pk-bar");if(b)b.classList.toggle("shade",scrollY>4)},{passive:true});
+document.addEventListener("scroll",e=>{const t=e.target;if(t&&t.classList&&t.classList.contains("sm-card"))smShade(t)},{capture:true,passive:true});
 function paintSos(){if(sosSheet)sosSheet.querySelector(".sm-card").innerHTML=sosHTML()}
+/* 日文語音：用手機內建的日文語音（不用網路）；〇〇 唸成「ここ」，搭配手指地圖 */
+const sayText=t=>String(t).replace(/〇〇/g,"ここ");
+const HOTEL_SAY="この住所までお願いします。愛知県名古屋市中区錦、一丁目、十三の十八。ランプライトブックスホテル名古屋です。";
+function jaVoice(){try{return (speechSynthesis.getVoices()||[]).find(v=>/^ja(-|_|$)/i.test(v.lang))||null}catch(_){return null}}
+function sayJa(text,btn){
+ const ss=window.speechSynthesis;if(!ss||!window.SpeechSynthesisUtterance){if(btn)btn.querySelector("span").textContent="這支手機不支援語音";return}
+ const vs=ss.getVoices()||[],v=jaVoice();
+ if(vs.length&&!v){if(btn)btn.querySelector("span").textContent="沒有日文語音，請到手機設定下載";return}
+ ss.cancel();const u=new SpeechSynthesisUtterance(sayText(text));u.lang="ja-JP";u.rate=.85;if(v)u.voice=v;
+ if(btn){btn.classList.add("on");btn.querySelector("span").textContent="播放中…";u.onend=u.onerror=()=>{btn.classList.remove("on");btn.querySelector("span").textContent="再聽一次"}}
+ ss.speak(u);
+}
+const SAY_BTN=`<button type="button" class="s-say" data-say><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>播放日文</span></button>`;
+try{window.speechSynthesis&&speechSynthesis.getVoices()}catch(_){}
 function sosShow(k){
  const v=document.createElement("div");v.className="sos-show";v.setAttribute("role","dialog");v.setAttribute("aria-label","放大顯示");
  const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
- if(k==="hotel"){const H=SOS_HOTEL;v.innerHTML=`${x}<div class="s-lead">この住所までお願いします。</div><div class="s-big">${H.jp}</div><div class="s-mid">${H.zip}<br>${H.ad.replace("中区","中区<br>")}</div><div class="s-mid">TEL ${H.tel}</div><div class="s-zh">請帶我到這個地址（伏見站 10 號出口附近）</div>`}
- else{const p=SOS_PHRASES[+k];v.innerHTML=`${x}<div class="s-big">${p[1]}</div><div class="s-zh">${p[0]}・${p[2]}</div>`}
- v.addEventListener("click",e=>{if(e.target.closest(".sm-x")||!e.target.closest("a"))v.remove()});
+ let say;
+ if(k==="hotel"){const H=SOS_HOTEL;say=HOTEL_SAY;v.innerHTML=`${x}<div class="s-lead">この住所までお願いします。</div><div class="s-big">${H.jp}</div><div class="s-mid">${H.zip}<br>${H.ad.replace("中区","中区<br>")}</div><div class="s-mid">TEL ${H.tel}</div><div class="s-zh">請帶我到這個地址（伏見站 10 號出口附近）</div>${SAY_BTN}`}
+ else{const p=SOS_PHRASES[+k];say=p[1];v.innerHTML=`${x}<div class="s-big">${p[1]}</div><div class="s-zh">${p[0]}・${p[2]}</div>${SAY_BTN}`}
+ v.addEventListener("click",e=>{const sb=e.target.closest("[data-say]");if(sb){sayJa(say,sb);return}if(e.target.closest(".sm-x")||!e.target.closest("a")){try{speechSynthesis.cancel()}catch(_){};v.remove()}});
  document.body.appendChild(v);
 }
 function openSos(){
  if(sosSheet)return;setupFlag("sos");sosEditing=false;sosTab="talk";
  const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","緊急與日文資訊");
  v.innerHTML=`<div class="sm-card sos"></div>`;sosSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";paintSos();
- v.querySelector(".sm-card").addEventListener("scroll",()=>sosShade(v),{passive:true});
  const close=()=>{v.remove();sosSheet=null;sosEditing=false;document.body.style.overflow=""};
  v.addEventListener("click",async e=>{
   if(e.target===v||e.target.closest(".sm-head .sm-x")){close();return}
