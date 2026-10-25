@@ -227,8 +227,12 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .wx .w-meta b{color:var(--ink);font-weight:700}
 
 .notes{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.note{display:flex;gap:10px;align-items:flex-start;background:var(--coral-soft);border:1.5px solid var(--coral-line);border-radius:20px;padding:10px 14px;font-size:14px;font-weight:700;color:var(--ink)}
-.note svg{width:18px;height:18px;flex:none;margin-top:2px;color:var(--coral-ink)}
+/* 行程頁提醒：跟其他卡片一樣棕框實心陰影；鈴鐺放在淺珊瑚圓底裡，標出「這是提醒」 */
+.day-note{display:flex;gap:12px;align-items:center;background:var(--card);border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:18px;padding:10px 14px 10px 10px;font-size:15px;font-weight:700;line-height:1.45;color:var(--ink)}
+.day-note .dn-ic{width:38px;height:38px;flex:none;border-radius:50%;background:var(--coral-soft);display:grid;place-items:center}
+.day-note .dn-ic svg{width:20px;height:20px;color:var(--coral-ink)}
+.day-note .dn-t{min-width:0}
+.day-note small{display:block;font-size:12px;font-weight:700;color:var(--coral-ink);line-height:1.3}
 
 .tl{list-style:none;margin:18px 0 0;padding:0;display:flex;flex-direction:column;gap:12px}
 .leg{position:relative;margin:-2px 0 -2px 46px;padding:2px 0}
@@ -820,7 +824,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .nowcard{border:2.5px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:18px;transition:transform .08s,box-shadow .08s}
 .nowcard:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol);background:var(--card)}
 .nowcard.done{border-color:var(--line-strong);box-shadow:none}
-.note,.alert{border-width:2px}
+.alert{border-width:2px}
 .illo{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:26px}
 .src{border-radius:999px}
 .tip{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);background:var(--butter-soft)}
@@ -895,6 +899,16 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sos-tel.wide b{font-size:17px}
 .sos-tel.off{opacity:.75}
 .sos-ph{display:flex;flex-direction:column;gap:6px}
+/* 求助分類：外層淺底，選中的一格是白底加棕框實心陰影；情境標籤不加框、用底色區分 */
+.sos-tabs{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:18px;background:var(--sunk)}
+.sos-tabs button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:2px solid transparent;border-radius:14px;background:transparent;font:inherit;font-family:var(--f-display);font-weight:900;font-size:15px;color:var(--muted);cursor:pointer}
+.sos-tabs button svg{width:18px;height:18px;flex:none}
+.sos-tabs button[aria-selected="true"]{background:var(--card);border-color:var(--ol);box-shadow:0 3px 0 var(--ol);color:var(--ink)}
+.sos-tabs button[data-sos-tab="emg"][aria-selected="true"] svg{color:var(--coral-ink)}
+.sos-tabs button[data-sos-tab="talk"][aria-selected="true"] svg{color:var(--accent)}
+.sos-grps{display:flex;flex-wrap:wrap;flex:none;gap:6px}
+.sos-grps button{flex:none;min-height:38px;padding:0 13px;border:0;border-radius:999px;background:var(--paper);font:inherit;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap}
+.sos-grps button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-deep)}
 .sos-ph button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;border:0;border-radius:16px;background:var(--paper);padding:10px 12px;font:inherit;color:var(--ink);cursor:pointer}
 .sos-ph button:active{background:var(--sunk)}
 .sos-ph .p-zh{font-size:13px;color:var(--muted);font-weight:700}
@@ -1092,9 +1106,9 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 @media (max-height:640px){.stamp .sl small{display:none}.pp-sum b{font-size:36px}.stamps{padding-bottom:30px}}
 /* 3 方格筆記本 */
 .pg-mood{background:#EBE2F6}
-.note{position:relative;width:100%;max-width:370px;padding:22px 16px 16px;background:#FFFDF8;background-image:linear-gradient(rgba(148,102,69,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,102,69,.12) 1px,transparent 1px);background-size:16px 16px;border-radius:6px;box-shadow:0 8px 20px rgba(63,49,39,.18),0 0 0 2px var(--ol);transform:rotate(1.5deg);display:flex;flex-direction:column;gap:10px}
-.note .tape{top:-10px}.note .tape.l{left:-14px;transform:rotate(-32deg)}.note .tape.r{right:-14px;transform:rotate(30deg)}
-.note h2{font-size:22px;text-align:left}
+.pg-mood .note{position:relative;width:100%;max-width:370px;padding:22px 16px 16px;background:#FFFDF8;background-image:linear-gradient(rgba(148,102,69,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,102,69,.12) 1px,transparent 1px);background-size:16px 16px;border-radius:6px;box-shadow:0 8px 20px rgba(63,49,39,.18),0 0 0 2px var(--ol);transform:rotate(1.5deg);display:flex;flex-direction:column;gap:10px}
+.pg-mood .note .tape{top:-10px}.pg-mood .note .tape.l{left:-14px;transform:rotate(-32deg)}.pg-mood .note .tape.r{right:-14px;transform:rotate(30deg)}
+.pg-mood .note h2{font-size:22px;text-align:left}
 .curve{position:relative;width:100%;aspect-ratio:16/10}
 .curve svg.ln{position:absolute;inset:18px 18px 26px;width:calc(100% - 36px);height:calc(100% - 44px);overflow:visible}
 .curve svg.ln path{fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .6s ease .2s}
@@ -1220,7 +1234,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
     <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.3" fill="currentColor"/></symbol>
     <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4zM10 21h4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol><symbol id="i-chat" viewBox="0 0 24 24"><path d="M4.5 6.5a3 3 0 0 1 3-3h9a3 3 0 0 1 3 3v6a3 3 0 0 1-3 3H11l-4.5 4v-4h0a2 2 0 0 1-2-2z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M9 9.5h6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
     <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M8 12.5l2.8 2.8L16 10" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
@@ -1887,7 +1901,7 @@ function dayBodyHTML(){
   <div class="route">${x.route.map(esc).join('<svg><use href="#i-arrow"/></svg>')}</div></div></div>
   <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
 ${nowCardHTML(x,stat)}
- ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="note"><svg><use href="#i-bell"/></svg><span>${esc(n)}</span></div>`).join("")}</div>`:""}
+ ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="day-note"><span class="dn-ic" aria-hidden="true"><svg><use href="#i-bell"/></svg></span><span class="dn-t"><small>提醒</small>${esc(n)}</span></div>`).join("")}</div>`:""}
  <ol class="tl">${x.items.map((it,i)=>legHTML(x,i)+itemHTML(it,i,stat)).join("")}</ol>${moodSectionHTML(x)}`;
 }
 function dayHTML(){
@@ -2806,17 +2820,46 @@ const SOS_HOTEL={pid:"ChIJ74aBvtd2A2AR8TRTA-QLXZM",jp:"ランプライトブッ�
 const BOOK_FIELDS=[["order","訂單編號"],["via","訂房平台"],["guest","訂房人"],["room","房型"],["pay","付款"],["payNote","提醒"]],INS_FIELDS=[["ins","旅平險公司"],["insTel","旅平險急難電話"]];
 const sosFormHTML=(fs,save)=>`<div class="sos-form">${fs.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${sosEsc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" ${save}>儲存</button></div></div>`;
 async function sosSave(root){const n={...sosInfo};root.querySelectorAll("[data-sos-f]").forEach(i=>{n[i.dataset.sosF]=i.value.trim()});sosInfo=n;store.set("sos",sosInfo);if(db&&canWrite){try{await db.doc("settings/sos").set(sosInfo)}catch(_){}}}
+/* 求助的日文句子：[中文, 日文, 讀音, 分類, 特殊]。分類 emg 放在「緊急」分頁，其他放在「日常日文」 */
+const SOS_GROUPS=[["eat","餐廳","餐廳"],["buy","購物","購物"],["stay","飯店・寄放行李","飯店"],["go","交通・問路","交通"]];
 const SOS_PHRASES=[
- ["請帶我到這個地址","この住所までお願いします。","kono jūsho made onegaishimasu","hotel"],
- ["請幫我叫救護車","救急車を呼んでください。","kyūkyūsha o yonde kudasai"],
- ["請幫我叫警察","警察を呼んでください。","keisatsu o yonde kudasai"],
- ["這附近有醫院嗎？","この近くに病院はありますか？","kono chikaku ni byōin wa arimasu ka"],
- ["我身體不舒服","気分が悪いです。","kibun ga warui desu"],
- ["我的錢包（手機）不見了","財布（スマホ）をなくしました。","saifu (sumaho) o nakushimashita"],
- ["我不太會說日文","日本語があまり話せません。","nihongo ga amari hanasemasen"],
- ["可以刷卡嗎？","カードは使えますか？","kādo wa tsukaemasu ka"],
- ["可以辦免稅嗎？","免税手続きはできますか？","menzei tetsuzuki wa dekimasu ka"],
- ["廁所在哪裡？","トイレはどこですか？","toire wa doko desu ka"]];
+ ["請幫我叫救護車","救急車を呼んでください。","kyūkyūsha o yonde kudasai","emg"],
+ ["請幫我叫警察","警察を呼んでください。","keisatsu o yonde kudasai","emg"],
+ ["這附近有醫院嗎？","この近くに病院はありますか？","kono chikaku ni byōin wa arimasu ka","emg"],
+ ["我身體不舒服","気分が悪いです。","kibun ga warui desu","emg"],
+ ["我的錢包（手機）不見了","財布（スマホ）をなくしました。","saifu (sumaho) o nakushimashita","emg"],
+ ["有會說中文或英文的人嗎？","中国語か英語を話せる人はいますか？","chūgokugo ka eigo o hanaseru hito wa imasu ka","emg"],
+ ["我有預約","予約しています。","yoyaku shite imasu","eat"],
+ ["沒有預約，請問有位置嗎？","予約していないのですが、席はありますか？","yoyaku shite inai no desu ga, seki wa arimasu ka","eat"],
+ ["我們兩位","2人です。","futari desu","eat"],
+ ["大概要等多久？","どのくらい待ちますか？","dono kurai machimasu ka","eat"],
+ ["有中文或英文的菜單嗎？","中国語か英語のメニューはありますか？","chūgokugo ka eigo no menyū wa arimasu ka","eat"],
+ ["推薦哪一道？","おすすめはどれですか？","osusume wa dore desu ka","eat"],
+ ["請給我這個","これをください。","kore o kudasai","eat"],
+ ["可以外帶嗎？","持ち帰りできますか？","mochikaeri dekimasu ka","eat"],
+ ["請幫我結帳","お会計をお願いします。","okaikei o onegaishimasu","eat"],
+ ["可以分開付嗎？","別々に払えますか？","betsubetsu ni haraemasu ka","eat"],
+ ["這個多少錢？","これはいくらですか？","kore wa ikura desu ka","buy"],
+ ["可以刷卡嗎？","カードは使えますか？","kādo wa tsukaemasu ka","buy"],
+ ["可以辦免稅嗎？","免税手続きはできますか？","menzei tetsuzuki wa dekimasu ka","buy"],
+ ["有其他尺寸（顏色）嗎？","他のサイズ（色）はありますか？","hoka no saizu (iro) wa arimasu ka","buy"],
+ ["可以試穿嗎？","試着してもいいですか？","shichaku shite mo ii desu ka","buy"],
+ ["不需要袋子","袋はいりません。","fukuro wa irimasen","buy"],
+ ["請幫我分開包裝","別々に包んでください。","betsubetsu ni tsutsunde kudasai","buy"],
+ ["可以寄放行李嗎？","荷物を預かってもらえますか？","nimotsu o azukatte moraemasu ka","stay"],
+ ["我來拿寄放的行李","預けた荷物を受け取りに来ました。","azuketa nimotsu o uketori ni kimashita","stay"],
+ ["我要辦理入住","チェックインをお願いします。","chekkuin o onegaishimasu","stay"],
+ ["我要退房","チェックアウトをお願いします。","chekkuauto o onegaishimasu","stay"],
+ ["附近有投幣式置物櫃嗎？","近くにコインロッカーはありますか？","chikaku ni koin rokkā wa arimasu ka","stay"],
+ ["請帶我到這個地址","この住所までお願いします。","kono jūsho made onegaishimasu","go","hotel"],
+ ["〇〇要怎麼走？","〇〇へはどう行けばいいですか？","〇〇 e wa dō ikeba ii desu ka","go"],
+ ["這班車會到〇〇嗎？","この電車は〇〇に行きますか？","kono densha wa 〇〇 ni ikimasu ka","go"],
+ ["廁所在哪裡？","トイレはどこですか？","toire wa doko desu ka","go"],
+ ["可以幫我們拍照嗎？","写真を撮ってもらえますか？","shashin o totte moraemasu ka","go"],
+ ["我不太會說日文","日本語があまり話せません。","nihongo ga amari hanasemasen","go"]];
+let sosTab="emg",sosGrp="all";
+const sosPhBtns=list=>`<div class="sos-ph">${list.map(([p,i])=>`<button type="button" data-sos-show="${i}"><span class="p-zh">${p[0]}</span><span class="p-jp">${p[1]}</span><span class="p-rd">${p[2]}</span></button>`).join("")}</div>`;
+const sosPh=g=>SOS_PHRASES.map((p,i)=>[p,i]).filter(([p])=>p[3]===g);
 const SOS_TELS=[
  {n:"110",l:"警察",s:"失竊、遇到糾紛",tel:"110",hot:1},
  {n:"119",l:"救護車・消防",s:"受傷、急病、火災",tel:"119",hot:1},
@@ -2828,7 +2871,15 @@ function sosHTML(){
  const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
  const H=SOS_HOTEL;
  const ins=(sosInfo.insTel||"").trim();
- return `<div class="sm-head"><b>緊急與日文資訊</b>${x}</div>
+ const tabs=`<div class="sos-tabs" role="tablist" aria-label="資訊分類">${[["emg","緊急求助","i-bell"],["talk","日常日文","i-chat"]].map(([k,l,ic])=>`<button type="button" role="tab" aria-selected="${sosTab===k}" data-sos-tab="${k}"><svg aria-hidden="true"><use href="#${ic}"/></svg>${l}</button>`).join("")}</div>`;
+ if(sosTab==="talk"){
+  const gs=sosGrp==="all"?SOS_GROUPS:SOS_GROUPS.filter(g=>g[0]===sosGrp);
+  return `<div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}
+ <div class="sos-grps" role="group" aria-label="情境">${[["all","全部","全部"],...SOS_GROUPS].map(([k,l,sl])=>`<button type="button" aria-pressed="${sosGrp===k}" data-sos-grp="${k}" aria-label="${l}">${sl}</button>`).join("")}</div>
+ ${gs.map(([k,l])=>`<h3>${l}${k===gs[0][0]?`<small>點一句放大給對方看</small>`:""}</h3>${sosPhBtns(sosPh(k))}`).join("")}
+ <p class="sos-note">〇〇 的地方指著地圖或店名給對方看・這一頁沒有網路也能打開</p>`;
+ }
+ return `<div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}
  <h3>我們住這裡<small>11/17–11/24・7 晚</small></h3>
  <div class="sos-box sos-hotel">
   <div><div class="jp">${H.jp}</div><div class="zh">${H.zh}</div></div>
@@ -2841,8 +2892,8 @@ ${sosEditing?sosFormHTML(INS_FIELDS,"data-sos-save"):""}
  <div class="sos-tels">${SOS_TELS.map(t=>t.wide?`<a class="sos-tel wide" href="tel:${t.tel}"><div><span>${t.l}</span><small>${t.s}</small></div><b>${t.n}</b></a>`:`<a class="sos-tel${t.hot?" hot":""}" href="tel:${t.tel}"><b>${t.n}</b><span>${t.l}</span><small>${t.s}</small></a>`).join("")}
   ${ins?`<a class="sos-tel wide" href="tel:${sosEsc(ins.replace(/[^\d+]/g,""))}"><div><span>旅平險・${sosEsc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${sosEsc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡填寫</small></div></button>`}${ins&&!sosEditing?`<button type="button" class="sos-edit" data-sos-edit style="grid-column:1/-1;justify-self:end">修改旅平險</button>`:""}
  </div>
- <h3>常用日文<small>點一句放大給對方看</small></h3>
- <div class="sos-ph">${SOS_PHRASES.map((p,i)=>`<button type="button" data-sos-show="${i}"><span class="p-zh">${p[0]}</span><span class="p-jp">${p[1]}</span><span class="p-rd">${p[2]}</span></button>`).join("")}</div>
+ <h3>緊急時用的日文<small>點一句放大給對方看</small></h3>
+ ${sosPhBtns(sosPh("emg"))}
  <p class="sos-note">這一頁沒有網路也能打開</p>`;
 }
 function paintSos(){if(sosSheet)sosSheet.querySelector(".sm-card").innerHTML=sosHTML()}
@@ -2861,7 +2912,9 @@ function openSos(){
  const close=()=>{v.remove();sosSheet=null;sosEditing=false;document.body.style.overflow=""};
  v.addEventListener("click",async e=>{
   if(e.target===v||e.target.closest(".sm-head .sm-x")){close();return}
-  const sh=e.target.closest("[data-sos-show]");if(sh){const p=SOS_PHRASES[+sh.dataset.sosShow];sosShow(p&&p[3]==="hotel"?"hotel":sh.dataset.sosShow);return}
+  const sh=e.target.closest("[data-sos-show]");if(sh){const p=SOS_PHRASES[+sh.dataset.sosShow];sosShow(p&&p[4]==="hotel"?"hotel":sh.dataset.sosShow);return}
+  const st=e.target.closest("[data-sos-tab]");if(st){sosTab=st.dataset.sosTab;sosEditing=false;paintSos();v.querySelector(".sm-card").scrollTop=0;return}
+  const sg=e.target.closest("[data-sos-grp]");if(sg){sosGrp=sg.dataset.sosGrp;paintSos();const c=v.querySelector(".sm-card"),t=c.querySelector(".sos-grps");if(t&&c.scrollTop>t.offsetTop)c.scrollTop=t.offsetTop-8;return}
   if(e.target.closest("[data-sos-edit]")){sosEditing=true;paintSos();setTimeout(()=>v.querySelector(".sos-form input")?.focus(),30);return}
   if(e.target.closest("[data-sos-cancel]")){sosEditing=false;paintSos();return}
   if(e.target.closest("[data-sos-save]")){sosEditing=false;await sosSave(v);paintSos()}
