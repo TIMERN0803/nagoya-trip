@@ -1705,7 +1705,7 @@ function heroHTML(){
   const c=cdParts();
   cd=`<div class="cd"><div class="cd-d"><b id="cd-d">${c.d}</b><small>天</small></div><div class="hms" aria-label="時分秒"><span><b id="cd-h">${p2(c.h)}</b><i>時</i></span><span><b id="cd-m">${p2(c.m)}</b><i>分</i></span><span><b id="cd-s">${p2(c.s)}</b><i>秒</i></span></div></div>`;lbl="名古屋，我們來了";
   sub="11/17（二）07:05 從台中起飛<br>JX 320，10:40 抵達名古屋";
-  const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,soon=new Set(dueSoon().map(x=>x.r.id)),next=pl.find(r=>!done[r.id]&&r.due&&!soon.has(r.id));
+  const pl=itemsOf("prep"),n=pl.filter(r=>done[r.id]).length,soon=new Set(dueSoon().map(x=>x.r.id)),next=pl.filter(r=>!done[r.id]&&r.due&&!soon.has(r.id)).map(r=>({r,ts:dueTs(r.due)})).filter(x=>x.ts!=null&&x.ts>=Date.now()).sort((a,b)=>a.ts-b.ts).map(x=>x.r)[0];
   foot=`${next?`<button class="chip coral" type="button" data-go-item="${esc(next.id)}"><svg><use href="#i-bell"/></svg>${esc(next.due)} ${esc(next.title)}</button>`:""}`;
  }else if(todayIdx>=0){
   const x=DAYS[todayIdx];
