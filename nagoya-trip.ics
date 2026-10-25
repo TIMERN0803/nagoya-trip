@@ -148,10 +148,9 @@ DTEND;TZID=Asia/Tokyo:20261120T093000
 SUMMARY:イトウ珈琲喫茶室
 DESCRIPTION:早餐\n名古屋看花花 https://timern0803.github.io/nagoy
  a-trip/
-LOCATION:イトウ珈琲喫茶室 名古屋
+LOCATION:イトウ珈琲 泉 名古屋
 URL:https://www.google.com/maps/search/?api=1&query=%E3%82%A4%E3%83%88%E3
- %82%A6%E7%8F%88%E7%90%B2%E5%96%AB%E8%8C%B6%E5%AE%A4%20%E5%90%8D%E5%8F%A4
- %E5%B1%8B
+ %82%A6%E7%8F%88%E7%90%B2%20%E6%B3%89%20%E5%90%8D%E5%8F%A4%E5%B1%8B
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:30 分鐘後：イトウ珈琲喫茶室
@@ -248,9 +247,9 @@ DTEND;TZID=Asia/Tokyo:20261121T120000
 SUMMARY:熱田うなぎ 天
 DESCRIPTION:午餐\n鰻魚飯，提早到\n名古屋看花花 https://tim
  ern0803.github.io/nagoya-trip/
-LOCATION:熱田うなぎ 天
+LOCATION:熱田うなぎ 天 名古屋
 URL:https://www.google.com/maps/search/?api=1&query=%E7%86%B1%E7%94%B0%E3
- %81%86%E3%81%AA%E3%81%8E%20%E5%A4%A9
+ %81%86%E3%81%AA%E3%81%8E%20%E5%A4%A9%20%E5%90%8D%E5%8F%A4%E5%B1%8B
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:30 分鐘後：熱田うなぎ 天
