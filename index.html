@@ -866,6 +866,9 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .hud-sos svg{width:22px;height:22px}
 .hud-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
 .sos{max-height:92vh;overflow-y:auto;overscroll-behavior:contain;gap:14px}
+/* 標題＋分頁固定在面板頂端，只捲下面的內容；捲動後下緣出現淡陰影 */
+.sos-top{position:sticky;top:-16px;z-index:3;margin:-16px -16px 0;padding:16px 16px 10px;background:var(--card);display:flex;flex-direction:column;gap:12px;transition:box-shadow .15s}
+.sos-top.shade{box-shadow:0 8px 12px -10px rgba(63,49,39,.45)}
 .sos h3{margin:2px 2px 0;font-size:16px;display:flex;align-items:baseline;justify-content:space-between}
 .sos h3 small{font-size:12.5px;color:var(--muted);font-weight:700}
 .sos-box{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:22px;background:var(--card);padding:14px;display:flex;flex-direction:column;gap:10px}
@@ -2872,12 +2875,12 @@ function sosHTML(){
  const tabs=`<div class="sos-tabs" role="tablist" aria-label="資訊分類">${[["talk","日常日文","i-chat"],["emg","緊急求助","i-bell"]].map(([k,l,ic])=>`<button type="button" role="tab" aria-selected="${sosTab===k}" data-sos-tab="${k}"><svg aria-hidden="true"><use href="#${ic}"/></svg>${l}</button>`).join("")}</div>`;
  if(sosTab==="talk"){
   const gs=sosGrp==="all"?SOS_GROUPS:SOS_GROUPS.filter(g=>g[0]===sosGrp);
-  return `<div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}
+  return `<div class="sos-top"><div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}</div>
  <div class="sos-grps" role="group" aria-label="情境">${[["all","全部","全部"],...SOS_GROUPS].map(([k,l,sl])=>`<button type="button" aria-pressed="${sosGrp===k}" data-sos-grp="${k}" aria-label="${l}">${sl}</button>`).join("")}</div>
  ${gs.map(([k,l])=>`<h3>${l}${k===gs[0][0]?`<small>點一句放大給對方看</small>`:""}</h3>${sosPhBtns(sosPh(k))}`).join("")}
  <p class="sos-note">〇〇 的地方指著地圖或店名給對方看・這一頁沒有網路也能打開</p>`;
  }
- return `<div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}
+ return `<div class="sos-top"><div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}</div>
  <h3>我們住這裡<small>11/17–11/24・7 晚</small></h3>
  <div class="sos-box sos-hotel">
   <div><div class="jp">${H.jp}</div><div class="zh">${H.zh}</div></div>
@@ -2894,6 +2897,7 @@ ${sosEditing?sosFormHTML(INS_FIELDS,"data-sos-save"):""}
  ${sosPhBtns(sosPh("emg"))}
  <p class="sos-note">這一頁沒有網路也能打開</p>`;
 }
+function sosShade(v){const c=v.querySelector(".sm-card"),t=c.querySelector(".sos-top");if(t)t.classList.toggle("shade",c.scrollTop>4)}
 function paintSos(){if(sosSheet)sosSheet.querySelector(".sm-card").innerHTML=sosHTML()}
 function sosShow(k){
  const v=document.createElement("div");v.className="sos-show";v.setAttribute("role","dialog");v.setAttribute("aria-label","放大顯示");
@@ -2907,12 +2911,13 @@ function openSos(){
  if(sosSheet)return;setupFlag("sos");sosEditing=false;sosTab="talk";
  const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","緊急與日文資訊");
  v.innerHTML=`<div class="sm-card sos"></div>`;sosSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";paintSos();
+ v.querySelector(".sm-card").addEventListener("scroll",()=>sosShade(v),{passive:true});
  const close=()=>{v.remove();sosSheet=null;sosEditing=false;document.body.style.overflow=""};
  v.addEventListener("click",async e=>{
   if(e.target===v||e.target.closest(".sm-head .sm-x")){close();return}
   const sh=e.target.closest("[data-sos-show]");if(sh){const p=SOS_PHRASES[+sh.dataset.sosShow];sosShow(p&&p[4]==="hotel"?"hotel":sh.dataset.sosShow);return}
-  const st=e.target.closest("[data-sos-tab]");if(st){sosTab=st.dataset.sosTab;sosEditing=false;paintSos();v.querySelector(".sm-card").scrollTop=0;return}
-  const sg=e.target.closest("[data-sos-grp]");if(sg){sosGrp=sg.dataset.sosGrp;paintSos();const c=v.querySelector(".sm-card"),t=c.querySelector(".sos-grps");if(t&&c.scrollTop>t.offsetTop)c.scrollTop=t.offsetTop-8;return}
+  const st=e.target.closest("[data-sos-tab]");if(st){sosTab=st.dataset.sosTab;sosEditing=false;paintSos();v.querySelector(".sm-card").scrollTop=0;sosShade(v);return}
+  const sg=e.target.closest("[data-sos-grp]");if(sg){sosGrp=sg.dataset.sosGrp;paintSos();v.querySelector(".sm-card").scrollTop=0;sosShade(v);return}
   if(e.target.closest("[data-sos-edit]")){sosEditing=true;paintSos();setTimeout(()=>v.querySelector(".sos-form input")?.focus(),30);return}
   if(e.target.closest("[data-sos-cancel]")){sosEditing=false;paintSos();return}
   if(e.target.closest("[data-sos-save]")){sosEditing=false;await sosSave(v);paintSos()}
