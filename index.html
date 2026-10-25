@@ -226,9 +226,9 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .wx .w-meta{font-size:13px;color:var(--muted);line-height:1.45;min-width:0}
 .wx .w-meta b{color:var(--ink);font-weight:700}
 
-.notes{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-/* 行程頁提醒：跟其他卡片一樣棕框實心陰影；鈴鐺放在淺珊瑚圓底裡，標出「這是提醒」 */
-.day-note{display:flex;gap:12px;align-items:center;background:var(--card);border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:18px;padding:10px 14px 10px 10px;font-size:15px;font-weight:700;line-height:1.45;color:var(--ink)}
+.notes{display:flex;flex-direction:column;gap:12px;margin-top:14px}
+/* 行程頁提醒：方格紙底＋珊瑚內框＋棕色外圈，跟一般卡片不同、比較顯眼；不傾斜，鈴鐺（淺珊瑚圓底）和文字同一排 */
+.day-note{display:flex;gap:12px;align-items:center;margin:2px;padding:10px 14px 10px 10px;background:#FFFDF8;background-image:linear-gradient(rgba(148,102,69,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,102,69,.12) 1px,transparent 1px);background-size:16px 16px;border:2px solid var(--coral-line);border-radius:8px;box-shadow:0 0 0 2px var(--ol),0 8px 20px rgba(63,49,39,.18);font-size:15px;font-weight:700;line-height:1.45;color:var(--ink)}
 .day-note .dn-ic{width:38px;height:38px;flex:none;border-radius:50%;background:var(--coral-soft);display:grid;place-items:center}
 .day-note .dn-ic svg{width:20px;height:20px;color:var(--coral-ink)}
 .day-note .dn-t{min-width:0}
@@ -899,13 +899,11 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sos-tel.wide b{font-size:17px}
 .sos-tel.off{opacity:.75}
 .sos-ph{display:flex;flex-direction:column;gap:6px}
-/* 求助分類：外層淺底，選中的一格是白底加棕框實心陰影；情境標籤不加框、用底色區分 */
+/* 求助分類：外層淺底，選中的一格是焦糖棕底白字（跟主要按鈕同一套）；情境標籤不加框、用底色區分 */
 .sos-tabs{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:18px;background:var(--sunk)}
 .sos-tabs button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;border:2px solid transparent;border-radius:14px;background:transparent;font:inherit;font-family:var(--f-display);font-weight:900;font-size:15px;color:var(--muted);cursor:pointer}
 .sos-tabs button svg{width:18px;height:18px;flex:none}
-.sos-tabs button[aria-selected="true"]{background:var(--card);border-color:var(--ol);box-shadow:0 3px 0 var(--ol);color:var(--ink)}
-.sos-tabs button[data-sos-tab="emg"][aria-selected="true"] svg{color:var(--coral-ink)}
-.sos-tabs button[data-sos-tab="talk"][aria-selected="true"] svg{color:var(--accent)}
+.sos-tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent-deep);box-shadow:0 3px 0 var(--accent-deep);color:#fff}
 .sos-grps{display:flex;flex-wrap:wrap;flex:none;gap:6px}
 .sos-grps button{flex:none;min-height:38px;padding:0 13px;border:0;border-radius:999px;background:var(--paper);font:inherit;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap}
 .sos-grps button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent-deep)}
@@ -2857,7 +2855,7 @@ const SOS_PHRASES=[
  ["廁所在哪裡？","トイレはどこですか？","toire wa doko desu ka","go"],
  ["可以幫我們拍照嗎？","写真を撮ってもらえますか？","shashin o totte moraemasu ka","go"],
  ["我不太會說日文","日本語があまり話せません。","nihongo ga amari hanasemasen","go"]];
-let sosTab="emg",sosGrp="all";
+let sosTab="talk",sosGrp="all";
 const sosPhBtns=list=>`<div class="sos-ph">${list.map(([p,i])=>`<button type="button" data-sos-show="${i}"><span class="p-zh">${p[0]}</span><span class="p-jp">${p[1]}</span><span class="p-rd">${p[2]}</span></button>`).join("")}</div>`;
 const sosPh=g=>SOS_PHRASES.map((p,i)=>[p,i]).filter(([p])=>p[3]===g);
 const SOS_TELS=[
@@ -2871,7 +2869,7 @@ function sosHTML(){
  const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
  const H=SOS_HOTEL;
  const ins=(sosInfo.insTel||"").trim();
- const tabs=`<div class="sos-tabs" role="tablist" aria-label="資訊分類">${[["emg","緊急求助","i-bell"],["talk","日常日文","i-chat"]].map(([k,l,ic])=>`<button type="button" role="tab" aria-selected="${sosTab===k}" data-sos-tab="${k}"><svg aria-hidden="true"><use href="#${ic}"/></svg>${l}</button>`).join("")}</div>`;
+ const tabs=`<div class="sos-tabs" role="tablist" aria-label="資訊分類">${[["talk","日常日文","i-chat"],["emg","緊急求助","i-bell"]].map(([k,l,ic])=>`<button type="button" role="tab" aria-selected="${sosTab===k}" data-sos-tab="${k}"><svg aria-hidden="true"><use href="#${ic}"/></svg>${l}</button>`).join("")}</div>`;
  if(sosTab==="talk"){
   const gs=sosGrp==="all"?SOS_GROUPS:SOS_GROUPS.filter(g=>g[0]===sosGrp);
   return `<div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}
@@ -2906,7 +2904,7 @@ function sosShow(k){
  document.body.appendChild(v);
 }
 function openSos(){
- if(sosSheet)return;setupFlag("sos");sosEditing=false;
+ if(sosSheet)return;setupFlag("sos");sosEditing=false;sosTab="talk";
  const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","緊急與日文資訊");
  v.innerHTML=`<div class="sm-card sos"></div>`;sosSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";paintSos();
  const close=()=>{v.remove();sosSheet=null;sosEditing=false;document.body.style.overflow=""};
