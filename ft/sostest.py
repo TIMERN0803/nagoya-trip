@@ -10,9 +10,12 @@ async def main():
         ft.rec("S 求助","首頁有求助按鈕",await pg.query_selector('.hud [data-sos]'))
         await pg.click('[data-sos]');await pg.wait_for_timeout(300)
         t=await pg.inner_text('.sos')
-        for k in ["ランプライトブックスホテル名古屋","〒460-0003","052-231-7011","伏見站","110","119","050-3816-2787","090-8794-4568","+886-800-085-095","この住所までお願いします"]:
+        for k in ["ランプライトブックスホテル名古屋","〒460-0003","052-231-7011","伏見站","110","119","050-3816-2787","090-8794-4568","+886-800-085-095"]:
             ft.rec("S 求助",f"面板含 {k}",k in t)
         hrefs=await pg.eval_on_selector_all('.sos a[href^="tel:"]','a=>a.map(x=>x.getAttribute("href"))')
+        await pg.click('[data-sos-tab="talk"]');await pg.wait_for_timeout(200)
+        ft.rec("S 求助","日常日文有「請帶我到這個地址」","この住所までお願いします" in await pg.inner_text('.sos'))
+        await pg.click('[data-sos-tab="emg"]');await pg.wait_for_timeout(200)
         ft.rec("S 求助","電話都能撥（tel: 連結）",all(h[4:].replace('+','').isdigit() for h in hrefs) and len(hrefs)>=7,hrefs)
         ft.rec("S 求助","求助面板不含訂房資料","訂單編號" not in t and "訂房人" not in t)
         ft.rec("S 求助","程式碼裡沒有訂單編號",not __import__("re").search(r"IN\d{8,}",ft.SRC))
@@ -28,7 +31,7 @@ async def main():
         ft.rec("S 求助","給司機看：全螢幕顯示日文地址","錦1丁目13-18" in sh and "この住所までお願いします" in sh)
         await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(200)
         ft.rec("S 求助","全螢幕可以關閉",not await pg.query_selector('.sos-show'))
-        await pg.click('.sos-ph button:nth-child(2)');await pg.wait_for_timeout(200)
+        await pg.click('.sos-ph button:nth-child(1)');await pg.wait_for_timeout(200)
         ft.rec("S 求助","點日文句子會放大","救急車" in await pg.inner_text('.sos-show'))
         await pg.click('.sos-show');await pg.click('.sos .sm-head .sm-x');await pg.wait_for_timeout(200)
         ft.rec("S 求助","面板可以關閉、頁面恢復捲動",not await pg.query_selector('.sos') and await pg.evaluate('document.body.style.overflow')=="")

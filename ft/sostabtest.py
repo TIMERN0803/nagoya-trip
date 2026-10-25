@@ -1,0 +1,101 @@
+# 求助面板分類切換（緊急求助／日常日文＋情境篩選）、行程頁提醒卡樣式
+import asyncio,json
+import fulltest as ft
+from playwright.async_api import async_playwright
+OUT='/home/claude/build/'
+async def home(pg):
+    if not await pg.query_selector('.hero'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
+async def open_sos(pg):
+    await home(pg);await pg.click('[data-sos]');await pg.wait_for_timeout(300)
+TXT='document.querySelector(".sos").innerText'
+async def main():
+    async with async_playwright() as p:
+        b=await p.chromium.launch()
+        pg=await ft.newpage(b,ft.twt(10,25,18,0),tz="Asia/Taipei");await open_sos(pg)
+        tabs=await pg.evaluate('[...document.querySelectorAll(".sos-tabs [role=tab]")].map(t=>[t.textContent.trim(),t.getAttribute("aria-selected")])')
+        ft.rec("求助分類","有「緊急求助」「日常日文」兩個分頁，預設緊急",tabs==[["緊急求助","true"],["日常日文","false"]],tabs)
+        t=await pg.evaluate(TXT)
+        ft.rec("求助分類","緊急分頁：飯店、緊急電話、旅平險、緊急日文","ランプライトブックスホテル名古屋" in t and "110" in t and "119" in t and "旅平險" in t and "緊急時用的日文" in t,t[:60])
+        n=await pg.evaluate('document.querySelectorAll(".sos .sos-ph button").length')
+        ft.rec("求助分類","緊急分頁只放緊急句子（6 句）",n==6 and "救急車" in t and "予約" not in t and "荷物" not in t,n)
+        await pg.click('.sos-ph button:nth-child(1)');await pg.wait_for_timeout(200)
+        ft.rec("求助分類","緊急句子點了會放大","救急車" in await pg.inner_text('.sos-show'))
+        await pg.click('.sos-show');await pg.wait_for_timeout(150)
+        # 切到日常日文
+        await pg.evaluate('document.querySelector(".sos").scrollTop=99999')
+        await pg.click('[data-sos-tab="talk"]');await pg.wait_for_timeout(300)
+        t=await pg.evaluate(TXT);st=await pg.evaluate('document.querySelector(".sos").scrollTop')
+        ft.rec("求助分類","切到日常日文會回到最上面",st==0,st)
+        ft.rec("求助分類","日常日文不顯示緊急電話與飯店卡","110" not in t and "緊急電話" not in t and "旅平險" not in t)
+        hs=await pg.evaluate('[...document.querySelectorAll(".sos h3")].map(h=>h.firstChild.textContent.trim())')
+        ft.rec("求助分類","全部：餐廳、購物、飯店・寄放行李、交通・問路四區",hs==["餐廳","購物","飯店・寄放行李","交通・問路"],hs)
+        need=["可以寄放行李嗎？","沒有預約，請問有位置嗎？","我有預約","我來拿寄放的行李","可以刷卡嗎？","可以辦免稅嗎？","廁所在哪裡？","我不太會說日文"]
+        miss=[x for x in need if x not in t]
+        ft.rec("求助分類","包含使用者要的句子與原本的日常句",not miss,miss)
+        n=await pg.evaluate('document.querySelectorAll(".sos .sos-ph button").length')
+        ft.rec("求助分類","日常日文共 28 句",n==28,n)
+        chips=await pg.evaluate('[...document.querySelectorAll(".sos-grps button")].map(b=>[b.textContent,Math.round(b.getBoundingClientRect().top),b.getBoundingClientRect().height])')
+        ft.rec("求助分類","情境標籤 5 個排成一排、高度 ≥ 36",len(chips)==5 and len({c[1] for c in chips})==1 and all(c[2]>=36 for c in chips),chips)
+        await pg.screenshot(path=OUT+'sos_talk.png')
+        # 篩選
+        await pg.click('[data-sos-grp="stay"]');await pg.wait_for_timeout(250)
+        t=await pg.evaluate(TXT);n=await pg.evaluate('document.querySelectorAll(".sos .sos-ph button").length')
+        ft.rec("求助分類","選「飯店」只顯示飯店・寄放 5 句",n==5 and "荷物を預かってもらえますか" in t and "予約していないのですが" not in t,n)
+        pr=await pg.evaluate('[...document.querySelectorAll(".sos-grps button")].filter(b=>b.getAttribute("aria-pressed")==="true").map(b=>b.textContent)')
+        ft.rec("求助分類","選中的標籤有 aria-pressed",pr==["飯店"],pr)
+        await pg.click('.sos-ph button:nth-child(1)');await pg.wait_for_timeout(200)
+        ft.rec("求助分類","寄放行李句子放大顯示日文","荷物を預かってもらえますか" in await pg.inner_text('.sos-show'))
+        await pg.click('.sos-show');await pg.wait_for_timeout(150)
+        await pg.click('[data-sos-grp="eat"]');await pg.wait_for_timeout(250)
+        t=await pg.evaluate(TXT)
+        ft.rec("求助分類","選「餐廳」有預約相關句子","予約しています" in t and "席はありますか" in t and "荷物" not in t)
+        await pg.click('[data-sos-grp="go"]');await pg.wait_for_timeout(250)
+        await pg.click('.sos-ph button:nth-child(1)');await pg.wait_for_timeout(200)
+        sh=await pg.inner_text('.sos-show')
+        ft.rec("求助分類","「請帶我到這個地址」顯示飯店地址全螢幕","錦1丁目13-18" in sh,sh[:40])
+        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(150)
+        await pg.click('[data-sos-grp="all"]');await pg.wait_for_timeout(200)
+        # 關掉再打開：記得上次的分頁
+        await pg.click('.sos .sm-head .sm-x');await pg.wait_for_timeout(200)
+        await pg.click('[data-sos]');await pg.wait_for_timeout(300)
+        sel=await pg.evaluate('document.querySelector(".sos-tabs [aria-selected=true]").dataset.sosTab')
+        ft.rec("求助分類","關掉再打開停在上次的分頁",sel=="talk",sel)
+        await pg.click('[data-sos-tab="emg"]');await pg.wait_for_timeout(200)
+        # 旅平險編輯仍可用
+        await pg.click('.sos [data-sos-edit]');await pg.wait_for_timeout(200)
+        await pg.fill('[data-sos-f=insTel]','0800-123-456');await pg.click('[data-sos-save]');await pg.wait_for_timeout(300)
+        ft.rec("求助分類","緊急分頁的旅平險仍可填寫",await pg.query_selector('.sos a[href="tel:0800123456"]'))
+        sel=await pg.evaluate('document.querySelector(".sos-tabs [aria-selected=true]").dataset.sosTab')
+        ft.rec("求助分類","存完旅平險還在緊急分頁",sel=="emg",sel)
+        tb=await pg.evaluate('[...document.querySelectorAll(".sos-tabs button")].map(b=>b.getBoundingClientRect().height)')
+        ft.rec("求助分類","分頁按鈕高度 ≥ 44",all(h>=44 for h in tb),tb)
+        ft.rec("求助分類","沒有 JS 錯誤",not pg.errs,pg.errs[:2])
+        await ft.close(pg)
+        # 320px 小螢幕
+        pg=await ft.newpage(b,ft.twt(10,25,18,0),tz="Asia/Taipei");await pg.set_viewport_size({'width':320,'height':640});await open_sos(pg)
+        await pg.click('[data-sos-tab="talk"]');await pg.wait_for_timeout(250)
+        w=await pg.evaluate('({sw:document.querySelector(".sos").scrollWidth,cw:document.querySelector(".sos").clientWidth,chips:[...document.querySelectorAll(".sos-grps button")].map(b=>Math.round(b.getBoundingClientRect().right))})')
+        ft.rec("求助分類","320px 沒有水平捲動、標籤都在畫面內",w['sw']<=w['cw'] and max(w['chips'])<=320,w)
+        await ft.close(pg)
+        # 行程頁提醒卡
+        pg=await ft.newpage(b,ft.jst(11,18,7,30));await pg.wait_for_timeout(400)
+        if not await pg.query_selector('.notes'):await pg.click('[data-day="1"]');await pg.wait_for_timeout(400)
+        info=await pg.evaluate('''[...document.querySelectorAll(".notes .day-note")].map(n=>{const cs=getComputedStyle(n),ic=n.querySelector(".dn-ic"),tx=n.querySelector(".dn-t"),ir=ic.getBoundingClientRect(),tr=tx.getBoundingClientRect();return {t:tx.textContent,tf:cs.transform,bg:cs.backgroundImage,bc:cs.borderTopColor,sh:cs.boxShadow,icbg:getComputedStyle(ic).backgroundColor,row:Math.abs((ir.top+ir.height/2)-(tr.top+tr.height/2))<8&&ir.right<tr.left,h:Math.round(n.getBoundingClientRect().height),icw:Math.round(ir.width)}})''')
+        ft.rec("提醒卡","11/18 有兩則提醒",len(info)==2,[i['t'] for i in info])
+        ft.rec("提醒卡","不歪（沒有旋轉）、沒有方格底",all(i['tf'] in ("none","") and i['bg']=="none" for i in info),[(i['tf'],i['bg'][:30]) for i in info])
+        ft.rec("提醒卡","棕色外框 #8C6D55 加同色實心陰影",all(i['bc']=="rgb(140, 109, 85)" and "rgb(140, 109, 85)" in i['sh'] for i in info),[(i['bc'],i['sh']) for i in info])
+        ft.rec("提醒卡","鈴鐺放在淺珊瑚圓底 #FDE6DC",all(i['icbg']=="rgb(253, 230, 220)" for i in info),[i['icbg'] for i in info])
+        ft.rec("提醒卡","圖示和文字同一排、垂直置中",all(i['row'] for i in info),info)
+        ft.rec("提醒卡","單行提醒高度精簡（≤ 72px）",min(i['h'] for i in info)<=72,[i['h'] for i in info])
+        ft.rec("提醒卡","有「提醒」小標","提醒" in await pg.inner_text('.notes'))
+        await pg.evaluate('document.querySelector(".notes").scrollIntoView({block:"center"})');await pg.wait_for_timeout(200)
+        await pg.screenshot(path=OUT+'day_notes.png')
+        ft.rec("提醒卡","沒有 JS 錯誤",not pg.errs,pg.errs[:2])
+        await ft.close(pg)
+        # 回顧頁的方格筆記本不受影響
+        pg=await ft.newpage(b,ft.jst(11,26,12,0));await pg.wait_for_timeout(500)
+        css=await pg.evaluate('''(()=>{const d=document.createElement("div");d.className="pg-mood";d.innerHTML='<div class="note"></div>';document.body.appendChild(d);const cs=getComputedStyle(d.firstChild);const r={tf:cs.transform,bg:cs.backgroundImage.slice(0,15)};d.remove();const e=document.createElement("div");e.className="note";document.body.appendChild(e);const c2=getComputedStyle(e);r.out=c2.transform;e.remove();return r})()''')
+        ft.rec("提醒卡","回顧頁的方格筆記本仍然微傾、有方格；樣式不外溢",css['tf']!="none" and "linear" in css['bg'] and css['out']=="none",css)
+        await ft.close(pg)
+        await b.close()
+asyncio.run(main())
