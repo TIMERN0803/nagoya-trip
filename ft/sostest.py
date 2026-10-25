@@ -8,7 +8,7 @@ async def main():
         pg=await ft.newpage(b,ft.twt(10,25,11,0),tz="Asia/Taipei")
         if not await pg.query_selector('.g-home'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
         ft.rec("S 求助","首頁有求助按鈕",await pg.query_selector('.hud [data-sos]'))
-        await pg.click('[data-sos]');await pg.wait_for_timeout(300)
+        await pg.click('[data-sos]');await pg.wait_for_timeout(300);await pg.click('[data-sos-tab=\"emg\"]');await pg.wait_for_timeout(200)
         t=await pg.inner_text('.sos')
         for k in ["ランプライトブックスホテル名古屋","〒460-0003","052-231-7011","伏見站","110","119","050-3816-2787","090-8794-4568","+886-800-085-095"]:
             ft.rec("S 求助",f"面板含 {k}",k in t)
@@ -38,13 +38,13 @@ async def main():
         # 重新整理後還記得
         await pg.reload();await pg.wait_for_timeout(900)
         if not await pg.query_selector('.g-home'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
-        await pg.click('[data-sos]');await pg.wait_for_timeout(300)
+        await pg.click('[data-sos]');await pg.wait_for_timeout(300);await pg.click('[data-sos-tab=\"emg\"]');await pg.wait_for_timeout(200)
         ft.rec("S 求助","重新整理後資料還在","測試產險" in await pg.inner_text('.sos'))
         await pg.click('.sos .sm-head .sm-x');await pg.wait_for_timeout(200)
         # 對方手機同步
         pg2=await ft.newpage(b,ft.twt(10,25,11,0),tz="Asia/Taipei",me="star",ctx=pg.ctx)
         if not await pg2.query_selector('.g-home'):await pg2.click('[data-home]');await pg2.wait_for_timeout(300)
-        await pg2.click('[data-sos]');await pg2.wait_for_timeout(300)
+        await pg2.click('[data-sos]');await pg2.wait_for_timeout(300);await pg2.click('[data-sos-tab=\"emg\"]');await pg2.wait_for_timeout(200)
         ft.rec("S 求助","另一人手機也看得到旅平險","測試產險" in await pg2.inner_text('.sos'))
         # 第一天入住行程
         await pg.click('[data-day="0"]');await pg.wait_for_timeout(400)

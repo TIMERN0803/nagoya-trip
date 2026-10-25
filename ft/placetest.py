@@ -33,7 +33,7 @@ async def main():
         ft.rec("L 地點精修",f"交通路線都帶終點 ID（共 {nleg} 段，自訂起訖點的除外）",len(legbad)<=3,legbad)
         pg=await ft.newpage(b,ft.twt(10,25,13,0),tz="Asia/Taipei")
         if not await pg.query_selector('.g-home'):await pg.click('[data-home]')
-        await pg.click('[data-sos]');await pg.wait_for_timeout(300)
+        await pg.click('[data-sos]');await pg.wait_for_timeout(300);await pg.click('[data-sos-tab=\"emg\"]');await pg.wait_for_timeout(200)
         h=await pg.evaluate('[...document.querySelectorAll(".sos a")].find(a=>a.textContent.includes("地圖")).href')
         ft.rec("L 地點精修","求助頁飯店「地圖」也帶地點 ID","query_place_id=ChIJ74aBvtd2A2AR8TRTA-QLXZM" in h,h)
         errs+=pg.errs
