@@ -960,27 +960,25 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .su-other.ok{color:var(--mint-ink)}
 .su-other:not(.ok) svg{opacity:.45}
 
-/* ===== 使用教學（第一次打開） ===== */
-.tour{position:fixed;inset:0;z-index:66;background:rgba(43,36,32,.5);display:flex;align-items:center;justify-content:center;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));animation:fadein .2s ease}
-.tour-card{width:100%;max-width:400px;max-height:100%;display:flex;flex-direction:column;background:var(--card);border:2.5px solid var(--ol);border-radius:28px;box-shadow:0 5px 0 var(--ol);overflow:hidden;animation:sheetup .3s cubic-bezier(.2,.9,.3,1)}
-.tour-track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
-.tour-track::-webkit-scrollbar{display:none}
-.tour-slide{flex:0 0 100%;scroll-snap-align:center;display:flex;flex-direction:column}
-.tour-art{display:block;width:100%;height:auto;aspect-ratio:2/1;border-bottom:2px solid var(--ol)}
-.tour-txt{padding:18px 20px 6px;display:flex;flex-direction:column;gap:8px}
-.tour-txt h2{margin:0;font-size:21px;line-height:1.3}
-.tour-txt p{margin:0;font-size:15px;line-height:1.6;color:var(--muted)}
-.tour-txt p b{color:var(--ink)}
-.tour-foot{display:flex;align-items:center;gap:10px;padding:12px 16px 16px}
-.tour-dots{flex:1;display:flex;justify-content:center;gap:7px}
-.tour-dots i{width:8px;height:8px;border-radius:50%;background:var(--line-strong);transition:width .2s,background .2s}
-.tour-dots i.on{width:22px;border-radius:5px;background:var(--accent)}
-.tour-skip{flex:none;min-width:64px;height:44px;border:0;background:none;color:var(--muted);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14.5px;cursor:pointer;text-align:left;padding:0 4px}
-.tour-next{flex:none;min-width:96px;height:46px;padding:0 18px;border:0;border-radius:15px;background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep);font:inherit;font-family:var(--f-display);font-weight:900;font-size:15.5px;cursor:pointer}
-.tour-next:active{transform:translateY(2px);box-shadow:0 1px 0 var(--accent-deep)}
-.tour-next.wide{flex:1}
+/* ===== 使用教學：框住實際畫面＋貓咪對話框 ===== */
+.coach{position:fixed;inset:0;z-index:66}
+.coach-hole{position:fixed;border-radius:18px;box-shadow:0 0 0 3px var(--butter),0 0 0 9999px rgba(43,36,32,.62);transition:left .3s cubic-bezier(.2,.8,.3,1),top .3s cubic-bezier(.2,.8,.3,1),width .3s,height .3s;pointer-events:none}
+.coach-tip{position:fixed;left:16px;right:16px;max-width:420px;margin:0 auto;display:flex;align-items:flex-end;gap:8px;transition:top .3s cubic-bezier(.2,.8,.3,1);animation:coachin .3s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes coachin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.coach-tip.below{align-items:flex-start}
+.coach-cat{flex:none;width:58px;height:48px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
+.coach-bub{position:relative;flex:1;min-width:0;background:var(--card);border:2.5px solid var(--ol);border-radius:20px;box-shadow:0 4px 0 var(--ol);padding:12px 14px 10px}
+.coach-bub::before{content:"";position:absolute;left:-9px;bottom:16px;width:14px;height:14px;background:var(--card);border-left:2.5px solid var(--ol);border-bottom:2.5px solid var(--ol);transform:rotate(45deg)}
+.coach-tip.below .coach-bub::before{bottom:auto;top:16px}
+.coach-bub p{margin:0;font-size:15.5px;line-height:1.5;font-weight:700;color:var(--ink)}
+.coach-foot{display:flex;align-items:center;gap:8px;margin-top:8px}
+.coach-dots{flex:1;display:flex;gap:5px}
+.coach-dots i{width:6px;height:6px;border-radius:50%;background:var(--line-strong)}
+.coach-dots i.on{width:16px;border-radius:4px;background:var(--accent)}
+.coach-skip{border:0;background:none;color:var(--muted);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13.5px;padding:8px 4px;cursor:pointer}
+.coach-next{border:0;border-radius:12px;background:var(--accent);color:#fff;box-shadow:0 2px 0 var(--accent-deep);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14px;height:38px;padding:0 16px;cursor:pointer}
 .su-tour{align-self:center;border:0;background:none;color:var(--accent);font:inherit;font-family:var(--f-display);font-weight:900;font-size:14px;padding:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
-@media (prefers-reduced-motion:reduce){.tour,.tour-card{animation:none}.tour-track{scroll-behavior:auto}}
+@media (prefers-reduced-motion:reduce){.coach-hole,.coach-tip{transition:none;animation:none}}
 </style>
 </head>
 <body>
@@ -2328,38 +2326,56 @@ function openSetup(){
 document.addEventListener("click",e=>{if(e.target.closest("[data-setup-open]"))openSetup()});
 setTimeout(setupAuto,1500);setInterval(setupAuto,15000);
 
-/* ===== 使用教學：每支手機第一次打開出現一次，可略過；出發前手機設定清單最下面可以再打開 ===== */
+/* ===== 使用教學：框住實際畫面，豆花和芝麻用對話框各講一句；每支手機第一次打開出現一次 ===== */
 const TOUR_KEY="ngy:tour";
-const TOL=`stroke="#3F3127" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"`;
-const TOUR=[
- {t:"歡迎來到名古屋看花花",p:"這是<b>阿彰和星星</b>兩個人的旅行 App。行程、清單、記帳都會在兩支手機之間同步。",
-  art:`<rect width="300" height="150" fill="#FCEFC6"/><path d="M0 120h300v30H0z" fill="#E7DCCB"/><g ${TOL}><rect x="30" y="38" width="44" height="74" rx="9" fill="#fff"/><rect x="36" y="48" width="32" height="44" rx="4" fill="#BFE2F0"/><rect x="226" y="38" width="44" height="74" rx="9" fill="#fff"/><rect x="232" y="48" width="32" height="44" rx="4" fill="#F6D58A"/><path d="M90 58q60-30 120 0" fill="none" stroke-dasharray="2 7"/><path d="M200 50l10 8-12 4" fill="none"/><path d="M210 92q-60 30-120 0" fill="none" stroke-dasharray="2 7"/><path d="M100 100l-10-8 12-4" fill="none"/></g><svg x="96" y="56" width="108" height="66" viewBox="0 0 132 80"><use href="#cats-hi"/></svg>`},
- {t:"首頁看行程",p:"出發前看倒數，旅途中會<b>自動跳到今天</b>，右下角的按鈕會帶你看<b>下一站</b>。點 8 天的地點可以看每天的行程。",
-  art:`<rect width="300" height="150" fill="#DDF0E2"/><path d="M0 122h300v28H0z" fill="#E7DCCB"/><g ${TOL}><rect x="150" y="22" width="122" height="96" rx="14" fill="#fff"/><path d="M150 46h122" /><path d="M176 14v16M246 14v16"/><rect x="164" y="58" width="26" height="22" rx="6" fill="#F6D58A"/><rect x="198" y="58" width="26" height="22" rx="6" fill="#fff"/><rect x="232" y="58" width="26" height="22" rx="6" fill="#fff"/><rect x="164" y="88" width="26" height="22" rx="6" fill="#fff"/><rect x="198" y="88" width="26" height="22" rx="6" fill="#fff"/><rect x="232" y="88" width="26" height="22" rx="6" fill="#fff"/><rect x="150" y="6" width="44" height="18" rx="9" fill="#7CC8B4" stroke-width="2"/></g><text x="172" y="19" font-size="11" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">今天</text><svg x="10" y="54" width="132" height="80" viewBox="0 0 132 80"><use href="#cats-walk"/></svg>`},
- {t:"遇到狀況，按「求助」",p:"首頁右上角的<b>求助</b>有飯店的日文地址（可以全螢幕給司機看）、緊急電話和常用日文，<b>沒網路也能打開</b>。",
-  art:`<rect width="300" height="150" fill="#FDE6DC"/><path d="M0 122h300v28H0z" fill="#E7DCCB"/><g ${TOL}><rect x="164" y="16" width="62" height="108" rx="12" fill="#fff"/><rect x="172" y="30" width="46" height="70" rx="5" fill="#fff"/><path d="M178 42h34M178 54h26M178 66h34M178 78h20"/><circle cx="238" cy="30" r="20" fill="#EE9479"/><path d="M238 20v13M238 40v.1" stroke="#fff" stroke-width="3.6"/></g><svg x="14" y="50" width="132" height="80" viewBox="0 0 132 80"><use href="#cats"/></svg>`},
- {t:"兩個小技巧",p:"刪錯了不用怕，下方會出現<b>「復原」</b>可以救回來。待辦和要買的可以按<b>「排序」</b>，按住左邊的把手上下拖。",
-  art:`<rect width="300" height="150" fill="#EBE2F6"/><path d="M0 122h300v28H0z" fill="#E7DCCB"/><g ${TOL}><rect x="30" y="34" width="112" height="40" rx="12" fill="#3F3127"/><rect x="96" y="42" width="38" height="24" rx="8" fill="#F6D58A" stroke="none"/><path d="M42 54h40" stroke="#fff"/><rect x="160" y="26" width="112" height="28" rx="9" fill="#fff"/><rect x="160" y="60" width="112" height="28" rx="9" fill="#FCEFC6" transform="rotate(-3 216 74)"/><rect x="160" y="94" width="112" height="28" rx="9" fill="#fff"/><path d="M170 36h12M170 40h12M170 44h12M170 104h12M170 108h12M170 112h12" stroke-width="2"/><path d="M168 68h12M168 72h12M168 76h12" stroke-width="2" transform="rotate(-3 216 74)"/></g><text x="115" y="58" font-size="12" font-weight="900" fill="#3F3127" text-anchor="middle" font-family="sans-serif">復原</text><svg x="30" y="80" width="74" height="45" viewBox="0 0 132 80"><use href="#cats-hi"/></svg>`},
- {t:"最後，設定這支手機",p:"加到主畫面、選好你是誰、連上同步、打開提醒。<b>兩個人的手機要各自設定</b>，能偵測的項目 App 會自動幫你打勾。",
-  art:`<rect width="300" height="150" fill="#FCEFC6"/><path d="M0 122h300v28H0z" fill="#E7DCCB"/><svg x="168" y="14" width="96" height="111" viewBox="0 0 52 60">${PHONE_SVG.replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg><svg x="22" y="54" width="132" height="80" viewBox="0 0 132 80"><use href="#cats-hi"/></svg>`}];
-let tourEl=null;
-function openTour(){
- if(tourEl)return;const pre=Date.now()<DEPART,n=TOUR.length;
- const v=document.createElement("div");v.className="tour";v.setAttribute("role","dialog");v.setAttribute("aria-modal","true");v.setAttribute("aria-label","使用教學");
- v.innerHTML=`<div class="tour-card"><div class="tour-track">${TOUR.map((c,i)=>`<section class="tour-slide" aria-label="第 ${i+1} 頁，共 ${n} 頁"><svg class="tour-art" viewBox="0 0 300 150" aria-hidden="true">${c.art}</svg><div class="tour-txt"><h2>${c.t}</h2><p>${c.p}</p></div></section>`).join("")}</div>
-  <div class="tour-foot"><button type="button" class="tour-skip" data-tour-skip>略過</button><span class="tour-dots" aria-hidden="true">${TOUR.map((_,i)=>`<i${i?"":' class="on"'}></i>`).join("")}</span><button type="button" class="tour-next" data-tour-next>下一步</button></div></div>`;
- tourEl=v;document.body.appendChild(v);document.body.style.overflow="hidden";
- const track=v.querySelector(".tour-track"),dots=[...v.querySelectorAll(".tour-dots i")],next=v.querySelector("[data-tour-next]"),skip=v.querySelector("[data-tour-skip]");
- let cur=0;
- const sync=()=>{cur=Math.round(track.scrollLeft/Math.max(1,track.clientWidth));dots.forEach((d,i)=>d.classList.toggle("on",i===cur));const last=cur===n-1;next.textContent=last?(pre?"開始設定這支手機":"開始使用"):"下一步";next.classList.toggle("wide",last);skip.hidden=last};
- track.addEventListener("scroll",()=>{clearTimeout(track._t);track._t=setTimeout(sync,60)},{passive:true});
- const close=()=>{try{localStorage.setItem(TOUR_KEY,"1")}catch(_){};v.remove();tourEl=null;document.body.style.overflow=""};
- skip.addEventListener("click",close);
- next.addEventListener("click",()=>{if(cur<n-1){track.scrollTo({left:(cur+1)*track.clientWidth,behavior:reduce()?"auto":"smooth"});setTimeout(sync,reduce()?0:380);return}close();if(pre)openSetup()});
- v.addEventListener("keydown",e=>{if(e.key==="Escape")close();if(e.key==="ArrowRight")next.click()});
- setTimeout(()=>next.focus({preventScroll:true}),50);
+const goHome=()=>{if(!(tab==="plan"&&view==="home")){tab="plan";view="home";render()}};
+const goList=()=>{if(tab!=="list"){tab="list";sortGroup=null;editItem=null;render()}};
+function coachSteps(){
+ const pre=Date.now()<DEPART,st=[
+  {go:goHome,sel:".hud-badge",cat:"w",t:"嗨！我們是豆花和芝麻，帶你認識一下這個 App"},
+  {go:goHome,sel:".hud-sos",cat:"b",t:"遇到狀況按「求助」，有飯店日文地址和緊急電話"},
+  {go:goHome,sel:[".g-home .grid .tile.today",".g-home .grid .tile[data-day]"],cat:"w",t:"點一天，看那天的行程和交通"},
+  {go:goList,sel:'[data-group-id="prep"] [data-sort-toggle]',cat:"b",t:"清單可以按「排序」調整順序，刪錯了下面會出現「復原」"}];
+ if(pre)st.push({go:goHome,sel:".setup-entry",cat:"w",t:"最後，把這支手機設定好",last:"開始設定"});
+ else st.push({go:goHome,sel:".fab",cat:"w",t:"下一站在這裡，點一下就會帶你過去",last:"開始使用"});
+ return st;
 }
-(()=>{let seen=false;try{seen=localStorage.getItem(TOUR_KEY)==="1"}catch(_){seen=true}if(!seen)setTimeout(openTour,700)})();
+let coachEl=null;
+const coachFind=sel=>{for(const q of [].concat(sel)){const el=[...document.querySelectorAll(q)].find(e=>e.getClientRects().length);if(el)return el}return null};
+function openTour(){
+ if(coachEl)return;const steps=coachSteps(),n=steps.length;let cur=0;
+ const v=document.createElement("div");v.className="coach";v.setAttribute("role","dialog");v.setAttribute("aria-modal","true");v.setAttribute("aria-label","使用教學");
+ v.innerHTML=`<div class="coach-hole"></div><div class="coach-tip" aria-live="polite"><svg class="coach-cat" viewBox="3 -3 64 51" aria-hidden="true"><use href="#head-w"/></svg><div class="coach-bub"><p></p><div class="coach-foot"><span class="coach-dots" aria-hidden="true">${steps.map(()=>"<i></i>").join("")}</span><button type="button" class="coach-skip" data-coach-skip>略過</button><button type="button" class="coach-next" data-coach-next>下一步</button></div></div></div>`;
+ coachEl=v;document.body.appendChild(v);document.body.style.overflow="hidden";
+ const hole=v.querySelector(".coach-hole"),tip=v.querySelector(".coach-tip"),txt=v.querySelector(".coach-bub p"),dots=[...v.querySelectorAll(".coach-dots i")],next=v.querySelector("[data-coach-next]"),skip=v.querySelector("[data-coach-skip]"),catU=v.querySelector(".coach-cat use");
+ const place=()=>{
+  const s=steps[cur],el=coachFind(s.sel);
+  const vh=innerHeight,pad=6;
+  if(!el){hole.style.cssText=`left:50%;top:40%;width:0;height:0`;tip.classList.remove("below");tip.style.top=`${vh*.4}px`;return}
+  const r=el.getBoundingClientRect(),H=Math.min(r.height,vh*.45);
+  hole.style.cssText=`left:${r.left-pad}px;top:${r.top-pad}px;width:${r.width+pad*2}px;height:${H+pad*2}px`;
+  const th=tip.offsetHeight||110,below=r.top-pad-14-th<Math.max(12,parseFloat(getComputedStyle(document.documentElement).paddingTop)||0)+8;
+  tip.classList.toggle("below",below);
+  tip.style.top=(below?Math.min(r.top+H+pad+14,vh-th-12):r.top-pad-14-th)+"px";
+ };
+ const show=()=>{
+  const s=steps[cur];if(s.go)s.go();
+  const el=coachFind(s.sel);
+  if(el){el.addEventListener("animationend",place,{once:true});el.addEventListener("transitionend",place,{once:true})}
+  if(el){const r=el.getBoundingClientRect(),vh=innerHeight;if(r.top<vh*.3||r.bottom>vh*.72)scrollTo(0,Math.max(0,r.top+scrollY-vh*.42))}
+  txt.textContent=s.t;catU.setAttribute("href","#head-"+s.cat);
+  dots.forEach((d,i)=>d.classList.toggle("on",i===cur));
+  const last=cur===n-1;next.textContent=last?s.last:"下一步";skip.hidden=last;
+  requestAnimationFrame(place);clearTimeout(v._p);v._p=setTimeout(place,450);
+ };
+ const close=()=>{try{localStorage.setItem(TOUR_KEY,"1")}catch(_){};removeEventListener("resize",place);v.remove();coachEl=null;document.body.style.overflow="";goHome();scrollTo(0,0)};
+ skip.addEventListener("click",close);
+ next.addEventListener("click",()=>{if(cur<n-1){cur++;show();return}const pre=Date.now()<DEPART;close();if(pre)openSetup()});
+ v.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
+ addEventListener("resize",place);
+ show();setTimeout(()=>next.focus({preventScroll:true}),50);
+}
+(()=>{let seen=false;try{seen=localStorage.getItem(TOUR_KEY)==="1"}catch(_){seen=true}if(!seen)setTimeout(openTour,900)})();
 document.addEventListener("click",e=>{if(e.target.closest("[data-tour-open]")){if(setupSheet){setupSheet.remove();setupSheet=null;document.body.style.overflow=""}openTour()}});
 </script>
 
