@@ -1,0 +1,21 @@
+PASS O 排序 | 待辦有排序按鈕
+PASS O 排序 | 要買的也有排序按鈕
+PASS O 排序 | 進入排序模式：每列左側有把手，沒有數字和箭頭
+PASS O 排序 | 排序模式沒有勾選框、不會誤觸打勾
+PASS O 排序 | 拖曳：最後一項拖到最上面 | ['seat2', 'vjw', 'seat1', 'mu', 'kiso']
+PASS O 排序 | 新順序存進雲端 | [1, 2, 3, 4, 5]
+PASS O 排序 | 星星的手機也是新順序 | ['seat2', 'vjw', 'seat1', 'mu', 'kiso']
+PASS O 排序 | 往下拖一格 | ['vjw', 'seat2', 'seat1', 'mu', 'kiso']
+PASS O 排序 | 再拖回第一個 | ['seat2', 'vjw', 'seat1', 'mu', 'kiso']
+PASS O 排序 | 拖一點點沒越過一半，順序不變
+PASS O 排序 | 按完成回到一般清單、可以打勾
+PASS O 排序 | 重新整理後順序還在 | ['seat2', 'vjw', 'seat1', 'mu', 'kiso']
+PASS O 排序 | 新增的項目排在最後 | ['seat2', 'vjw', 'seat1', 'mu', 'kiso', 'imwakxeqd']
+PASS O 排序 | 要買的：排序模式顯示地點和品項
+PASS O 排序 | 同一時間只有一個清單在排序
+PASS O 排序 | 要買的：最後一項拖到最上面 | ['b5', 'b1', 'b2', 'b3', 'b4']
+PASS O 排序 | 要買的：新順序存進雲端
+PASS O 排序 | 要買的：星星的手機也是新順序
+PASS O 排序 | 要買的：按完成回到一般清單
+PASS O 排序 | 沒有錯誤
+TOTAL 20 FAIL 0

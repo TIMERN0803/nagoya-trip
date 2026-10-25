@@ -1,0 +1,2745 @@
+{
+  "results": [
+    {
+      "name": "amount_input_0",
+      "pass": true,
+      "details": {
+        "entered": "0",
+        "actual": "0",
+        "expected": "0"
+      }
+    },
+    {
+      "name": "amount_input_-100",
+      "pass": false,
+      "details": {
+        "entered": "-100",
+        "actual": "100",
+        "expected": "reject or explain invalid amount"
+      }
+    },
+    {
+      "name": "amount_input_1.5",
+      "pass": false,
+      "details": {
+        "entered": "1.5",
+        "actual": "15",
+        "expected": "reject or explain invalid amount"
+      }
+    },
+    {
+      "name": "amount_input_999999999",
+      "pass": false,
+      "details": {
+        "entered": "999999999",
+        "actual": "99999999",
+        "expected": "reject or explain invalid amount"
+      }
+    },
+    {
+      "name": "amount_input_99,999,999",
+      "pass": true,
+      "details": {
+        "entered": "99,999,999",
+        "actual": "99999999",
+        "expected": "99999999"
+      }
+    },
+    {
+      "name": "amount_input_1e3",
+      "pass": false,
+      "details": {
+        "entered": "1e3",
+        "actual": "13",
+        "expected": "reject or explain invalid amount"
+      }
+    },
+    {
+      "name": "decimal_saved_without_reinterpretation",
+      "pass": false,
+      "details": [
+        {
+          "amt": 15,
+          "cat": "food",
+          "who": "zhang",
+          "split": "both",
+          "pay": "cash",
+          "day": "11/18",
+          "note": "decimal-boundary",
+          "ts": 1794999601611
+        }
+      ]
+    },
+    {
+      "name": "reject_empty_zero_'0'",
+      "pass": true,
+      "details": "請先輸入金額"
+    },
+    {
+      "name": "reject_empty_zero_'   '",
+      "pass": true,
+      "details": "請先輸入金額"
+    },
+    {
+      "name": "reject_empty_zero_''",
+      "pass": true,
+      "details": "請先輸入金額"
+    },
+    {
+      "name": "tax_threshold_4999",
+      "pass": true,
+      "details": false
+    },
+    {
+      "name": "integer_exact_4999",
+      "pass": true,
+      "details": [
+        {
+          "amt": 4999,
+          "cat": "food",
+          "who": "zhang",
+          "split": "both",
+          "pay": "cash",
+          "day": "11/18",
+          "note": "boundary-4999",
+          "ts": 1794999602394
+        }
+      ]
+    },
+    {
+      "name": "tax_threshold_5000",
+      "pass": true,
+      "details": true
+    },
+    {
+      "name": "integer_exact_5000",
+      "pass": true,
+      "details": [
+        {
+          "amt": 5000,
+          "cat": "food",
+          "who": "zhang",
+          "split": "both",
+          "pay": "cash",
+          "day": "11/18",
+          "note": "boundary-5000",
+          "ts": 1794999602572
+        }
+      ]
+    },
+    {
+      "name": "tax_threshold_99999999",
+      "pass": true,
+      "details": true
+    },
+    {
+      "name": "integer_exact_99999999",
+      "pass": true,
+      "details": [
+        {
+          "amt": 99999999,
+          "cat": "food",
+          "who": "zhang",
+          "split": "both",
+          "pay": "cash",
+          "day": "11/18",
+          "note": "boundary-99999999",
+          "ts": 1794999602759
+        }
+      ]
+    },
+    {
+      "name": "list_xss_not_executed",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "long_unicode_roundtrip",
+      "pass": true,
+      "details": {
+        "length": 581,
+        "saved": 1
+      }
+    },
+    {
+      "name": "long_text_no_horizontal_overflow",
+      "pass": true,
+      "details": {
+        "width": 390,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "name": "expense_xss_not_executed",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "remote_mood_delete_clears_home",
+      "pass": true,
+      "details": {
+        "mock_document_exists": false,
+        "stale_note_visible": false
+      }
+    },
+    {
+      "name": "remote_mood_delete_clears_daily",
+      "pass": false,
+      "details": "今天的心情\n11/18（三）\n用\n阿彰\n的身分填寫\n不是阿彰？切換\n阿彰\n超開心\n\nremote-delete-probe\n\n星星\n\n還沒填，等等再來看"
+    },
+    {
+      "name": "remote_mood_delete_reload_clears_cache",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "openSos_focus_enters_dialog",
+      "pass": false,
+      "details": {
+        "role": "dialog",
+        "aria-modal": null
+      }
+    },
+    {
+      "name": "openSos_escape_closes",
+      "pass": false,
+      "details": null
+    },
+    {
+      "name": "openWallet_focus_enters_dialog",
+      "pass": true,
+      "details": {
+        "role": "dialog",
+        "aria-modal": null
+      }
+    },
+    {
+      "name": "openWallet_escape_closes",
+      "pass": false,
+      "details": null
+    },
+    {
+      "name": "openCalSheet_focus_enters_dialog",
+      "pass": false,
+      "details": {
+        "role": "dialog",
+        "aria-modal": null
+      }
+    },
+    {
+      "name": "openCalSheet_escape_closes",
+      "pass": false,
+      "details": null
+    },
+    {
+      "name": "openSetup_focus_enters_dialog",
+      "pass": false,
+      "details": {
+        "role": "dialog",
+        "aria-modal": null
+      }
+    },
+    {
+      "name": "openSetup_escape_closes",
+      "pass": false,
+      "details": null
+    },
+    {
+      "name": "timeline_2026-10-25T18:00:00+08:00_Asia/Taipei",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n名古屋，我們來了\n22\n天\n13\n時\n04\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/15 07:05 去程線上選位",
+        "today": [],
+        "fab": null,
+        "reminders": [
+          "11/15 07:05 去程線上選位"
+        ]
+      }
+    },
+    {
+      "name": "timeline_2026-11-16T23:59:00+08:00_Asia/Taipei",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n名古屋，我們來了\n0\n天\n07\n時\n05\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/20 20:00 搶 KISO 號碼牌",
+        "today": [
+          "0"
+        ],
+        "fab": "接下來 07:05\nJX 320 台中 → 名古屋",
+        "reminders": [
+          "11/20 20:00 搶 KISO 號碼牌"
+        ]
+      }
+    },
+    {
+      "name": "timeline_2026-11-17T00:01:00+08:00_Asia/Taipei",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n名古屋，我們來了\n0\n天\n07\n時\n03\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/20 20:00 搶 KISO 號碼牌",
+        "today": [
+          "0"
+        ],
+        "fab": "接下來 07:05\nJX 320 台中 → 名古屋",
+        "reminders": [
+          "11/20 20:00 搶 KISO 號碼牌"
+        ]
+      }
+    },
+    {
+      "name": "timeline_2026-11-17T06:00:00+08:00_Asia/Taipei",
+      "pass": true,
+      "details": {
+        "hero": "名古屋，我們來了\n0\n天\n01\n時\n04\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/20 20:00 搶 KISO 號碼牌",
+        "today": [
+          "0"
+        ],
+        "fab": "接下來 07:05\nJX 320 台中 → 名古屋",
+        "reminders": [
+          "11/20 20:00 搶 KISO 號碼牌"
+        ]
+      }
+    },
+    {
+      "name": "timeline_2026-11-17T12:00:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "今天的行程\n抵達名古屋\n台中 → 名古屋 → 名古屋城 → 榮\nD1\n11/17（二）\n旅程進度\n1 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "0"
+        ],
+        "fab": "現在\n搭名鐵到名古屋車站",
+        "reminders": []
+      }
+    },
+    {
+      "name": "timeline_2026-11-17T18:00:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n今天的行程\n抵達名古屋\n台中 → 名古屋 → 名古屋城 → 榮\nD1\n11/17（二）\n旅程進度\n1 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "0"
+        ],
+        "fab": "現在\n名古屋燈光圖書飯店",
+        "reminders": []
+      }
+    },
+    {
+      "name": "timeline_2026-11-18T13:00:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "今天的行程\n吉卜力公園\n青春之丘 → Dondoko 森林 → 魔法之里 → 魔女之谷 → 大倉庫\nD2\n11/18（三）\n旅程進度\n2 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "1"
+        ],
+        "fab": "現在\n吉卜力公園",
+        "reminders": []
+      }
+    },
+    {
+      "name": "timeline_2026-11-17T21:00:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n今天的行程\n抵達名古屋\n台中 → 名古屋 → 名古屋城 → 榮\nD1\n11/17（二）\n旅程進度\n1 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "0"
+        ],
+        "fab": "現在\nすゞ家 赤門店",
+        "reminders": []
+      }
+    },
+    {
+      "name": "timeline_2026-11-17T22:30:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n今天的行程\n抵達名古屋\n台中 → 名古屋 → 名古屋城 → 榮\nD1\n11/17（二）\n旅程進度\n1 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "0"
+        ],
+        "fab": "今天行程結束\n回家",
+        "reminders": []
+      }
+    },
+    {
+      "name": "late_evening_home_fab",
+      "pass": true,
+      "details": "今天行程結束\n回家"
+    },
+    {
+      "name": "timeline_2026-11-21T21:30:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n今天的行程\n熱田神宮與大須\n熱田神宮 → 大須商店街 → 久屋大通\nD5\n11/21（六）\n旅程進度\n5 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "4"
+        ],
+        "fab": "現在\n久屋大通與中日大樓 7 樓",
+        "reminders": [
+          "還有 14 小時 10 分 到期\n回程線上選位・11/22 11:40\n完成"
+        ]
+      }
+    },
+    {
+      "name": "timeline_2026-11-21T22:10:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n今天的行程\n熱田神宮與大須\n熱田神宮 → 大須商店街 → 久屋大通\nD5\n11/21（六）\n旅程進度\n5 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "4"
+        ],
+        "fab": "今天行程結束\n回家",
+        "reminders": [
+          "還有 13 小時 30 分 到期\n回程線上選位・11/22 11:40\n完成"
+        ]
+      }
+    },
+    {
+      "name": "timeline_2026-11-24T07:30:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "今天的行程\n回家\n名古屋車站 → 中部國際機場 → 台中\nD8\n11/24（二）\n旅程進度\n8 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "7"
+        ],
+        "fab": "現在\n名古屋車站搭名鐵往機場",
+        "reminders": []
+      }
+    },
+    {
+      "name": "last_day_no_home_fab_7",
+      "pass": true,
+      "details": "現在\n名古屋車站搭名鐵往機場"
+    },
+    {
+      "name": "timeline_2026-11-24T15:00:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "今天的行程\n回家\n名古屋車站 → 中部國際機場 → 台中\nD8\n11/24（二）\n旅程進度\n8 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "7"
+        ],
+        "fab": null,
+        "reminders": []
+      }
+    },
+    {
+      "name": "last_day_no_home_fab_15",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "timeline_2026-11-25T12:00:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "下次再一起出發\n記帳、清單和心情都還留著\n完\n旅程結束\n旅程進度\n8 / 8\n回顧我們的心情",
+        "today": [],
+        "fab": null,
+        "reminders": []
+      }
+    },
+    {
+      "name": "timeline_2026-12-15T12:00:00+09:00_Asia/Tokyo",
+      "pass": true,
+      "details": {
+        "hero": "下次再一起出發\n記帳、清單和心情都還留著\n完\n旅程結束\n旅程進度\n8 / 8\n回顧我們的心情",
+        "today": [],
+        "fab": null,
+        "reminders": []
+      }
+    },
+    {
+      "name": "timeline_2026-11-19T00:01:00+09:00_Asia/Taipei",
+      "pass": true,
+      "details": {
+        "hero": "Z\nz\n今天的行程\n犬山一日\n犬山城 → 城下町 → 名古屋\nD3\n11/19（四）\n旅程進度\n3 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "2"
+        ],
+        "fab": "接下來 08:00\nコンパル サンロード店",
+        "reminders": []
+      }
+    },
+    {
+      "name": "midnight_2026-11-18T23:59:00+09:00",
+      "pass": true,
+      "details": "名古屋看花花\n11/17 – 11/24・兩個人的旅行\n求助\n0 / 5\n0 / 5\n¥0\nZ\nz\n今天的行程\n犬山一日\n犬山城 → 城下町 → 名古屋\nD3\n11/19（四）\n旅程進度\n3 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句\n8 天的地點\n點一下看當天\n名古屋城\n11/17 週二\n吉卜力公園\n11/18 週三\n今天\n犬山\n11/19 週四\n東山動植物園\n11/20 週五\n熱田神宮\n11/21 週六\n常滑\n11/22 週日\n名駅・榮\n11/23 週一\n回家\n11/24 週二"
+    },
+    {
+      "name": "midnight_2026-11-24T23:59:00+09:00",
+      "pass": true,
+      "details": "名古屋看花花\n11/17 – 11/24・兩個人的旅行\n求助\n0 / 5\n0 / 5\n¥0\nZ\nz\n下次再一起出發\n記帳、清單和心情都還留著\n完\n旅程結束\n旅程進度\n8 / 8\n回顧我們的心情\nNAGOYA 2026\n我們的名古屋回顧\n8 天的故事，點開播放\n8 天的地點\n點一下看當天\n名古屋城\n11/17 週二\n吉卜力公園\n11/18 週三\n犬山\n11/19 週四\n東山動植物園\n11/20 週五\n熱田神宮\n11/21 週六\n常滑\n11/22 週日\n名駅・榮\n11/23 週一\n回家\n11/24 "
+    },
+    {
+      "name": "midnight_2026-11-16T23:59:00+08:00",
+      "pass": true,
+      "details": "名古屋看花花\n11/17 – 11/24・兩個人的旅行\n求助\n0 / 5\n0 / 5\n¥0\nZ\nz\n名古屋，我們來了\n0\n天\n07\n時\n03\n分\n57\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/20 20:00 搶 KISO 號碼牌\n出發前手機設定\n2/8\n0/8\n出發前一週完成，到日本才不會手忙腳亂\n8 天的地點\n點一下看當天\n今天\n名古屋城\n11/17 週二\n吉卜力公園\n11/18 週三\n犬山\n11/19 週四\n東山動植物園"
+    },
+    {
+      "name": "layout_320x568_plan",
+      "pass": true,
+      "details": {
+        "w": 320,
+        "sw": 320,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 86,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 86,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 99,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "11/15 07:05 去程線上選位",
+            "width": 200,
+            "height": 31
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_320x568_acct",
+      "pass": true,
+      "details": {
+        "w": 320,
+        "sw": 320,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "餐飲",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "交通",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "購物",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "門票",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "住宿",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "其他",
+            "width": 72,
+            "height": 32
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_320x568_list",
+      "pass": true,
+      "details": {
+        "w": 320,
+        "sw": 320,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-mu",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 買名鐵車票",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      }
+    },
+    {
+      "name": "reduced_motion_320",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "sos_within_320x568",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "layout_375x667_plan",
+      "pass": true,
+      "details": {
+        "w": 375,
+        "sw": 375,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 104,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 104,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 119,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "11/15 07:05 去程線上選位",
+            "width": 200,
+            "height": 31
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_375x667_acct",
+      "pass": true,
+      "details": {
+        "w": 375,
+        "sw": 375,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "餐飲",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "交通",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "購物",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "門票",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "住宿",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "其他",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "阿彰",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "星星",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "兩人平分",
+            "width": 80,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "自己的",
+            "width": 66,
+            "height": 32
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_375x667_list",
+      "pass": true,
+      "details": {
+        "w": 375,
+        "sw": 375,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-mu",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 買名鐵車票",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-kiso",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 搶 KISO 號碼牌",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat2",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 回程線上選位",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      }
+    },
+    {
+      "name": "reduced_motion_375",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "sos_within_375x667",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "layout_390x844_plan",
+      "pass": true,
+      "details": {
+        "w": 390,
+        "sw": 390,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 109,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 109,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 125,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "11/15 07:05 去程線上選位",
+            "width": 200,
+            "height": 31
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_390x844_acct",
+      "pass": true,
+      "details": {
+        "w": 390,
+        "sw": 390,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "餐飲",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "交通",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "購物",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "門票",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "住宿",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "其他",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "阿彰",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "星星",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "兩人平分",
+            "width": 80,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "自己的",
+            "width": 66,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "現金",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "刷卡",
+            "width": 72,
+            "height": 32
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_390x844_list",
+      "pass": true,
+      "details": {
+        "w": 390,
+        "sw": 390,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-mu",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 買名鐵車票",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-kiso",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 搶 KISO 號碼牌",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat2",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 回程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          }
+        ]
+      }
+    },
+    {
+      "name": "reduced_motion_390",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "sos_within_390x844",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "layout_430x932_plan",
+      "pass": true,
+      "details": {
+        "w": 430,
+        "sw": 430,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 121,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 121,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 139,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "11/15 07:05 去程線上選位",
+            "width": 200,
+            "height": 31
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_430x932_acct",
+      "pass": true,
+      "details": {
+        "w": 430,
+        "sw": 430,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "餐飲",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "交通",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "購物",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "門票",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "住宿",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "其他",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "阿彰",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "星星",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "兩人平分",
+            "width": 80,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "自己的",
+            "width": 66,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "現金",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "刷卡",
+            "width": 72,
+            "height": 32
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_430x932_list",
+      "pass": true,
+      "details": {
+        "w": 430,
+        "sw": 430,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-mu",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 買名鐵車票",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-kiso",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 搶 KISO 號碼牌",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat2",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 回程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-b1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 小倉山莊",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-b2",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 妙香園",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      }
+    },
+    {
+      "name": "reduced_motion_430",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "sos_within_430x932",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "layout_844x390_plan",
+      "pass": true,
+      "details": {
+        "w": 844,
+        "sw": 844,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 150,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 150,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 172,
+            "height": 38
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_844x390_acct",
+      "pass": true,
+      "details": {
+        "w": 844,
+        "sw": 844,
+        "small": []
+      }
+    },
+    {
+      "name": "layout_844x390_list",
+      "pass": true,
+      "details": {
+        "w": 844,
+        "sw": 844,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      }
+    },
+    {
+      "name": "reduced_motion_844",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "sos_within_844x390",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "layout_568x320_plan",
+      "pass": true,
+      "details": {
+        "w": 568,
+        "sw": 568,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 150,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 150,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 172,
+            "height": 38
+          }
+        ]
+      }
+    },
+    {
+      "name": "layout_568x320_acct",
+      "pass": true,
+      "details": {
+        "w": 568,
+        "sw": 568,
+        "small": []
+      }
+    },
+    {
+      "name": "layout_568x320_list",
+      "pass": true,
+      "details": {
+        "w": 568,
+        "sw": 568,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      }
+    },
+    {
+      "name": "reduced_motion_568",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "sos_within_568x320",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "stress_count_50",
+      "pass": true,
+      "details": {
+        "count": 50,
+        "sum": "旅程總花費\n¥5,000\n約 NT$ 1,000\n阿彰付 ¥5,000\n星星付 ¥0\n餐飲 ¥5,000\n星星要給阿彰 ¥2,500\n匯率 1 日圓 ＝\n台幣\n自動更新・等待連線"
+      }
+    },
+    {
+      "name": "stress_sum_50",
+      "pass": true,
+      "details": "旅程總花費\n¥5,000\n約 NT$ 1,000\n阿彰付 ¥5,000\n星星付 ¥0\n餐飲 ¥5,000\n星星要給阿彰 ¥2,500\n匯率 1 日圓 ＝\n台幣\n自動更新・等待連線"
+    },
+    {
+      "name": "stress_count_300",
+      "pass": true,
+      "details": {
+        "count": 300,
+        "sum": "旅程總花費\n¥30,000\n約 NT$ 6,000\n阿彰付 ¥30,000\n星星付 ¥0\n餐飲 ¥30,000\n星星要給阿彰 ¥15,000\n匯率 1 日圓 ＝\n台幣\n自動更新・等待連線"
+      }
+    },
+    {
+      "name": "stress_sum_300",
+      "pass": true,
+      "details": "旅程總花費\n¥30,000\n約 NT$ 6,000\n阿彰付 ¥30,000\n星星付 ¥0\n餐飲 ¥30,000\n星星要給阿彰 ¥15,000\n匯率 1 日圓 ＝\n台幣\n自動更新・等待連線"
+    },
+    {
+      "name": "stress_count_1000",
+      "pass": true,
+      "details": {
+        "count": 1000,
+        "sum": "旅程總花費\n¥100,000\n約 NT$ 20,000\n阿彰付 ¥100,000\n星星付 ¥0\n餐飲 ¥100,000\n星星要給阿彰 ¥50,000\n匯率 1 日圓 ＝\n台幣\n自動更新・等待連線"
+      }
+    },
+    {
+      "name": "stress_sum_1000",
+      "pass": true,
+      "details": "旅程總花費\n¥100,000\n約 NT$ 20,000\n阿彰付 ¥100,000\n星星付 ¥0\n餐飲 ¥100,000\n星星要給阿彰 ¥50,000\n匯率 1 日圓 ＝\n台幣\n自動更新・等待連線"
+    },
+    {
+      "name": "stress_200_prep_200_buy",
+      "pass": true,
+      "details": 400
+    },
+    {
+      "name": "stress_200_pack",
+      "pass": true,
+      "details": 200
+    },
+    {
+      "name": "stress_12hours_no_js_errors",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "firebase_500_local_write",
+      "pass": true,
+      "details": {
+        "local": "[{\"amt\":400,\"cat\":\"food\",\"who\":\"zhang\",\"split\":\"both\",\"pay\":\"cash\",\"day\":\"11/18\",\"note\":\"\",\"ts\":1794999601232,\"id\":\"l1794999601232\"}]",
+        "text": "記帳\n目前離線，先記在這支手機上\n設定錢包\n旅程總花費\n¥400\n約 NT$ 80\n阿彰付 ¥400\n星星付 ¥0\n餐飲 ¥400\n星星要給阿彰 ¥200\n匯率 1 日圓 ＝\n台幣\n自動更新・等待連線\n¥\n類別\n餐飲\n交通\n購物\n門票\n住宿\n其他\n誰付的\n阿彰\n星星\n怎麼分\n兩人平分\n自己的\n怎麼付\n現金\n刷卡\n日期\n"
+      }
+    },
+    {
+      "name": "firebase_timeout_local_write",
+      "pass": true,
+      "details": {
+        "local": "[{\"amt\":400,\"cat\":\"food\",\"who\":\"zhang\",\"split\":\"both\",\"pay\":\"cash\",\"day\":\"11/18\",\"note\":\"\",\"ts\":1794999601245,\"id\":\"l1794999601245\"}]",
+        "text": "記帳\n目前離線，先記在這支手機上\n設定錢包\n旅程總花費\n¥400\n約 NT$ 80\n阿彰付 ¥400\n星星付 ¥0\n餐飲 ¥400\n星星要給阿彰 ¥200\n匯率 1 日圓 ＝\n台幣\n自動更新・等待連線\n¥\n類別\n餐飲\n交通\n購物\n門票\n住宿\n其他\n誰付的\n阿彰\n星星\n怎麼分\n兩人平分\n自己的\n怎麼付\n現金\n刷卡\n日期\n"
+      }
+    }
+  ],
+  "data": {
+    "browser": "155.0.8059.85",
+    "timeline": [
+      {
+        "time": "2026-10-25T18:00:00+08:00",
+        "tz": "Asia/Taipei",
+        "initial": "名古屋看花花\n11/17 – 11/24・兩個人的旅行\n求助\n0 / 5\n0 / 5\n¥0\nZ\nz\n名古屋，我們來了\n22\n天\n13\n時\n04\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/15 07:05 去程線上選位\n出發前手機設定\n0/8\n0/8\n出發前一週完成，到日本才不會手忙腳亂\n8 天的地點\n點一下看當天\n名古屋城\n11/17 週二\n吉卜力公園\n11/18 週三\n犬山\n11/19 週四\n東山動植物園\n11/20",
+        "hero": "Z\nz\n名古屋，我們來了\n22\n天\n13\n時\n04\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/15 07:05 去程線上選位",
+        "today": [],
+        "fab": null,
+        "reminders": [
+          "11/15 07:05 去程線上選位"
+        ]
+      },
+      {
+        "time": "2026-11-16T23:59:00+08:00",
+        "tz": "Asia/Taipei",
+        "initial": "全部天數\n第 1 天，共 8 天\n今天\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n11/17（二）今天\n抵達名古屋\n台中\n名古屋\n名古屋城\n榮\n17° / 8°\n名古屋往年平均\n日落約 16:40\n接下來\n07:05 JX 320 台中 → 名古屋\n6 小時 6 分後\n07:05\n航班\n接下來\nJX 320 台中 → 名古屋\n\n10:40 抵達中部國際機場\n\n10:40\n交通\n搭名鐵到名古屋車站\n\nμSKY 約 28 分鐘，詳見交通分頁\n\n地鐵約 12 分\n名古屋站→",
+        "hero": "Z\nz\n名古屋，我們來了\n0\n天\n07\n時\n05\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/20 20:00 搶 KISO 號碼牌",
+        "today": [
+          "0"
+        ],
+        "fab": "接下來 07:05\nJX 320 台中 → 名古屋",
+        "reminders": [
+          "11/20 20:00 搶 KISO 號碼牌"
+        ]
+      },
+      {
+        "time": "2026-11-17T00:01:00+08:00",
+        "tz": "Asia/Taipei",
+        "initial": "全部天數\n第 1 天，共 8 天\n今天\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n11/17（二）今天\n抵達名古屋\n台中\n名古屋\n名古屋城\n榮\n17° / 8°\n名古屋往年平均\n日落約 16:40\n接下來\n07:05 JX 320 台中 → 名古屋\n6 小時 4 分後\n07:05\n航班\n接下來\nJX 320 台中 → 名古屋\n\n10:40 抵達中部國際機場\n\n10:40\n交通\n搭名鐵到名古屋車站\n\nμSKY 約 28 分鐘，詳見交通分頁\n\n地鐵約 12 分\n名古屋站→",
+        "hero": "Z\nz\n名古屋，我們來了\n0\n天\n07\n時\n03\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/20 20:00 搶 KISO 號碼牌",
+        "today": [
+          "0"
+        ],
+        "fab": "接下來 07:05\nJX 320 台中 → 名古屋",
+        "reminders": [
+          "11/20 20:00 搶 KISO 號碼牌"
+        ]
+      },
+      {
+        "time": "2026-11-17T06:00:00+08:00",
+        "tz": "Asia/Taipei",
+        "initial": "全部天數\n第 1 天，共 8 天\n今天\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n11/17（二）今天\n抵達名古屋\n台中\n名古屋\n名古屋城\n榮\n17° / 8°\n名古屋往年平均\n日落約 16:40\n接下來\n07:05 JX 320 台中 → 名古屋\n5 分後\n07:05\n航班\n接下來\nJX 320 台中 → 名古屋\n\n10:40 抵達中部國際機場\n\n10:40\n交通\n搭名鐵到名古屋車站\n\nμSKY 約 28 分鐘，詳見交通分頁\n\n地鐵約 12 分\n名古屋站→伏見站，走",
+        "hero": "名古屋，我們來了\n0\n天\n01\n時\n04\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/20 20:00 搶 KISO 號碼牌",
+        "today": [
+          "0"
+        ],
+        "fab": "接下來 07:05\nJX 320 台中 → 名古屋",
+        "reminders": [
+          "11/20 20:00 搶 KISO 號碼牌"
+        ]
+      },
+      {
+        "time": "2026-11-17T12:00:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 1 天，共 8 天\n今天\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n11/17（二）今天\n抵達名古屋\n台中\n名古屋\n名古屋城\n榮\n17° / 8°\n名古屋往年平均\n日落約 16:40\n接下來\n20:30 すゞ家 赤門店\n8 小時 30 分後・地鐵約 9 分\n07:05\n航班\n已過\nJX 320 台中 → 名古屋\n\n10:40 抵達中部國際機場\n\n10:40\n交通\n進行中\n搭名鐵到名古屋車站\n\nμSKY 約 28 分鐘，詳見交通分頁\n\n地鐵約 12 分\n名",
+        "hero": "今天的行程\n抵達名古屋\n台中 → 名古屋 → 名古屋城 → 榮\nD1\n11/17（二）\n旅程進度\n1 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "0"
+        ],
+        "fab": "現在\n搭名鐵到名古屋車站",
+        "reminders": []
+      },
+      {
+        "time": "2026-11-17T18:00:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 1 天，共 8 天\n今天\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n11/17（二）今天\n抵達名古屋\n台中\n名古屋\n名古屋城\n榮\n17° / 8°\n名古屋往年平均\n日落約 16:40\n接下來\n20:30 すゞ家 赤門店\n2 小時 30 分後・地鐵約 9 分\n07:05\n航班\n已過\nJX 320 台中 → 名古屋\n\n10:40 抵達中部國際機場\n\n10:40\n交通\n已過\n搭名鐵到名古屋車站\n\nμSKY 約 28 分鐘，詳見交通分頁\n\n地鐵約 12 分\n名古",
+        "hero": "Z\nz\n今天的行程\n抵達名古屋\n台中 → 名古屋 → 名古屋城 → 榮\nD1\n11/17（二）\n旅程進度\n1 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "0"
+        ],
+        "fab": "現在\n名古屋燈光圖書飯店",
+        "reminders": []
+      },
+      {
+        "time": "2026-11-18T13:00:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 2 天，共 8 天\n二\n17\n今天\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n園區時間表\n現在：魔女之谷，到 14:35\n11/18（三）今天\n吉卜力公園\n青春之丘\nDondoko 森林\n魔法之里\n魔女之谷\n大倉庫\n16° / 6°\n長久手往年平均\n日落約 16:40\n接下來\n19:30 伏見屋 飛騨牛 別邸\n6 小時 30 分後・電車約 66 分\n提醒\n公園 10:00 開，最晚 9:20 要到「愛・地球博記念公園站」\n提醒\n大倉庫入場 14:00\n彈性\n前往\n",
+        "hero": "今天的行程\n吉卜力公園\n青春之丘 → Dondoko 森林 → 魔法之里 → 魔女之谷 → 大倉庫\nD2\n11/18（三）\n旅程進度\n2 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "1"
+        ],
+        "fab": "現在\n吉卜力公園",
+        "reminders": []
+      },
+      {
+        "time": "2026-11-17T21:00:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 1 天，共 8 天\n今天\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n11/17（二）今天\n抵達名古屋\n台中\n名古屋\n名古屋城\n榮\n17° / 8°\n名古屋往年平均\n日落約 16:40\n都走完了\n寫今天的心情\n07:05\n航班\n已過\nJX 320 台中 → 名古屋\n\n10:40 抵達中部國際機場\n\n10:40\n交通\n已過\n搭名鐵到名古屋車站\n\nμSKY 約 28 分鐘，詳見交通分頁\n\n地鐵約 12 分\n名古屋站→伏見站，走路約 17 分\n彈性\n前往\n住宿\n",
+        "hero": "Z\nz\n今天的行程\n抵達名古屋\n台中 → 名古屋 → 名古屋城 → 榮\nD1\n11/17（二）\n旅程進度\n1 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "0"
+        ],
+        "fab": "現在\nすゞ家 赤門店",
+        "reminders": []
+      },
+      {
+        "time": "2026-11-17T22:30:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 1 天，共 8 天\n今天\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n11/17（二）今天\n抵達名古屋\n台中\n名古屋\n名古屋城\n榮\n17° / 8°\n名古屋往年平均\n日落約 16:40\n都走完了\n寫今天的心情\n07:05\n航班\n已過\nJX 320 台中 → 名古屋\n\n10:40 抵達中部國際機場\n\n10:40\n交通\n已過\n搭名鐵到名古屋車站\n\nμSKY 約 28 分鐘，詳見交通分頁\n\n地鐵約 12 分\n名古屋站→伏見站，走路約 17 分\n彈性\n前往\n住宿\n",
+        "hero": "Z\nz\n今天的行程\n抵達名古屋\n台中 → 名古屋 → 名古屋城 → 榮\nD1\n11/17（二）\n旅程進度\n1 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "0"
+        ],
+        "fab": "今天行程結束\n回家",
+        "reminders": []
+      },
+      {
+        "time": "2026-11-21T21:30:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 5 天，共 8 天\n二\n17\n三\n18\n四\n19\n五\n20\n今天\n日\n22\n一\n23\n二\n24\n11/21（六）今天\n熱田神宮與大須\n熱田神宮\n大須商店街\n久屋大通\n17° / 8°\n名古屋往年平均\n日落約 16:40\n都走完了\n寫今天的心情\n08:00\n前往\n早餐\n已過\nKISO\n\n用前一晚搶到的號碼牌\n\n地鐵約 38 分\n彈性\n前往\n景點\n熱田神宮\n走路約 15 分\n11:00\n前往\n午餐\n已過\n熱田うなぎ 天\n\n鰻魚飯，提早到\n\n地鐵約 24 分\n彈性\n前往\n景點\n大須商店街",
+        "hero": "Z\nz\n今天的行程\n熱田神宮與大須\n熱田神宮 → 大須商店街 → 久屋大通\nD5\n11/21（六）\n旅程進度\n5 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "4"
+        ],
+        "fab": "現在\n久屋大通與中日大樓 7 樓",
+        "reminders": [
+          "還有 14 小時 10 分 到期\n回程線上選位・11/22 11:40\n完成"
+        ]
+      },
+      {
+        "time": "2026-11-21T22:10:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 5 天，共 8 天\n二\n17\n三\n18\n四\n19\n五\n20\n今天\n日\n22\n一\n23\n二\n24\n11/21（六）今天\n熱田神宮與大須\n熱田神宮\n大須商店街\n久屋大通\n17° / 8°\n名古屋往年平均\n日落約 16:40\n都走完了\n寫今天的心情\n08:00\n前往\n早餐\n已過\nKISO\n\n用前一晚搶到的號碼牌\n\n地鐵約 38 分\n彈性\n前往\n景點\n熱田神宮\n走路約 15 分\n11:00\n前往\n午餐\n已過\n熱田うなぎ 天\n\n鰻魚飯，提早到\n\n地鐵約 24 分\n彈性\n前往\n景點\n大須商店街",
+        "hero": "Z\nz\n今天的行程\n熱田神宮與大須\n熱田神宮 → 大須商店街 → 久屋大通\nD5\n11/21（六）\n旅程進度\n5 / 8\n寫今天的心情\n今天過得怎麼樣？選一隻貓、寫一句話",
+        "today": [
+          "4"
+        ],
+        "fab": "今天行程結束\n回家",
+        "reminders": [
+          "還有 13 小時 30 分 到期\n回程線上選位・11/22 11:40\n完成"
+        ]
+      },
+      {
+        "time": "2026-11-24T07:30:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 8 天，共 8 天\n二\n17\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n今天\n11/24（二）今天\n回家\n名古屋車站\n中部國際機場\n台中\n16° / 7°\n名古屋往年平均\n日落約 16:40\n接下來\n07:40 抵達中部國際機場\n10 分後\n提醒\n06:30 要搭車，07:40 到機場\n06:30\n交通\n進行中\n名古屋車站搭名鐵往機場\n07:40\n前往\n航班\n接下來\n抵達中部國際機場\n\n先辦退稅，再辦登機和託運\n\n07:45\n08\n提醒\n先辦退稅，再託運\n\n免稅品",
+        "hero": "今天的行程\n回家\n名古屋車站 → 中部國際機場 → 台中\nD8\n11/24（二）\n旅程進度\n8 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "7"
+        ],
+        "fab": "現在\n名古屋車站搭名鐵往機場",
+        "reminders": []
+      },
+      {
+        "time": "2026-11-24T15:00:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "全部天數\n第 8 天，共 8 天\n二\n17\n三\n18\n四\n19\n五\n20\n六\n21\n日\n22\n一\n23\n今天\n11/24（二）今天\n回家\n名古屋車站\n中部國際機場\n台中\n16° / 7°\n名古屋往年平均\n日落約 16:40\n都走完了\n寫今天的心情\n提醒\n06:30 要搭車，07:40 到機場\n06:30\n交通\n已過\n名古屋車站搭名鐵往機場\n07:40\n前往\n航班\n已過\n抵達中部國際機場\n\n先辦退稅，再辦登機和託運\n\n07:45\n08\n提醒\n已過\n先辦退稅，再託運\n\n免稅品帶在身上，到退稅機出示護",
+        "hero": "今天的行程\n回家\n名古屋車站 → 中部國際機場 → 台中\nD8\n11/24（二）\n旅程進度\n8 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "7"
+        ],
+        "fab": null,
+        "reminders": []
+      },
+      {
+        "time": "2026-11-25T12:00:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "名古屋看花花\n11/17 – 11/24・兩個人的旅行\n求助\n0 / 5\n0 / 5\n¥0\n下次再一起出發\n記帳、清單和心情都還留著\n完\n旅程結束\n旅程進度\n8 / 8\n回顧我們的心情\nNAGOYA 2026\n我們的名古屋回顧\n8 天的故事，點開播放\n8 天的地點\n點一下看當天\n名古屋城\n11/17 週二\n吉卜力公園\n11/18 週三\n犬山\n11/19 週四\n東山動植物園\n11/20 週五\n熱田神宮\n11/21 週六\n常滑\n11/22 週日\n名駅・榮\n11/23 週一\n回家\n11/24 週二\n要",
+        "hero": "下次再一起出發\n記帳、清單和心情都還留著\n完\n旅程結束\n旅程進度\n8 / 8\n回顧我們的心情",
+        "today": [],
+        "fab": null,
+        "reminders": []
+      },
+      {
+        "time": "2026-12-15T12:00:00+09:00",
+        "tz": "Asia/Tokyo",
+        "initial": "名古屋看花花\n11/17 – 11/24・兩個人的旅行\n求助\n0 / 5\n0 / 5\n¥0\n下次再一起出發\n記帳、清單和心情都還留著\n完\n旅程結束\n旅程進度\n8 / 8\n回顧我們的心情\nNAGOYA 2026\n我們的名古屋回顧\n8 天的故事，點開播放\n8 天的地點\n點一下看當天\n名古屋城\n11/17 週二\n吉卜力公園\n11/18 週三\n犬山\n11/19 週四\n東山動植物園\n11/20 週五\n熱田神宮\n11/21 週六\n常滑\n11/22 週日\n名駅・榮\n11/23 週一\n回家\n11/24 週二\n要",
+        "hero": "下次再一起出發\n記帳、清單和心情都還留著\n完\n旅程結束\n旅程進度\n8 / 8\n回顧我們的心情",
+        "today": [],
+        "fab": null,
+        "reminders": []
+      },
+      {
+        "time": "2026-11-19T00:01:00+09:00",
+        "tz": "Asia/Taipei",
+        "initial": "全部天數\n第 3 天，共 8 天\n二\n17\n三\n18\n今天\n五\n20\n六\n21\n日\n22\n一\n23\n二\n24\n11/19（四）今天\n犬山一日\n犬山城\n城下町\n名古屋\n16° / 6°\n犬山往年平均\n日落約 16:40\n接下來\n08:00 コンパル サンロード店\n7 小時 59 分後\n提醒\n可到名鐵買「犬山城下町套票」：車票、犬山城門票加商家優惠\n08:00\n前往\n早餐\n接下來\nコンパル サンロード店\n走路約 2 分\n彈性\n交通\n搭名鐵到犬山\n\n套票在名鐵車站買\n\n走路約 22 分\n從犬山站出發，",
+        "hero": "Z\nz\n今天的行程\n犬山一日\n犬山城 → 城下町 → 名古屋\nD3\n11/19（四）\n旅程進度\n3 / 8\n寫今天的心情\n今天才剛開始，晚上回飯店記得留一句",
+        "today": [
+          "2"
+        ],
+        "fab": "接下來 08:00\nコンパル サンロード店",
+        "reminders": []
+      }
+    ],
+    "layout": [
+      {
+        "size": [
+          320,
+          568
+        ],
+        "tab": "plan",
+        "w": 320,
+        "sw": 320,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 86,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 86,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 99,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "11/15 07:05 去程線上選位",
+            "width": 200,
+            "height": 31
+          }
+        ]
+      },
+      {
+        "size": [
+          320,
+          568
+        ],
+        "tab": "acct",
+        "w": 320,
+        "sw": 320,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "餐飲",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "交通",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "購物",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "門票",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "住宿",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "其他",
+            "width": 72,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "size": [
+          320,
+          568
+        ],
+        "tab": "list",
+        "w": 320,
+        "sw": 320,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-mu",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 買名鐵車票",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      },
+      {
+        "size": [
+          375,
+          667
+        ],
+        "tab": "plan",
+        "w": 375,
+        "sw": 375,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 104,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 104,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 119,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "11/15 07:05 去程線上選位",
+            "width": 200,
+            "height": 31
+          }
+        ]
+      },
+      {
+        "size": [
+          375,
+          667
+        ],
+        "tab": "acct",
+        "w": 375,
+        "sw": 375,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "餐飲",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "交通",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "購物",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "門票",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "住宿",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "其他",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "阿彰",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "星星",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "兩人平分",
+            "width": 80,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "自己的",
+            "width": 66,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "size": [
+          375,
+          667
+        ],
+        "tab": "list",
+        "w": 375,
+        "sw": 375,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-mu",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 買名鐵車票",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-kiso",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 搶 KISO 號碼牌",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat2",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 回程線上選位",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      },
+      {
+        "size": [
+          390,
+          844
+        ],
+        "tab": "plan",
+        "w": 390,
+        "sw": 390,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 109,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 109,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 125,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "11/15 07:05 去程線上選位",
+            "width": 200,
+            "height": 31
+          }
+        ]
+      },
+      {
+        "size": [
+          390,
+          844
+        ],
+        "tab": "acct",
+        "w": 390,
+        "sw": 390,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "餐飲",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "交通",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "購物",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "門票",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "住宿",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "其他",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "阿彰",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "星星",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "兩人平分",
+            "width": 80,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "自己的",
+            "width": 66,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "現金",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "刷卡",
+            "width": 72,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "size": [
+          390,
+          844
+        ],
+        "tab": "list",
+        "w": 390,
+        "sw": 390,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-mu",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 買名鐵車票",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-kiso",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 搶 KISO 號碼牌",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat2",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 回程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          }
+        ]
+      },
+      {
+        "size": [
+          430,
+          932
+        ],
+        "tab": "plan",
+        "w": 430,
+        "sw": 430,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 121,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 121,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 139,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "11/15 07:05 去程線上選位",
+            "width": 200,
+            "height": 31
+          }
+        ]
+      },
+      {
+        "size": [
+          430,
+          932
+        ],
+        "tab": "acct",
+        "w": 430,
+        "sw": 430,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "餐飲",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "交通",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "購物",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "門票",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "住宿",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "其他",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "阿彰",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "星星",
+            "width": 77,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "兩人平分",
+            "width": 80,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "自己的",
+            "width": 66,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "現金",
+            "width": 72,
+            "height": 32
+          },
+          {
+            "tag": "BUTTON",
+            "text": "刷卡",
+            "width": 72,
+            "height": 32
+          }
+        ]
+      },
+      {
+        "size": [
+          430,
+          932
+        ],
+        "tab": "list",
+        "w": 430,
+        "sw": 430,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-mu",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 買名鐵車票",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-kiso",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 搶 KISO 號碼牌",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat2",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 回程線上選位",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-b1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 小倉山莊",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-b2",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 妙香園",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      },
+      {
+        "size": [
+          844,
+          390
+        ],
+        "tab": "plan",
+        "w": 844,
+        "sw": 844,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 150,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 150,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 172,
+            "height": 38
+          }
+        ]
+      },
+      {
+        "size": [
+          844,
+          390
+        ],
+        "tab": "acct",
+        "w": 844,
+        "sw": 844,
+        "small": []
+      },
+      {
+        "size": [
+          844,
+          390
+        ],
+        "tab": "list",
+        "w": 844,
+        "sw": 844,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-seat1",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 去程線上選位",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      },
+      {
+        "size": [
+          568,
+          320
+        ],
+        "tab": "plan",
+        "w": 568,
+        "sw": 568,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "待辦完成 0 項，共 5 項",
+            "width": 150,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "要買的已買 0 項，共 5 項",
+            "width": 150,
+            "height": 38
+          },
+          {
+            "tag": "BUTTON",
+            "text": "目前花費 ¥0",
+            "width": 172,
+            "height": 38
+          }
+        ]
+      },
+      {
+        "size": [
+          568,
+          320
+        ],
+        "tab": "acct",
+        "w": 568,
+        "sw": 568,
+        "small": []
+      },
+      {
+        "size": [
+          568,
+          320
+        ],
+        "tab": "list",
+        "w": 568,
+        "sw": 568,
+        "small": [
+          {
+            "tag": "BUTTON",
+            "text": "排序",
+            "width": 66,
+            "height": 30
+          },
+          {
+            "tag": "INPUT",
+            "text": "c-vjw",
+            "width": 26,
+            "height": 26
+          },
+          {
+            "tag": "A",
+            "text": "VJW",
+            "width": 71,
+            "height": 31
+          },
+          {
+            "tag": "A",
+            "text": "填寫教學",
+            "width": 97,
+            "height": 31
+          },
+          {
+            "tag": "BUTTON",
+            "text": "編輯 填 Visit Japan Web",
+            "width": 40,
+            "height": 40
+          }
+        ]
+      }
+    ],
+    "stress": [
+      {
+        "expenses": 50,
+        "account_render_ms": [
+          38,
+          33,
+          33
+        ],
+        "heap_mb": 3.23,
+        "dom_nodes": 9072
+      },
+      {
+        "expenses": 300,
+        "account_render_ms": [
+          63,
+          45,
+          42
+        ],
+        "heap_mb": 3.59,
+        "dom_nodes": 21072
+      },
+      {
+        "expenses": 1000,
+        "account_render_ms": [
+          153,
+          132,
+          115
+        ],
+        "heap_mb": 3.29,
+        "dom_nodes": 36106,
+        "switch100": {
+          "ms": 5622,
+          "heap_before_mb": 2.5,
+          "heap_after_mb": 2.61,
+          "listeners_before": 47,
+          "listeners_after": 47
+        },
+        "cpu4_account_ms": 1201
+      }
+    ]
+  }
+}

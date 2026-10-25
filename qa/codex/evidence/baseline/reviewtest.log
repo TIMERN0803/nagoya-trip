@@ -1,0 +1,40 @@
+PASS R 旅程回顧 | 出發前 10/25 不顯示回顧入口
+PASS R 旅程回顧 | 旅途中 11/20 不顯示回顧入口
+PASS R 旅程回顧 | 回國當天 11/24 上午 不顯示回顧入口
+PASS R 旅程回顧 | 旅程結束後首頁出現電影票入口
+PASS R 旅程回顧 | 7 頁依序：開場、集章、心情、最開心、對戰、收據、總結 | ['pg-open', 'pg-stamp', 'pg-mood', 'pg-best', 'pg-vs', 'pg-rcpt', 'pg-sum']
+PASS R 旅程回顧 | 打開時在第 1 頁、進度條 7 段
+PASS R 旅程回顧 | 點右邊到下一頁，集章頁數字跳到 32
+PASS R 旅程回顧 | 8 個戳章
+PASS R 旅程回顧 | 點左邊回上一頁
+PASS R 旅程回顧 | 心情曲線：兩條線、7 個點
+PASS R 旅程回顧 | 心情的點都在筆記本紙內
+PASS R 旅程回顧 | 最開心的一天：11/18 吉卜力公園＋兩人留言
+PASS R 旅程回顧 | 對戰卡：付了多少、現金、心情則數
+PASS R 旅程回顧 | 收據：分類、合計、台幣、分帳都看得到
+PASS R 旅程回顧 | 收據整張印出來、沒有被遮住
+PASS R 旅程回顧 | 最後一頁是總結，沒有下一頁
+Traceback (most recent call last):
+  File "C:\Users\Sam\Documents\Codex\2026-10-25\new-chat-5\work\run_test.py", line 34, in <module>
+    try:runpy.run_path(str(target),run_name='__main__')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\Sam\Documents\Codex\2026-10-25\new-chat-5\work\run-tools\ft\reviewtest.py", line 79, in <module>
+    asyncio.run(main())
+  File "asyncio\runners.py", line 195, in run
+  File "asyncio\runners.py", line 118, in run
+  File "asyncio\base_events.py", line 691, in run_until_complete
+  File "C:\Users\Sam\Documents\Codex\2026-10-25\new-chat-5\work\run-tools\ft\reviewtest.py", line 48, in main
+    async with pg.expect_download() as dl:
+               ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Sam\Documents\Codex\2026-10-25\new-chat-5\work\python\Lib\site-packages\playwright\_impl\_async_base.py", line 60, in __aexit__
+    await self._event.value
+  File "C:\Users\Sam\Documents\Codex\2026-10-25\new-chat-5\work\python\Lib\site-packages\playwright\_impl\_async_base.py", line 35, in value
+    return mapping.from_maybe_impl(await self._future)
+                                   ^^^^^^^^^^^^^^^^^^
+playwright._impl._errors.TimeoutError: Timeout 30000ms exceeded while waiting for event "download"
+=========================== logs ===========================
+waiting for event "download"
+============================================================

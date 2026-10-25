@@ -1,0 +1,26 @@
+PASS no wallet box on page
+PASS chip says 設定錢包
+PASS sheet asks who
+PASS picked: saved
+PASS picked: set form shown
+PASS picked: form payer zhang
+PASS pay pick default cash
+PASS set 40000
+PASS chip updates
+PASS sheet closed
+PASS cash deducted only cash
+PASS row says 付現/刷卡
+PASS top-up adds
+PASS mode toggle works
+PASS only my wallet editable
+PASS saved to firestore
+PASS backdrop closes
+PASS chip low
+PASS hero low
+PASS home pill shows cash
+PASS home pill opens sheet
+PASS partner sees my wallet
+PASS partner sheet edits own (set form)
+PASS partner home pill falls back
+PASS no js errors
+25/25 passed []

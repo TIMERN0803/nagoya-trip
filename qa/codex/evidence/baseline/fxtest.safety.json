@@ -1,0 +1,7 @@
+{
+  "external_blocked": {
+    "fonts.googleapis.com": 7
+  },
+  "firestore_blocked": 0,
+  "contexts": 4
+}

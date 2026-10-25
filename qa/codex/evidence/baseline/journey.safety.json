@@ -1,0 +1,8 @@
+{
+  "external_blocked": {
+    "fonts.googleapis.com": 1,
+    "api.open-meteo.com": 1
+  },
+  "firestore_blocked": 0,
+  "contexts": 9
+}

@@ -1,0 +1,8 @@
+{
+  "external_blocked": {
+    "open.er-api.com": 17,
+    "cdn.jsdelivr.net": 17
+  },
+  "firestore_blocked": 0,
+  "contexts": 1
+}

@@ -1,0 +1,6 @@
+PASS J 排序抽動 | 放開後不會出現一半新一半舊的中間順序 | [['seat2', 'vjw', 'seat1', 'mu', 'kiso']]
+PASS J 排序抽動 | 放開後順序正確 | ['seat2', 'vjw', 'seat1', 'mu', 'kiso']
+PASS J 排序抽動 | 放開後其他列完全不動（偏移 ≤ 3px） | 最大偏移 0px（None），共 89 格畫面
+PASS J 排序抽動 | 被拖的那一列只朝新位置滑進去、不會來回 | 反向 0 次
+PASS J 排序抽動 | 沒有錯誤
+TOTAL 5 FAIL 0

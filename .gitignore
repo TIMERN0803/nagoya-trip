@@ -2,3 +2,6 @@
 *.png
 __pycache__/
 ft/results.json
+qa/claude/shots/
+qa/claude/site_*/
+qa/claude/scripts/__pycache__/

@@ -1,0 +1,8 @@
+{"name": "review_native_download", "pass": true, "details": {"seconds": 0.48, "bytes": 211491, "size": [1080, 1350]}}
+{"name": "voice_empty_fallback_requests_japanese", "pass": true, "details": null}
+{"name": "voice_async_japanese_available", "pass": true, "details": [{"text": "鈭?????, "lang": "ja-JP", "rate": 0.85, "voice": null}, {"text": "鈭?????, "lang": "ja-JP", "rate": 0.85, "voice": "Kyoko"}]}
+{"name": "voice_rapid_no_queue", "pass": true, "details": {"cancels": 12, "utterances": 12}}
+{"name": "voice_close_cancels", "pass": true, "details": null}
+{"name": "wallet_exact_zero", "pass": true, "details": "???暸?\n瞼0"}
+{"name": "wallet_negative_warning", "pass": true, "details": "???暸?\n瞼-1"}
+{"name": "payer_edit_updates_both_wallets", "pass": true, "details": "???Ｗ?\n?踹蔑????坼n瞼99\n?? 瞼100?餌?鈭?瞼1\n敹怎摰?嚗?敺?\n嚗?鋆\n靽格蝮賡?\n??\n?? 瞼200?餉鈭?瞼100\n?怏?00\n銝?踹蔑嚗?????"}

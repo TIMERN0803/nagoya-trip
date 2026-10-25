@@ -1,0 +1,50 @@
+[
+ [
+  "listener 洩漏",
+  "求助 開關 30 次：listeners 60→60，nodes 2905→2905",
+  true,
+  ""
+ ],
+ [
+  "listener 洩漏",
+  "錢包 開關 30 次：listeners 60→60，nodes 2905→2905",
+  true,
+  ""
+ ],
+ [
+  "listener 洩漏",
+  "行事曆 開關 30 次：listeners 60→60，nodes 2905→2905",
+  true,
+  ""
+ ],
+ [
+  "listener 洩漏",
+  "出發前設定 開關 30 次：listeners 60→60，nodes 2905→2905",
+  true,
+  ""
+ ],
+ [
+  "listener 洩漏",
+  "地圖檢視器 開關 30 次：listeners 60→60，nodes 2905→2905",
+  true,
+  ""
+ ],
+ [
+  "listener 洩漏",
+  "給司機看 開關 30 次：listeners 60→60，nodes 2905→2905",
+  true,
+  ""
+ ],
+ [
+  "listener 洩漏",
+  "回顧故事 開關 30 次：listeners 60→60，nodes 3289→3289",
+  true,
+  ""
+ ],
+ [
+  "listener 洩漏",
+  "首頁重畫 開關 30 次：listeners 60→60，nodes 2905→2905",
+  true,
+  ""
+ ]
+]

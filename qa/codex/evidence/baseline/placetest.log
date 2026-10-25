@@ -1,0 +1,8 @@
+PASS L 地點精修 | 每個有地圖的地點都有 Google 地點 ID（men's NEELU 除外）
+PASS L 地點精修 | 地點 ID 格式正確
+PASS L 地點精修 | 「榮」導到 Oasis 21 並註明起點
+PASS L 地點精修 | 每個地點的地圖連結都帶 query_place_id
+PASS L 地點精修 | 交通路線都帶終點 ID（共 30 段，自訂起訖點的除外） | ['ランプライトブックスホテル名古屋', 'Meitetsu Nagoya Station', '犬山城']
+PASS L 地點精修 | 求助頁飯店「地圖」也帶地點 ID | https://www.google.com/maps/search/?api=1&query=%E3%83%A9%E3%83%B3%E3%83%97%E3%83%A9%E3%82%A4%E3%83%88%E3%83%96%E3%83%83%E3%82%AF%E3%82%B9%E3%83%9B%E3%83%86%E3%83%AB%E5%90%8D%E5%8F%A4%E5%B1%8B&query_place_id=ChIJ74aBvtd2A2AR8TRTA-QLXZM
+PASS L 地點精修 | 沒有錯誤
+TOTAL 7 FAIL 0

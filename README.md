@@ -9,3 +9,5 @@
 - 測試前先 node mkdays.js 產生 /tmp/days.json；t5 需要 mock/（ft/app.js、ft/fs.js 的複本）
 - 真實訂房資料只放 .sos-private.json（已列入 .gitignore，repo 是公開的，不要提交）
 - 本機伺服器用背景方式啟動，2 小時後會自動停止，測試出現 ERR_CONNECTION_REFUSED 時重新啟動即可
+
+- **v44 獨立測試結果與修正計畫**：見 `qa/README.md` 和 `qa/fix-plan.md`（兩份測試報告、重現腳本、離線模擬 `qa/claude/scripts/fs_offline.js`）

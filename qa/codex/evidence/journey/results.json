@@ -1,0 +1,283 @@
+{
+  "results": [
+    {
+      "name": "two_page_concurrent_add",
+      "pass": true,
+      "details": [
+        200,
+        100
+      ]
+    },
+    {
+      "name": "ten_clicks_single_expense",
+      "pass": true,
+      "details": [
+        200,
+        100,
+        333
+      ]
+    },
+    {
+      "name": "two_page_check_sync",
+      "pass": true,
+      "details": null
+    },
+    {
+      "name": "mood_delete_stale_reproduced",
+      "pass": true,
+      "details": null
+    }
+  ],
+  "data": {
+    "onboarding": "名古屋看花花\n11/17 – 11/24・兩個人的旅行\n求助\n0 / 5\n0 / 5\n¥0\nZ\nz\n名古屋，我們來了\n22\n天\n13\n時\n04\n分\n58\n秒\n11/17（二）07:05 從台中起飛\nJX 320，10:40 抵達名古屋\n旅程進度\n0 / 8\n11/15 07:05 去程線上選位\n出發前手機設定\n0/8\n0/8\n出發前一週完成，到日本才不會手忙腳亂\n8 天的地點\n點一下看當天\n名古屋城\n11/17 週二\n吉卜力公園\n11/18 週三\n犬山\n11/19 週四\n東山動植物園\n11/20 週五\n熱田神宮\n11/21 週六\n常滑\n11/22 週日\n名駅・榮\n11/23 週一\n回家\n11/24 週二\n要買的\n0 / 5 已買\n行程提醒\nApp 內提醒\n關閉中\n加到手機行事曆\n加一次，關掉 App、沒網路也會在 30 分鐘前提醒\n行程\n天氣\n交通\n記帳\n清單",
+    "route_links": [
+      {
+        "text": "前往",
+        "href": "https://www.google.com/maps/search/?api=1&query=%E5%90%8D%E9%89%84%E3%83%90%E3%82%B9%E3%82%BB%E3%83%B3%E3%82%BF%E3%83%BC&query_place_id=ChIJVVVV4t12A2ARuGHeruHGtx8"
+      },
+      {
+        "text": "巴士約 60 分\n名鐵巴士直達",
+        "href": "https://www.google.com/maps/dir/?api=1&origin=%E5%90%8D%E9%89%84%E3%83%90%E3%82%B9%E3%82%BB%E3%83%B3%E3%82%BF%E3%83%BC&destination=%E3%82%B8%E3%83%96%E3%83%AA%E3%83%91%E3%83%BC%E3%82%AF&origin_place_id=ChIJVVVV4t12A2ARuGHeruHGtx8&destination_place_id=ChIJs9ADAkVnA2ARixLFaXpLFjY&travelmode=transit"
+      },
+      {
+        "text": "地圖",
+        "href": "https://www.google.com/maps/search/?api=1&query=%E3%82%B8%E3%83%96%E3%83%AA%E3%83%91%E3%83%BC%E3%82%AF&query_place_id=ChIJs9ADAkVnA2ARixLFaXpLFjY"
+      },
+      {
+        "text": "電車約 66 分\nLinimo＋地鐵東山線",
+        "href": "https://www.google.com/maps/dir/?api=1&origin=%E3%82%B8%E3%83%96%E3%83%AA%E3%83%91%E3%83%BC%E3%82%AF&destination=%E5%90%8D%E9%A7%85%E7%84%BC%E8%82%89%20%E4%BC%8F%E8%A6%8B%E5%B1%8B%20%E5%88%A5%E9%82%B8&origin_place_id=ChIJs9ADAkVnA2ARixLFaXpLFjY&destination_place_id=ChIJ5bzUCut3A2ARM5etF3E8j_M&travelmode=transit"
+      },
+      {
+        "text": "前往",
+        "href": "https://www.google.com/maps/search/?api=1&query=%E5%90%8D%E9%A7%85%E7%84%BC%E8%82%89%20%E4%BC%8F%E8%A6%8B%E5%B1%8B%20%E5%88%A5%E9%82%B8&query_place_id=ChIJ5bzUCut3A2ARM5etF3E8j_M"
+      }
+    ],
+    "tel_links": [
+      {
+        "text": "打給飯店",
+        "href": "tel:+81522317011"
+      },
+      {
+        "text": "110\n警察\n失竊、遇到糾紛",
+        "href": "tel:110"
+      },
+      {
+        "text": "119\n救護車・消防\n受傷、急病、火災",
+        "href": "tel:119"
+      },
+      {
+        "text": "日本觀光客熱線\n24 小時，有中文。不知道該打哪支時先打這支\n050-3816-2787",
+        "href": "tel:+815038162787"
+      },
+      {
+        "text": "台北駐大阪辦事處・急難\n負責愛知縣。護照遺失、重大意外\n090-8794-4568",
+        "href": "tel:+819087944568"
+      },
+      {
+        "text": "台北駐大阪辦事處・上班時間\n一般護照、文件問題\n06-6227-8623",
+        "href": "tel:+81662278623"
+      },
+      {
+        "text": "外交部緊急聯絡中心\n24 小時，從日本撥回台灣\n+886-800-085-095",
+        "href": "tel:+886800085095"
+      }
+    ],
+    "slow3g": {
+      "latency_ms": 400,
+      "bytes_per_sec": 50000,
+      "navigation_to_tabs_ms": 7008.16,
+      "caveat": "localhost; mock SDK; external fonts and APIs blocked; not a production network benchmark"
+    },
+    "a11y_controls": [
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "設定我的錢包",
+        "labelled": true,
+        "width": 118,
+        "height": 44
+      },
+      {
+        "tag": "INPUT",
+        "id": "f-rate",
+        "text": "",
+        "labelled": true,
+        "width": 96,
+        "height": 36
+      },
+      {
+        "tag": "INPUT",
+        "id": "f-amt",
+        "text": "金額（日圓）",
+        "labelled": true,
+        "width": 265.375,
+        "height": 46.796875
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "餐飲",
+        "labelled": true,
+        "width": 72,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "交通",
+        "labelled": true,
+        "width": 72,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "購物",
+        "labelled": true,
+        "width": 72,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "門票",
+        "labelled": true,
+        "width": 72,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "住宿",
+        "labelled": true,
+        "width": 72,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "其他",
+        "labelled": true,
+        "width": 72,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "阿彰",
+        "labelled": true,
+        "width": 77,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "星星",
+        "labelled": true,
+        "width": 77,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "兩人平分",
+        "labelled": true,
+        "width": 80,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "自己的",
+        "labelled": true,
+        "width": 66,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "現金",
+        "labelled": true,
+        "width": 72,
+        "height": 32.390625
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "刷卡",
+        "labelled": true,
+        "width": 72,
+        "height": 32.390625
+      },
+      {
+        "tag": "SELECT",
+        "id": "f-day",
+        "text": "11/17（二）\n11/18（三）\n11/19（四）\n11/20（五）\n11/21（六）\n11/22（日）\n11/23（一）\n11/24（二）",
+        "labelled": true,
+        "width": 154,
+        "height": 44
+      },
+      {
+        "tag": "INPUT",
+        "id": "f-note",
+        "text": "",
+        "labelled": true,
+        "width": 154,
+        "height": 43.59375
+      },
+      {
+        "tag": "BUTTON",
+        "id": "f-save",
+        "text": "記下這筆",
+        "labelled": true,
+        "width": 318,
+        "height": 53.59375
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "行程",
+        "labelled": true,
+        "width": 70,
+        "height": 51.1875
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "天氣",
+        "labelled": true,
+        "width": 70,
+        "height": 51.1875
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "交通",
+        "labelled": true,
+        "width": 70,
+        "height": 51.1875
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "記帳",
+        "labelled": true,
+        "width": 70,
+        "height": 51.1875
+      },
+      {
+        "tag": "BUTTON",
+        "id": "",
+        "text": "清單",
+        "labelled": true,
+        "width": 70,
+        "height": 51.1875
+      }
+    ],
+    "contrast_candidates": [],
+    "css_zoom_200": {
+      "innerWidth": 390,
+      "scrollWidth": 479
+    }
+  }
+}

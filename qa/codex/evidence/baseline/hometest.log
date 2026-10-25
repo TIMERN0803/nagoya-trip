@@ -1,0 +1,56 @@
+PASS 回家按鈕 | 11/17 21:00 晚餐進行中 | {'t': '現在 すゞ家 赤門店', 'home': False, 'mode': 'go', 'aria': '現在：すゞ家 赤門店，看行程'}
+PASS 回家按鈕 | 11/17 21:00 晚餐進行中：沒有 JS 錯誤
+PASS 回家按鈕 | 11/17 22:30 最後的晚餐已過 90 分 | {'t': '今天行程結束 回家', 'home': True, 'mode': 'home', 'aria': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 11/17 22:30 最後的晚餐已過 90 分：沒有 JS 錯誤
+PASS 回家按鈕 | 11/17 23:50 深夜 | {'t': '今天行程結束 回家', 'home': True, 'mode': 'home', 'aria': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 11/17 23:50 深夜：沒有 JS 錯誤
+PASS 回家按鈕 | 11/18 00:30 隔天凌晨，回到下一天的第一項 | {'t': '現在 名古屋車站 4 樓搭名鐵巴士', 'home': False, 'mode': 'go', 'aria': '現在：名古屋車站 4 樓搭名鐵巴士，看行程'}
+PASS 回家按鈕 | 11/18 00:30 隔天凌晨，回到下一天的第一項：沒有 JS 錯誤
+PASS 回家按鈕 | 11/18 21:10 燒肉 19:30 已過 90 分 | {'t': '今天行程結束 回家', 'home': True, 'mode': 'home', 'aria': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 11/18 21:10 燒肉 19:30 已過 90 分：沒有 JS 錯誤
+PASS 回家按鈕 | 11/18 20:30 燒肉還在進行中 | {'t': '現在 伏見屋 飛騨牛 別邸', 'home': False, 'mode': 'go', 'aria': '現在：伏見屋 飛騨牛 別邸，看行程'}
+PASS 回家按鈕 | 11/18 20:30 燒肉還在進行中：沒有 JS 錯誤
+PASS 回家按鈕 | 11/21 21:00 還有彈性行程，22 點前不算結束 | {'t': '現在 久屋大通與中日大樓 7 樓', 'home': False, 'mode': 'go', 'aria': '現在：久屋大通與中日大樓 7 樓，看行程'}
+PASS 回家按鈕 | 11/21 21:00 還有彈性行程，22 點前不算結束：沒有 JS 錯誤
+PASS 回家按鈕 | 11/21 22:10 22 點後只剩彈性行程 | {'t': '今天行程結束 回家', 'home': True, 'mode': 'home', 'aria': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 11/21 22:10 22 點後只剩彈性行程：沒有 JS 錯誤
+PASS 回家按鈕 | 11/20 21:00 20:00 提醒還在 90 分內 | {'t': '現在 搶 KISO 號碼牌', 'home': False, 'mode': 'go', 'aria': '現在：搶 KISO 號碼牌，看行程'}
+PASS 回家按鈕 | 11/20 21:00 20:00 提醒還在 90 分內：沒有 JS 錯誤
+PASS 回家按鈕 | 11/20 21:40 20:00 提醒已過，但 22 點前還有彈性行程 | {'t': '現在 挽き肉のトリコ', 'home': False, 'mode': 'go', 'aria': '現在：挽き肉のトリコ，看行程'}
+PASS 回家按鈕 | 11/20 21:40 20:00 提醒已過，但 22 點前還有彈性行程：沒有 JS 錯誤
+PASS 回家按鈕 | 11/20 22:00 22 點後只剩彈性行程 | {'t': '今天行程結束 回家', 'home': True, 'mode': 'home', 'aria': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 11/20 22:00 22 點後只剩彈性行程：沒有 JS 錯誤
+PASS 回家按鈕 | 11/24 15:00 最後一天搭機後不顯示回家
+PASS 回家按鈕 | 11/24 15:00 最後一天搭機後不顯示回家：沒有 JS 錯誤
+PASS 回家按鈕 | 11/24 23:00 最後一天深夜也不顯示
+PASS 回家按鈕 | 11/24 23:00 最後一天深夜也不顯示：沒有 JS 錯誤
+PASS 回家按鈕 | 11/10 出發前
+PASS 回家按鈕 | 11/10 出發前：沒有 JS 錯誤
+PASS 回家按鈕 | 11/25 結束後
+PASS 回家按鈕 | 11/25 結束後：沒有 JS 錯誤
+PASS 回家按鈕 | 點了只開一次地圖 | [['https://www.google.com/maps/dir/?api=1&destination=%E3%83%A9%E3%83%B3%E3%83%97%E3%83%A9%E3%82%A4%E3%83%88%E3%83%96%E3%83%83%E3%82%AF%E3%82%B9%E3%83%9B%E3%83%86%E3%83%AB%E5%90%8D%E5%8F%A4%E5%B1%8B&destination_place_id=ChIJ74aBvtd2A2AR8TRTA-QLXZM&travelmode=transit', '_blank', 'noopener']]
+PASS 回家按鈕 | 目的地是飯店 Place ID | {'api': '1', 'destination': 'ランプライトブックスホテル名古屋', 'destination_place_id': 'ChIJ74aBvtd2A2AR8TRTA-QLXZM', 'travelmode': 'transit'}
+PASS 回家按鈕 | 大眾運輸模式、沒有寫死出發地（用目前位置） | {'api': '1', 'destination': 'ランプライトブックスホテル名古屋', 'destination_place_id': 'ChIJ74aBvtd2A2AR8TRTA-QLXZM', 'travelmode': 'transit'}
+PASS 回家按鈕 | 以新分頁開啟（noopener） | [['https://www.google.com/maps/dir/?api=1&destination=%E3%83%A9%E3%83%B3%E3%83%97%E3%83%A9%E3%82%A4%E3%83%88%E3%83%96%E3%83%83%E3%82%AF%E3%82%B9%E3%83%9B%E3%83%86%E3%83%AB%E5%90%8D%E5%8F%A4%E5%B1%8B&destination_place_id=ChIJ74aBvtd2A2AR8TRTA-QLXZM&travelmode=transit', '_blank', 'noopener']]
+PASS 回家按鈕 | 點完還在首頁、按鈕還在 | {'hash': '', 'home': True, 'fab': True}
+PASS 回家按鈕 | 小字是焦糖棕 #946645 | {'c': 'rgb(148, 102, 69)', 'hs': True, 'go': True, 'w': 170, 'r': 374, 'a': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 有房子圖示和箭頭 | {'c': 'rgb(148, 102, 69)', 'hs': True, 'go': True, 'w': 170, 'r': 374, 'a': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 按鈕在畫面內 | {'c': 'rgb(148, 102, 69)', 'hs': True, 'go': True, 'w': 170, 'r': 374, 'a': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 讀屏標籤說明會導航回飯店 | {'c': 'rgb(148, 102, 69)', 'hs': True, 'go': True, 'w': 170, 'r': 374, 'a': '今天行程結束，回家：用 Google 地圖導航回飯店'}
+PASS 回家按鈕 | 21:58 是一般按鈕，過了 22:00 自動變回家 | [{'t': '現在 すゞ家 赤門店', 'home': False, 'mode': 'go', 'aria': '現在：すゞ家 赤門店，看行程'}, {'t': '今天行程結束 回家', 'home': True, 'mode': 'home', 'aria': '今天行程結束，回家：用 Google 地圖導航回飯店'}]
+PASS 回家按鈕 | 隔天變回一般按鈕，點了跳行程不開地圖 | [{'t': '現在 名古屋車站 4 樓搭名鐵巴士', 'home': False, 'mode': 'go', 'aria': '現在：名古屋車站 4 樓搭名鐵巴士，看行程'}, {'op': 0, 'day': True, 'when': '11/18（三）今天'}]
+PASS 回家按鈕 | 切到清單分頁時隱藏
+PASS 首頁插圖 | 5:20 是 morning | morning
+PASS 首頁插圖 | 10:20 是 morning | morning
+PASS 首頁插圖 | 11:20 是 noon | noon
+PASS 首頁插圖 | 13:20 是 noon | noon
+PASS 首頁插圖 | 14:20 是 afternoon | afternoon
+PASS 首頁插圖 | 16:20 是 afternoon | afternoon
+PASS 首頁插圖 | 17:20 是 night | night
+PASS 首頁插圖 | 23:20 是 night | night
+PASS 首頁插圖 | 2:20 是 night | night
+PASS 首頁插圖 | 4:20 是 night | night
+PASS 首頁插圖 | 旅途中 15:00 也是下午，有午後天空與兩隻貓 | {'p': 'afternoon', 'sky': True, 'grad': True, 'cats': 2, 'hop': True}
+PASS 首頁插圖 | 下午的貓點一下會跳
+PASS 首頁插圖 | 沒有 JS 錯誤
+PASS 首頁插圖 | 16:59 下午，過 17:00 自動換晚上 | ['afternoon', 'night']

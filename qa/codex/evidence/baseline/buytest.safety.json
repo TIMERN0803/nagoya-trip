@@ -1,0 +1,9 @@
+{
+  "external_blocked": {
+    "fonts.googleapis.com": 1,
+    "open.er-api.com": 5,
+    "cdn.jsdelivr.net": 5
+  },
+  "firestore_blocked": 0,
+  "contexts": 1
+}

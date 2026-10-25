@@ -1,0 +1,65 @@
+[
+  {
+    "name": "review_native_download",
+    "pass": true,
+    "details": {
+      "seconds": 0.48,
+      "bytes": 211491,
+      "size": [
+        1080,
+        1350
+      ]
+    }
+  },
+  {
+    "name": "voice_empty_fallback_requests_japanese",
+    "pass": true,
+    "details": null
+  },
+  {
+    "name": "voice_async_japanese_available",
+    "pass": true,
+    "details": [
+      {
+        "text": "予約しています。",
+        "lang": "ja-JP",
+        "rate": 0.85,
+        "voice": null
+      },
+      {
+        "text": "予約しています。",
+        "lang": "ja-JP",
+        "rate": 0.85,
+        "voice": "Kyoko"
+      }
+    ]
+  },
+  {
+    "name": "voice_rapid_no_queue",
+    "pass": true,
+    "details": {
+      "cancels": 12,
+      "utterances": 12
+    }
+  },
+  {
+    "name": "voice_close_cancels",
+    "pass": true,
+    "details": null
+  },
+  {
+    "name": "wallet_exact_zero",
+    "pass": true,
+    "details": "我的現金\n¥0"
+  },
+  {
+    "name": "wallet_negative_warning",
+    "pass": true,
+    "details": "我的現金\n¥-1"
+  },
+  {
+    "name": "payer_edit_updates_both_wallets",
+    "pass": true,
+    "details": "我的錢包\n阿彰的現金還剩\n¥99\n換了 ¥100・現金花了 ¥1\n快用完了，記得去領錢\n＋ 補錢\n修改總額\n星星\n換了 ¥200・花了 ¥100\n剩¥100\n不是阿彰？切換成星星"
+  }
+]

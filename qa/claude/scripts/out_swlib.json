@@ -1,0 +1,58 @@
+[
+ [
+  "SW 程式庫",
+  "v44 使用兩次後的快取內容（外部檔）",
+  null,
+  {
+   "caches": [
+    [
+     "ngy-v44",
+     [
+      "firebase-app.js",
+      "firebase-firestore.js"
+     ]
+    ]
+   ],
+   "live": true
+  }
+ ],
+ [
+  "SW 程式庫",
+  "上線 v45 後重開一次（有網路）的快取內容",
+  null,
+  [
+   [
+    "ngy-v45",
+    []
+   ]
+  ]
+ ],
+ [
+  "SW 程式庫",
+  "再重開一次（有網路）後的快取內容",
+  null,
+  [
+   [
+    "ngy-v45",
+    [
+     "firebase-app.js",
+     "firebase-firestore.js"
+    ]
+   ]
+  ]
+ ],
+ [
+  "SW 程式庫",
+  "更新後下一次離線開啟：Firebase 程式庫仍在快取、可離線同步佇列",
+  false,
+  {
+   "快取": [
+    [
+     "ngy-v45",
+     []
+    ]
+   ],
+   "離線開啟狀態": "（離線開啟的同步狀態無法在本機驗證：Playwright route 在離線時仍會回應假程式庫）"
+  }
+ ]
+]

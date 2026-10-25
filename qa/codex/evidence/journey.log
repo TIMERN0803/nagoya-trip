@@ -1,0 +1,4 @@
+{"name": "two_page_concurrent_add", "pass": true, "details": [200, 100]}
+{"name": "ten_clicks_single_expense", "pass": true, "details": [200, 100, 333]}
+{"name": "two_page_check_sync", "pass": true, "details": null}
+{"name": "mood_delete_stale_reproduced", "pass": true, "details": null}
