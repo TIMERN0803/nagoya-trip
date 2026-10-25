@@ -927,6 +927,38 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sort-row.dragging{z-index:3;transition:none;box-shadow:0 10px 24px rgba(63,49,39,.22),0 0 0 2px var(--ol);border-radius:16px;border-top-color:transparent}
 .sort-row.dragging .drag-h{cursor:grabbing;background:var(--butter)}
 @media (prefers-reduced-motion:reduce){.sort-row{transition:none}}
+
+/* ===== 出發前手機設定 ===== */
+.setup-entry{position:relative;display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;padding:12px 14px 12px 12px;border:2.5px solid var(--ol);border-radius:24px;background:var(--card);box-shadow:0 4px 0 var(--ol);cursor:pointer;text-align:left;font:inherit;color:var(--ink);transition:transform .08s,box-shadow .08s}
+.setup-entry:active{transform:translateY(2px);box-shadow:0 2px 0 var(--ol)}
+.su-phone{width:52px;height:60px;flex:none}
+.su-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.su-body b{font-family:var(--f-display);font-weight:900;font-size:16.5px}
+.su-body small{font-size:12.5px;color:var(--muted);line-height:1.35}
+.setup-entry.all-done{background:var(--mint-soft)}
+.setup-entry.all-done small{color:var(--mint-ink);font-weight:700}
+.su-sheet{max-height:90vh;overflow-y:auto;overscroll-behavior:contain}
+.su-intro{margin:-2px 2px 0;font-size:13.5px;color:var(--muted);line-height:1.5}
+.su-me{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
+.su-me b{color:var(--ink)}
+.su-list{display:flex;flex-direction:column;gap:8px}
+.su-row{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:18px;background:var(--paper)}
+.su-row.done{background:var(--sunk)}
+.su-ck{flex:none;width:30px;height:30px;margin-top:1px;border-radius:50%;border:2.5px solid var(--line-strong);background:var(--card);display:grid;place-items:center;cursor:pointer;padding:0;color:#fff}
+.su-ck svg{width:16px;height:16px;opacity:0}
+.su-row.done .su-ck{background:var(--mint-ink);border-color:var(--mint-ink)}
+.su-row.done .su-ck svg{opacity:1}
+.su-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;line-height:1.4}
+.su-txt b{font-family:var(--f-display);font-weight:900;font-size:15px}
+.su-row.done .su-txt b{color:var(--muted)}
+.su-txt small{font-size:12.5px;color:var(--muted)}
+.su-txt .auto{font-size:11.5px;color:var(--mint-ink);font-weight:700}
+.su-side{flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.su-act{height:32px;padding:0 12px;border:0;border-radius:10px;background:var(--accent);color:#fff;box-shadow:0 2px 0 var(--accent-deep);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13px;cursor:pointer;white-space:nowrap}
+.su-other{display:inline-flex;align-items:center;gap:2px;font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
+.su-other svg{width:20px;height:17px}
+.su-other.ok{color:var(--mint-ink)}
+.su-other:not(.ok) svg{opacity:.45}
 </style>
 </head>
 <body>
@@ -1247,6 +1279,19 @@ const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("ngy:"+k,JSON.stringify(v))}catch(e){}}};
 let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
+let setupSheet=null,suRunning=false;
+const SETUP=[
+ ["home","加到主畫面","iPhone：Safari 分享 → 加入主畫面；Android：Chrome 選單 → 安裝應用程式。之後從主畫面圖示打開","auto"],
+ ["me","選好「我是誰」","記帳、錢包和心情才會記在對的人身上","auto"],
+ ["sync","連上同步，看到「同步中」","在清單分頁輸入旅程代碼，兩支手機的資料才會同步","auto"],
+ ["notify","開啟 App 內提醒","iPhone 要先加到主畫面才能收到通知","auto","開啟"],
+ ["cal","訂閱行事曆","關掉 App、沒網路也會在行程前 30 分鐘提醒。iPhone 記得把「移除提示」關掉",null,"設定"],
+ ["offline","開飛航模式打開一次","確認沒網路也能看行程、求助頁","auto"],
+ ["sos","看一次「求助」頁","知道飯店日文地址、緊急電話在哪裡","auto","打開"],
+ ["net","日本上網方式開通","eSIM、漫遊或網卡，確認設定好；落地後再打開也可以",null]];
+const suKey=(k,w)=>"su-"+k+"@"+w;
+const suCnt=w=>SETUP.filter(r=>done[suKey(r[0],w)]).length;
+const PHONE_SVG=`<svg class="su-phone" viewBox="0 0 52 60" aria-hidden="true"><g stroke="#3F3127" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="10" y="4" width="28" height="50" rx="7" fill="#fff"/><rect x="14" y="11" width="20" height="30" rx="3" fill="#F6D58A"/><path d="M20 48h8"/><path d="M18 26l4 4 8-8" fill="none" stroke="#24695A" stroke-width="3"/><circle cx="41" cy="12" r="8" fill="#EE9479"/><path d="M41 8v5M41 16v.1" stroke="#fff" stroke-width="2.4"/></g></svg>`;
 let sosInfo=store.get("sos")||{},sosSheet=null,sosEditing=false,stayEditing=false;
 const sosEsc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mapUrl=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
@@ -1445,6 +1490,7 @@ function homeHTML(){
  return `<div class="g-home">${hudHTML()}
  ${heroHTML()}
  ${dueAlertsHTML()}
+ ${setupCardHTML()}
  <section class="sheet"><div class="clips" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
   <div class="sheet-head"><h2>8 天的地點</h2><span>點一下看當天</span></div>
   <div class="grid${todayIdx<0&&diff<=0?" trip-over":""}">${DAYS.map((x,i)=>`<button class="tile${dayDate(x)<today?" past":""}${i===todayIdx?" today":""}" data-day="${i}"><span class="art">${svgTile(x.art)}${i===todayIdx?`<span class="tile-pill">今天</span>`:dayDate(x)<today?`<span class="tile-done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`:""}</span><b>${esc(x.place)}</b><small>${x.d} 週${x.w}</small></button>`).join("")}
@@ -2173,7 +2219,7 @@ async function connect(){
    store.set("items",items);itemsReady();if(tab!=="acct")refresh()},()=>itemsReady());
   try{await ensureSeeded()}catch(_){}
   db.collection("moods").onSnapshot(snap=>{const n={...moods};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{});
-  db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
+  db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(setupSheet)paintSetup();if(tab!=="acct")refresh()},()=>{});
   db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0}});paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home"&&!stayEditing)render(true)}},()=>{});
@@ -2206,6 +2252,59 @@ async function loadWeather(){
 }
 loadWeather();
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")loadWeather()});
+
+/* ===== 出發前手機設定：每人各自打勾，存在 checks/su-<項目>@<人>；能偵測的自動打勾 ===== */
+function setupFlag(k){const f=store.get("suFlags")||{};if(!f[k]){f[k]=1;store.set("suFlags",f)}setupAuto()}
+try{if(!navigator.onLine)setupFlag("offline")}catch(_){}
+function suDetect(k){
+ const f=store.get("suFlags")||{};
+ if(k==="home")return standalone;
+ if(k==="me")return !!me;
+ if(k==="sync")return !!live;
+ if(k==="notify")return notifyOn&&(!canNotify()||Notification.permission==="granted");
+ return !!f[k];
+}
+async function setupSet(k,v){
+ if(!me)return;const id=suKey(k,me);if(!!done[id]===v)return;
+ done[id]=v;store.set("done",done);paintSetup();if(tab==="plan"&&view==="home")render(true);
+ if(db&&canWrite){try{await db.doc("checks/"+id).set({done:v})}catch(_){}}
+}
+async function setupAuto(){
+ if(!me||Date.now()>=DEPART||suRunning)return;suRunning=true;
+ try{for(const r of SETUP)if(r[3]==="auto"&&suDetect(r[0])&&!done[suKey(r[0],me)])await setupSet(r[0],true)}finally{suRunning=false}
+}
+function setupCardHTML(){
+ if(Date.now()>=DEPART)return"";
+ const n=SETUP.length,all=PEOPLE.every(p=>suCnt(p[0])===n);
+ return `<button class="setup-entry${all?" all-done":""}" type="button" data-setup-open aria-label="打開出發前手機設定">${PHONE_SVG}<span class="su-body"><b>出發前手機設定</b><span class="pe-counts">${PEOPLE.map(p=>`<span><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg>${suCnt(p[0])}/${n}</span>`).join("")}</span><small>${all?"兩個人都設定好了":"出發前一週完成，到日本才不會手忙腳亂"}</small></span><svg class="pe-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+}
+function setupSheetHTML(){
+ const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
+ const head=`<div class="sm-head"><b>出發前手機設定</b>${x}</div>`;
+ if(!me)return head+`<p class="su-intro">每個人的手機要各自設定。先選你是誰：</p><div class="w-who">${PEOPLE.map(p=>`<button type="button" class="pick" data-setup-me="${p[0]}"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg>我是${p[1]}</button>`).join("")}</div>`;
+ const other=PEOPLE.find(p=>p[0]!==me);
+ return head+`<p class="su-intro">這是<b>${nameOf(me)}</b>這支手機的設定，兩個人要各自完成。能偵測的項目會自動打勾。</p>
+ <div class="su-list">${SETUP.map(([k,t,d,auto,act])=>{const ok=!!done[suKey(k,me)],oo=other&&!!done[suKey(k,other[0])];
+  return `<div class="su-row${ok?" done":""}"><button type="button" class="su-ck" data-setup-ck="${k}" role="checkbox" aria-checked="${ok}" aria-label="${esc(t)}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="su-txt"><b>${esc(t)}</b><small>${esc(d)}</small>${auto&&ok&&suDetect(k)?`<span class="auto">App 已自動確認</span>`:""}</span><span class="su-side">${act&&!ok?`<button type="button" class="su-act" data-setup-act="${k}">${act}</button>`:""}${other?`<span class="su-other${oo?" ok":""}"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${other[0]==="zhang"?"b":"w"}"/></svg>${oo?"好了":"還沒"}</span>`:""}</span></div>`}).join("")}</div>`;
+}
+function paintSetup(){if(setupSheet)setupSheet.querySelector(".sm-card").innerHTML=setupSheetHTML()}
+function openSetup(){
+ if(setupSheet)return;
+ const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","出發前手機設定");
+ v.innerHTML=`<div class="sm-card su-sheet"></div>`;setupSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";setupAuto();paintSetup();
+ const close=()=>{v.remove();setupSheet=null;document.body.style.overflow=""};
+ v.addEventListener("click",async e=>{
+  if(e.target===v||e.target.closest(".sm-head .sm-x")){close();return}
+  const pm=e.target.closest("[data-setup-me]");if(pm){me=pm.dataset.setupMe;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;await setupAuto();paintSetup();if(tab==="plan"&&view==="home")render(true);return}
+  const ck=e.target.closest("[data-setup-ck]");if(ck){const k=ck.dataset.setupCk;setupSet(k,!done[suKey(k,me)]);return}
+  const a=e.target.closest("[data-setup-act]");if(a){const k=a.dataset.setupAct;
+   if(k==="notify"){if(!notifyOn)await toggleNotify();await setupAuto();paintSetup();return}
+   if(k==="cal"){openCalSheet();return}
+   if(k==="sos"){close();openSos();return}}
+ });
+}
+document.addEventListener("click",e=>{if(e.target.closest("[data-setup-open]"))openSetup()});
+setTimeout(setupAuto,1500);setInterval(setupAuto,15000);
 </script>
 
 <script>
@@ -2265,7 +2364,7 @@ function sosShow(k){
  document.body.appendChild(v);
 }
 function openSos(){
- if(sosSheet)return;sosEditing=false;
+ if(sosSheet)return;setupFlag("sos");sosEditing=false;
  const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","緊急與日文資訊");
  v.innerHTML=`<div class="sm-card sos"></div>`;sosSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";paintSos();
  const close=()=>{v.remove();sosSheet=null;sosEditing=false;document.body.style.overflow=""};
