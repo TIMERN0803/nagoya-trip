@@ -843,6 +843,64 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .leg a:active{background:var(--sunk)}
 .chk.editing,.ex.editing{background:var(--butter-soft)}
 .switch.on{background:var(--accent)}
+
+/* ===== 緊急與日文資訊卡 ===== */
+.item .card.has-pic>.stay-ord{grid-column:1 / -1}
+.stay-ord .sos-ord{grid-template-columns:auto 1fr}
+.stay-ord dt{white-space:nowrap}
+.stay-ord .mono{white-space:nowrap}
+.stay-ord{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.stay-ord .sos-ord{font-size:13.5px;padding:9px 12px}
+.stay-sos{align-self:flex-start;border:0;border-radius:12px;background:var(--sunk);color:var(--ink);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13.5px;padding:8px 12px;cursor:pointer}
+.hud-sos{margin-left:auto;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:52px;height:52px;border-radius:18px;border:var(--olw,2.5px) solid var(--ol);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:11.5px;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.hud-sos svg{width:22px;height:22px}
+.hud-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+.sos{max-height:92vh;overflow-y:auto;overscroll-behavior:contain;gap:14px}
+.sos h3{margin:2px 2px 0;font-size:16px;display:flex;align-items:baseline;justify-content:space-between}
+.sos h3 small{font-size:12.5px;color:var(--muted);font-weight:700}
+.sos-box{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:22px;background:var(--card);padding:14px;display:flex;flex-direction:column;gap:10px}
+.sos-hotel .jp{font-size:20px;font-weight:900;font-family:var(--f-display);line-height:1.3}
+.sos-hotel .zh{font-size:13px;color:var(--muted)}
+.sos-hotel .ad{font-size:15px;line-height:1.5}
+.sos-hotel .ac{font-size:13px;color:var(--muted)}
+.sos-acts{display:flex;gap:8px}
+.sos-acts>*{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:44px;border-radius:14px;border:0;font:inherit;font-family:var(--f-display);font-weight:900;font-size:14.5px;text-decoration:none;cursor:pointer;background:var(--sunk);color:var(--ink)}
+.sos-acts .main{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep)}
+.sos-acts svg{width:18px;height:18px}
+.sos-ord{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;background:var(--paper);border-radius:16px;padding:10px 12px;font-size:14px}
+.sos-ord dt{color:var(--muted);font-size:13px}
+.sos-ord dd{margin:0;font-weight:700;word-break:break-all}
+.sos-ord dd.mono{font-variant-numeric:tabular-nums;letter-spacing:.03em}
+.sos-ord .warn{grid-column:1/-1;color:var(--coral-ink);background:var(--coral-soft);border-radius:10px;padding:6px 10px;font-size:13px;font-weight:700}
+.sos-empty{color:var(--muted);font-weight:400}
+.sos-edit{border:0;background:none;color:var(--accent);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13.5px;cursor:pointer;padding:4px 2px}
+.sos-form{display:flex;flex-direction:column;gap:8px}
+.sos-form label{display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted);font-weight:700}
+.sos-form input{height:42px;border-radius:12px;border:1.5px solid var(--line);background:var(--paper);padding:0 12px;font:inherit;font-size:16px;color:var(--ink)}
+.sos-tels{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sos-tel{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:16px;background:var(--sunk);text-decoration:none;color:var(--ink)}
+.sos-tel b{font-family:var(--f-display);font-weight:900;font-size:22px;font-variant-numeric:tabular-nums;line-height:1.2}
+.sos-tel span{font-size:13px;font-weight:700}
+.sos-tel small{font-size:12px;color:var(--muted);line-height:1.35}
+.sos-tel.hot{background:var(--coral-soft)}
+.sos-tel.hot b{color:var(--coral-ink);font-size:30px}
+.sos-tel.wide{grid-column:1/-1;flex-direction:row;align-items:center;gap:10px}
+.sos-tel.wide>div{flex:1;min-width:0;display:flex;flex-direction:column}
+.sos-tel.wide b{font-size:17px}
+.sos-tel.off{opacity:.75}
+.sos-ph{display:flex;flex-direction:column;gap:6px}
+.sos-ph button{display:flex;flex-direction:column;align-items:flex-start;gap:1px;text-align:left;border:0;border-radius:16px;background:var(--paper);padding:10px 12px;font:inherit;color:var(--ink);cursor:pointer}
+.sos-ph button:active{background:var(--sunk)}
+.sos-ph .p-zh{font-size:13px;color:var(--muted);font-weight:700}
+.sos-ph .p-jp{font-size:17px;font-weight:900;font-family:var(--f-display)}
+.sos-ph .p-rd{font-size:12px;color:var(--muted)}
+.sos-note{font-size:12px;color:var(--muted);text-align:center;margin:0}
+.sos-show{position:fixed;inset:0;z-index:70;background:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));animation:fadein .15s ease;color:#2B2420}
+.sos-show .s-lead{font-size:22px;font-weight:900;line-height:1.4;color:var(--coral-ink)}
+.sos-show .s-big{font-size:clamp(30px,9vw,44px);font-weight:900;line-height:1.3;font-family:var(--f-display);word-break:break-word}
+.sos-show .s-mid{font-size:clamp(20px,6vw,28px);font-weight:700;line-height:1.5}
+.sos-show .s-zh{font-size:15px;color:var(--muted);border-top:1.5px dashed var(--line);padding-top:12px}
+.sos-show .sm-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:48px;height:48px}
 </style>
 </head>
 <body>
@@ -1058,7 +1116,7 @@ const DAYS=[
  {d:"11/17",w:"二",title:"抵達名古屋",place:"名古屋城",art:"castle",wx:["名古屋",17,8],route:["台中","名古屋","名古屋城","榮"],items:[
    {t:"07:05",k:"fly",n:"JX 320 台中 → 名古屋",p:"10:40 抵達中部國際機場"},
    {t:"10:40",k:"move",n:"搭名鐵到名古屋車站",p:"μSKY 約 28 分鐘，詳見交通分頁"},
-   {k:"stay",n:"名古屋燈光圖書飯店",map:"名古屋 燈光圖書飯店"},
+   {k:"stay",n:"名古屋燈光圖書飯店",jp:"ランプライトブックスホテル名古屋",p:"入住 15:00 起・11/24 退房 10:00 前・伏見站 10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋",stay:1},
    {k:"eat",l:"午餐",n:"つばめパン＆Milk 名駅店",p:"天然酵母吐司專門店",map:"つばめパン＆Milk 名駅店"},
    {k:"go",n:"名古屋城",map:"名古屋城"},
    {k:"go",n:"榮",map:"栄 名古屋"},
@@ -1162,6 +1220,8 @@ const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("ngy:"+k,JSON.stringify(v))}catch(e){}}};
 let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
+let sosInfo=store.get("sos")||{},sosSheet=null,sosEditing=false;
+const sosEsc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mapUrl=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
 const ext=(label,href)=>`<a class="chip" href="${esc(href)}" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg>${esc(label)}</a>`;
 const yen=n=>"¥"+Math.round(n).toLocaleString("en-US");
@@ -1346,7 +1406,7 @@ function hudHTML(){
  const pl=itemsOf("prep"),bl=itemsOf("buy"),n=pl.filter(r=>done[r.id]).length,spent=expenses.reduce((a,e)=>a+e.amt,0);
  const day=cdParts().ms>0?`還有 ${cdParts().d} 天`:todayIdx>=0?`第 ${todayIdx+1} 天`:"旅程完成";
  const pill=(ic,cls,v,attr,lab)=>`<button class="hud-pill ${cls}" type="button" ${attr} aria-label="${lab}"><span class="hp-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${ic}"/></svg></span><b>${v}</b></button>`;
- return `<header class="hud"><span class="hud-badge"><svg role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg></span><div class="hud-t"><h1>名古屋看花花</h1><small>11/17 – 11/24・兩個人的旅行</small></div></header>
+ return `<header class="hud"><span class="hud-badge"><svg role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg></span><div class="hud-t"><h1>名古屋看花花</h1><small>11/17 – 11/24・兩個人的旅行</small></div><button type="button" class="hud-sos" data-sos aria-label="緊急與日文資訊"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/></svg>求助</button></header>
  <div class="hud-row">${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("k-buy","hp-buy",`${bl.filter(r=>done[r.id]).length} / ${bl.length}`,'data-go-group="buy"',`要買的已買 ${bl.filter(r=>done[r.id]).length} 項，共 ${bl.length} 項`)}${me&&cashIn(me)>0?pill("i-cash",`hp-yen${cashLeft(me)<LOW_CASH?" low":""}`,yen(cashLeft(me)),'data-wallet-open',`我的現金剩 ${yen(cashLeft(me))}，打開錢包`):pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
 }
 function tripBarHTML(){
@@ -1468,7 +1528,12 @@ function itemHTML(it,i,stat){
  if(it.map&&it.img)acts.push(`<a class="chip" href="${mapUrl(it.map)}" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>地圖</a>`);
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
-  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
+  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
+}
+function stayOrdHTML(){
+ const v=k=>(sosInfo[k]||"").trim(),row=(l,k,c)=>v(k)?`<dt>${l}</dt><dd${c?` class="${c}"`:""}>${sosEsc(v(k))}</dd>`:"";
+ const body=row("訂單編號","order","mono")+row("訂房平台","via")+row("房型","room")+row("付款","pay");
+ return `<div class="stay-ord">${body?`<dl class="sos-ord">${body}${v("payNote")?`<div class="warn">${sosEsc(v("payNote"))}</div>`:""}</dl>`:""}<button type="button" class="stay-sos" data-sos>${body?"":"訂房資料・"}日文地址給司機看</button></div>`;
 }
 const smin=t=>{const[h,m]=t.split(":");return h*60+ +m};
 function schedNow(stat){if(!stat)return -1;return SCHED.findIndex(r=>{const[a,b]=r[0].split("–");return stat.nowM>=smin(a)&&stat.nowM<smin(b)})}
@@ -2057,6 +2122,7 @@ async function connect(){
   db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(tab!=="acct")refresh()},()=>{});
   db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0}});paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
   db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
+  db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home")render(true)}},()=>{});
   db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const v=+(s.data()||{}).jpyTwd;if(v>0){rate=v;store.set("rate",v);if(tab==="acct")renderAcct()}}},()=>{});
   rerenderData();
  }catch(err){
@@ -2090,6 +2156,80 @@ document.addEventListener("visibilitychange",()=>{if(document.visibilityState===
 
 <script>
 if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}))}
+
+/* ===== 緊急與日文資訊卡（離線可用；訂房細節只存在雲端，不寫進公開程式碼） ===== */
+const SOS_HOTEL={jp:"ランプライトブックスホテル名古屋",zh:"名古屋燈光圖書飯店",zip:"〒460-0003",ad:"愛知県名古屋市中区錦1丁目13-18",tel:"052-231-7011",telI:"+81522317011",ac:"地下鐵東山線・鶴舞線「伏見站」10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋"};
+const SOS_FIELDS=[["order","訂單編號"],["via","訂房平台"],["guest","訂房人"],["room","房型"],["pay","付款"],["ins","旅平險公司"],["insTel","旅平險急難電話"]];
+const SOS_PHRASES=[
+ ["請帶我到這個地址","この住所までお願いします。","kono jūsho made onegaishimasu","hotel"],
+ ["請幫我叫救護車","救急車を呼んでください。","kyūkyūsha o yonde kudasai"],
+ ["請幫我叫警察","警察を呼んでください。","keisatsu o yonde kudasai"],
+ ["這附近有醫院嗎？","この近くに病院はありますか？","kono chikaku ni byōin wa arimasu ka"],
+ ["我身體不舒服","気分が悪いです。","kibun ga warui desu"],
+ ["我的錢包（手機）不見了","財布（スマホ）をなくしました。","saifu (sumaho) o nakushimashita"],
+ ["我不太會說日文","日本語があまり話せません。","nihongo ga amari hanasemasen"],
+ ["可以刷卡嗎？","カードは使えますか？","kādo wa tsukaemasu ka"],
+ ["可以辦免稅嗎？","免税手続きはできますか？","menzei tetsuzuki wa dekimasu ka"],
+ ["廁所在哪裡？","トイレはどこですか？","toire wa doko desu ka"]];
+const SOS_TELS=[
+ {n:"110",l:"警察",s:"失竊、遇到糾紛",tel:"110",hot:1},
+ {n:"119",l:"救護車・消防",s:"受傷、急病、火災",tel:"119",hot:1},
+ {n:"050-3816-2787",l:"日本觀光客熱線",s:"24 小時，有中文。不知道該打哪支時先打這支",tel:"+815038162787",wide:1},
+ {n:"090-8794-4568",l:"台北駐大阪辦事處・急難",s:"負責愛知縣。護照遺失、重大意外",tel:"+819087944568",wide:1},
+ {n:"06-6227-8623",l:"台北駐大阪辦事處・上班時間",s:"一般護照、文件問題",tel:"+81662278623",wide:1},
+ {n:"+886-800-085-095",l:"外交部緊急聯絡中心",s:"24 小時，從日本撥回台灣",tel:"+886800085095",wide:1}];
+function sosVal(k){const v=(sosInfo[k]||"").trim();return v?`<dd class="${k==="order"?"mono":""}">${sosEsc(v)}</dd>`:`<dd class="sos-empty">還沒填</dd>`}
+function sosHTML(){
+ const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
+ const H=SOS_HOTEL;
+ const ord=sosEditing?`<div class="sos-form">${SOS_FIELDS.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${sosEsc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" data-sos-save>儲存</button></div></div>`
+  :`<dl class="sos-ord">${SOS_FIELDS.slice(0,5).map(([k,l])=>`<dt>${l}</dt>${sosVal(k)}`).join("")}${sosInfo.payNote?`<div class="warn">${sosEsc(sosInfo.payNote)}</div>`:""}</dl>`;
+ const ins=(sosInfo.insTel||"").trim();
+ return `<div class="sm-head"><b>緊急與日文資訊</b>${x}</div>
+ <h3>我們住這裡<small>11/17–11/24・7 晚</small></h3>
+ <div class="sos-box sos-hotel">
+  <div><div class="jp">${H.jp}</div><div class="zh">${H.zh}</div></div>
+  <div class="ad">${H.zip} ${H.ad}<br>TEL ${H.tel}</div>
+  <div class="ac">${H.ac}</div>
+  <div class="sos-acts"><button type="button" class="main" data-sos-show="hotel">給司機看</button><a href="tel:${H.telI}">打給飯店</a><a href="${mapUrl(H.map)}" target="_blank" rel="noopener">地圖</a></div>
+ </div>
+ <h3>訂房資料<button type="button" class="sos-edit" data-sos-edit>${sosEditing?"":"編輯"}</button></h3>
+ ${ord}
+ <h3>緊急電話<small>點一下直接撥</small></h3>
+ <div class="sos-tels">${SOS_TELS.map(t=>t.wide?`<a class="sos-tel wide" href="tel:${t.tel}"><div><span>${t.l}</span><small>${t.s}</small></div><b>${t.n}</b></a>`:`<a class="sos-tel${t.hot?" hot":""}" href="tel:${t.tel}"><b>${t.n}</b><span>${t.l}</span><small>${t.s}</small></a>`).join("")}
+  ${ins?`<a class="sos-tel wide" href="tel:${sosEsc(ins.replace(/[^\d+]/g,""))}"><div><span>旅平險・${sosEsc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${sosEsc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡到「訂房資料・編輯」填寫</small></div></button>`}
+ </div>
+ <h3>常用日文<small>點一句放大給對方看</small></h3>
+ <div class="sos-ph">${SOS_PHRASES.map((p,i)=>`<button type="button" data-sos-show="${i}"><span class="p-zh">${p[0]}</span><span class="p-jp">${p[1]}</span><span class="p-rd">${p[2]}</span></button>`).join("")}</div>
+ <p class="sos-note">這一頁沒有網路也能打開</p>`;
+}
+function paintSos(){if(sosSheet)sosSheet.querySelector(".sm-card").innerHTML=sosHTML()}
+function sosShow(k){
+ const v=document.createElement("div");v.className="sos-show";v.setAttribute("role","dialog");v.setAttribute("aria-label","放大顯示");
+ const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
+ if(k==="hotel"){const H=SOS_HOTEL;v.innerHTML=`${x}<div class="s-lead">この住所までお願いします。</div><div class="s-big">${H.jp}</div><div class="s-mid">${H.zip}<br>${H.ad.replace("中区","中区<br>")}</div><div class="s-mid">TEL ${H.tel}</div><div class="s-zh">請帶我到這個地址（伏見站 10 號出口附近）</div>`}
+ else{const p=SOS_PHRASES[+k];v.innerHTML=`${x}<div class="s-big">${p[1]}</div><div class="s-zh">${p[0]}・${p[2]}</div>`}
+ v.addEventListener("click",e=>{if(e.target.closest(".sm-x")||!e.target.closest("a"))v.remove()});
+ document.body.appendChild(v);
+}
+function openSos(){
+ if(sosSheet)return;sosEditing=false;
+ const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","緊急與日文資訊");
+ v.innerHTML=`<div class="sm-card sos"></div>`;sosSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";paintSos();
+ const close=()=>{v.remove();sosSheet=null;sosEditing=false;document.body.style.overflow=""};
+ v.addEventListener("click",async e=>{
+  if(e.target===v||e.target.closest(".sm-head .sm-x")){close();return}
+  const sh=e.target.closest("[data-sos-show]");if(sh){const p=SOS_PHRASES[+sh.dataset.sosShow];sosShow(p&&p[3]==="hotel"?"hotel":sh.dataset.sosShow);return}
+  if(e.target.closest("[data-sos-edit]")){sosEditing=true;paintSos();setTimeout(()=>v.querySelector(".sos-form input")?.focus(),30);return}
+  if(e.target.closest("[data-sos-cancel]")){sosEditing=false;paintSos();return}
+  if(e.target.closest("[data-sos-save]")){
+   const n={...sosInfo};v.querySelectorAll("[data-sos-f]").forEach(i=>{n[i.dataset.sosF]=i.value.trim()});
+   sosInfo=n;store.set("sos",sosInfo);sosEditing=false;paintSos();
+   if(db&&canWrite){try{await db.doc("settings/sos").set(sosInfo)}catch(_){}}
+  }
+ });
+}
+document.addEventListener("click",e=>{if(e.target.closest("[data-sos]"))openSos()});
 </script>
 </body>
 </html>
