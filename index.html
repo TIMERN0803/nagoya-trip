@@ -911,6 +911,29 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .undo-bar i{position:absolute;left:0;bottom:0;height:3px;background:var(--butter);width:100%;animation:undoshrink 5s linear forwards}
 @keyframes undoshrink{to{width:0}}
 @media (prefers-reduced-motion:reduce){.undo-bar,.undo-bar i{animation:none}}
+
+/* ===== 待辦自訂排序 ===== */
+.group h3 .h-r{display:flex;align-items:center;gap:8px}
+.sort-btn{display:inline-flex;align-items:center;gap:4px;height:30px;padding:0 10px;border:0;border-radius:10px;background:var(--sunk);color:var(--brown);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13.5px;cursor:pointer}
+.sort-btn svg{width:15px;height:15px}
+.sort-btn.on{background:var(--accent);color:#fff;box-shadow:0 2px 0 var(--accent-deep);padding:0 16px}
+.sort-hint{margin:-4px 18px 8px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.sort-hint svg{width:16px;height:16px;color:var(--brown)}
+.sort-list{position:relative}
+.sort-row{background:var(--card);transition:transform .18s cubic-bezier(.2,.8,.3,1)}
+.sort-row .chk{padding-right:96px;align-items:center;cursor:default}
+.sort-n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--brown);display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:13px}
+.drag-h{position:absolute;right:8px;top:50%;margin-top:-22px;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:var(--brown);background:var(--sunk);cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
+.drag-h svg{width:22px;height:22px}
+.sort-ud{position:absolute;right:56px;top:50%;margin-top:-22px;display:flex;flex-direction:column;gap:2px}
+.sort-ud button{width:34px;height:21px;border:0;border-radius:7px;background:none;color:var(--muted);font-size:10px;line-height:1;cursor:pointer}
+.sort-ud button:disabled{opacity:.25;cursor:default}
+.sort-ud button:not(:disabled):active{background:var(--sunk)}
+.sort-row.dragging{z-index:3;transition:none;box-shadow:0 10px 24px rgba(63,49,39,.22),0 0 0 2px var(--ol);border-radius:16px;border-top-color:transparent}
+.sort-row.dragging .drag-h{cursor:grabbing;background:var(--butter)}
+.sort-row.saved{animation:sortflash .6s ease}
+@keyframes sortflash{from{background:var(--butter-soft)}to{background:var(--card)}}
+@media (prefers-reduced-motion:reduce){.sort-row{transition:none}.sort-row.saved{animation:none}}
 </style>
 </head>
 <body>
@@ -1215,6 +1238,7 @@ const PACK=[
  ["k22","摺疊傘","","etc"],["k23","零錢包","日本硬幣多，分開放比較好找","etc"],["k24","環保購物袋","超商、藥妝店購物袋要收費","etc"],["k25","摺疊行李袋","回程裝伴手禮","etc"]];
 const DEFAULT_ITEMS=[...PREP.map((r,i)=>({id:r[0],group:"prep",title:r[1],note:r[2],due:r[3]||"",links:r[4]||null,order:i})),...BUY.map((r,i)=>({id:r[0],group:"buy",title:r[1],note:r[2],due:"",links:null,order:100+i})),...PACK.map((r,i)=>({id:r[0],group:"pack",cat:r[3],title:r[1],note:r[2],due:"",links:null,order:200+i}))];
 const PCATS=[["doc","證件與錢"],["elec","電子用品"],["wear","衣物"],["wash","盥洗保養"],["med","藥品"],["etc","其他"]];
+const SORTABLE=["prep"];let sortGroup=null;
 const itemsOf=g=>items.filter(x=>x.group===g).sort((a,b)=>(a.order??0)-(b.order??0));
 /* 待辦期限：存成「11/15 07:05」；11/17 以前用台灣時間，旅程中（11/17 起）用日本時間 */
 function dueParts(v){const m=String(v||"").match(/^(\d{1,2})\/(\d{1,2})(?:\s+(\d{1,2}):(\d{2}))?$/);return m?{mo:+m[1],da:+m[2],h:m[3]!=null?+m[3]:null,mi:m[4]!=null?+m[4]:null}:null}
@@ -1789,8 +1813,12 @@ function packPageHTML(){
  </div>`;
 }
 function groupHTML(title,g){
- const rows=itemsOf(g),n=rows.filter(r=>done[r.id]).length;
- return `<div class="group" data-group-id="${g}"><h3>${title}<span class="prog">${n} / ${rows.length}</span></h3>
+ const rows=itemsOf(g),n=rows.filter(r=>done[r.id]).length,can=SORTABLE.includes(g)&&canWrite&&rows.length>1,on=sortGroup===g;
+ if(on)return `<div class="group sorting" data-group-id="${g}"><h3>${title}<span class="h-r"><button type="button" class="sort-btn on" data-sort-toggle="${g}">完成</button></span></h3>
+  <p class="sort-hint">按住右邊的 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 8h14M5 12h14M5 16h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg> 上下拖，排好按「完成」</p>
+  <div class="sort-list">${rows.map((r,i)=>`<div class="chk-row sort-row" data-sort-id="${esc(r.id)}"><div class="chk"><span class="sort-n">${i+1}</span><div class="txt"><b>${esc(r.title)}</b>${r.note||r.due?`<small>${[r.note,r.due&&("期限 "+r.due)].filter(Boolean).map(esc).join("・")}</small>`:""}</div></div><span class="drag-h" aria-label="拖曳 ${esc(r.title)}" role="button" tabindex="0"><svg viewBox="0 0 24 24"><path d="M5 8h14M5 12h14M5 16h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span><span class="sort-ud"><button type="button" data-sort-up="${esc(r.id)}" aria-label="上移 ${esc(r.title)}"${i===0?" disabled":""}>▲</button><button type="button" data-sort-down="${esc(r.id)}" aria-label="下移 ${esc(r.title)}"${i===rows.length-1?" disabled":""}>▼</button></span></div>`).join("")}</div>
+ </div>`;
+ return `<div class="group" data-group-id="${g}"><h3>${title}<span class="h-r">${can?`<button type="button" class="sort-btn" data-sort-toggle="${g}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16M8 4L4.5 7.5M8 4l3.5 3.5M16 20V4M16 20l-3.5-3.5M16 20l3.5-3.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>排序</button>`:""}<span class="prog">${n} / ${rows.length}</span></span></h3>
   ${rows.map(r=>editItem===r.id?`<div class="chk editing">${itemForm(g,r)}</div>`:`<div class="chk-row"><label class="chk" for="c-${esc(r.id)}"><input type="checkbox" id="c-${esc(r.id)}"${done[r.id]?" checked":""}${canWrite?"":" disabled"}><div class="txt"><b>${esc(r.title)}</b>${g==="buy"?buyInfoHTML(r):r.note?`<small>${esc(r.note)}</small>`:""}${r.links?`<div class="acts">${r.links.map(l=>ext(l[0],l[1])).join("")}</div>`:""}</div>${r.due?`<span class="due">${esc(r.due)}</span>`:""}</label>${canWrite?`<button class="edit-btn" type="button" data-item-edit="${esc(r.id)}" aria-label="編輯 ${esc(r.title)}"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg></button>`:""}</div>`).join("")}
   ${editItem==="new:"+g?`<div class="chk editing">${itemForm(g,null)}</div>`:(canWrite?`<button class="add-btn" type="button" data-item-new="${g}"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>新增一項</button>`:"")}
  </div>`;
@@ -2267,6 +2295,40 @@ function undoSnack(label,restore){
  v.querySelector("button").addEventListener("click",async()=>{done();try{await restore()}catch(_){}});
  document.body.appendChild(v);undoEl=v;undoTimer=setTimeout(done,5000);
 }
+
+/* ===== 待辦自訂排序：拖曳把手或 ▲▼，存成 order（雲端同步） ===== */
+async function applyOrder(g,ids,movedId){
+ const list=itemsOf(g),byId=Object.fromEntries(list.map(x=>[x.id,x]));const changed=[];
+ ids.forEach((id,i)=>{const it=byId[id];if(it&&it.order!==i+1){it.order=i+1;changed.push(it)}});
+ store.set("items",items);render(true);
+ if(movedId){const el=document.querySelector(`[data-sort-id="${CSS.escape(movedId)}"]`);if(el){el.classList.add("saved");el.scrollIntoView({block:"nearest"})}}
+ for(const it of changed)await saveItem({...it});
+}
+function moveBy(id,d){const g=sortGroup,ids=itemsOf(g).map(x=>x.id),i=ids.indexOf(id),j=i+d;if(i<0||j<0||j>=ids.length)return;ids.splice(j,0,ids.splice(i,1)[0]);applyOrder(g,ids,id)}
+document.addEventListener("click",e=>{
+ const t=e.target.closest("[data-sort-toggle]");if(t){const g=t.dataset.sortToggle;sortGroup=sortGroup===g?null:g;editItem=null;render(true);const el=document.querySelector(`[data-group-id="${g}"]`);if(el)el.scrollIntoView({block:"nearest"});return}
+ const u=e.target.closest("[data-sort-up]");if(u){moveBy(u.dataset.sortUp,-1);return}
+ const dn=e.target.closest("[data-sort-down]");if(dn){moveBy(dn.dataset.sortDown,1);return}
+});
+document.addEventListener("pointerdown",e=>{
+ const h=e.target.closest(".drag-h");if(!h||!sortGroup)return;
+ const row=h.closest(".sort-row"),list=row.parentElement,rows=[...list.children],from=rows.indexOf(row);
+ const rects=rows.map(r=>r.getBoundingClientRect()),H=rects[from].height,y0=e.clientY;let to=from;
+ e.preventDefault();try{h.setPointerCapture(e.pointerId)}catch(_){}
+ row.classList.add("dragging");
+ const move=ev=>{
+  const dy=ev.clientY-y0;row.style.transform=`translateY(${dy}px)`;
+  const top=rects[from].top+dy,bot=top+H;to=from;
+  rects.forEach((r,i)=>{if(i<from&&top<r.top+r.height/2)to=Math.min(to,i);if(i>from&&bot>r.top+r.height/2)to=Math.max(to,i)});
+  rows.forEach((r,i)=>{if(r===row)return;let sh=0;if(from<to&&i>from&&i<=to)sh=-H;if(from>to&&i>=to&&i<from)sh=H;r.style.transform=sh?`translateY(${sh}px)`:""});
+ };
+ const up=()=>{
+  h.removeEventListener("pointermove",move);h.removeEventListener("pointerup",up);h.removeEventListener("pointercancel",up);
+  rows.forEach(r=>{r.style.transform=""});row.classList.remove("dragging");
+  if(to!==from){const ids=rows.map(r=>r.dataset.sortId);ids.splice(to,0,ids.splice(from,1)[0]);applyOrder(sortGroup,ids,row.dataset.sortId)}
+ };
+ h.addEventListener("pointermove",move);h.addEventListener("pointerup",up);h.addEventListener("pointercancel",up);
+});
 </script>
 </body>
 </html>
