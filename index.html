@@ -1039,61 +1039,100 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .st-tap{position:absolute;z-index:2;top:0;bottom:0;width:34%;border:0;background:none;padding:0;cursor:pointer}
 .st-tap.prev{left:0}.st-tap.next{right:0;width:66%}
 .st-page .st-act{position:relative;z-index:3}
-/* 1 開場 */
-.pg-open{background:radial-gradient(circle at 50% 38%,#FCEFC6 0 40%,#F6D58A 100%)}
-.pg-open .op-cats{width:220px;height:133px}
-.pg-open h2{font-size:30px}
-.pg-open .op-n{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.pg-open .op-n span{padding:6px 14px;border:2.5px solid var(--ol);border-radius:999px;background:var(--card);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:17px}
-.stamp-date{display:inline-block;padding:4px 12px;border:2.5px dashed var(--coral-ink);border-radius:10px;color:var(--coral-ink);font-family:var(--f-display);font-weight:900;font-size:15px;transform:rotate(-6deg)}
-/* 2 集章冊 */
-.pg-stamp{background:#F3EBDD;background-image:radial-gradient(#E3D6C4 1.2px,transparent 1.3px);background-size:18px 18px}
-.stamps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px 10px;width:100%;max-width:360px}
-.stamp{display:flex;flex-direction:column;align-items:center;gap:4px}
-.stamp .sc{width:100%;aspect-ratio:1;border-radius:50%;padding:4px;border:3px dashed var(--coral-ink);background:var(--card);opacity:0;transform:scale(1.6) rotate(var(--r));transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s}
-.stamp .sc>svg{width:100%;height:100%;border-radius:50%;display:block}
-.stamp small{font-family:var(--f-display);font-weight:900;font-size:11.5px;color:var(--brown)}
+/* 紙本物件共用 */
+.st-page{justify-content:safe center;overflow-y:auto;overscroll-behavior:contain}
+.tape{position:absolute;width:86px;height:24px;background:rgba(246,213,138,.78);box-shadow:0 1px 2px rgba(63,49,39,.15);z-index:2}
+.tape.mint{background:rgba(124,200,180,.7)}.tape.coral{background:rgba(238,148,121,.62)}
+.st-cap{font-size:13.5px;color:var(--muted);margin:0}
+/* 1 登機證 */
+.pg-open{background:#F6D58A;background-image:radial-gradient(rgba(255,255,255,.55) 1.5px,transparent 1.6px);background-size:16px 16px}
+.bpass{position:relative;display:flex;width:100%;max-width:360px;background:#FFFDF8;border:2.5px solid var(--ol);border-radius:20px;box-shadow:0 5px 0 var(--ol);transform:rotate(-2deg);text-align:left}
+.bp-main{flex:1;padding:16px 14px 14px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.bp-top{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--muted);font-weight:700}
+.bp-top b{font-family:var(--f-display);font-weight:900;color:var(--accent);font-size:14px}
+.bp-route{display:flex;align-items:center;gap:8px}
+.bp-route span{display:flex;flex-direction:column;line-height:1.05}
+.bp-route b{font-family:var(--f-display);font-weight:900;font-size:32px}
+.bp-route small{font-size:12.5px;color:var(--muted);font-weight:700}
+.bp-route svg{flex:1;height:22px;min-width:24px}
+.bp-meta{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;gap:6px;border-top:2px dashed var(--line);padding-top:9px}
+.bp-meta div{display:flex;flex-direction:column;line-height:1.3}
+.bp-meta small{font-size:11px;color:var(--muted);font-weight:700}
+.bp-meta b{font-family:var(--f-display);font-weight:900;font-size:15px}
+.bp-stub{position:relative;width:88px;flex:none;border-left:2.5px dashed var(--ol);background:var(--butter-soft);border-radius:0 18px 18px 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:10px 6px;overflow:hidden}
+.bp-stub::before,.bp-stub::after{content:"";position:absolute;left:-12px;width:20px;height:20px;border-radius:50%;background:#F6D58A;border:2.5px solid var(--ol)}
+.bp-stub::before{top:-12px}.bp-stub::after{bottom:-12px}
+.bp-stub svg{width:80px;height:48px}
+.bp-stub small{font-family:var(--f-display);font-weight:900;font-size:12px;color:var(--brown)}
+.pg-open h2{font-size:28px;margin-top:6px}
+/* 2 護照入境章 */
+.pg-stamp{background:#F3EBDD;background-image:repeating-radial-gradient(circle at 50% 120%,transparent 0 14px,rgba(148,102,69,.07) 14px 15px)}
+.pp-head{display:flex;justify-content:space-between;width:100%;max-width:360px;font-family:var(--f-display);font-weight:900;font-size:14px;color:var(--brown);border-bottom:2px solid var(--line-strong);padding-bottom:6px}
+.stamps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px 10px;width:100%;max-width:360px}
+.stamp{display:flex;justify-content:center}
+.stamp .sc{position:relative;width:100%;aspect-ratio:1;padding:5px;border:3px solid var(--ink-c);color:var(--ink-c);border-radius:50%;background:rgba(255,255,255,.55);opacity:0;transform:scale(1.7) rotate(var(--r));transition:transform .35s cubic-bezier(.3,1.6,.5,1),opacity .2s;mix-blend-mode:multiply}
+.stamp.sq .sc{border-radius:12px;border-style:double;border-width:5px}
+.stamp .sc>svg{width:100%;height:100%;display:block;border-radius:inherit;opacity:.88}
+.stamp .sc small{position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);background:#F3EBDD;padding:0 5px;font-family:var(--f-display);font-weight:900;font-size:11px;white-space:nowrap}
 .pg-stamp.on .stamp .sc{opacity:1;transform:scale(1) rotate(var(--r));transition-delay:var(--d)}
-/* 3 心情曲線 */
-.pg-mood{background:linear-gradient(180deg,#EBE2F6,#FDE6DC)}
-.curve{position:relative;width:100%;max-width:380px;aspect-ratio:16/10;background:var(--card);border:2.5px solid var(--ol);border-radius:22px;box-shadow:0 4px 0 var(--ol);padding:14px 12px 26px}
-.curve svg.ln{position:absolute;inset:26px 26px 36px;width:calc(100% - 52px);height:calc(100% - 62px);overflow:visible}
+.big-stamp{display:inline-flex;flex-direction:column;align-items:center;padding:10px 22px;border:4px double var(--coral-ink);border-radius:14px;color:var(--coral-ink);transform:rotate(-7deg) scale(1.5);opacity:0;transition:transform .35s cubic-bezier(.3,1.6,.5,1) 1.1s,opacity .2s 1.1s;mix-blend-mode:multiply}
+.pg-stamp.on .big-stamp{transform:rotate(-7deg);opacity:1}
+.big-stamp b{font-family:var(--f-display);font-weight:900;font-size:46px;line-height:1}
+.big-stamp b small{font-size:18px;margin-left:3px}
+.big-stamp span{font-weight:900;font-size:13px;letter-spacing:.06em}
+/* 3 方格筆記本 */
+.pg-mood{background:#EBE2F6}
+.note{position:relative;width:100%;max-width:370px;padding:22px 16px 16px;background:#FFFDF8;background-image:linear-gradient(rgba(148,102,69,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(148,102,69,.12) 1px,transparent 1px);background-size:16px 16px;border-radius:6px;box-shadow:0 8px 20px rgba(63,49,39,.18),0 0 0 2px var(--ol);transform:rotate(1.5deg);display:flex;flex-direction:column;gap:10px}
+.note .tape{top:-10px}.note .tape.l{left:-14px;transform:rotate(-32deg)}.note .tape.r{right:-14px;transform:rotate(30deg)}
+.note h2{font-size:22px;text-align:left}
+.curve{position:relative;width:100%;aspect-ratio:16/10}
+.curve svg.ln{position:absolute;inset:18px 18px 26px;width:calc(100% - 36px);height:calc(100% - 44px);overflow:visible}
 .curve svg.ln path{fill:none;stroke-width:3.5;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity .6s ease .2s}
 .pg-mood.on .curve svg.ln path{opacity:1}
 .curve .pt{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;box-shadow:0 0 0 3px var(--pc);background:var(--card);opacity:0;transform:scale(.4);transition:opacity .2s,transform .3s cubic-bezier(.3,1.6,.5,1)}
 .curve .pt .face{width:30px;height:30px;display:block}
 .pg-mood.on .curve .pt{opacity:1;transform:none;transition-delay:var(--d)}
-.curve .dx{position:absolute;bottom:6px;font-size:11px;font-weight:700;color:var(--muted);transform:translateX(-50%)}
-.mood-leg{display:flex;gap:16px;justify-content:center;font-size:13.5px;font-weight:700}
-.mood-leg span{display:inline-flex;align-items:center;gap:6px}
-.mood-leg i{width:18px;height:4px;border-radius:2px}
+.curve .dx{position:absolute;bottom:2px;font-size:11px;font-weight:700;color:var(--muted);transform:translateX(-50%)}
+.mood-leg{display:flex;gap:10px;justify-content:flex-start}
+.mood-leg span{display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 4px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 2px var(--pc);font-size:13px;font-weight:700}
+.mood-leg svg{width:24px;height:20px}
 /* 4 拍立得 */
-.pg-best{background:linear-gradient(180deg,#DDF0E2,#FCEFC6)}
-.polaroid{width:min(250px,70vw);padding:12px 12px 14px;background:#fff;border-radius:6px;box-shadow:0 10px 26px rgba(63,49,39,.25),0 0 0 2px var(--ol);transform:rotate(-4deg)}
-.polaroid svg{width:100%;aspect-ratio:1;display:block;border-radius:3px}
-.polaroid b{display:block;margin-top:10px;font-family:var(--f-display);font-weight:900;font-size:17px}
+.pg-best{background:#DDF0E2;background-image:radial-gradient(rgba(255,255,255,.6) 2px,transparent 2.1px);background-size:22px 22px}
+.pol-wrap{position:relative}
+.polaroid{position:relative;width:min(250px,68vw);padding:12px 12px 14px;background:#fff;border-radius:4px;box-shadow:0 12px 26px rgba(63,49,39,.25),0 0 0 2px var(--ol);transform:rotate(-4deg)}
+.polaroid .tape{top:-12px;left:50%;margin-left:-43px;transform:rotate(3deg)}
+.polaroid>svg{width:100%;aspect-ratio:1;display:block;border-radius:2px}
+.polaroid b{display:block;margin-top:10px;font-family:var(--f-display);font-weight:900;font-size:18px}
 .polaroid small{font-size:12.5px;color:var(--muted)}
+.doodle{position:absolute;pointer-events:none}
+.doodle.d1{left:-34px;top:20px;width:34px}.doodle.d2{right:-30px;top:-6px;width:30px}.doodle.d3{right:-24px;bottom:30px;width:28px}
 .bubbles{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px}
 .bub{display:flex;align-items:flex-end;gap:8px;text-align:left}
 .bub.r{flex-direction:row-reverse;text-align:right}
 .bub>svg{width:46px;height:38px;flex:none}
-.bub span{position:relative;padding:9px 13px;background:var(--card);border:2.5px solid var(--ol);border-radius:16px;font-size:14.5px;font-weight:700;line-height:1.45}
-/* 5 對戰卡 */
-.pg-vs{background:linear-gradient(135deg,#3F3127 0 50%,#FCEFC6 50% 100%)}
-.pg-vs .st-k{color:#F6D58A;background:#3F3127;padding:4px 12px;border-radius:999px}
-.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:6px;width:100%;max-width:380px}
-.vs-p{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px;background:var(--card);border:2.5px solid var(--ol);border-radius:22px;box-shadow:0 4px 0 var(--ol)}
-.vs-p>svg{width:64px;height:75px}
-.vs-p b{font-family:var(--f-display);font-weight:900;font-size:18px}
-.vs-row{display:flex;flex-direction:column;line-height:1.25}
-.vs-row small{font-size:11.5px;color:var(--muted);font-weight:700}
-.vs-row em{font-style:normal;font-family:var(--f-display);font-weight:900;font-size:19px;font-variant-numeric:tabular-nums}
-.vs-mid{width:46px;height:46px;border-radius:50%;background:var(--coral-ink);color:#fff;display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:17px;border:3px solid #fff;box-shadow:0 0 0 2.5px var(--ol)}
+.bub span{position:relative;padding:9px 13px;background:var(--card);border:2.5px solid var(--ol);border-radius:16px 16px 16px 4px;font-size:14.5px;font-weight:700;line-height:1.45}
+.bub.r span{border-radius:16px 16px 4px 16px}
+/* 5 角色卡 */
+.pg-vs{background:#3F3127;background-image:repeating-linear-gradient(-45deg,rgba(255,255,255,.04) 0 14px,transparent 14px 28px);color:#fff}
+.pg-vs h2{color:#F6D58A}
+.vs{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:370px}
+.vs-p{display:flex;flex-direction:column;align-items:stretch;background:#FFFDF8;border:3px solid #fff;border-radius:18px;box-shadow:0 0 0 2.5px var(--ol),0 6px 0 rgba(0,0,0,.35);overflow:hidden;color:var(--ink);transform:rotate(var(--r))}
+.vs-p .vh{background:var(--pc);color:#fff;font-family:var(--f-display);font-weight:900;font-size:17px;padding:6px 0;text-align:center}
+.vs-p .vp{margin:10px auto 4px;width:76px;height:76px;border-radius:50%;background:var(--butter-soft);box-shadow:inset 0 0 0 2.5px var(--ol);display:grid;place-items:center}
+.vs-p .vp svg{width:58px;height:68px;margin-top:4px}
+.vs-row{display:flex;justify-content:space-between;align-items:baseline;gap:4px;padding:5px 12px;border-top:2px dashed var(--line);font-size:12px;color:var(--muted);font-weight:700}
+.vs-row em{font-style:normal;font-family:var(--f-display);font-weight:900;font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+.vs-mid{position:absolute;left:50%;top:44%;width:66px;height:66px;margin:-33px 0 0 -33px;z-index:2}
+.vs-bar{width:100%;max-width:370px;display:flex;flex-direction:column;gap:6px}
+.vs-bar .bt{display:flex;justify-content:space-between;font-size:12.5px;font-weight:700;color:#F6D58A}
+.vs-bar .bb{display:flex;height:14px;border-radius:8px;overflow:hidden;box-shadow:0 0 0 2px #fff}
+.vs-bar .bb i{display:block;height:100%}
 /* 6 收據 */
-.pg-rcpt{background:#E7DCCB}
-.rcpt-wrap{width:100%;max-width:330px;overflow:hidden}
-.rcpt{background:#FFFDF8;padding:22px 20px 26px;text-align:left;font-variant-numeric:tabular-nums;-webkit-mask:conic-gradient(from -45deg at bottom,transparent 90deg,#000 0) bottom/16px 12px repeat-x,linear-gradient(#000,#000) top/100% calc(100% - 11px) no-repeat;mask:conic-gradient(from -45deg at bottom,transparent 90deg,#000 0) bottom/16px 12px repeat-x,linear-gradient(#000,#000) top/100% calc(100% - 11px) no-repeat;transform:translateY(-100%);transition:transform 1s cubic-bezier(.3,.8,.4,1) .15s;box-shadow:0 6px 18px rgba(63,49,39,.18)}
+.pg-rcpt{background:#E7DCCB;background-image:linear-gradient(90deg,rgba(148,102,69,.06) 50%,transparent 50%);background-size:28px 28px}
+.rcpt-wrap{position:relative;width:100%;max-width:330px;overflow:hidden;padding-bottom:6px}
+.rcpt{position:relative;background:#FFFDF8;padding:22px 20px 22px;text-align:left;font-variant-numeric:tabular-nums;transform:translateY(-100%);transition:transform 1s cubic-bezier(.3,.8,.4,1) .15s;box-shadow:0 6px 18px rgba(63,49,39,.18)}
 .pg-rcpt.on .rcpt{transform:none}
+.rcpt::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:10px;background:conic-gradient(from 135deg at 50% 0,#FFFDF8 90deg,transparent 0) 0 0/16px 10px repeat-x}
 .rcpt h3{margin:0;text-align:center;font-size:17px;letter-spacing:.08em}
 .rcpt .rc-sub{text-align:center;font-size:12px;color:var(--muted);margin:2px 0 12px}
 .rcpt .rl{display:flex;align-items:baseline;gap:6px;font-size:14.5px;padding:4px 0}
@@ -1105,24 +1144,45 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .rcpt .tot span{font-weight:900}
 .rcpt .rc-tw{text-align:right;font-size:12.5px;color:var(--muted)}
 .rcpt .rc-settle{margin-top:10px;text-align:center;font-size:13.5px;font-weight:700}
-.rcpt .rc-thx{margin-top:14px;text-align:center;font-family:var(--f-display);font-weight:900;font-size:12px;letter-spacing:.2em;color:var(--muted)}
-/* 7 總結 */
-.pg-sum{background:radial-gradient(circle at 50% 30%,#FFF9EA,#F6D58A)}
-.sum-card{width:100%;max-width:340px;padding:18px 16px;background:var(--card);border:2.5px solid var(--ol);border-radius:26px;box-shadow:0 5px 0 var(--ol);display:flex;flex-direction:column;gap:12px}
-.sum-card .sc-h{display:flex;align-items:center;gap:10px;text-align:left}
-.sum-card .sc-h svg{width:70px;height:42px;flex:none}
-.sum-card .sc-h b{font-family:var(--f-display);font-weight:900;font-size:19px;display:block}
-.sum-card .sc-h small{font-size:12.5px;color:var(--muted)}
-.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.sum-grid div{background:var(--paper);border-radius:14px;padding:9px 8px;display:flex;flex-direction:column;gap:1px}
-.sum-grid small{font-size:11.5px;color:var(--muted);font-weight:700}
-.sum-grid b{font-family:var(--f-display);font-weight:900;font-size:19px;font-variant-numeric:tabular-nums}
-.sum-acts{display:flex;gap:10px;width:100%;max-width:340px}
+.rcpt .rc-thx{margin-top:18px;min-height:66px;display:flex;align-items:center;text-align:left;font-family:var(--f-display);font-weight:900;font-size:12px;letter-spacing:.2em;color:var(--muted)}
+.paid{position:absolute;right:16px;bottom:16px;width:78px;height:78px;border:3.5px solid var(--coral-ink);border-radius:50%;color:var(--coral-ink);display:flex;flex-direction:column;align-items:center;justify-content:center;transform:rotate(-14deg) scale(1.6);opacity:0;transition:transform .3s cubic-bezier(.3,1.6,.5,1) 1.2s,opacity .2s 1.2s;mix-blend-mode:multiply}
+.paid svg{width:30px;height:30px}
+.paid b{font-family:var(--f-display);font-weight:900;font-size:15px}
+.pg-rcpt.on .paid{transform:rotate(-14deg);opacity:.9}
+/* 7 旅行檔案卡 */
+.pg-sum{background:#FCEFC6;background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.5) 0 26px,transparent 26px 52px);justify-content:safe center}
+.dossier{position:relative;width:100%;max-width:360px;margin-top:6px}
+.dossier::before{content:"";position:absolute;inset:6px -6px -8px 8px;background:#F8DCC6;border:2.5px solid var(--ol);border-radius:22px;transform:rotate(2.5deg)}
+.ds-card{position:relative;background:#FFF6E6;border:2.5px solid var(--ol);border-radius:22px;box-shadow:0 5px 0 var(--ol);padding:14px;display:flex;flex-direction:column;gap:12px;text-align:left}
+.ds-clip{position:absolute;right:22px;top:-22px;width:30px;height:62px;z-index:3}
+.ds-top{display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:start}
+.ds-photo{width:104px;height:104px;border-radius:14px;border:2.5px solid var(--ol);background:linear-gradient(160deg,#EE9479,#F6D58A);overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+.ds-photo svg{width:112px;height:68px;margin-bottom:-2px}
+.ds-name{background:#FFFDF8;border:2px solid var(--line-strong);border-radius:14px;padding:8px 10px;text-align:center}
+.ds-name small{display:block;font-size:12px;font-weight:700;color:var(--brown)}
+.ds-name b{display:block;font-family:var(--f-display);font-weight:900;font-size:21px;line-height:1.25;color:var(--accent-deep)}
+.ds-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;align-items:center}
+.ds-tags>small{font-size:12px;font-weight:900;color:var(--brown);margin-right:2px}
+.ds-tags span{padding:3px 9px;border-radius:999px;background:#F8DCC6;font-size:12px;font-weight:900;color:var(--accent-deep)}
+.ds-sec{background:#FFFDF8;border:2px solid var(--line-strong);border-radius:14px;overflow:hidden}
+.ds-sec h3{margin:0;padding:6px 12px;background:#F8E3BE;font-size:13.5px;color:var(--brown)}
+.ds-sec ul{list-style:none;margin:0;padding:2px 12px}
+.ds-sec li{display:flex;align-items:center;gap:9px;padding:7px 0;border-top:1.5px dashed var(--line);font-size:14px;line-height:1.35}
+.ds-sec li:first-child{border-top:0}
+.ds-sec li svg{width:14px;height:14px;flex:none}
+.ds-says{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ds-say{position:relative;background:#FFFDF8;border:2px solid var(--line-strong);border-radius:14px;overflow:visible;min-width:0}
+.ds-say h4{margin:0;padding:5px 10px;background:#F8E3BE;border-radius:12px 12px 0 0;font-size:12.5px;color:var(--brown)}
+.ds-say p{margin:0;padding:8px 32px 10px 10px;font-size:13px;line-height:1.45;font-weight:700;color:var(--ink);min-height:3em}
+.ds-say .av{position:absolute;right:-6px;top:-16px;width:44px;height:37px}
+.ds-say .mf{position:absolute;right:6px;bottom:6px;width:24px;height:24px}
+.ds-say .mf .face{width:24px;height:24px}
+.sum-acts{display:flex;gap:10px;width:100%;max-width:360px}
 .sum-acts button{flex:1;height:48px;border:0;border-radius:15px;font:inherit;font-family:var(--f-display);font-weight:900;font-size:15px;cursor:pointer}
 .sum-acts .save{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep)}
 .sum-acts .again{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line-strong)}
 .st-msg{font-size:13px;color:var(--brown);font-weight:700;min-height:1em}
-@media (prefers-reduced-motion:reduce){.st-page,.stamp .sc,.curve .pt,.rcpt,.curve svg.ln path{transition:none!important}.stamp .sc,.curve .pt{opacity:1;transform:rotate(var(--r,0deg))}.rcpt{transform:none}.curve svg.ln path{opacity:1}}
+@media (prefers-reduced-motion:reduce){.st-page,.stamp .sc,.curve .pt,.rcpt,.curve svg.ln path,.big-stamp,.paid{transition:none!important}.stamp .sc{opacity:1;transform:rotate(var(--r))}.curve .pt{opacity:1;transform:none}.rcpt{transform:none}.curve svg.ln path{opacity:1}.big-stamp{opacity:1;transform:rotate(-7deg)}.paid{opacity:.9;transform:rotate(-14deg)}}
 </style>
 </head>
 <body>
@@ -2571,26 +2631,45 @@ function rvCount(el,to,fmt){
  if(!el)return;if(reduce()){el.textContent=fmt(to);return}
  const t0=performance.now(),dur=900;const f=t=>{const k=Math.min(1,(t-t0)/dur),v=Math.round(to*(1-Math.pow(1-k,3)));el.textContent=fmt(v);if(k<1&&el.isConnected)requestAnimationFrame(f)};requestAnimationFrame(f);
 }
+const TITLE_OF={food:"吃貨二人組",shop:"購物二人組",ticket:"玩樂二人組",move:"移動二人組",stay:"旅宿二人組",etc:"旅行二人組"};
+const DIAMOND=`<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M7 1l5.5 6L7 13 1.5 7z" fill="#E9A15F" stroke="#946645" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const CLIP=`<svg class="ds-clip" viewBox="0 0 30 62" aria-hidden="true"><path d="M9 20V9a6 6 0 0 1 12 0v36a9 9 0 0 1-18 0V14" fill="none" stroke="#C7843F" stroke-width="3.4" stroke-linecap="round"/></svg>`;
+function rvProfile(D){
+ const top=D.cats[0],nCard=expenses.filter(e=>e.pay==="card").length,nCash=expenses.filter(e=>e.pay==="cash").length;
+ const title="名古屋"+(top?TITLE_OF[top[0][0]]||"旅行二人組":"旅行二人組");
+ const sub=D.best?`${D.best.x.place}最開心的`:`8 天走了 ${D.pids} 個地方的`;
+ const tags=[`${D.pids} 個地方`,top&&`${top[0][1]}最多`,expenses.length&&(nCard>nCash*1.5?"刷卡派":nCash>nCard*1.5?"現金派":"現金刷卡都來"),D.nMood&&`心情 ${D.nMood} 則`].filter(Boolean);
+ const rec=[`去了 ${D.pids} 個地方，蓋滿 8 個章`,D.best&&`最開心：${D.best.x.d} ${D.best.x.place}`,D.total&&`總共花了 ${yen(D.total)}（約 NT$ ${Math.round(D.total*rate).toLocaleString("en-US")}）`,top&&`花最多的是${top[0][1]} ${yen(top[1])}`,D.nMood&&`兩個人寫了 ${D.nMood} 則心情`,D.total&&D.settle].filter(Boolean);
+ const says=PEOPLE.map(p=>{let bv=null;DAYS.forEach(x=>{const v=moods[mk(x.d,p[0])];if(v&&(!bv||v.score>=bv.score))bv=v});return{id:p[0],name:p[1],head:p[0]==="zhang"?"b":"w",v:bv,text:bv?(bv.note||MOODS[bv.score-1][1]):"這趟沒有留下心情"}});
+ return{title,sub,tags,rec,says};
+}
 function rvPages(D){
- const pages=[];const face=n=>moodFace(n);
- pages.push({cls:"pg-open",html:`<span class="stamp-date">2026.11.17 – 11.24</span><svg class="op-cats" viewBox="0 0 132 80" aria-hidden="true"><use href="#cats-walk"/></svg><h2>我們的名古屋</h2><div class="op-n"><span>8 天</span><span>2 隻貓</span><span>1 趟旅行</span></div><p>點右邊看下一頁</p>`});
- pages.push({cls:"pg-stamp",html:`<span class="st-k">STAMP BOOK</span><div class="stamps">${DAYS.map((x,i)=>`<div class="stamp" style="--d:${i*.12}s;--r:${[-8,6,-4,9,-6,4,-10,7][i]}deg"><span class="sc"><svg viewBox="2 2 116 116" aria-hidden="true">${svgTile(x.art).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg></span><small>${x.d}</small></div>`).join("")}</div><div><div class="st-big"><span data-count="${D.pids}">0</span><small>個地方</small></div><p>8 天蓋滿 8 個章</p></div>`,count:true});
+ const pages=[];const tile=x=>`<svg viewBox="2 2 116 116" aria-hidden="true">${svgTile(x.art).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg>`;
+ pages.push({cls:"pg-open",html:`<div class="bpass"><div class="bp-main"><div class="bp-top"><span>登機證</span><b>JX 320</b></div><div class="bp-route"><span><b>TXG</b><small>台中</small></span><svg viewBox="0 0 120 26" aria-hidden="true"><path d="M4 18 Q60 -4 110 16" fill="none" stroke="#946645" stroke-width="2.4" stroke-dasharray="3 6" stroke-linecap="round"/><path d="M96 9l14 7-15 4 4-5z" fill="#946645"/></svg><span><b>NGO</b><small>名古屋</small></span></div><div class="bp-meta"><div><small>乘客</small><b>阿彰・星星</b></div><div><small>日期</small><b>11/17–11/24</b></div><div><small>天數</small><b>8 天</b></div></div></div><div class="bp-stub"><svg viewBox="0 0 132 80" aria-hidden="true"><use href="#cats-hi"/></svg><small>NGO</small></div></div><h2>我們的名古屋</h2><p class="st-cap">點右邊看下一頁</p>`});
+ const inks=["#A64A2E","#6B4730","#24695A","#A64A2E","#6B4730","#24695A","#A64A2E","#6B4730"];
+ pages.push({cls:"pg-stamp",html:`<div class="pp-head"><span>入境紀錄</span><span>名古屋・愛知</span></div><div class="stamps">${DAYS.map((x,i)=>`<div class="stamp${i%3===1?" sq":""}" style="--d:${i*.12}s;--r:${[-8,6,-4,9,-6,4,-10,7][i]}deg;--ink-c:${inks[i]}"><span class="sc">${tile(x)}<small>${x.d}</small></span></div>`).join("")}</div><div class="big-stamp"><b><span data-count="${D.pids}">0</span><small>個地方</small></b><span>8 天・全部入境</span></div>`,count:true});
  if(D.nMood){
   const W=100,H=100,xs=i=>i/(DAYS.length-1)*W,ys=n=>H-(n-1)/4*H;
-  const lines=PEOPLE.map(p=>{const pts=DAYS.map((x,i)=>{const v=moods[mk(x.d,p[0])];return v?[xs(i),ys(v.score),v.score,i]:null}).filter(Boolean);return{p,pts}});
+  const lines=PEOPLE.map(p=>({p,pts:DAYS.map((x,i)=>{const v=moods[mk(x.d,p[0])];return v?[xs(i),ys(v.score),v.score,i]:null}).filter(Boolean)}));
   const path=pts=>pts.map((q,j)=>(j?"L":"M")+q[0].toFixed(2)+" "+q[1].toFixed(2)).join(" ");
-  pages.push({cls:"pg-mood",html:`<span class="st-k">MOOD</span><h2>心情曲線</h2><div class="curve"><svg class="ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines.map(l=>l.pts.length>1?`<path d="${path(l.pts)}" stroke="${RV_PEOPLE_COLOR[l.p[0]]}" vector-effect="non-scaling-stroke"/>`:"").join("")}</svg>${lines.map((l,li)=>l.pts.map(q=>{const other=lines[1-li]&&lines[1-li].pts.find(z=>z[3]===q[3]&&z[2]===q[2]),off=other?(li?9:-9):0;return `<span class="pt" style="left:calc(26px + (100% - 52px) * ${q[0]/100} + ${off}px);top:calc(26px + (100% - 62px) * ${q[1]/100});--d:${.25+q[3]*.12}s;--pc:${RV_PEOPLE_COLOR[l.p[0]]}">${face(q[2])}</span>`}).join("")).join("")}${DAYS.map((x,i)=>`<span class="dx" style="left:calc(26px + (100% - 52px) * ${i/(DAYS.length-1)})">${x.d.split("/")[1]}</span>`).join("")}</div><div class="mood-leg">${PEOPLE.map(p=>`<span><i style="background:${RV_PEOPLE_COLOR[p[0]]}"></i>${p[1]}</span>`).join("")}</div><p>兩個人一共寫了 <b>${D.nMood}</b> 則心情</p>`});
+  pages.push({cls:"pg-mood",html:`<div class="note"><span class="tape l"></span><span class="tape r mint"></span><h2>我們的心情曲線</h2><div class="curve"><svg class="ln" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">${lines.map(l=>l.pts.length>1?`<path d="${path(l.pts)}" stroke="${RV_PEOPLE_COLOR[l.p[0]]}" vector-effect="non-scaling-stroke"/>`:"").join("")}</svg>${lines.map((l,li)=>l.pts.map(q=>{const o=lines[1-li]&&lines[1-li].pts.find(z=>z[3]===q[3]&&z[2]===q[2]),off=o?(li?9:-9):0;return `<span class="pt" style="left:calc(18px + (100% - 36px) * ${q[0]/100} + ${off}px);top:calc(18px + (100% - 44px) * ${q[1]/100});--d:${.25+q[3]*.12}s;--pc:${RV_PEOPLE_COLOR[l.p[0]]}">${moodFace(q[2])}</span>`}).join("")).join("")}${DAYS.map((x,i)=>`<span class="dx" style="left:calc(18px + (100% - 36px) * ${i/(DAYS.length-1)})">${x.d.split("/")[1]}</span>`).join("")}</div><div class="mood-leg">${PEOPLE.map(p=>`<span style="--pc:${RV_PEOPLE_COLOR[p[0]]}"><svg viewBox="3 -3 64 51" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg>${p[1]}</span>`).join("")}</div></div><p class="st-cap">兩個人一共寫了 ${D.nMood} 則心情</p>`});
  }
  if(D.best){const x=D.best.x;
-  pages.push({cls:"pg-best",html:`<span class="st-k">BEST DAY</span><div class="polaroid"><svg viewBox="2 2 116 116" aria-hidden="true">${svgTile(x.art).replace(/^<svg[^>]*>|<\/svg>$/g,"")}</svg><b>${esc(x.place)}</b><small>${x.d}（${x.w}）・最開心的一天</small></div><div class="bubbles">${PEOPLE.map((p,j)=>{const v=moods[mk(x.d,p[0])];return v?`<div class="bub${j?" r":""}"><svg viewBox="3 -3 64 51" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg><span>${esc(v.note||MOODS[v.score-1][1])}</span></div>`:""}).join("")}</div>`});
+  const heart=`<svg class="doodle d1" viewBox="0 0 34 30" aria-hidden="true"><path d="M17 27C5 18 2 12 5 7s10-4 12 2c2-6 9-7 12-2s0 11-12 20z" fill="#EE9479" stroke="#3F3127" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
+  const star=c=>`<svg class="doodle ${c}" viewBox="0 0 30 30" aria-hidden="true"><path d="M15 2l3.6 8.6L28 12l-7 6.3L23 28l-8-4.6L7 28l2-9.7L2 12l9.4-1.4z" fill="#F6D58A" stroke="#3F3127" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
+  pages.push({cls:"pg-best",html:`<div class="pol-wrap">${heart}${star("d2")}${star("d3")}<div class="polaroid"><span class="tape coral"></span>${tile(x)}<b>${esc(x.place)}</b><small>${x.d}（${x.w}）・最開心的一天</small></div></div><div class="bubbles">${PEOPLE.map((p,j)=>{const v=moods[mk(x.d,p[0])];return v?`<div class="bub${j?" r":""}"><svg viewBox="3 -3 64 51" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg><span>${esc(v.note||MOODS[v.score-1][1])}</span></div>`:""}).join("")}</div>`});
  }
  if(D.total||D.nMood){
-  pages.push({cls:"pg-vs",html:`<span class="st-k">阿彰 VS 星星</span><div class="vs">${D.ppl.map((p,j)=>`${j?`<span class="vs-mid">VS</span>`:""}<div class="vs-p"><svg viewBox="0 0 60 70" aria-hidden="true"><use href="#${p.sym}"/></svg><b>${p.name}</b><span class="vs-row"><small>付了</small><em>${yen(p.paid)}</em></span>${p.cash!=null?`<span class="vs-row"><small>現金用掉</small><em>${yen(p.cash)}</em></span>`:""}<span class="vs-row"><small>心情</small><em>${p.moods} 則</em></span></div>`).join("")}</div>`});
+  const tp=D.ppl.reduce((a,p)=>a+p.paid,0)||1;
+  const burst=`<svg class="vs-mid" viewBox="0 0 66 66" aria-hidden="true"><path d="M33 2l6 12 13-6-2 14 14 3-11 9 9 11-14 1 1 14-12-7-6 13-6-13-12 7 1-14-14-1 9-11-11-9 14-3-2-14 13 6z" fill="#EE9479" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><text x="33" y="40" text-anchor="middle" font-size="19" font-weight="900" fill="#fff" font-family="sans-serif">VS</text></svg>`;
+  pages.push({cls:"pg-vs",html:`<h2>阿彰和星星</h2><div class="vs">${D.ppl.map((p,j)=>`<div class="vs-p" style="--pc:${RV_PEOPLE_COLOR[p.id]};--r:${j?2:-2}deg"><div class="vh">${p.name}</div><div class="vp"><svg viewBox="0 0 60 70" aria-hidden="true"><use href="#${p.sym}"/></svg></div><div class="vs-row">付了<em>${yen(p.paid)}</em></div>${p.cash!=null?`<div class="vs-row">現金用掉<em>${yen(p.cash)}</em></div>`:""}<div class="vs-row">心情<em>${p.moods} 則</em></div></div>`).join("")}${burst}</div>${D.total?`<div class="vs-bar"><div class="bt">${D.ppl.map(p=>`<span>${p.name} ${Math.round(p.paid/tp*100)}%</span>`).join("")}</div><div class="bb">${D.ppl.map(p=>`<i style="width:${(p.paid/tp*100).toFixed(2)}%;background:${RV_PEOPLE_COLOR[p.id]}"></i>`).join("")}</div></div>`:""}`});
  }
  if(D.total){
-  pages.push({cls:"pg-rcpt",html:`<span class="st-k">RECEIPT</span><div class="rcpt-wrap"><div class="rcpt"><h3>名古屋看花花</h3><div class="rc-sub">2026.11.17 – 11.24・2 名</div>${D.cats.map(([c,v])=>`<div class="rl"><span>${c[1]}</span><i></i><b>${yen(v)}</b></div>`).join("")}<hr><div class="rl tot"><span>合計</span><i></i><b>${yen(D.total)}</b></div><div class="rc-tw">約 NT$ ${Math.round(D.total*rate).toLocaleString("en-US")}</div><div class="rc-settle">${esc(D.settle)}</div><div class="rc-thx">ありがとう 名古屋</div></div></div>`});
+  const paw=`<svg viewBox="0 0 30 30" aria-hidden="true"><g fill="currentColor"><ellipse cx="15" cy="20" rx="7" ry="6"/><circle cx="7" cy="12" r="3"/><circle cx="12" cy="7" r="3"/><circle cx="18" cy="7" r="3"/><circle cx="23" cy="12" r="3"/></g></svg>`;
+  pages.push({cls:"pg-rcpt",html:`<div class="rcpt-wrap"><div class="rcpt"><h3>名古屋看花花</h3><div class="rc-sub">2026.11.17 – 11.24・2 名</div>${D.cats.map(([c,v])=>`<div class="rl"><span>${c[1]}</span><i></i><b>${yen(v)}</b></div>`).join("")}<hr><div class="rl tot"><span>合計</span><i></i><b>${yen(D.total)}</b></div><div class="rc-tw">約 NT$ ${Math.round(D.total*rate).toLocaleString("en-US")}</div><div class="rc-settle">${esc(D.settle)}</div><div class="rc-thx">ありがとう 名古屋</div><div class="paid">${paw}<b>已付清</b></div></div></div>`});
  }
- pages.push({cls:"pg-sum",html:`<div class="sum-card" id="sum-card"><div class="sc-h"><svg viewBox="0 0 132 80" aria-hidden="true"><use href="#cats-hi"/></svg><span><b>我們的名古屋</b><small>2026.11.17 – 11.24・阿彰 & 星星</small></span></div><div class="sum-grid"><div><small>去過的地方</small><b>${D.pids} 個</b></div><div><small>心情</small><b>${D.nMood} 則</b></div><div><small>最開心的一天</small><b>${D.best?esc(D.best.x.place):"—"}</b></div><div><small>總花費</small><b>${yen(D.total)}</b></div></div></div><div class="sum-acts st-act"><button type="button" class="again" data-story-again>再看一次</button><button type="button" class="save" data-story-save>存成圖片</button></div><div class="st-msg st-act" aria-live="polite"></div>`});
+ const P=rvProfile(D);
+ pages.push({cls:"pg-sum",html:`<div class="dossier" id="sum-card"><div class="ds-card">${CLIP}<div class="ds-top"><div class="ds-photo"><svg viewBox="0 0 132 80" aria-hidden="true"><use href="#cats-hi"/></svg></div><div><div class="ds-name"><small>${esc(P.sub)}</small><b>${esc(P.title)}</b></div><div class="ds-tags"><small>特徵</small>${P.tags.map(t=>`<span>${esc(t)}</span>`).join("")}</div></div></div><div class="ds-sec"><h3>旅行紀錄</h3><ul>${P.rec.map(r=>`<li>${DIAMOND}<span>${esc(r)}</span></li>`).join("")}</ul></div><div class="ds-says">${P.says.map(q=>`<div class="ds-say"><h4>${q.name}的一句話</h4><svg class="av" viewBox="3 -3 64 51" aria-hidden="true"><use href="#head-${q.head}"/></svg><p>${esc(q.text)}</p>${q.v?`<span class="mf">${moodFace(q.v.score)}</span>`:""}</div>`).join("")}</div></div></div><div class="sum-acts st-act"><button type="button" class="again" data-story-again>再看一次</button><button type="button" class="save" data-story-save>存成圖片</button></div><div class="st-msg st-act" aria-live="polite"></div>`});
  return pages;
 }
 let storyEl=null;
@@ -2621,18 +2700,38 @@ function rvSvgImg(inner,vb,w,h){
   const img=new Image();img.onload=()=>res(img);img.onerror=rej;img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)});
 }
 async function rvSaveImage(D){
- const W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
- const F=getComputedStyle(document.body).getPropertyValue("--f-display")||"sans-serif",B=getComputedStyle(document.body).fontFamily;
- const OL="#8C6D55",INK="#3F3127",MUT="#6E5E52";
- const rr=(x,y,w,h,r)=>{g.beginPath();g.roundRect?g.roundRect(x,y,w,h,r):g.rect(x,y,w,h)};
- const grd=g.createRadialGradient(W/2,H*.3,50,W/2,H*.3,H);grd.addColorStop(0,"#FFF9EA");grd.addColorStop(1,"#F6D58A");g.fillStyle=grd;g.fillRect(0,0,W,H);
- g.fillStyle=OL;rr(90,150,W-180,H-300,64);g.fill();g.fillStyle="#fff";rr(90,138,W-180,H-300,64);g.fill();g.lineWidth=7;g.strokeStyle=OL;g.stroke();
- const cats=await rvSvgImg('<use href="#cats-hi" xlink:href="#cats-hi"/>',"0 0 132 80",440,267);g.drawImage(cats,W/2-220,190,440,267);
- g.fillStyle=INK;g.textAlign="center";g.font=`900 72px ${F}`;g.fillText("我們的名古屋",W/2,540);
- g.fillStyle=MUT;g.font=`500 36px ${B}`;g.fillText("2026.11.17 – 11.24・阿彰 & 星星",W/2,600);
- const cells=[["去過的地方",`${D.pids} 個`],["心情",`${D.nMood} 則`],["最開心的一天",D.best?D.best.x.place:"—"],["總花費",yen(D.total)]];
- cells.forEach(([k,val],i)=>{const x=150+(i%2)*400,y=660+Math.floor(i/2)*230;g.fillStyle="#F8F3EC";rr(x,y,380,200,36);g.fill();g.textAlign="left";g.fillStyle=MUT;g.font=`700 32px ${B}`;g.fillText(k,x+36,y+66);g.fillStyle=INK;let fs=64;g.font=`900 ${fs}px ${F}`;while(g.measureText(val).width>320&&fs>30){fs-=4;g.font=`900 ${fs}px ${F}`}g.fillText(val,x+36,y+150)});
- g.textAlign="center";g.fillStyle=OL;g.font=`900 30px ${F}`;g.fillText("名古屋看花花",W/2,1150);
+ const P=rvProfile(D),W=1080,H=1350,c=document.createElement("canvas");c.width=W;c.height=H;const g=c.getContext("2d");
+ const cs=getComputedStyle(document.body),F=cs.getPropertyValue("--f-display").trim()||"sans-serif",B=cs.fontFamily;
+ const OL="#8C6D55",INK="#3F3127",MUT="#6E5E52",BR="#82593A",DEEP="#6B4730",LINE="#E3D6C4",LS="#CDB79F";
+ const rr=(x,y,w,h,r)=>{g.beginPath();if(g.roundRect)g.roundRect(x,y,w,h,r);else g.rect(x,y,w,h)};
+ const fit=(t,max,size,w,fam)=>{let fs=size;g.font=`${w} ${fs}px ${fam}`;while(g.measureText(t).width>max&&fs>16){fs-=2;g.font=`${w} ${fs}px ${fam}`}return fs};
+ const wrap=(t,x,y,max,lh)=>{let line="",yy=y;for(const ch of t){if(g.measureText(line+ch).width>max&&line){g.fillText(line,x,yy);line=ch;yy+=lh}else line+=ch}g.fillText(line,x,yy);return yy};
+ g.fillStyle="#FCEFC6";g.fillRect(0,0,W,H);g.fillStyle="rgba(255,255,255,.5)";for(let x=0;x<W;x+=104)g.fillRect(x,0,52,H);
+ const X=80,Y=110,CW=W-160,CH=1120;
+ g.save();g.translate(X+CW/2,Y+CH/2);g.rotate(2.5*Math.PI/180);g.fillStyle="#F8DCC6";rr(-CW/2+16,-CH/2+16,CW,CH,52);g.fill();g.lineWidth=6;g.strokeStyle=OL;g.stroke();g.restore();
+ g.fillStyle=OL;rr(X,Y+12,CW,CH,52);g.fill();g.fillStyle="#FFF6E6";rr(X,Y,CW,CH,52);g.fill();g.lineWidth=6;g.strokeStyle=OL;g.stroke();
+ const px=X+36,py=Y+36,PS=250,pg=g.createLinearGradient(px,py,px+PS,py+PS);pg.addColorStop(0,"#EE9479");pg.addColorStop(1,"#F6D58A");
+ g.fillStyle=pg;rr(px,py,PS,PS,34);g.fill();g.lineWidth=6;g.strokeStyle=OL;g.stroke();
+ const cats=await rvSvgImg('<use href="#cats-hi" xlink:href="#cats-hi"/>',"0 0 132 80",270,164);g.save();rr(px,py,PS,PS,34);g.clip();g.drawImage(cats,px-10,py+PS-160,270,164);g.restore();
+ const nx=px+PS+28,nw=X+CW-36-nx;g.fillStyle="#FFFDF8";rr(nx,py,nw,140,30);g.fill();g.lineWidth=4;g.strokeStyle=LS;g.stroke();
+ g.textAlign="center";g.fillStyle=BR;fit(P.sub,nw-40,30,700,B);g.fillText(P.sub,nx+nw/2,py+52);g.fillStyle=DEEP;fit(P.title,nw-40,54,900,F);g.fillText(P.title,nx+nw/2,py+112);
+ g.textAlign="left";let tx=nx,ty=py+172;g.fillStyle=BR;g.font=`900 28px ${B}`;g.fillText("特徵",tx,ty+30);tx+=g.measureText("特徵").width+14;
+ g.font=`900 26px ${B}`;for(const t of P.tags){const w=g.measureText(t).width+36;if(tx+w>nx+nw){tx=nx+80;ty+=54}g.fillStyle="#F8DCC6";rr(tx,ty,w,44,22);g.fill();g.fillStyle=DEEP;g.fillText(t,tx+18,ty+31);tx+=w+10}
+ let sy=Math.max(py+PS,ty+44)+30;const sx=X+36,sw=CW-72,rowH=66,sh=60+P.rec.length*rowH;
+ g.fillStyle="#FFFDF8";rr(sx,sy,sw,sh,30);g.fill();g.save();rr(sx,sy,sw,sh,30);g.clip();g.fillStyle="#F8E3BE";g.fillRect(sx,sy,sw,58);g.restore();g.lineWidth=4;g.strokeStyle=LS;rr(sx,sy,sw,sh,30);g.stroke();
+ g.fillStyle=BR;g.font=`900 30px ${B}`;g.fillText("旅行紀錄",sx+28,sy+40);
+ P.rec.forEach((r,i)=>{const yy=sy+58+i*rowH;if(i){g.setLineDash([8,8]);g.strokeStyle=LINE;g.lineWidth=3;g.beginPath();g.moveTo(sx+24,yy);g.lineTo(sx+sw-24,yy);g.stroke();g.setLineDash([])}
+  const cx=sx+44,cy=yy+rowH/2;g.beginPath();g.moveTo(cx,cy-13);g.lineTo(cx+12,cy);g.lineTo(cx,cy+13);g.lineTo(cx-12,cy);g.closePath();g.fillStyle="#E9A15F";g.fill();g.lineWidth=3;g.strokeStyle="#946645";g.stroke();
+  g.fillStyle=INK;fit(r,sw-110,30,500,B);g.fillText(r,sx+72,cy+11)});
+ const by=sy+sh+30,bw=(sw-24)/2,bh=Y+CH-36-by;
+ for(let i=0;i<2;i++){const q=P.says[i],bx=sx+i*(bw+24);g.fillStyle="#FFFDF8";rr(bx,by,bw,bh,28);g.fill();g.save();rr(bx,by,bw,bh,28);g.clip();g.fillStyle="#F8E3BE";g.fillRect(bx,by,bw,52);g.restore();g.lineWidth=4;g.strokeStyle=LS;rr(bx,by,bw,bh,28);g.stroke();
+  g.fillStyle=BR;g.font=`900 26px ${B}`;g.fillText(`${q.name}的一句話`,bx+22,by+36);
+  g.fillStyle=INK;g.font=`700 30px ${B}`;wrap(q.text,bx+22,by+100,bw-44,42);
+  const hd=await rvSvgImg(`<use href="#head-${q.head}" xlink:href="#head-${q.head}"/>`,"3 -3 64 51",100,80);g.drawImage(hd,bx+bw-96,by-46,100,80);
+  if(q.v){const fi=await new Promise((res,rej)=>{const im=new Image();im.onload=()=>res(im);im.onerror=rej;im.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(moodFace(q.v.score).replace("<svg",'<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96"'))});
+   g.drawImage(fi,bx+bw-22-96,by+bh-22-96,96,96);g.fillStyle=MUT;g.font=`700 26px ${B}`;g.textAlign="left";g.fillText(`${q.v.day||""} ${MOODS[q.v.score-1][1]}`.trim(),bx+22,by+bh-40)}}
+ g.lineWidth=7;g.strokeStyle="#C7843F";g.lineCap="round";g.beginPath();const cx0=X+CW-110,cy0=Y-40;g.moveTo(cx0+18,cy0+40);g.lineTo(cx0+18,cy0+18);g.arc(cx0+30,cy0+18,12,Math.PI,0);g.lineTo(cx0+42,cy0+90);g.arc(cx0+24,cy0+90,18,0,Math.PI);g.lineTo(cx0+6,cy0+28);g.stroke();
+ g.textAlign="center";g.fillStyle=OL;g.font=`900 30px ${F}`;g.fillText("名古屋看花花・2026.11.17 – 11.24",W/2,H-48);
  const blob=await new Promise(r=>c.toBlob(r,"image/png"));const file=new File([blob],"名古屋回顧.png",{type:"image/png"});
  if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:"我們的名古屋回顧"});return "shared"}
  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="名古屋回顧.png";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);return "saved";
