@@ -339,6 +339,8 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .sync{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted);background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:4px 12px;margin-bottom:12px;max-width:100%}
 .sync i{width:8px;height:8px;border-radius:50%;background:var(--brown-soft);flex:none}
 .sync.on i{background:var(--mint)}
+.sync span{white-space:nowrap}
+.sync.off i{background:transparent;box-shadow:inset 0 0 0 2px var(--brown-soft)}
 .group{background:var(--card);border-radius:20px;overflow:hidden;border:1.5px solid var(--line);box-shadow:var(--shadow)}
 .group h3{margin:0;padding:14px 18px 10px;font-size:17px;display:flex;justify-content:space-between;align-items:center}
 .prog{font-family:var(--f-display);font-size:13px;font-weight:700;color:var(--brown);background:var(--accent-soft);border-radius:8px;padding:1px 10px;font-variant-numeric:tabular-nums}
@@ -1549,6 +1551,41 @@ const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"
 
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("ngy:"+k,JSON.stringify(v))}catch(e){}}};
+/* ===== 同步佇列：每一筆要寫到雲端的變更，先存在手機上（outbox），雲端確認收到後才刪掉。
+   還沒連上（程式庫載入中、伺服器很慢、離線開 App）時的變更也會留著，連上後先送出；
+   雲端快照進來時，會疊上還沒送達的變更，所以不會被雲端的舊資料蓋掉。路徑相同時只留最新的一筆。 ===== */
+const OB_KEY="ngy:outbox";
+let outbox=(()=>{try{return JSON.parse(localStorage.getItem(OB_KEY))||{}}catch(_){return {}}})(),obSeq=Date.now();
+const obSave=()=>{try{localStorage.setItem(OB_KEY,JSON.stringify(outbox))}catch(_){}};
+/* data 為 null 代表刪除 */
+function put(path,data){const s=++obSeq;outbox[path]={d:data==null?null:data,s};obSave();send(path,s)}
+function putMany(list){
+ const sent=list.map(([p,d])=>{const s=++obSeq;outbox[p]={d,s};return[p,s]});obSave();
+ if(!db)return;
+ /* 一次送出（雲端只回傳一次完整的新狀態，不會出現一半新一半舊） */
+ db.setMany(list).then(()=>{sent.forEach(([p,s])=>obDone(p,s));srvOk()},()=>{});
+}
+function send(path,s){
+ const e=outbox[path];if(!db||!e||e.s!==s)return;
+ const r=db.doc(path);
+ (e.d===null?r.delete():r.set(e.d)).then(()=>{obDone(path,s);srvOk()},err=>{
+  const c=err&&err.code;
+  if(c==="invalid_argument"){canWrite=false;obDone(path,s);render(true)}
+  /* 權限錯誤：先確認是代碼錯了（整個旅程都讀不到，保留變更等換對代碼），還是只有這筆寫不進去（丟掉，不然會一直重送） */
+  else if(c==="permission-denied")checkServer().then(ok=>{if(ok)obDone(path,s)});
+ });
+}
+function obDone(path,s){if(outbox[path]&&outbox[path].s===s){delete outbox[path];obSave()}}
+function flushOutbox(){
+ /* 照當初操作的先後順序送出 */
+ const all=Object.entries(outbox).sort((a,b)=>a[1].s-b[1].s);
+ for(const[p,v]of all)send(p,v.s);
+}
+/* 某個集合裡還沒送達的變更：[[id, 資料或 null]] */
+const pendingIn=col=>Object.entries(outbox).filter(([p])=>p.startsWith(col+"/")&&p.indexOf("/",col.length+1)<0).map(([p,v])=>[p.slice(col.length+1),v.d]);
+const pendingCount=()=>Object.keys(outbox).length;
+/* 本機產生的文件 id（和 Firestore 自動 id 同格式）：重複按也只會寫同一筆 */
+function newId(){const c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";let s="";const a=new Uint8Array(20);try{crypto.getRandomValues(a)}catch(_){for(let i=0;i<20;i++)a[i]=Math.random()*256}for(const x of a)s+=c[x%62];return s}
 let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
 let setupSheet=null,suRunning=false,rateMeta=store.get("rateMeta")||{auto:true,ts:0,src:""},rateBusy=false;
 const TF_MIN=5000,tfRefund=a=>Math.floor(a*10/110);
@@ -1585,7 +1622,10 @@ const todayIdx=DAYS.findIndex(x=>dayDate(x).getTime()===today.getTime());
 
 let tab="plan",view="home",dayIdx=todayIdx>=0?todayIdx:0;
 let done=store.get("done")||{},db=null,canWrite=true,live=false;
+/* exp：記帳的本機副本（雲端快照＋自己剛記的），離線開 App 時也看得到之前的帳、現金餘額才算得對 */
 let expenses=store.get("exp")||[],rate=store.get("rate")||0.2,forecast=null;
+/* 舊版離線記的帳（id 以 l 開頭）還沒上傳過：搬進同步佇列，連上時送出 */
+if(!store.get("expMig")){for(const x of expenses){const id=String(x.id||"");if(id.startsWith("l")&&!outbox["expenses/"+id]){const{id:_i,...rec}=x;outbox["expenses/"+id]={d:rec,s:++obSeq}}}obSave();store.set("expMig",1)}
 /* 現金錢包：各自記「手上換了多少日圓」，現金付的帳從付款人扣 */
 let wallet=store.get("wallet")||{},walletEdit=null;
 const cashIn=w=>+((wallet[w]||{}).cashIn)||0;
@@ -1623,7 +1663,7 @@ function pickMeHTML(){
 }
 function rerenderMoodSec(){const sec=document.getElementById("mood");if(sec)sec.outerHTML=moodSectionHTML(DAYS[dayIdx])}
 async function deleteMood(d,who){const key=mk(d,who),old=moods[key];
- if(old)undoSnack(`已刪除 ${d} 的心情`,async()=>{moods[key]=old;store.set("moods",moods);if(db){try{await db.doc("moods/"+key).set(old)}catch(_){}}if(typeof rerenderMoodSec==="function")rerenderMoodSec();if(tab==="plan"&&view==="home")render(true)});delete moods[key];store.set("moods",moods);if(db){try{await db.doc("moods/"+key).delete()}catch(_){}}}
+ if(old)undoSnack(`已刪除 ${d} 的心情`,async()=>{moods[key]=old;store.set("moods",moods);put("moods/"+key,old);if(typeof rerenderMoodSec==="function")rerenderMoodSec();if(tab==="plan"&&view==="home")render(true)});delete moods[key];store.set("moods",moods);put("moods/"+key,null)}
 let pendingMoodDel=false;
 function moodHint(x){
  const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])],h=Math.floor(tzNow("Asia/Tokyo").m/60);
@@ -1677,10 +1717,9 @@ function rerenderMood(){
  if(sec&&!sec.contains(document.activeElement)){const x=DAYS[dayIdx];sec.outerHTML=moodSectionHTML(x)}
  if(tab==="plan"&&view==="home"){const st=app.querySelector(".mood-strip");if(st)st.outerHTML=moodStripHTML();const h=app.querySelector(".hero");if(h&&!h.contains(document.activeElement)){const y=scrollY;render(true);scrollTo(0,y)}}
 }
-async function saveMood(d,score,note){
+function saveMood(d,score,note){
  const key=mk(d,me),rec={score,note,ts:Date.now(),who:me,day:d};
- moods[key]=rec;store.set("moods",moods);
- if(db){try{await db.doc("moods/"+key).set(rec)}catch(_){}}
+ moods[key]=rec;store.set("moods",moods);put("moods/"+key,rec);
 }
 function gotoMood(i){pickingMe=false;pendingMe=null;
  tab="plan";view="day";dayIdx=i;render();
@@ -2039,11 +2078,11 @@ function openWallet(){
  });
  v.addEventListener("submit",async e=>{
   e.preventDefault();const f=e.target;const val=parseInt((f.amt.value||"").replace(/[^\d]/g,""),10);if(!(val>0)){f.amt.focus();return}
-  const mode=cashIn(me)>0?walletMode:"set";await saveWallet(me,mode==="add"?cashIn(me)+val:val);walletEdit=null;afterWalletChange();
+  const mode=cashIn(me)>0?walletMode:"set";saveWallet(me,mode==="add"?cashIn(me)+val:val);walletEdit=null;afterWalletChange();
  });
 }
 let walletMode="set";
-async function saveWallet(w,val){wallet={...wallet,[w]:{...(wallet[w]||{}),cashIn:val,ts:Date.now()}};store.set("wallet",wallet);if(db){try{await db.doc("wallet/"+w).set(wallet[w])}catch(_){}}}
+function saveWallet(w,val){wallet={...wallet,[w]:{...(wallet[w]||{}),cashIn:val,ts:Date.now()}};store.set("wallet",wallet);put("wallet/"+w,wallet[w])}
 function renderAcct(){
  const sum=document.getElementById("acct-sum"),list=document.getElementById("acct-list");if(!sum)return;renderTf();
  const wc=document.querySelector(".wchip");if(wc)wc.outerHTML=walletChip();
@@ -2148,7 +2187,7 @@ function listHTML(){
  ${canWrite&&missingDefaults().length?`<button class="restore${pendingRestore?" sure":""}" type="button" data-restore>${pendingRestore?`確定補回 ${missingDefaults().length} 個原本的項目？`:"補回原本行程文件裡的項目"}</button>`:""}</div>`;
 }
 const missingDefaults=()=>DEFAULT_ITEMS.filter(d=>!items.some(x=>x.id===d.id));
-async function restoreDefaults(){for(const d of missingDefaults())await saveItem({...d})}
+async function restoreDefaults(){for(const d of missingDefaults())saveItem({...d})}
 /* 確保原本行程文件裡的項目已經上傳到共用清單：成功寫入後才標記完成，失敗會在下次打開或下次新增時重試 */
 let seededOk=false,seeding=null,itemsReady,serverIds=new Set();const itemsLoaded=new Promise(r=>itemsReady=r);
 function ensureSeeded(){
@@ -2159,28 +2198,30 @@ function ensureSeeded(){
   const v=m.itemsRestore||0;if(v>=2){seededOk=true;return}
   await Promise.race([itemsLoaded,new Promise(r=>setTimeout(r,4000))]);
   /* 第一次：補上所有原本項目；已經補過（v1）的只補新加的行李清單，不會把使用者刪掉的加回來 */
-  for(const d of DEFAULT_ITEMS){if(serverIds.has(d.id))continue;if(v>=1&&d.group!=="pack")continue;const cur=items.find(x=>x.id===d.id)||d;const {id,...rec}=cur;await db.doc("items/"+id).set(rec)}
-  await db.doc("settings/meta").set({...m,itemsSeeded:true,itemsRestore:2});
+  /* 寫進同步佇列（不等雲端回應）：離線也不會卡住，送達前雲端快照也會保留這些項目 */
+  const list=[];for(const d of DEFAULT_ITEMS){if(serverIds.has(d.id))continue;if(v>=1&&d.group!=="pack")continue;const cur=items.find(x=>x.id===d.id)||d;const {id,...rec}=cur;list.push(["items/"+id,rec])}
+  if(list.length)putMany(list);
+  put("settings/meta",{...m,itemsSeeded:true,itemsRestore:2});
   seededOk=true;
  })().finally(()=>{seeding=null});
  return seeding;
 }
 let pendingRestore=false;
-async function saveItem(it){
+function saveItem(it){
  const i=items.findIndex(x=>x.id===it.id);if(i>=0)items[i]=it;else items.push(it);
  store.set("items",items);
- if(db){try{await ensureSeeded()}catch(_){};const {id,...rec}=it;try{await db.doc("items/"+id).set(rec)}catch(_){}}
+ const {id,...rec}=it;put("items/"+id,rec);ensureSeeded().catch(()=>{});
 }
 async function deleteItem(id){
  const at=items.findIndex(x=>x.id===id),it=items[at],dk=Object.keys(done).filter(k=>k===id||k.startsWith(id+"@")),dv=Object.fromEntries(dk.map(k=>[k,done[k]]));
  if(it)undoSnack(`已刪除「${it.title||"項目"}」`,async()=>{
   if(!items.some(x=>x.id===id))items.splice(Math.min(at,items.length),0,{...it});
-  Object.assign(done,dv);store.set("done",done);await saveItem({...it});
-  if(db){for(const k of dk){try{await db.doc("checks/"+k).set({done:dv[k]})}catch(_){}}}
+  Object.assign(done,dv);store.set("done",done);saveItem({...it});
+  for(const k of dk)put("checks/"+k,{done:dv[k]});
   render(true);
  });
  items=items.filter(x=>x.id!==id);store.set("items",items);delete done[id];store.set("done",done);
- if(db){try{await db.doc("items/"+id).delete();await db.doc("checks/"+id).delete()}catch(_){}}
+ put("items/"+id,null);put("checks/"+id,null);
 }
 function focusItemForm(){const f=app.querySelector(".chk-form input[name=title]");if(f){f.focus({preventScroll:true});f.closest(".chk").scrollIntoView({block:"center",behavior:reduce()?"auto":"smooth"})}}
 
@@ -2365,8 +2406,8 @@ app.addEventListener("click",e=>{
  if(e.target.closest("[data-pack-todo]")){packTodo=!packTodo;try{localStorage.setItem("ngy:packTodo",packTodo?"1":"0")}catch(_){};render(true);return}
  const gg=e.target.closest("[data-go-group]");if(gg){const g=gg.dataset.goGroup;tab="list";listSub=null;editItem=null;render();setTimeout(()=>{const h=document.querySelector(`[data-group-id="${g}"]`);if(h)scrollTo(0,h.getBoundingClientRect().top+scrollY-90)},30);return}
  const gi=e.target.closest("[data-go-item]");if(gi){focusItem=gi.dataset.goItem;focusUntil=Date.now()+2500;tab="list";listSub=null;editItem=null;render();return}
- const pkb=e.target.closest("[data-pack]");if(pkb){const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);if(db)db.doc("checks/"+k).set({done:v}).catch(()=>{});return}
- const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);if(db)db.doc("checks/"+id).set({done:true}).catch(()=>{});return}
+ const pkb=e.target.closest("[data-pack]");if(pkb){const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);put("checks/"+k,{done:v});return}
+ const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);put("checks/"+id,{done:true});return}
  if(e.target.closest("[data-wallet-open]")){openWallet();return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
  const pk=e.target.closest(".pick");if(pk){const grp=pk.parentElement.dataset.pick;draft[grp]=pk.dataset.v;pk.parentElement.querySelectorAll(".pick").forEach(b=>b.setAttribute("aria-pressed",b===pk));return}
@@ -2385,17 +2426,17 @@ app.addEventListener("input",e=>{
 app.addEventListener("change",async e=>{
  const t=e.target;
  if(t.id==="f-day"){draft.day=t.value;return}
- if(t.id==="f-rate"){const v=parseFloat(t.value);if(v>0&&v<10){rate=v;store.set("rate",rate);rateMeta={auto:false,ts:Date.now(),src:""};store.set("rateMeta",rateMeta);renderAcct();if(db&&canWrite){try{await db.doc("settings/rate").set({jpyTwd:v,auto:false,ts:rateMeta.ts})}catch(_){}}}else{t.value=rate}return}
+ if(t.id==="f-rate"){const v=parseFloat(t.value);if(v>0&&v<10){rate=v;store.set("rate",rate);rateMeta={auto:false,ts:Date.now(),src:""};store.set("rateMeta",rateMeta);renderAcct();if(canWrite)put("settings/rate",{jpyTwd:v,auto:false,ts:rateMeta.ts})}else{t.value=rate}return}
  if(!t.matches(".chk input[type=checkbox]"))return;
  const id=t.id.slice(2);done[id]=t.checked;store.set("done",done);refresh();
- if(db){try{await db.doc("checks/"+id).set({done:t.checked})}catch(err){if(err&&err.code==="invalid_argument"){canWrite=false;render(true)}}}
+ put("checks/"+id,{done:t.checked});
 });
 app.addEventListener("submit",async e=>{
  e.preventDefault();
  if(e.target.id==="mood-form"){
   const f=e.target,on=f.querySelector(".fbtn.on");if(!on)return;
   const d=f.dataset.d,score=+on.dataset.score,note=f.querySelector("#mood-note").value.trim();
-  moodEdit=null;moodDraft=null;await saveMood(d,score,note);
+  moodEdit=null;moodDraft=null;saveMood(d,score,note);
   const sec=document.getElementById("mood");if(sec){sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);const n=document.getElementById("mood");n.classList.add("saved")}
   return;
  }
@@ -2411,41 +2452,33 @@ app.addEventListener("submit",async e=>{
  if(!amt||amt<=0){msg.className="msg err";msg.textContent="請先輸入金額";document.getElementById("f-amt").focus();return}
  const rec={amt,cat:draft.cat,who:draft.who,split:draft.split,pay:draft.pay||"cash",day:draft.day,note:draft.note.trim(),ts:Date.now()};
  if(draft.tf&&amt>=TF_MIN){rec.tf=true;const o=editingId&&expenses.find(x=>x.id===editingId);if(o&&o.carry)rec.carry=true}
- const btn=document.getElementById("f-save");btn.disabled=true;
- try{
-  if(editingId){
-   const id=editingId,old=expenses.find(x=>x.id===id);rec.ts=old?old.ts:rec.ts;
-   if(db&&!id.startsWith("l"))await db.doc("expenses/"+id).set(rec);
-   expenses=expenses.map(x=>x.id===id?{...rec,id}:x);if(!db)store.set("exp",expenses);
-   editingId=null;draft.amt="";draft.note="";draft.tf=false;render(true);
-   const m=document.getElementById("f-msg");m.className="msg";m.textContent=`已更新為 ${yen(amt)}`;return;
-  }
-  if(db){const ref=db.collection("expenses").doc();await ref.set(rec);if(!expenses.some(x=>x.id===ref.id))expenses.push({...rec,id:ref.id})}
-  else{expenses.push({...rec,id:"l"+rec.ts});store.set("exp",expenses)}
-  draft.amt="";draft.note="";draft.tf=false;const tr=document.getElementById("f-tf-row");if(tr){tr.hidden=true;tr.querySelector("[data-tf-toggle]").setAttribute("aria-pressed","false");tr.querySelector(".switch").classList.remove("on")}
-  document.getElementById("f-amt").value="";document.getElementById("f-note").value="";
-  msg.textContent=`已記下 ${yen(amt)}`;renderAcct();
- }catch(err){msg.className="msg err";msg.textContent=err&&err.code==="invalid_argument"?"你沒有記帳權限，請擁有者分享時選 Contributor":"沒有存到，請確認網路後再按一次"}
- btn.disabled=false;
+ /* 先在手機上記好、清空表單（不等雲端回應）；寫入交給同步佇列，網路慢或離線時恢復後自動送出 */
+ if(editingId){
+  const id=editingId,old=expenses.find(x=>x.id===id);rec.ts=old?old.ts:rec.ts;
+  put("expenses/"+id,rec);
+  expenses=expenses.map(x=>x.id===id?{...rec,id}:x);store.set("exp",expenses);
+  editingId=null;draft.amt="";draft.note="";draft.tf=false;render(true);
+  const m=document.getElementById("f-msg");m.className="msg";m.textContent=`已更新為 ${yen(amt)}${syncLater()}`;return;
+ }
+ const id=newId();put("expenses/"+id,rec);expenses.push({...rec,id});store.set("exp",expenses);
+ draft.amt="";draft.note="";draft.tf=false;const tr=document.getElementById("f-tf-row");if(tr){tr.hidden=true;tr.querySelector("[data-tf-toggle]").setAttribute("aria-pressed","false");tr.querySelector(".switch").classList.remove("on")}
+ document.getElementById("f-amt").value="";document.getElementById("f-note").value="";
+ msg.textContent=`已記下 ${yen(amt)}${syncLater()}`;renderAcct();
 });
 async function removeExpense(id){
  const ex=expenses.find(e=>e.id===id);
  if(ex)undoSnack(`已刪除 ${yen(ex.amt)}${ex.note?`「${ex.note}」`:""}`,async()=>{
   const {id:_i,...rec}=ex;
   if(!expenses.some(e=>e.id===id))expenses.push({...ex});
-  if(db&&!id.startsWith("l")){try{await db.doc("expenses/"+id).set(rec)}catch(_){}}else store.set("exp",expenses);
+  put("expenses/"+id,rec);store.set("exp",expenses);
   renderAcct();if(tab==="plan"&&view==="home")render(true);
  });
- if(db&&!id.startsWith("l")){try{await db.doc("expenses/"+id).delete()}catch(_){}}
- expenses=expenses.filter(e=>e.id!==id);if(!db)store.set("exp",expenses);if(editingId===id){stopEdit();return}renderAcct();
+ put("expenses/"+id,null);
+ expenses=expenses.filter(e=>e.id!==id);store.set("exp",expenses);if(editingId===id){stopEdit();return}renderAcct();
 }
 (()=>{let last=0;document.querySelector("nav.tabs").addEventListener("touchend",e=>{const now=Date.now();if(now-last<350){e.preventDefault();const b=e.target.closest("button");if(b)b.click()}last=now},{passive:false})})();
 document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(t==="plan"){const same=tab==="plan"&&view==="home";tab="plan";view="home";if(same){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}render();scrollTo(0,0);return}if(t==="list"&&tab==="list"&&listSub){listSub=null;render(false,true);return}if(t===tab&&!(t==="plan"&&view==="day")){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}tab=t;render();scrollTo(0,0)});
 
-const h=location.hash.slice(1);
-if(["wx","move","acct","list"].includes(h))tab=h;
-if(todayIdx>=0){view="day";dayIdx=todayIdx}
-render();
 
 
 setInterval(()=>{if(tab==="plan"&&view==="day"&&dayIdx===todayIdx){const b=document.getElementById("dayBody");const k=JSON.stringify(dayStatus(DAYS[dayIdx]));if(b&&b.dataset.k!==k){b.dataset.k=k;b.innerHTML=dayBodyHTML();bindSched();pinCheck()}}},30000);
@@ -2468,59 +2501,134 @@ function getCode(){
  if(m){try{localStorage.setItem(TRIP_KEY,m[1])}catch(_){};history.replaceState(null,"",location.pathname+location.search)}
  try{return localStorage.getItem(TRIP_KEY)}catch(_){return null}
 }
+/* 同步狀態：live＝已接上雲端資料庫；srv＝伺服器是否回應過（"?" 還不確定、"ok"、"down"） */
+let srv="?";
+const netDown=()=>!navigator.onLine||srv==="down";
 const syncIsPill=()=>live||!FIREBASE||syncMsg==="connecting"||syncMsg==="offline";
 const syncPill=()=>syncIsPill()?syncHTML():"";
 const syncForm=()=>syncIsPill()?"":syncHTML();
+/* 標題列空間小，只寫「離線中」；完整說明放在讀螢幕的標籤和存檔訊息裡 */
+const OFFLINE_TXT="離線中";
 function syncHTML(){
- if(live)return `<div class="sync on"><i></i><span>同步中</span></div>`;
+ if(live&&netDown())return `<div class="sync off" aria-label="離線中，恢復網路後自動同步"><i></i><span>${OFFLINE_TXT}</span></div>`;
+ if(live&&srv==="ok")return `<div class="sync on"><i></i><span>同步中</span></div>`;
+ if(live)return `<div class="sync"><i></i><span>連線中…</span></div>`;
  if(!FIREBASE)return `<div class="sync"><i></i><span>記在這支手機上</span></div>`;
  if(syncMsg==="connecting")return `<div class="sync"><i></i><span>連線中…</span></div>`;
- if(syncMsg==="offline")return `<div class="sync"><i></i><span>目前離線，先記在這支手機上</span></div>`;
+ if(syncMsg==="offline")return `<div class="sync off" aria-label="離線中，恢復網路後自動同步"><i></i><span>${OFFLINE_TXT}</span></div>`;
  return `<form class="box code" id="code-form" autocomplete="off"><b>${syncMsg==="bad"?"旅行代碼不對，請再確認一次":"輸入旅行代碼，就能和同行者共用記帳與清單"}</b>
   <div class="code-row"><input class="field" id="f-code" placeholder="旅行代碼" aria-label="旅行代碼" autocapitalize="off" spellcheck="false"><button class="primary" type="submit">開啟共用</button></div></form>`;
 }
+/* 只換掉狀態小膠囊；膠囊和代碼表單要互換時才整頁重畫 */
+function paintSync(){
+ const pills=document.querySelectorAll(".sync"),form=document.getElementById("code-form");
+ if(syncIsPill()&&!form){pills.forEach(el=>{el.outerHTML=syncHTML()});return}
+ if(tab==="acct"||tab==="list")render(true);
+}
+/* 存檔訊息的補充：還沒連上雲端時告訴使用者會自動補傳 */
+const syncLater=()=>FIREBASE&&getCode()&&(!live||netDown())?"（恢復網路後同步）":"";
 function rerenderData(){if(tab==="acct"||tab==="list")render(true);else if(tab==="plan"&&view==="home")render(true)}
-let connecting=false;
-async function connect(){
+const FB_V="10.12.2";
+let connecting=false,libFailed=false,fbInst=null,unsubs=[],probe=null,connTimer=null;
+function connect(){
  const code=getCode();
- if(!FIREBASE||!code||connecting||live)return;
+ if(!FIREBASE||!code||connecting||live)return Promise.resolve();
  connecting=true;
+ /* 代碼已經存好：顯示「連線中…」，不是代碼表單；太久沒接上就改顯示離線（背景仍在等） */
+ if(syncMsg!=="offline"){syncMsg="connecting";paintSync()}
+ clearTimeout(connTimer);connTimer=setTimeout(()=>{if(!live&&syncMsg==="connecting"){syncMsg="offline";paintSync()}},8000);
+ return (async()=>{
  try{
-  const V="10.12.2";
-  const {initializeApp}=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-app.js`);
-  const F=await import(`https://www.gstatic.com/firebasejs/${V}/firebase-firestore.js`);
-  const fbApp=initializeApp(FIREBASE);
-  let fs;try{fs=F.initializeFirestore(fbApp,{localCache:F.persistentLocalCache()})}catch(_){fs=F.getFirestore(fbApp)}
-  const base=`trips/${code}`;
-  const wrap=r=>({id:r.id,get:()=>F.getDoc(r).then(x=>({exists:x.exists(),data:()=>x.data()})),set:d=>F.setDoc(r,d),delete:()=>F.deleteDoc(r),onSnapshot:(n,e)=>F.onSnapshot(r,s=>n({id:s.id,exists:s.exists(),data:()=>s.data()}),e)});
-  const fdb={setMany:async list=>{if(F.writeBatch){const b=F.writeBatch(fs);for(const[p,d]of list)b.set(F.doc(fs,base+"/"+p),d);await b.commit()}else{for(const[p,d]of list)await F.setDoc(F.doc(fs,base+"/"+p),d)}},doc:p=>wrap(F.doc(fs,base+"/"+p)),collection:p=>{const c=F.collection(fs,base+"/"+p);return{doc:()=>wrap(F.doc(c)),onSnapshot:(n,e)=>F.onSnapshot(c,s=>n({docs:s.docs.map(d=>({id:d.id,exists:true,data:()=>d.data()}))}),e)}}};
-  // 先確認代碼可用
-  await F.getDocFromServer(F.doc(fs,base+"/settings/rate")).catch(err=>{if(err&&err.code==="permission-denied")throw err});
-  db=fdb;live=true;syncMsg="";
-  // 把還沒共用前記在手機上的帳搬上去
-  const locals=expenses.filter(x=>String(x.id).startsWith("l"));
-  for(const x of locals){const {id,...rec}=x;try{await db.collection("expenses").doc().set(rec)}catch(_){}}
-  if(locals.length){try{localStorage.removeItem("ngy:exp")}catch(_){}}
-  db.collection("items").onSnapshot(snap=>{
+  if(!fbInst){
+   let A,F;
+   try{[A,F]=await Promise.all([import(`https://www.gstatic.com/firebasejs/${FB_V}/firebase-app.js`),import(`https://www.gstatic.com/firebasejs/${FB_V}/firebase-firestore.js`)])}
+   catch(err){libFailed=true;throw err}
+   const fbApp=A.initializeApp(FIREBASE);
+   let fs;try{fs=F.initializeFirestore(fbApp,{localCache:F.persistentLocalCache()})}catch(_){fs=F.getFirestore(fbApp)}
+   fbInst={F,fs};
+  }
+  libFailed=false;
+  const {F,fs}=fbInst,base=`trips/${code}`,ref=p=>F.doc(fs,base+"/"+p);
+  /* 快照疊上還沒送達的變更（同步佇列），雲端的舊資料不會蓋掉手機上剛做的事 */
+  const wrap=(r,p)=>({id:r.id,get:()=>F.getDoc(r).then(x=>({exists:x.exists(),data:()=>x.data()})),set:d=>F.setDoc(r,d),delete:()=>F.deleteDoc(r),
+   onSnapshot:(n,e)=>F.onSnapshot(r,s=>{const o=p&&outbox[p];if(o)n({id:s.id,exists:o.d!==null,data:()=>o.d});else n({id:s.id,exists:s.exists(),data:()=>s.data()})},e)});
+  const fdb={setMany:async list=>{if(F.writeBatch){const b=F.writeBatch(fs);for(const[p,d]of list)b.set(ref(p),d);await b.commit()}else{for(const[p,d]of list)await F.setDoc(ref(p),d)}},
+   doc:p=>wrap(ref(p),p),
+   collection:p=>{const c=F.collection(fs,base+"/"+p);return{doc:()=>wrap(F.doc(c)),onSnapshot:(n,e)=>F.onSnapshot(c,s=>{
+    const m=new Map(s.docs.map(d=>[d.id,d.data()]));for(const[id,d]of pendingIn(p)){if(d===null)m.delete(id);else m.set(id,d)}
+    n({docs:[...m].map(([id,d])=>({id,exists:true,data:()=>d}))})},e)}}};
+  /* Firestore 程式庫一準備好就開始用（它自己會排隊處理離線寫入）；代碼能不能用改在背景確認 */
+  db=fdb;live=true;syncMsg="";srv="?";clearTimeout(connTimer);
+  probe=()=>F.getDocFromServer(ref("settings/rate"));
+  flushOutbox();
+  const sub=(fn)=>{try{const u=fn();if(typeof u==="function")unsubs.push(u)}catch(_){}};
+  sub(()=>db.collection("items").onSnapshot(snap=>{
    /* 原本項目還沒確認上傳前，不讓「伺服器上比較少的清單」蓋掉手機上的清單 */
    serverIds=new Set(snap.docs.map(d=>d.id));
    if(!seededOk&&snap.docs.length<items.length){const srv=snap.docs.map(d=>({id:d.id,...d.data()}));items=[...items.filter(x=>!srv.some(y=>y.id===x.id)),...srv]}
    else items=snap.docs.map(d=>({id:d.id,...d.data()}));
-   store.set("items",items);itemsReady();if(tab!=="acct")refresh()},()=>itemsReady());
-  try{await ensureSeeded()}catch(_){}
-  db.collection("moods").onSnapshot(snap=>{const n={...moods};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{});
-  db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(setupSheet)paintSetup();if(tab!=="acct")refresh()},()=>{});
-  db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0,...(v.tf?{tf:true}:{}),...(v.carry?{carry:true}:{})}});paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
-  db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{});
-  db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home"&&!stayEditing)render(true)}},()=>{});
-  db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const d=s.data()||{},v=+d.jpyTwd;if(v>0){rate=v;store.set("rate",v);rateMeta={auto:d.auto!==false,ts:+d.ts||0,src:d.src||""};store.set("rateMeta",rateMeta);if(tab==="acct")renderAcct()}}fetchRate()},()=>{});
+   store.set("items",items);itemsReady();if(tab!=="acct")refresh()},()=>itemsReady()));
+  /* 心情：用快照重建整份（對方刪掉的會消失），不和舊的合併 */
+  sub(()=>db.collection("moods").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{}));
+  sub(()=>db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(setupSheet)paintSetup();if(tab!=="acct")refresh()},()=>{}));
+  sub(()=>db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0,...(v.tf?{tf:true}:{}),...(v.carry?{carry:true}:{})}});store.set("exp",expenses);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{}));
+  sub(()=>db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{}));
+  sub(()=>db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home"&&!stayEditing)render(true)}},()=>{}));
+  sub(()=>db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const d=s.data()||{},v=+d.jpyTwd;if(v>0){rate=v;store.set("rate",v);rateMeta={auto:d.auto!==false,ts:+d.ts||0,src:d.src||""};store.set("rateMeta",rateMeta);if(tab==="acct")renderAcct()}}fetchRate()},()=>{}));
   rerenderData();
+  ensureSeeded().catch(()=>{});
+  checkServer();
  }catch(err){
-  if(err&&err.code==="permission-denied"){try{localStorage.removeItem(TRIP_KEY)}catch(_){};syncMsg="bad"}else syncMsg="offline";
-  rerenderData();
+  if(!live){syncMsg="offline";rerenderData();paintSync()}
  }finally{connecting=false}
+ })();
 }
-addEventListener("online",()=>{if(!live){syncMsg="";connect()}});
+/* 背景確認伺服器：能讀到＝同步中；離線＝顯示離線；權限錯誤＝代碼不對 */
+function checkServer(){
+ if(!live||!probe)return Promise.resolve(false);
+ return probe().then(()=>{srvOk();return true},err=>{
+  if(err&&err.code==="permission-denied"){badCode();return false}
+  if(srv!=="down"){srv="down";paintSync()}return false});
+}
+function srvOk(){if(srv!=="ok"){srv="ok";paintSync()}}
+function badCode(){
+ unsubs.forEach(u=>{try{u()}catch(_){}});unsubs=[];db=null;live=false;probe=null;srv="?";
+ try{localStorage.removeItem(TRIP_KEY)}catch(_){};syncMsg="bad";render(true);
+}
+/* 網路恢復時重新連線。程式庫上次載入失敗的話，同一頁再載入一定還是失敗（瀏覽器會記住），
+   確認程式庫抓得到之後重新整理頁面（正在輸入時先等，不會吃掉輸入到一半的內容） */
+function libReachable(){return fetch(`https://www.gstatic.com/firebasejs/${FB_V}/firebase-app.js`,{cache:"no-store"}).then(r=>r.ok,()=>false)}
+function busyEditing(){
+ const a=document.activeElement;if(a&&a.matches&&a.matches("input:not([type=checkbox]):not([type=radio]),textarea,select"))return true;
+ return !!(draft.amt||(draft.note||"").trim()||moodDraft||editItem||editingId||stayEditing||sosEditing||walletEdit);
+}
+let reloadWait=null;
+function reloadSoon(){
+ if(busyEditing()){clearTimeout(reloadWait);reloadWait=setTimeout(retrySync,15000);return}
+ try{const t=+sessionStorage.getItem("ngy:reloadAt")||0;if(Math.abs(Date.now()-t)<60000)return;
+  sessionStorage.setItem("ngy:reloadAt",String(Date.now()));sessionStorage.setItem("ngy:resume",JSON.stringify({tab,view,dayIdx,y:scrollY,at:Date.now()}))}catch(_){}
+ location.reload();
+}
+function retrySync(){
+ if(!FIREBASE||!getCode())return;
+ if(live){if(srv!=="ok")checkServer();return}
+ if(connecting)return;
+ if(!libFailed){connect();return}
+ libReachable().then(ok=>{if(!ok)return;connect().then(()=>{if(!live&&libFailed)reloadSoon()})});
+}
+addEventListener("online",()=>{paintSync();retrySync()});
+addEventListener("offline",()=>paintSync());
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&navigator.onLine)retrySync()});
+setInterval(()=>{if(navigator.onLine&&((!live&&libFailed)||(live&&srv==="down")))retrySync()},30000);
+/* 第一次畫面：記帳、清單等分頁會用到後面才宣告的東西，所以先畫行程，整份程式載入完再切到要開的分頁 */
+let startTab=null,resumeY=null;
+{const h=location.hash.slice(1);if(["wx","move","acct","list"].includes(h))startTab=h}
+if(todayIdx>=0){view="day";dayIdx=todayIdx}
+/* 為了恢復同步而自動重新整理時，回到原本的分頁和位置 */
+try{const r=JSON.parse(sessionStorage.getItem("ngy:resume")||"null");sessionStorage.removeItem("ngy:resume");
+ if(r&&Math.abs(Date.now()-r.at)<60000&&["plan","wx","move","acct","list"].includes(r.tab)){startTab=r.tab==="plan"?null:r.tab;view=r.view==="day"?"day":"home";if(DAYS[r.dayIdx])dayIdx=r.dayIdx;resumeY=+r.y||0}}catch(_){}
+render();
+document.addEventListener("DOMContentLoaded",()=>{if(startTab){tab=startTab;render()}if(resumeY)requestAnimationFrame(()=>scrollTo(0,resumeY))});
 connect();
 
 /* ---------- 天氣：Open-Meteo 預報（免金鑰，約可預報 16 天） ---------- */
@@ -2557,7 +2665,7 @@ function suDetect(k){
 async function setupSet(k,v){
  if(!me)return;const id=suKey(k,me);if(!!done[id]===v)return;
  done[id]=v;store.set("done",done);paintSetup();if(tab==="plan"&&view==="home")render(true);
- if(db&&canWrite){try{await db.doc("checks/"+id).set({done:v})}catch(_){}}
+ if(canWrite)put("checks/"+id,{done:v});
 }
 async function setupAuto(){
  if(!me||Date.now()>=DEPART||suRunning)return;suRunning=true;
@@ -2663,7 +2771,7 @@ function renderTf(){
 document.addEventListener("click",async e=>{
  const tg=e.target.closest("[data-tf-toggle]");if(tg){draft.tf=!draft.tf;tg.setAttribute("aria-pressed",String(draft.tf));tg.querySelector(".switch").classList.toggle("on",draft.tf);return}
  const cy=e.target.closest("[data-carry]");if(cy){const id=cy.dataset.carry,ex=expenses.find(x=>x.id===id);if(!ex)return;ex.carry=!ex.carry;renderTf();
-  const {id:_i,...rec}=ex;if(db&&!id.startsWith("l")){try{await db.doc("expenses/"+id).set(rec)}catch(_){}}else store.set("exp",expenses);return}
+  const {id:_i,...rec}=ex;put("expenses/"+id,rec);store.set("exp",expenses);return}
  if(e.target.closest("[data-go-tf]")){tab="acct";render();setTimeout(()=>{const b=document.getElementById("tf-list");if(b&&!b.hidden)b.scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});else scrollTo(0,0)},60);return}
 });
 
@@ -2812,7 +2920,7 @@ async function fetchRate(force){
     const v=+pick(await r.json());if(!(v>0.1&&v<0.5))continue;
     rate=Math.round(v*10000)/10000;rateMeta={auto:true,ts:Date.now(),src:name};store.set("rate",rate);store.set("rateMeta",rateMeta);
     if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home"&&todayIdx<0&&diff<=0)render(true);
-    if(db&&canWrite){try{await db.doc("settings/rate").set({jpyTwd:rate,auto:true,ts:rateMeta.ts,src:name})}catch(_){}}
+    if(db&&canWrite)put("settings/rate",{jpyTwd:rate,auto:true,ts:rateMeta.ts,src:name});
     return}catch(_){}
   }
  }finally{rateBusy=false}
@@ -2830,7 +2938,7 @@ if("serviceWorker" in navigator){addEventListener("load",()=>navigator.serviceWo
 const SOS_HOTEL={pid:"ChIJ74aBvtd2A2AR8TRTA-QLXZM",jp:"ランプライトブックスホテル名古屋",zh:"名古屋燈光圖書飯店",zip:"〒460-0003",ad:"愛知県名古屋市中区錦1丁目13-18",tel:"052-231-7011",telI:"+81522317011",ac:"地下鐵東山線・鶴舞線「伏見站」10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋"};
 const BOOK_FIELDS=[["order","訂單編號"],["via","訂房平台"],["guest","訂房人"],["room","房型"],["pay","付款"],["payNote","提醒"]],INS_FIELDS=[["ins","旅平險公司"],["insTel","旅平險急難電話"]];
 const sosFormHTML=(fs,save)=>`<div class="sos-form">${fs.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${sosEsc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" ${save}>儲存</button></div></div>`;
-async function sosSave(root){const n={...sosInfo};root.querySelectorAll("[data-sos-f]").forEach(i=>{n[i.dataset.sosF]=i.value.trim()});sosInfo=n;store.set("sos",sosInfo);if(db&&canWrite){try{await db.doc("settings/sos").set(sosInfo)}catch(_){}}}
+async function sosSave(root){const n={...sosInfo};root.querySelectorAll("[data-sos-f]").forEach(i=>{n[i.dataset.sosF]=i.value.trim()});sosInfo=n;store.set("sos",sosInfo);if(canWrite)put("settings/sos",sosInfo)}
 /* 求助的日文句子：[中文, 日文, 讀音, 分類, 特殊]。分類 emg 放在「緊急」分頁，其他放在「日常日文」 */
 const SOS_GROUPS=[["eat","餐廳","餐廳"],["buy","購物","購物"],["stay","飯店・寄放行李","飯店"],["go","交通・問路","交通"]];
 const SOS_PHRASES=[
@@ -2968,10 +3076,10 @@ async function applyOrder(g,ids,redraw){
  const list=itemsOf(g),byId=Object.fromEntries(list.map(x=>[x.id,x]));const changed=[];
  ids.forEach((id,i)=>{const it=byId[id];if(it&&it.order!==i+1){it.order=i+1;changed.push(it)}});
  store.set("items",items);if(redraw)render(true);
- if(!changed.length||!db)return;
- try{await ensureSeeded()}catch(_){}
+ if(!changed.length)return;
+ ensureSeeded().catch(()=>{});
  /* 一次寫入全部順序：雲端只回傳一次完整的新順序，不會出現一半新一半舊的中間狀態 */
- try{await db.setMany(changed.map(it=>{const{id,...rec}=it;return["items/"+id,rec]}))}catch(_){}
+ putMany(changed.map(it=>{const{id,...rec}=it;return["items/"+id,rec]}));
 }
 document.addEventListener("click",e=>{
  const t=e.target.closest("[data-sort-toggle]");if(t){const g=t.dataset.sortToggle;sortGroup=sortGroup===g?null:g;editItem=null;render(true);const el=document.querySelector(`[data-group-id="${g}"]`);if(el)el.scrollIntoView({block:"nearest"});return}

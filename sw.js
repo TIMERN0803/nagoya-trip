@@ -1,14 +1,24 @@
 /* 離線快取：頁面先抓最新、沒網路時用快取；字型與 Firebase 程式庫用快取並在背景更新 */
 const VERSION = "ngy-v44";
+/* 字型與 Firebase 程式庫放在獨立的快取，版本更新時不刪（不然更新後第一次沒網路就無法同步） */
+const LIB = "ngy-lib";
+const isLib = (u) => /fonts\.(googleapis|gstatic)\.com$/.test(u.hostname) || (u.hostname === "www.gstatic.com" && u.pathname.startsWith("/firebasejs/"));
 const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./ghibli-map.jpg", "./ghibli-map-thumb.jpg", "./nagoya-trip.ics"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
 });
 
+/* 舊版快取裡的字型與程式庫先搬到 LIB，再刪舊版 */
+async function keepLibs(old) {
+  const from = await caches.open(old), to = await caches.open(LIB);
+  for (const req of await from.keys()) {
+    try { if (isLib(new URL(req.url)) && !(await to.match(req))) { const res = await from.match(req); if (res) await to.put(req, res); } } catch (_) {}
+  }
+}
 self.addEventListener("activate", (e) => {
   e.waitUntil(
-    caches.keys().then((keys) => Promise.all(keys.filter((k) => k !== VERSION).map((k) => caches.delete(k))))
+    caches.keys().then((keys) => Promise.all(keys.filter((k) => k.startsWith("ngy-") && k !== VERSION && k !== LIB).map((k) => keepLibs(k).catch(() => {}).then(() => caches.delete(k)))))
       .then(() => self.clients.claim())
   );
 });
@@ -31,9 +41,9 @@ self.addEventListener("fetch", (e) => {
   }
 
   // 字型與 Firebase 程式庫：先用快取，背景更新
-  if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname) || (url.hostname === "www.gstatic.com" && url.pathname.startsWith("/firebasejs/"))) {
+  if (isLib(url)) {
     e.respondWith(
-      caches.open(VERSION).then((c) => c.match(req).then((hit) => {
+      caches.open(LIB).then((c) => c.match(req).then((hit) => {
         const net = fetch(req).then((res) => { if (res.ok || res.type === "opaque") c.put(req, res.clone()); return res; }).catch(() => hit);
         return hit || net;
       }))
