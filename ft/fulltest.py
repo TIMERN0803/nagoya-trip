@@ -46,8 +46,10 @@ async def A_timeline(b):
             rec("A 當天行程",f"{lab} 自動開到當天",d['d'] in info['when'] and "今天" in info['when'],info['when'])
             exp={}
             nxt=None
+            # 行程時間換算成日本時間：去程航班（tz Asia/Taipei）寫的是台灣時間，比日本慢 1 小時
+            tmj=lambda it:None if tmin(it.get('t')) is None else tmin(it.get('t'))+(60 if it.get('tz')=="Asia/Taipei" else 0)
             for i,it in enumerate(d['items']):
-                tm=tmin(it.get('t'))
+                tm=tmj(it)
                 if tm is None:continue
                 if tm>nowM:
                     if nxt is None:nxt=i
@@ -57,11 +59,13 @@ async def A_timeline(b):
             bad=[(i,exp.get(i,""),got.get(i,"")) for i in range(len(d['items'])) if exp.get(i,"")!=got.get(i,"")]
             rec("A 當天行程",f"{lab} 已過／進行中／接下來標示",not bad,bad)
             if nxt is not None:
-                it=d['items'][nxt];left=tmin(it['t'])-nowM
+                it=d['items'][nxt];left=tmj(it)-nowM
                 ok=it['n'][:6] in info['now'] and (f"{left%60} 分後" in info['now'])
                 rec("A 當天行程",f"{lab} 接下來列",ok,info['now'])
             else:
-                rec("A 當天行程",f"{lab} 行程走完時的提示","心情" in info['now'] or "走完" in info['now'],info['now'])
+                cur=[i for i,v in exp.items() if v=="now"]
+                if cur:rec("A 當天行程",f"{lab} 最後一個行程進行中的提示","進行中" in info['now'] and d['items'][max(cur)]['n'][:6] in info['now'],info['now'])
+                else:rec("A 當天行程",f"{lab} 行程走完時的提示","心情" in info['now'] or "走完" in info['now'],info['now'])
             rec("A 當天行程",f"{lab} 當天心情可填",info['mood'] is False)
             rec("A 當天行程",f"{lab} 沒有錯誤",not pg.errs,pg.errs[:2])
             if h==8:

@@ -307,4 +307,4 @@ async def main():
             except Exception as e: rec("執行", f.__name__ + " 沒有例外", False, repr(e)[:300])
         await b.close()
     bad = [r for r in ft.R if not r[2]]; print("TOTAL", len(ft.R), "FAIL", len(bad))
-asyncio.run(main())
+if __name__ == "__main__": asyncio.run(main())

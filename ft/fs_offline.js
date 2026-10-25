@@ -13,20 +13,21 @@ const sp=p=>localStorage.setItem("mockpending",JSON.stringify(p));
 const subs=[];let waiters=[],frozen=null;
 if(localStorage.getItem("mocknet")==="0"&&!window.__forceOnline){window.__net=false;frozen=load()}
 const online=()=>window.__net!==false;
-const view=()=>{if(online())return load();const v={...(frozen||load())};for(const[p,d]of lp()){if(d===null)delete v[p];else v[p]=d}return v};
+const ap=(v,p,d,m)=>{if(d===null)delete v[p];else v[p]=m?{...(v[p]||{}),...d}:d};
+const view=()=>{if(online())return load();const v={...(frozen||load())};for(const[p,d,m]of lp())ap(v,p,d,m);return v};
 const notify=()=>subs.forEach(f=>f());
 window.__goOffline=()=>{frozen=load();window.__net=false;localStorage.setItem("mocknet","0")};
-window.__goOnline=()=>{const db=load();for(const[p,d]of lp()){if(d===null)delete db[p];else db[p]=d}save(db);sp([]);window.__net=true;localStorage.removeItem("mocknet");const w=waiters;waiters=[];w.forEach(f=>f());setTimeout(notify,0)};
+window.__goOnline=()=>{const db=load();for(const[p,d,m]of lp())ap(db,p,d,m);save(db);sp([]);window.__net=true;localStorage.removeItem("mocknet");const w=waiters;waiters=[];w.forEach(f=>f());setTimeout(notify,0)};
 window.__pending=()=>lp().length;
 const wait=()=>online()?Promise.resolve():new Promise(r=>waiters.push(r));
-function write(path,d){if(online()){const db=load();if(d===null)delete db[path];else db[path]=d;save(db)}else{const p=lp();p.push([path,d]);sp(p)}window.__writes=(window.__writes||0)+1;setTimeout(notify,0)}
+function write(path,d,m){if(online()){const db=load();ap(db,path,d,m);save(db)}else{const p=lp();p.push([path,d,!!m]);sp(p)}window.__writes=(window.__writes||0)+1;setTimeout(notify,0)}
 export function initializeFirestore(){return {}}
 export function getFirestore(){return {}}
 export function persistentLocalCache(){return {}}
 export function doc(a,b){if(b===undefined){const id=Math.random().toString(36).slice(2,10);return {path:a.path+"/"+id,id}}const path=typeof a==="object"&&a.path?a.path+"/"+b:b;return {path,id:path.split("/").pop()}}
 export function collection(_,p){return {path:p,isCol:true}}
 const deny=()=>Object.assign(new Error("Missing or insufficient permissions."),{code:"permission-denied"});
-export async function setDoc(r,d){if(window.__deny)throw deny();write(r.path,d);if(window.__writeDelay)await new Promise(z=>setTimeout(z,window.__writeDelay));await wait()}
+export async function setDoc(r,d,o){if(window.__deny)throw deny();write(r.path,d,o&&o.merge);if(window.__writeDelay)await new Promise(z=>setTimeout(z,window.__writeDelay));await wait()}
 export function writeBatch(){const ops=[];return{set(r,d){ops.push([r,d]);return this},async commit(){if(window.__deny)throw deny();for(const[r,d]of ops)write(r.path,d);await wait()}}}
 export async function deleteDoc(r){if(window.__deny)throw deny();write(r.path,null);await wait()}
 const snapDoc=p=>{const db=view();return {id:p.split("/").pop(),exists:()=>p in db,data:()=>db[p]}};
