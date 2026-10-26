@@ -2,7 +2,8 @@
 放在 /home/claude/build（腳本內路徑寫死這個位置）。
 - 本機伺服器：cd /home/claude/nagoya-trip && python3 -m http.server 8766
 - 功能測試：cd /home/claude/build/ft && python3 fulltest.py（177 項）
-- 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest
+- 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest
+- smalltest：v44 第三批 3C（沒設定錢包時記現金帳的「設定錢包」入口、語音連點狀態）
 - layouttest：v44 第三批 3B（320px／200% 縮放無水平捲動、可點範圍 44、首頁「今天」對比、排序鍵盤）
 - helptest：v44 第三批 3A（首頁和當天行程頁的求助、飯店捷徑、給司機看只按 × 關閉與橫向捲動、面板 Esc／焦點、窄螢幕標題列）
 - fixtest：v44 第二批修正的回歸測試（金額輸入、兩人同時改帳、航班時區、過期待辦、匯率、分機、旅程代碼、沒選身分、超支、連點）
