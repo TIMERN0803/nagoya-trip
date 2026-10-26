@@ -11,6 +11,7 @@ async def main():
         a=await ft.newpage(b,ft.jst(11,21,20,0),me="zhang",code="neko-tf")
         s=await ft.newpage(b,ft.jst(11,21,20,0),me="star",code="neko-tf",ctx=a.ctx)
         await a.evaluate('document.querySelector(".tabs [data-tab=list]").click()');await a.wait_for_timeout(400)
+        await a.click('[data-list-tab="buy"]');await a.wait_for_timeout(300)
         ft.rec("X 免稅","要買的上方有免稅提醒","稅前滿 ¥5,000" in await a.inner_text('[data-group-id=buy]') and "護照" in await a.inner_text('[data-group-id=buy] .tf-tip'))
         await a.click('nav.tabs button[data-tab="acct"]');await a.wait_for_timeout(400)
         ft.rec("X 免稅","沒有免稅的帳時不顯示退稅清單",await a.evaluate('document.getElementById("tf-list").hidden'))

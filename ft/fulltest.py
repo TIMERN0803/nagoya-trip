@@ -185,8 +185,10 @@ async def E_acct(b):
 async def F_list(b):
     pg=await newpage(b,jst(11,18,20,0))
     await pg.click('nav.tabs button[data-tab="list"]');await pg.wait_for_timeout(500)
+    p0=await pg.evaluate('document.querySelectorAll("[data-group-id=prep] .chk-row").length')
+    await pg.click('[data-list-tab="buy"]');await pg.wait_for_timeout(300)
     n0=await pg.evaluate('document.querySelectorAll(".chk-row").length')
-    rec("F 清單","預設項目都在",n0>=10,n0)
+    rec("F 清單","預設項目都在（待辦＋要買的）",p0+n0>=10,[p0,n0])
     await pg.click('[data-item-new="buy"]');await pg.fill('.chk-form input[name=title]','白色戀人');await pg.click('.chk-form .primary');await pg.wait_for_timeout(500)
     n1=await pg.evaluate('document.querySelectorAll(".chk-row").length')
     rec("F 清單","新增一項",n1==n0+1,f"{n0}→{n1}")

@@ -1,6 +1,12 @@
 import asyncio,json
 from playwright.async_api import async_playwright
 APP=open('/home/claude/build/mock/app.js').read();FS=open('/home/claude/build/mock/fs.js').read()
+async def shown_all(pg):
+    n=0
+    for g in ("prep","buy"):
+        await pg.click(f'[data-list-tab="{g}"]');await pg.wait_for_timeout(250)
+        n+=await pg.evaluate('document.querySelectorAll(".chk-row").length')
+    return n
 async def run(b,label,server,local_items=None):
     ctx=await b.new_context(viewport={'width':390,'height':844})
     await ctx.route("**/firebasejs/**/firebase-app.js",lambda r:r.fulfill(body=APP,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))
@@ -11,9 +17,9 @@ async def run(b,label,server,local_items=None):
     await pg.goto('http://localhost:8766/'); await pg.wait_for_timeout(1500)
     srv=await pg.evaluate('Object.keys(JSON.parse(localStorage.getItem("mockdb"))).filter(k=>k.includes("/items/")).length')
     await pg.click('nav.tabs button[data-tab="list"]'); await pg.wait_for_timeout(300)
-    shown=await pg.evaluate('document.querySelectorAll(".chk-row").length')
+    shown=await shown_all(pg)
     await pg.click('[data-item-new="buy"]'); await pg.fill('.chk-form input[name=title]','測試新增'); await pg.click('.chk-form .primary'); await pg.wait_for_timeout(500)
-    shown2=await pg.evaluate('document.querySelectorAll(".chk-row").length')
+    shown2=await shown_all(pg)
     srv2=await pg.evaluate('Object.keys(JSON.parse(localStorage.getItem("mockdb"))).filter(k=>k.includes("/items/")).length')
     print(f"{label}: 開啟後 伺服器 {srv} 項／畫面 {shown} 項 → 新增一項後 伺服器 {srv2} 項／畫面 {shown2} 項 {errs}")
     await ctx.close()

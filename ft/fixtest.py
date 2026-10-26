@@ -215,7 +215,7 @@ async def no_me(b):
 
 async def rapid(b):
     ctx = await mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 12), init=seed(META))
-    await tab(pg, "list"); await pg.click('[data-item-new="buy"]'); await pg.fill('.chk-form input[name=title]', '連點')
+    await tab(pg, "list"); await pg.click('[data-list-tab="buy"]'); await pg.wait_for_timeout(200); await pg.click('[data-item-new="buy"]'); await pg.fill('.chk-form input[name=title]', '連點')
     await pg.evaluate('(()=>{const b=document.querySelector(".chk-form .primary");for(let i=0;i<10;i++)b.click()})()'); await pg.wait_for_timeout(600)
     rec("連點", "「新增」同一輪點 10 次只新增 1 筆", sum(1 for k, v in (await cloud(pg)).items() if "/items/" in k and v.get("title") == "連點") == 1)
     await tab(pg, "acct"); await pg.fill('#f-amt', '450'); await pg.fill('#f-note', '連點記帳')

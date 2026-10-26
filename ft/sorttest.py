@@ -24,7 +24,7 @@ async def main():
         for q in (a,s):await q.evaluate('document.querySelector(".tabs [data-tab=list]").click()');await q.wait_for_timeout(500)
         o0=await order(a)
         ft.rec("O 排序","待辦有排序按鈕",await a.query_selector('[data-group-id=prep] [data-sort-toggle]'))
-        ft.rec("O 排序","要買的也有排序按鈕",await a.query_selector('[data-group-id=buy] [data-sort-toggle]'))
+        ft.rec("O 排序","待辦頁籤不顯示要買的",not await a.query_selector('[data-group-id=buy]'))
         await a.click('[data-sort-toggle=prep]');await a.wait_for_timeout(300)
         ft.rec("O 排序","進入排序模式：每列左側有把手，沒有數字和箭頭",len(await a.query_selector_all('[data-group-id=prep] .drag-h'))==len(o0) and not await a.query_selector('.sort-n,[data-sort-up]') and await a.evaluate('(()=>{const r=document.querySelector(".sort-row");return r.querySelector(".drag-h").getBoundingClientRect().left<r.querySelector(".txt").getBoundingClientRect().left})()'))
         ft.rec("O 排序","排序模式沒有勾選框、不會誤觸打勾",not await a.query_selector('[data-group-id=prep] input[type=checkbox]'))
@@ -57,6 +57,8 @@ async def main():
         o3=await order(a)
         ft.rec("O 排序","新增的項目排在最後",len(o3)==len(o1)+1 and o3[:-1]==o1,o3)
         # 要買的排序
+        for q in (a,s):await q.click('[data-list-tab="buy"]');await q.wait_for_timeout(300)
+        ft.rec("O 排序","要買的也有排序按鈕",await a.query_selector('[data-group-id=buy] [data-sort-toggle]'))
         async def border():return await a.evaluate('[...document.querySelectorAll("[data-group-id=buy] [data-item-edit],[data-group-id=buy] [data-sort-id]")].map(x=>x.dataset.itemEdit||x.dataset.sortId)')
         b0=await border()
         await a.click('[data-sort-toggle=buy]');await a.wait_for_timeout(300)

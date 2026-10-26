@@ -6,6 +6,7 @@ B="trips/neko-test"
 def srv(pg,frag):return pg.evaluate(f'Object.keys(JSON.parse(localStorage.getItem("mockdb")||"{{}}")).filter(k=>k.includes({json.dumps(frag)}))')
 async def item_case(pg,label,group):
     await pg.evaluate('document.querySelector(".tabs [data-tab=list]").click()');await pg.wait_for_timeout(500)
+    if group in ("prep","buy"):await pg.click(f'[data-list-tab="{group}"]');await pg.wait_for_timeout(300)
     if group=="pack":
         g=await pg.query_selector('[data-list-sub="pack"],[data-go-pack],[data-sub="pack"]')
         if g:await g.click();await pg.wait_for_timeout(500)
@@ -40,6 +41,7 @@ async def main():
         await item_case(pg,"行李","pack")
         # 刪除後不按復原：5 秒後提示消失，資料維持刪除
         await pg.evaluate('document.querySelector(".tabs [data-tab=list]").click()');await pg.wait_for_timeout(500)
+        await pg.click('[data-list-tab="buy"]');await pg.wait_for_timeout(300)
         ed=await pg.query_selector('[data-group-id=buy] [data-item-edit]');id=await ed.get_attribute('data-item-edit')
         await ed.click();await pg.wait_for_timeout(300);await pg.click(f'[data-item-del="{id}"]');await pg.wait_for_timeout(300)
         await pg.clock.run_for(5600);await pg.wait_for_timeout(300)
@@ -90,7 +92,7 @@ async def main():
         # 對方手機同步：A 刪除再復原，B 看得到
         a=await ft.newpage(b,ft.jst(11,18,20,0),me="zhang",code="neko-sync")
         bb=await ft.newpage(b,ft.jst(11,18,20,0),me="star",code="neko-sync",ctx=a.ctx)
-        for q in (a,bb):await q.evaluate('document.querySelector(".tabs [data-tab=list]").click()');await q.wait_for_timeout(500)
+        for q in (a,bb):await q.evaluate('document.querySelector(".tabs [data-tab=list]").click()');await q.wait_for_timeout(500);await q.click('[data-list-tab="buy"]');await q.wait_for_timeout(300)
         ed=await a.query_selector('[data-group-id=buy] [data-item-edit]');id=await ed.get_attribute('data-item-edit')
         await ed.click();await a.wait_for_timeout(300);await a.click(f'[data-item-del="{id}"]');await a.wait_for_timeout(700)
         ft.rec("U 復原","同步：對方手機也刪掉",not await bb.query_selector(f'[data-item-edit="{id}"]'))

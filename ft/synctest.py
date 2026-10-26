@@ -55,6 +55,7 @@ async def do_ops(pg, tag, mood_day=2):
     await tab(pg, "list")
     cid = await pg.evaluate('document.querySelector("[data-group-id=prep] .chk input:not(:checked)")?.id')
     await pg.check('#' + cid); await pg.wait_for_timeout(100)
+    await pg.click('[data-list-tab="buy"]'); await pg.wait_for_timeout(100)
     await pg.click('[data-item-new="buy"]'); await pg.fill('.chk-form input[name=title]', tag + "要買"); await pg.click('.chk-form .primary'); await pg.wait_for_timeout(150)
     await tab(pg, "acct"); await pg.fill('#f-amt', '2200'); await pg.fill('#f-note', tag + "記帳"); await pg.click('#f-save'); await pg.wait_for_timeout(150)
     msg = await pg.inner_text('#f-msg')
