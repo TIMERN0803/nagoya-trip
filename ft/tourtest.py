@@ -4,6 +4,12 @@ import fulltest as ft
 from playwright.async_api import async_playwright
 NEW='localStorage.removeItem("ngy:tour");'
 async def hole_on(pg,sel):
+    # 教學會在 450ms 後重新對齊一次（目標可能還在進場動畫），所以最多等 1.5 秒
+    for i in range(10):
+        if await _hole_on(pg,sel):return True
+        await pg.clock.run_for(150);await pg.wait_for_timeout(60)
+    return False
+async def _hole_on(pg,sel):
     return await pg.evaluate('''([sel])=>{const h=document.querySelector(".coach-hole").getBoundingClientRect(),el=[...document.querySelectorAll(sel)].find(e=>e.getClientRects().length);if(!el)return false;const r=el.getBoundingClientRect();return Math.abs(h.left-(r.left-6))<3&&Math.abs(h.top-(r.top-6))<3&&r.top>=0&&r.bottom<=innerHeight}''',[sel])
 async def tip_ok(pg):
     return await pg.evaluate('''(()=>{const t=document.querySelector(".coach-tip").getBoundingClientRect(),h=document.querySelector(".coach-hole").getBoundingClientRect();const overlap=!(t.bottom<=h.top+2||t.top>=h.bottom-2);return t.top>=0&&t.bottom<=innerHeight&&!overlap})()''')
