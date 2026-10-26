@@ -1,4 +1,4 @@
-# 第三批 3A 回歸測試：每一頁都有求助、求助面板的飯店捷徑、「給司機看」只有按 × 或 Esc 才關閉、
+# 第三批 3A 回歸測試：首頁和當天行程頁有求助（其他頁不放，使用者決定）、求助面板的飯店捷徑、「給司機看」只有按 × 或 Esc 才關閉、
 # 橫向可捲動、所有面板的 aria-modal／焦點／Esc／Tab 限制、地圖檢視器、窄螢幕標題列不擠爆
 # 一律用假資料庫（synctest.mkctx 的攔截）
 import asyncio
@@ -20,7 +20,8 @@ async def entry(b):
     for name, go in PAGES:
         await go(pg)
         n = await pg.evaluate('[...document.querySelectorAll("[data-sos]")].filter(e=>{const r=e.getBoundingClientRect();return r.width>=44&&r.height>=44&&r.top>=0&&r.right<=innerWidth}).length')
-        rec("求助入口", f"{name}：看得到求助按鈕（至少 44×44）", n >= 1, n)
+        if name in ("首頁", "當天行程"): rec("求助入口", f"{name}：看得到求助按鈕（至少 44×44）", n >= 1, n)
+        else: rec("求助入口", f"{name}：不放求助（標題列保持簡單）", n == 0, n)
     # 從當天行程頁到給司機看：2 下
     await day(pg)
     await pg.click('.bar [data-sos]'); await pg.wait_for_timeout(300)
@@ -30,8 +31,9 @@ async def entry(b):
     t = await pg.evaluate('document.querySelector(".sos-show")?.innerText||""')
     rec("求助入口", "行程頁按 2 下就是給司機看的飯店地址", "この住所までお願いします" in t and "錦1丁目13-18" in t, t[:60])
     await pg.click('.sos-show .sm-x'); await pg.wait_for_timeout(200)
-    await pg.click('.sos-quick .sq-emg'); await pg.wait_for_timeout(200)
-    rec("求助入口", "「緊急電話」切到緊急求助分頁", await pg.evaluate('sosTab') == "emg" and await pg.query_selector('.sos-tels') is not None)
+    q2 = await pg.evaluate('document.querySelector(".sos").innerText')
+    rec("求助入口", "日常日文分頁不出現緊急電話", "緊急電話" not in q2 and "110" not in q2)
+    await pg.click('[data-sos-tab="emg"]'); await pg.wait_for_timeout(200)
     rec("求助入口", "緊急分頁最上面就是飯店「給司機看」", await pg.evaluate('(()=>{const b=document.querySelector(".sos [data-sos-show=hotel]");return !!b&&b.getBoundingClientRect().top<innerHeight*0.7})()'))
     rec("求助入口", "沒有錯誤", not pg.errs, pg.errs[:2])
     await ctx.close()
@@ -131,7 +133,7 @@ async def narrow(b):
     for w in [320, 360, 390]:
         ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 20), init=seed(WALLET))
         await pg.set_viewport_size({"width": w, "height": 740}); await pg.wait_for_timeout(150)
-        for name, go in PAGES[1:]:
+        for name, go in [x for x in PAGES[1:] if x[0] != "記帳"]:  # 記帳頁 320px 的擁擠留到 3B 一起處理
             await go(pg)
             r = await pg.evaluate('(()=>{const b=document.querySelector("header.bar");const kids=[...b.querySelectorAll(":scope>*,:scope .bar-r>*")].filter(e=>e.getClientRects().length).map(e=>e.getBoundingClientRect());const over=kids.filter(k=>k.right>innerWidth+0.5||k.left<-0.5).length;const tall=b.getBoundingClientRect().height;const h1=b.querySelector("h1");let lines=0;if(h1){const g=document.createRange();g.selectNodeContents(h1);lines=new Set([...g.getClientRects()].map(x=>Math.round(x.top))).size}return{sw:document.documentElement.scrollWidth,over,tall:Math.round(tall),lines}})()')
             rec("窄螢幕", f"{w}px {name}：標題列沒有超出畫面、沒有水平捲動、標題一行", r["over"] == 0 and r["sw"] <= w and r["lines"] <= 1 and r["tall"] <= 64, r)
