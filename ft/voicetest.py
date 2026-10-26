@@ -2,7 +2,7 @@
 import asyncio
 import fulltest as ft
 from playwright.async_api import async_playwright
-STUB='''(()=>{window._said=[];window._cancel=0;const ss={getVoices:()=>window._voices||[{lang:"ja-JP",name:"Kyoko"},{lang:"en-US",name:"Sam"}],speak:u=>{window._said.push({t:u.text,lang:u.lang,rate:u.rate,voice:u.voice&&u.voice.name});setTimeout(()=>u.onend&&u.onend(),50)},cancel:()=>{window._cancel++}};Object.defineProperty(window,"speechSynthesis",{value:ss,configurable:true});window.SpeechSynthesisUtterance=function(t){this.text=t};})();'''
+STUB='''(()=>{window._said=[];window._cancel=0;const ss={getVoices:()=>window._voices||[{lang:"ja-JP",name:"Kyoko"},{lang:"en-US",name:"Sam"}],speak:u=>{window._said.push({t:u.text,lang:u.lang,rate:u.rate,voice:u.voice&&u.voice.name});setTimeout(()=>u.onend&&u.onend(),400)},cancel:()=>{window._cancel++}};Object.defineProperty(window,"speechSynthesis",{value:ss,configurable:true});window.SpeechSynthesisUtterance=function(t){this.text=t};})();'''
 async def opensos(pg):
     if not await pg.query_selector('.hero'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
     await pg.click('[data-sos]');await pg.wait_for_timeout(300)
@@ -23,7 +23,7 @@ async def main():
         said=await pg.evaluate('window._said')
         ft.rec("語音","唸出日文句子，語言 ja-JP、用日文語音",said and said[-1]['t']=="荷物を預かってもらえますか？" and said[-1]['lang']=="ja-JP" and said[-1]['voice']=="Kyoko",said)
         ft.rec("語音","播放中顯示狀態","播放中" in st,st)
-        await pg.wait_for_timeout(150)
+        await pg.wait_for_timeout(600)  # 替身一句播 400ms（原本 50ms，電腦忙時點擊就超過 50ms，會誤判）
         ft.rec("語音","播完變「再聽一次」","再聽一次" in await pg.evaluate('document.querySelector(".sos-show [data-say]").innerText'))
         ft.rec("語音","點播放不會關掉放大畫面",await pg.query_selector('.sos-show'))
         await pg.click('.sos-show [data-say]');await pg.wait_for_timeout(100)
