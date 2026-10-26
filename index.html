@@ -104,7 +104,7 @@
   --accent:#946645; --accent-deep:#6B4730; --accent-soft:#F1E3D3;
   --st-now:#F4C04A; --st-now-soft:#FDF3D6; --st-next:var(--mint-ink); --st-next-glow:#B6E0D3;
   --shadow-float:0 10px 24px -10px rgba(63,49,39,.35);
-  --coral-soft:#FDE6DC; --coral-line:#F0B49E; --coral-ink:#A64A2E; --sos-line:#E07A5F;
+  --coral-soft:#FDE6DC; --coral-line:#F0B49E; --coral-ink:#A64A2E; --sos-line:var(--coral-ink);
   --c-move-bg:#DCEBF7; --c-move:#2D5F8A;
   --c-go-bg:#DDF0E2;   --c-go:#2E6B45;
   --c-eat-bg:#FDE3D2;  --c-eat:#A24E1F;
@@ -886,7 +886,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .stay-ord .sos-ord{font-size:13.5px;padding:9px 12px}
 .stay-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .stay-sos{border:0;border-radius:12px;background:var(--sunk);color:var(--ink);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13.5px;padding:8px 12px;cursor:pointer}
-/* 求助（首頁和當天行程頁同一個樣式）：icon 在左、文字在右，珊瑚色外框和陰影，和其他棕色外框的按鈕明顯不同 */
+/* 求助（首頁和當天行程頁同一個樣式）：icon 在左、文字在右，外框和陰影用和文字、icon 同一個深珊瑚色，和其他棕色外框的按鈕明顯不同 */
 .hud-sos,.bar-sos{flex:none;display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 13px 0 9px;border-radius:999px;border:2.5px solid var(--sos-line);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--sos-line);font-family:var(--f-display);font-weight:900;font-size:14px;cursor:pointer;transition:transform .08s,box-shadow .08s}
 .hud-sos{margin-left:auto}
 .hud-sos span,.bar-sos span{display:flex}.hud-sos svg,.bar-sos svg{width:20px;height:20px}
