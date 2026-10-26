@@ -128,6 +128,19 @@ async def viewer(b):
     await pg.wait_for_timeout(300); z = await L()
     rec("地圖檢視器", "連續開關 30 次地圖＋40 次面板：沒有殘留畫面、listener 不增加", abs(z - a) <= 5 and await pg.evaluate('document.querySelectorAll(".viewer,.sheet-modal").length') == 0 and await pg.evaluate('modals.length') == 0, [a, z])
     await c.detach(); await ctx.close()
+    # 出發前、沒有任何按鈕有焦點時連續開關（上次會讓每個面板留住前一個面板）
+    for nm, js, t in [("求助", 'openSos();document.querySelector(".sheet-modal .sm-x").click()', ft.jst(11, 10, 12)), ("錢包", 'openWallet();document.querySelector(".sheet-modal .sm-x").click()', ft.jst(11, 10, 12)),
+                      ("出發前設定", 'openSetup();document.querySelector(".sheet-modal .sm-x").click()', ft.jst(11, 10, 12)), ("給司機看", 'sosShow("hotel");document.querySelector(".sos-show .sm-x").click()', ft.jst(11, 10, 12)),
+                      ("地圖", 'openViewer("ghibli-map.jpg","x");document.querySelector(".viewer .vclose").click()', ft.jst(11, 10, 12)), ("回顧故事", 'openStory();document.querySelector(".story .st-x").click()', ft.jst(11, 26, 12))]:
+        ctx = await S.mkctx(b); pg = await opn(ctx, t, init=seed(META)); await home(pg)
+        c = await ctx.new_cdp_session(pg); await c.send("Performance.enable")
+        a = await L2(c)
+        for i in range(30): await pg.evaluate(js)
+        await pg.wait_for_timeout(400); z = await L2(c)
+        rec("記憶體", f"{nm}：沒有焦點時連續開關 30 次，listener 不增加", z - a <= 3, [a, z])
+        await c.detach(); await ctx.close()
+async def L2(c):
+    await c.send("HeapProfiler.collectGarbage"); m = await c.send("Performance.getMetrics"); return {x["name"]: x["value"] for x in m["metrics"]}["JSEventListeners"]
 
 async def narrow(b):
     for w in [320, 360, 390]:
