@@ -76,13 +76,14 @@ def lum(c):
 async def contrast(b):
     ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 20), init=seed(DB))
     await pg.evaluate('tab="plan";view="home";render()'); await pg.wait_for_timeout(250)
-    c = await pg.evaluate('''(()=>{const e=document.querySelector(".g-home .tile.today small");if(!e)return null;const p=s=>s.match(/\\d+/g).slice(0,3).map(Number);
+    # 首頁上所有寫著「今天」的小字（心情條、日期格），對比都要至少 4.5:1
+    cs = await pg.evaluate('''[...document.querySelectorAll("#app *")].filter(e=>e.childElementCount===0&&e.textContent.trim()==="今天"&&e.getClientRects().length).map(e=>{const p=s=>s.match(/\\d+/g).slice(0,3).map(Number);
      let bg=null,n=e;while(n&&!bg){const v=getComputedStyle(n).backgroundColor;if(v&&!/rgba\\(0, 0, 0, 0\\)|transparent/.test(v))bg=p(v);n=n.parentElement}
-     return{fg:p(getComputedStyle(e).color),bg:bg||[255,255,255]}})()''')
-    if c:
-        a, z = sorted([lum(c["fg"]), lum(c["bg"])], reverse=True); ratio = (a + 0.05) / (z + 0.05)
-        rec("對比", "首頁「今天」對比至少 4.5:1", ratio >= 4.5, round(ratio, 2))
-    else: rec("對比", "找得到首頁「今天」", False)
+     return{where:e.parentElement.className,fg:p(getComputedStyle(e).color),bg:bg||[255,255,255]}})''')
+    out = []
+    for c in cs:
+        a, z = sorted([lum(c["fg"]), lum(c["bg"])], reverse=True); out.append((c["where"], round((a + 0.05) / (z + 0.05), 2)))
+    rec("對比", "首頁所有「今天」小字對比至少 4.5:1", out and all(r >= 4.5 for _, r in out), out)
     await ctx.close()
 
 async def sort_keys(b):
