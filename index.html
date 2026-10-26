@@ -884,11 +884,8 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .bar-sos{flex:none;display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 12px 0 8px;border-radius:999px;border:2.5px solid var(--ol);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:14px;cursor:pointer;transition:transform .08s,box-shadow .08s}
 .bar-sos span{display:flex}.bar-sos svg{width:20px;height:20px}
 .bar-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
-.bar>h1+.bar-sos{margin-left:auto}
-/* 窄螢幕：求助只留圖示、記帳頁不放貓頭、同步只留燈號、行程頁天數縮短，標題列不會擠爆 */
-@media (max-width:400px){.bar:has(.bar-r) .logo{display:none}}
-@media (max-width:360px){.bar-sos{width:44px;padding:0;justify-content:center}.bar-sos b{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.bar .dc-of{display:none}
- .bar .sync span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.bar .sync{padding:0;width:44px;height:44px;justify-content:center}}
+/* 窄螢幕：求助只留圖示、天數縮短成「第 3 天」 */
+@media (max-width:360px){.bar-sos{width:44px;padding:0;justify-content:center}.bar-sos b{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.bar .dc-of{display:none}}
 .sos{max-height:92vh;overflow-y:auto;overscroll-behavior:contain;gap:14px}
 /* 標題＋分頁固定在面板頂端，只捲下面的內容；捲動後下緣出現淡陰影 */
 .sos-top{display:flex;flex-direction:column;gap:12px}
@@ -910,7 +907,6 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sq-main span{display:flex;flex-direction:column;min-width:0}
 .sq-main b{font-family:var(--f-display);font-weight:900;font-size:16px}
 .sq-main small{font-size:12px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sq-emg{flex:none;padding:0 12px;background:var(--coral-soft);color:var(--coral-ink);font-family:var(--f-display);font-weight:900;font-size:14px}
 .sos-quick button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
 .sos-ord{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;background:var(--paper);border-radius:16px;padding:10px 12px;font-size:14px}
 .sos-ord dt{color:var(--muted);font-size:13px}
@@ -2059,7 +2055,7 @@ async function switchDay(i){
 }
 function wxHTML(){
  const any=DAYS.some(x=>wxFor(x).live);
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>天氣</h1>${barSos()}</header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>天氣</h1></header>
  <svg class="illo" viewBox="2 2 316 116" aria-hidden="true"><g filter="url(#rough)"><rect width="320" height="120" fill="url(#gSky)"/><circle class="ol" cx="270" cy="32" r="16" fill="#FCE4A0"/>${cloud(64,34,1.4)}${cloud(196,30,1)}<path d="M0 100q80-14 160-4t160-2v26H0z" fill="#CFE6BE"/>${maple(34,106,"#F2A877",1)}${maple(292,108,"#EF8E74",.9)}<g class="ol" transform="translate(160 40)"><path d="M0 0v52" fill="none"/><path d="M-44 8a44 26 0 0 1 88 0q-11-5-22 0q-11-5-22 0q-11-5-22 0q-11-5-22 0z" fill="#EE9479"/></g></g>${use("cats-hi",118,46,84,55)}</svg>
  <div class="gap"></div>
  <span class="src ${any?"live":"avg"}">${any?`實際預報，${updatedText()}`:"目前是往年平均，出發前約兩週會自動換成預報"}</span>
@@ -2067,7 +2063,7 @@ function wxHTML(){
  <div class="tip"><svg aria-hidden="true"><use href="#cats"/></svg><div><b>怎麼穿</b><br>早晚約 8 度、白天約 17 度，溫差大。建議洋蔥式穿搭，帶薄羽絨或大衣，穿好走的鞋。下午 4 點半左右天就暗了。</div></div></div>`;
 }
 function moveHTML(){
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>交通</h1>${barSos()}</header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>交通</h1></header>
  <svg class="illo" viewBox="2 2 316 116" aria-hidden="true"><g filter="url(#rough)"><rect width="320" height="120" fill="url(#gWarm)"/>${cloud(250,30,1.2)}${cloud(150,22,.9)}
   <rect y="94" width="320" height="26" fill="#E7DCCB"/><path d="M0 102h320M0 110h320" stroke="#B9A88F" stroke-width="3"/>
   <g class="ol"><rect x="110" y="48" width="200" height="44" rx="18" fill="#fff"/><path d="M286 48h6a18 18 0 0 1 18 18v8h-24z" fill="#9CC6DE"/>
@@ -2093,7 +2089,7 @@ function moveHTML(){
  </div>`;
 }
 function acctHTML(){
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>記帳</h1><div class="bar-r">${syncPill()}${walletChip()}${barSos()}</div></header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>記帳</h1><div class="bar-r">${syncPill()}${walletChip()}</div></header>
  ${syncForm()}
  <div class="stack"><div class="box" id="acct-sum"></div>
  <form class="box form" id="acct-form" autocomplete="off">
@@ -2169,7 +2165,7 @@ document.addEventListener("keydown",e=>{
  if(!m.v.contains(cur)){e.preventDefault();a.focus();return}
  if(e.shiftKey&&cur===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&cur===z){e.preventDefault();a.focus()}
 },true);
-/* 每一頁標題列右邊的小求助按鈕（首頁另有大的） */
+/* 當天行程頁標題列右邊的求助（首頁另有大的）。旅途中打開 App 預設就是當天行程頁 */
 const SOS_ICO=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/></svg>`;
 const barSos=()=>`<button type="button" class="bar-sos" data-sos aria-label="求助：飯店地址、緊急電話、日文"><span>${SOS_ICO}</span><b>求助</b></button>`;
 function openWallet(){
@@ -2271,7 +2267,7 @@ function packPageHTML(){
  const groups=PCATS.map(([c,n])=>[c,n,rows.filter(r=>(r.cat||"etc")===c)]).filter(g=>g[2].length);
  const vis=list=>packTodo&&me?list.filter(r=>!mineDone(r)||editItem===r.id):list;
  const left=me?rows.length-packCnt(rows,me):0;
- return `<header class="bar pk-bar"><button class="back" data-pack-close><svg><use href="#i-back"/></svg>清單</button><h1 class="pk-title">行李準備</h1>${syncPill()}${barSos()}</header>
+ return `<header class="bar pk-bar"><button class="back" data-pack-close><svg><use href="#i-back"/></svg>清單</button><h1 class="pk-title">行李準備</h1>${syncPill()}</header>
  <div class="stack">
   <div class="box pack-sum">${SUITCASE}<div class="ps-body">${PEOPLE.map(p=>{const n=packCnt(rows,p[0]);return `<span class="pe-row"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg><b>${p[1]}</b><span class="pe-bar"><i style="width:${rows.length?(n/rows.length*100).toFixed(1):0}%"></i></span><small>${n}/${rows.length}</small></span>`}).join("")}
    ${me?`<button class="pt-toggle" type="button" data-pack-todo aria-pressed="${packTodo}"><span class="switch${packTodo?" on":""}"><i></i></span>只看我還沒裝的${left?`（${left}）`:""}</button>`:""}</div></div>
@@ -2294,7 +2290,7 @@ function groupHTML(title,g){
  </div>`;
 }
 function listHTML(){
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>清單</h1>${syncPill()}${barSos()}</header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>清單</h1>${syncPill()}</header>
  ${syncForm()}
  <div class="stack">${packEntryHTML()}${groupHTML("待辦清單","prep")}${groupHTML("要買的","buy")}
  ${canWrite&&missingDefaults().length?`<button class="restore${pendingRestore?" sure":""}" type="button" data-restore>${pendingRestore?`確定補回 ${missingDefaults().length} 個原本的項目？`:"補回原本行程文件裡的項目"}</button>`:""}</div>`;
@@ -3181,7 +3177,7 @@ ${sosEditing?sosFormHTML(INS_FIELDS,"data-sos-save"):""}
  <p class="sos-note">這一頁沒有網路也能打開</p>`;
 }
 /* 求助面板最上面的捷徑：迷路時打開求助、按一下就是給司機看的飯店地址 */
-const sosQuickHTML=()=>`<div class="sos-quick"><button type="button" class="sq-main" data-sos-show="hotel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5M6.5 10v9h11v-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>飯店地址給司機看</b><small>${SOS_HOTEL.jp}</small></span></button>${sosTab==="talk"?`<button type="button" class="sq-emg" data-sos-tab="emg">緊急電話</button>`:""}</div>`;
+const sosQuickHTML=()=>`<div class="sos-quick"><button type="button" class="sq-main" data-sos-show="hotel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5M6.5 10v9h11v-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>飯店地址給司機看</b><small>${SOS_HOTEL.jp}</small></span></button></div>`;
 function smShade(c){const t=c&&c.querySelector(":scope>.sm-head,:scope>.sos-top");if(t)t.classList.toggle("shade",c.scrollTop>4)}
 const sosShade=v=>smShade(v.querySelector(".sm-card"));
 addEventListener("scroll",()=>{const b=document.querySelector(".pk-bar");if(b)b.classList.toggle("shade",scrollY>4)},{passive:true});
