@@ -753,7 +753,6 @@ body.has-fab .shell{padding-bottom:190px}
 .mapcard .go{width:20px;height:20px;color:var(--brown);flex:none}
 .mapcard:active{transform:scale(.98)}
 .viewer{position:fixed;inset:0;z-index:50;background:rgba(43,36,32,.94);touch-action:none;overflow:hidden;animation:fadein .18s ease}
-.viewer.out{opacity:0;transition:opacity .18s}
 .viewer img{position:absolute;left:0;top:0;transform-origin:0 0;user-select:none;-webkit-user-select:none;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
 .vclose{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#2B2420;display:grid;place-items:center;cursor:pointer}
 .vclose svg{width:20px;height:20px}
@@ -881,6 +880,15 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .hud-sos{margin-left:auto;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:52px;height:52px;border-radius:18px;border:var(--olw,2.5px) solid var(--ol);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:11.5px;cursor:pointer;transition:transform .08s,box-shadow .08s}
 .hud-sos svg{width:22px;height:22px}
 .hud-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+/* 各頁標題列的求助：珊瑚色小膠囊，高 44 */
+.bar-sos{flex:none;display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 12px 0 8px;border-radius:999px;border:2.5px solid var(--ol);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:14px;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.bar-sos span{display:flex}.bar-sos svg{width:20px;height:20px}
+.bar-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+.bar>h1+.bar-sos{margin-left:auto}
+/* 窄螢幕：求助只留圖示、記帳頁不放貓頭、同步只留燈號、行程頁天數縮短，標題列不會擠爆 */
+@media (max-width:400px){.bar:has(.bar-r) .logo{display:none}}
+@media (max-width:360px){.bar-sos{width:44px;padding:0;justify-content:center}.bar-sos b{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.bar .dc-of{display:none}
+ .bar .sync span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.bar .sync{padding:0;width:44px;height:44px;justify-content:center}}
 .sos{max-height:92vh;overflow-y:auto;overscroll-behavior:contain;gap:14px}
 /* 標題＋分頁固定在面板頂端，只捲下面的內容；捲動後下緣出現淡陰影 */
 .sos-top{display:flex;flex-direction:column;gap:12px}
@@ -895,6 +903,15 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sos-acts>*{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;height:44px;border-radius:14px;border:0;font:inherit;font-family:var(--f-display);font-weight:900;font-size:14.5px;text-decoration:none;cursor:pointer;background:var(--sunk);color:var(--ink)}
 .sos-acts .main{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep)}
 .sos-acts svg{width:18px;height:18px}
+.sos-quick{display:flex;gap:8px;flex:none}
+.sos-quick button{border:2px solid var(--ol);box-shadow:0 3px 0 var(--ol);border-radius:18px;font:inherit;cursor:pointer;min-height:56px}
+.sq-main{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--accent);color:#fff;text-align:left}
+.sq-main svg{width:26px;height:26px;flex:none}
+.sq-main span{display:flex;flex-direction:column;min-width:0}
+.sq-main b{font-family:var(--f-display);font-weight:900;font-size:16px}
+.sq-main small{font-size:12px;opacity:.9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sq-emg{flex:none;padding:0 12px;background:var(--coral-soft);color:var(--coral-ink);font-family:var(--f-display);font-weight:900;font-size:14px}
+.sos-quick button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
 .sos-ord{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;background:var(--paper);border-radius:16px;padding:10px 12px;font-size:14px}
 .sos-ord dt{color:var(--muted);font-size:13px}
 .sos-ord dd{margin:0;font-weight:700;word-break:break-all}
@@ -931,16 +948,19 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .sos-ph .p-jp{font-size:17px;font-weight:900;font-family:var(--f-display)}
 .sos-ph .p-rd{font-size:12px;color:var(--muted)}
 .sos-note{font-size:12px;color:var(--muted);text-align:center;margin:0}
-.sos-show{position:fixed;inset:0;z-index:70;background:#fff;display:flex;flex-direction:column;justify-content:center;gap:18px;padding:calc(24px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));animation:fadein .15s ease;color:#2B2420}
+.sos-show{position:fixed;inset:0;z-index:70;background:#fff;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:calc(72px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));animation:fadein .15s ease;color:#2B2420}
 .sos-show .s-say{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;min-height:52px;padding:0 22px 0 18px;border:2.5px solid var(--accent-deep);border-radius:999px;background:var(--accent);box-shadow:0 4px 0 var(--accent-deep);color:#fff;font:inherit;font-family:var(--f-display);font-weight:900;font-size:17px;cursor:pointer}
 .sos-show .s-say svg{width:24px;height:24px}
+/* 內容放得下時置中；放不下（手機橫拿）時從最上面開始排，可以往下捲 */
+.sos-show .s-body{margin-block:auto;display:flex;flex-direction:column;gap:18px;outline:none}
+@media (max-height:500px){.sos-show{padding-top:calc(20px + env(safe-area-inset-top,0px));padding-right:80px}.sos-show .s-body{gap:10px}.sos-show .s-lead{font-size:18px}.sos-show .s-big{font-size:clamp(24px,8vh,36px)}.sos-show .s-mid{font-size:clamp(17px,5.5vh,24px)}}
 .sos-show .s-say:active{transform:translateY(2px);box-shadow:0 2px 0 var(--accent-deep)}
 .sos-show .s-say.on{background:var(--accent-deep)}
 .sos-show .s-lead{font-size:22px;font-weight:900;line-height:1.4;color:var(--coral-ink)}
 .sos-show .s-big{font-size:clamp(30px,9vw,44px);font-weight:900;line-height:1.3;font-family:var(--f-display);word-break:break-word}
 .sos-show .s-mid{font-size:clamp(20px,6vw,28px);font-weight:700;line-height:1.5}
 .sos-show .s-zh{font-size:15px;color:var(--muted);border-top:1.5px dashed var(--line);padding-top:12px}
-.sos-show .sm-x{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:48px;height:48px}
+.sos-show .sm-x{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:14px;width:52px;height:52px;z-index:1}
 
 /* ===== 刪除後復原 ===== */
 .undo-bar{position:fixed;z-index:62;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(104px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto;display:flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;border-radius:18px;background:var(--ink);color:#fff;box-shadow:var(--shadow-float);font-family:var(--f-body);animation:toastin .25s cubic-bezier(.2,.9,.3,1.2);overflow:hidden}
@@ -1781,10 +1801,9 @@ function openViewer(src,alt){
  v.addEventListener("pointerup",up);v.addEventListener("pointercancel",up);
  v.addEventListener("wheel",e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,s*(e.deltaY<0?1.15:1/1.15),false)},{passive:false});
  v.querySelector(".vtools").addEventListener("click",e=>{const b=e.target.closest("[data-z]");if(!b)return;const z=+b.dataset.z;if(z===0)zoomAt(vw()/2,vh()/2,1,true);else zoomAt(vw()/2,vh()/2,s*(z>0?1.6:1/1.6),true)});
- const close=()=>{removeEventListener("resize",fit);removeEventListener("keydown",esc_);v.classList.add("out");document.body.style.overflow="";setTimeout(()=>v.remove(),reduce()?0:180)};
- const esc_=e=>{if(e.key==="Escape")close()};addEventListener("keydown",esc_);
+ /* 關閉時立刻移除（不留淡出中的舊畫面），Esc 和焦點交給共用的面板處理 */
+ const close=modal(v,()=>{removeEventListener("resize",fit);document.body.style.overflow="";v.remove()},".vclose");
  v.querySelector(".vclose").addEventListener("click",close);
- v.querySelector(".vclose").focus({preventScroll:true});
 }
 let pendingDel=null,editingId=null,editBase=null,lastSave=0;
 /* 新帳的預設值：自己付、兩人平分、付現、今天。修改完舊帳或取消修改後都回到這裡，不沿用舊帳 */
@@ -2008,7 +2027,7 @@ ${nowCardHTML(x,stat)}
  <ol class="tl">${x.items.map((it,i)=>legHTML(x,i)+itemHTML(it,i,stat)).join("")}</ol>${moodSectionHTML(x)}`;
 }
 function dayHTML(){
- return `<header class="bar"><button class="back" data-home><svg><use href="#i-back"/></svg>全部天數</button><span class="right" id="dayCount">第 ${dayIdx+1} 天，共 8 天</span></header>
+ return `<header class="bar"><button class="back" data-home><svg><use href="#i-back"/></svg>全部天數</button><span class="right" id="dayCount">第 ${dayIdx+1} 天<span class="dc-of">，共 8 天</span></span>${barSos()}</header>
  <div class="strip"><div class="days" role="tablist" aria-label="選擇日期"><span class="ind" aria-hidden="true"></span>${DAYS.map((d,i)=>`<button class="day-btn${i===todayIdx?" today":""}${dayDate(d)<today?" past":""}" role="tab" aria-selected="${i===dayIdx}" data-day="${i}" aria-label="${d.d}（${d.w}）">${chipInner(d,i)}</button>`).join("")}</div></div>
  <div id="dayBody">${dayBodyHTML()}</div>`;
 }
@@ -2027,7 +2046,7 @@ async function switchDay(i){
  const dir=i>dayIdx?1:-1,prev=dayIdx;dayIdx=i;store.set("day",i);
  const chips=app.querySelectorAll(".day-btn");
  [prev,i].forEach(k=>{chips[k].setAttribute("aria-selected",k===i);chips[k].innerHTML=chipInner(DAYS[k],k)});
- document.getElementById("dayCount").textContent=`第 ${i+1} 天，共 8 天`;
+ document.getElementById("dayCount").innerHTML=`第 ${i+1} 天<span class="dc-of">，共 8 天</span>`;
  placeInd(true);
  const body=document.getElementById("dayBody"),strip=app.querySelector(".strip");
  const stripBottom=strip.getBoundingClientRect().bottom,bodyTop=body.getBoundingClientRect().top;
@@ -2040,7 +2059,7 @@ async function switchDay(i){
 }
 function wxHTML(){
  const any=DAYS.some(x=>wxFor(x).live);
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>天氣</h1></header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>天氣</h1>${barSos()}</header>
  <svg class="illo" viewBox="2 2 316 116" aria-hidden="true"><g filter="url(#rough)"><rect width="320" height="120" fill="url(#gSky)"/><circle class="ol" cx="270" cy="32" r="16" fill="#FCE4A0"/>${cloud(64,34,1.4)}${cloud(196,30,1)}<path d="M0 100q80-14 160-4t160-2v26H0z" fill="#CFE6BE"/>${maple(34,106,"#F2A877",1)}${maple(292,108,"#EF8E74",.9)}<g class="ol" transform="translate(160 40)"><path d="M0 0v52" fill="none"/><path d="M-44 8a44 26 0 0 1 88 0q-11-5-22 0q-11-5-22 0q-11-5-22 0q-11-5-22 0z" fill="#EE9479"/></g></g>${use("cats-hi",118,46,84,55)}</svg>
  <div class="gap"></div>
  <span class="src ${any?"live":"avg"}">${any?`實際預報，${updatedText()}`:"目前是往年平均，出發前約兩週會自動換成預報"}</span>
@@ -2048,7 +2067,7 @@ function wxHTML(){
  <div class="tip"><svg aria-hidden="true"><use href="#cats"/></svg><div><b>怎麼穿</b><br>早晚約 8 度、白天約 17 度，溫差大。建議洋蔥式穿搭，帶薄羽絨或大衣，穿好走的鞋。下午 4 點半左右天就暗了。</div></div></div>`;
 }
 function moveHTML(){
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>交通</h1></header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>交通</h1>${barSos()}</header>
  <svg class="illo" viewBox="2 2 316 116" aria-hidden="true"><g filter="url(#rough)"><rect width="320" height="120" fill="url(#gWarm)"/>${cloud(250,30,1.2)}${cloud(150,22,.9)}
   <rect y="94" width="320" height="26" fill="#E7DCCB"/><path d="M0 102h320M0 110h320" stroke="#B9A88F" stroke-width="3"/>
   <g class="ol"><rect x="110" y="48" width="200" height="44" rx="18" fill="#fff"/><path d="M286 48h6a18 18 0 0 1 18 18v8h-24z" fill="#9CC6DE"/>
@@ -2074,7 +2093,7 @@ function moveHTML(){
  </div>`;
 }
 function acctHTML(){
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>記帳</h1><div class="bar-r">${syncPill()}${walletChip()}</div></header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>記帳</h1><div class="bar-r">${syncPill()}${walletChip()}${barSos()}</div></header>
  ${syncForm()}
  <div class="stack"><div class="box" id="acct-sum"></div>
  <form class="box form" id="acct-form" autocomplete="off">
@@ -2114,13 +2133,50 @@ function walletSheetHTML(){
  <button type="button" class="w-swap" data-wallet-swap>不是${nameOf(me)}？切換成${other[1]}</button>`;
 }
 let walletSheet=null;
-function paintWalletSheet(focus){if(!walletSheet)return;walletSheet.querySelector(".sm-card").innerHTML=walletSheetHTML();if(focus)setTimeout(()=>walletSheet&&walletSheet.querySelector(".w-form input")?.focus(),30)}
+/* 重畫面板內容時保留標題下緣的捲動陰影（同步資料進來時會重畫） */
+function paintWalletSheet(focus){if(!walletSheet)return;const c=walletSheet.querySelector(".sm-card");c.innerHTML=walletSheetHTML();smShade(c);if(focus)setTimeout(()=>walletSheet&&walletSheet.querySelector(".w-form input")?.focus(),30)}
 function afterWalletChange(){paintWalletSheet();if(tab==="acct"||(tab==="plan"&&view==="home"))render(true)}
+/* ===== 面板共用：aria-modal、打開時焦點移進面板、Tab 不會跑到後面的頁面、Esc 關閉最上層、關閉後焦點回到原本的按鈕 ===== */
+const modals=[];
+function modal(v,close,focusSel){
+ /* 打開面板的按鈕：通常是目前的焦點；如果開面板時畫面重畫、焦點掉到 body，就用剛剛點的那顆 */
+ const ae=document.activeElement,back=ae&&ae!==document.body&&!v.contains(ae)?ae:lastClicked,m={v};
+ /* 原本的按鈕可能在面板開著時被重畫掉：記下它的 data- 屬性，關閉時找同一顆新的按鈕 */
+ const backSel=back&&back.attributes?[...back.attributes].filter(a=>a.name.startsWith("data-")).map(a=>`[${a.name}${a.value?`="${CSS.escape(a.value)}"`:""}]`).join(""):"";
+ v.setAttribute("aria-modal","true");
+ m.close=()=>{const i=modals.indexOf(m);if(i>=0)modals.splice(i,1);close();
+  while(modals.length&&!modals[modals.length-1].v.isConnected)modals.pop();
+  const top=modals[modals.length-1],scope=top?top.v:document;
+  let t=back&&back.isConnected&&scope.contains(back)?back:null;
+  if(!t&&backSel)t=[...scope.querySelectorAll(backSel)].find(e=>e.getClientRects().length)||null;
+  if(!t&&top)t=top.v.querySelector(".sm-x")||top.v.querySelector(FOCUSABLE);
+  if(t&&typeof t.focus==="function")t.focus({preventScroll:true})};
+ modals.push(m);
+ const focusIn=()=>{if(v.isConnected&&!v.contains(document.activeElement)){const t=(focusSel&&v.querySelector(focusSel))||v.querySelector(".sm-x")||v.querySelector("button,a[href],input");if(t)t.focus({preventScroll:true})}};
+ focusIn();requestAnimationFrame(focusIn);
+ return m.close;
+}
+let lastClicked=null;
+document.addEventListener("click",e=>{const t=e.target&&e.target.closest&&e.target.closest("button,a[href],[role=button],[tabindex]");if(t)lastClicked=t},true);
+const FOCUSABLE='button:not([disabled]),a[href],input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+document.addEventListener("keydown",e=>{
+ while(modals.length&&!modals[modals.length-1].v.isConnected)modals.pop();
+ const m=modals[modals.length-1];if(!m)return;
+ if(e.key==="Escape"){e.preventDefault();e.stopPropagation();m.close();return}
+ if(e.key!=="Tab")return;
+ const f=[...m.v.querySelectorAll(FOCUSABLE)].filter(x=>x.getClientRects().length);if(!f.length)return;
+ const a=f[0],z=f[f.length-1],cur=document.activeElement;
+ if(!m.v.contains(cur)){e.preventDefault();a.focus();return}
+ if(e.shiftKey&&cur===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&cur===z){e.preventDefault();a.focus()}
+},true);
+/* 每一頁標題列右邊的小求助按鈕（首頁另有大的） */
+const SOS_ICO=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/></svg>`;
+const barSos=()=>`<button type="button" class="bar-sos" data-sos aria-label="求助：飯店地址、緊急電話、日文"><span>${SOS_ICO}</span><b>求助</b></button>`;
 function openWallet(){
  if(walletSheet)return;walletEdit=null;walletMode="add";
  const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","我的錢包");
  v.innerHTML=`<div class="sm-card ws"></div>`;walletSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";paintWalletSheet(!(me&&cashIn(me)>0)&&!!me);
- const close=()=>{v.remove();walletSheet=null;walletEdit=null;document.body.style.overflow=""};
+ const close=modal(v,()=>{v.remove();walletSheet=null;walletEdit=null;document.body.style.overflow=""},".w-form input");
  v.addEventListener("click",e=>{
   if(e.target===v||e.target.closest(".sm-x")){close();return}
   const wme=e.target.closest("[data-wallet-me]");if(wme){me=wme.dataset.walletMe;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;walletEdit=null;afterWalletChange();paintWalletSheet(!(cashIn(me)>0));return}
@@ -2215,7 +2271,7 @@ function packPageHTML(){
  const groups=PCATS.map(([c,n])=>[c,n,rows.filter(r=>(r.cat||"etc")===c)]).filter(g=>g[2].length);
  const vis=list=>packTodo&&me?list.filter(r=>!mineDone(r)||editItem===r.id):list;
  const left=me?rows.length-packCnt(rows,me):0;
- return `<header class="bar pk-bar"><button class="back" data-pack-close><svg><use href="#i-back"/></svg>清單</button><h1 class="pk-title">行李準備</h1>${syncPill()}</header>
+ return `<header class="bar pk-bar"><button class="back" data-pack-close><svg><use href="#i-back"/></svg>清單</button><h1 class="pk-title">行李準備</h1>${syncPill()}${barSos()}</header>
  <div class="stack">
   <div class="box pack-sum">${SUITCASE}<div class="ps-body">${PEOPLE.map(p=>{const n=packCnt(rows,p[0]);return `<span class="pe-row"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${p[0]==="zhang"?"b":"w"}"/></svg><b>${p[1]}</b><span class="pe-bar"><i style="width:${rows.length?(n/rows.length*100).toFixed(1):0}%"></i></span><small>${n}/${rows.length}</small></span>`}).join("")}
    ${me?`<button class="pt-toggle" type="button" data-pack-todo aria-pressed="${packTodo}"><span class="switch${packTodo?" on":""}"><i></i></span>只看我還沒裝的${left?`（${left}）`:""}</button>`:""}</div></div>
@@ -2238,7 +2294,7 @@ function groupHTML(title,g){
  </div>`;
 }
 function listHTML(){
- return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>清單</h1>${syncPill()}</header>
+ return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>清單</h1>${syncPill()}${barSos()}</header>
  ${syncForm()}
  <div class="stack">${packEntryHTML()}${groupHTML("待辦清單","prep")}${groupHTML("要買的","buy")}
  ${canWrite&&missingDefaults().length?`<button class="restore${pendingRestore?" sure":""}" type="button" data-restore>${pendingRestore?`確定補回 ${missingDefaults().length} 個原本的項目？`:"補回原本行程文件裡的項目"}</button>`:""}</div>`;
@@ -2320,7 +2376,7 @@ function openCalSheet(){
   <button type="button" class="sm-opt" data-copy><b>複製連結</b><small>上面都打不開時，複製後貼到 Safari 或 Chrome 打開</small></button>
   <p class="sm-msg" role="status"></p></div>`;
  document.body.appendChild(v);document.body.style.overflow="hidden";
- const close=()=>{v.remove();document.body.style.overflow=""};
+ const close=modal(v,()=>{v.remove();document.body.style.overflow=""});
  v.addEventListener("click",async e=>{
   if(e.target===v||e.target.closest(".sm-x")){close();return}
   if(e.target.closest("[data-copy]")){const m=v.querySelector(".sm-msg");try{await navigator.clipboard.writeText(ICS_HTTPS);m.textContent="已複製連結，到 Safari 或 Chrome 貼上打開就好"}catch(_){m.innerHTML=`請長按選取這串網址：<br><span class="sel">${ICS_HTTPS}</span>`}}
@@ -2784,12 +2840,12 @@ function setupSheetHTML(){
  <div class="su-list">${SETUP.map(([k,t,d,auto,act])=>{const ok=!!done[suKey(k,me)],oo=other&&!!done[suKey(k,other[0])];
   return `<div class="su-row${ok?" done":""}"><button type="button" class="su-ck" data-setup-ck="${k}" role="checkbox" aria-checked="${ok}" aria-label="${esc(t)}"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button><span class="su-txt"><b>${esc(t)}</b><small>${esc(d)}</small>${auto&&ok&&suDetect(k)?`<span class="auto">App 已自動確認</span>`:""}</span><span class="su-side">${act&&!ok?`<button type="button" class="su-act" data-setup-act="${k}">${act}</button>`:""}${other?`<span class="su-other${oo?" ok":""}"><svg viewBox="0 0 60 50" aria-hidden="true"><use href="#head-${other[0]==="zhang"?"b":"w"}"/></svg>${oo?"好了":"還沒"}</span>`:""}</span></div>`}).join("")}</div><button type="button" class="su-tour" data-tour-open>看使用教學</button>`;
 }
-function paintSetup(){if(setupSheet)setupSheet.querySelector(".sm-card").innerHTML=setupSheetHTML()}
+function paintSetup(){if(setupSheet){const c=setupSheet.querySelector(".sm-card");c.innerHTML=setupSheetHTML();smShade(c)}}
 function openSetup(){
  if(setupSheet)return;
  const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","出發前手機設定");
  v.innerHTML=`<div class="sm-card su-sheet"></div>`;setupSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";setupAuto();paintSetup();
- const close=()=>{v.remove();setupSheet=null;document.body.style.overflow=""};
+ const close=modal(v,()=>{v.remove();setupSheet=null;document.body.style.overflow=""},".sm-head .sm-x");
  v.addEventListener("click",async e=>{
   if(e.target===v||e.target.closest(".sm-head .sm-x")){close();return}
   const pm=e.target.closest("[data-setup-me]");if(pm){me=pm.dataset.setupMe;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;await setupAuto();paintSetup();if(tab==="plan"&&view==="home")render(true);return}
@@ -3102,6 +3158,7 @@ function sosHTML(){
  if(sosTab==="talk"){
   const gs=sosGrp==="all"?SOS_GROUPS:SOS_GROUPS.filter(g=>g[0]===sosGrp);
   return `<div class="sos-top"><div class="sm-head"><b>緊急與日文資訊</b>${x}</div>${tabs}</div>
+ ${sosQuickHTML()}
  <div class="sos-grps" role="group" aria-label="情境">${[["all","全部","全部"],...SOS_GROUPS].map(([k,l,sl])=>`<button type="button" aria-pressed="${sosGrp===k}" data-sos-grp="${k}" aria-label="${l}">${sl}</button>`).join("")}</div>
  ${gs.map(([k,l])=>`<h3>${l}${k===gs[0][0]?`<small>點一句放大・可播放日文</small>`:""}</h3>${sosPhBtns(sosPh(k))}`).join("")}
  <p class="sos-note">〇〇 的地方指著地圖或店名給對方看・這一頁沒有網路也能打開</p>`;
@@ -3123,11 +3180,13 @@ ${sosEditing?sosFormHTML(INS_FIELDS,"data-sos-save"):""}
  ${sosPhBtns(sosPh("emg"))}
  <p class="sos-note">這一頁沒有網路也能打開</p>`;
 }
+/* 求助面板最上面的捷徑：迷路時打開求助、按一下就是給司機看的飯店地址 */
+const sosQuickHTML=()=>`<div class="sos-quick"><button type="button" class="sq-main" data-sos-show="hotel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5M6.5 10v9h11v-9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>飯店地址給司機看</b><small>${SOS_HOTEL.jp}</small></span></button>${sosTab==="talk"?`<button type="button" class="sq-emg" data-sos-tab="emg">緊急電話</button>`:""}</div>`;
 function smShade(c){const t=c&&c.querySelector(":scope>.sm-head,:scope>.sos-top");if(t)t.classList.toggle("shade",c.scrollTop>4)}
 const sosShade=v=>smShade(v.querySelector(".sm-card"));
 addEventListener("scroll",()=>{const b=document.querySelector(".pk-bar");if(b)b.classList.toggle("shade",scrollY>4)},{passive:true});
 document.addEventListener("scroll",e=>{const t=e.target;if(t&&t.classList&&t.classList.contains("sm-card"))smShade(t)},{capture:true,passive:true});
-function paintSos(){if(sosSheet)sosSheet.querySelector(".sm-card").innerHTML=sosHTML()}
+function paintSos(){if(sosSheet){const c=sosSheet.querySelector(".sm-card");c.innerHTML=sosHTML();smShade(c)}}
 /* 日文語音：用手機內建的日文語音（不用網路）；〇〇 唸成「ここ」，搭配手指地圖 */
 const sayText=t=>String(t).replace(/〇〇/g,"ここ");
 const HOTEL_SAY="この住所までお願いします。愛知県名古屋市中区錦、一丁目、十三の十八。ランプライトブックスホテル名古屋です。";
@@ -3142,20 +3201,23 @@ function sayJa(text,btn){
 }
 const SAY_BTN=`<button type="button" class="s-say" data-say><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>播放日文</span></button>`;
 try{window.speechSynthesis&&speechSynthesis.getVoices()}catch(_){}
+/* 給司機看：點畫面任何地方都不會關（司機會用手指著看），只有右上角 × 或 Esc 才關閉 */
 function sosShow(k){
- const v=document.createElement("div");v.className="sos-show";v.setAttribute("role","dialog");v.setAttribute("aria-label","放大顯示");
+ const v=document.createElement("div");v.className="sos-show";v.setAttribute("role","dialog");v.setAttribute("aria-label",k==="hotel"?"飯店地址，給司機看":"日文放大顯示");
  const x=`<button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>`;
  let say;
- if(k==="hotel"){const H=SOS_HOTEL;say=HOTEL_SAY;v.innerHTML=`${x}<div class="s-lead">この住所までお願いします。</div><div class="s-big">${H.jp}</div><div class="s-mid">${H.zip}<br>${H.ad.replace("中区","中区<br>")}</div><div class="s-mid">TEL ${H.tel}</div><div class="s-zh">請帶我到這個地址（伏見站 10 號出口附近）</div>${SAY_BTN}`}
- else{const p=SOS_PHRASES[+k];say=p[1];v.innerHTML=`${x}<div class="s-big">${p[1]}</div><div class="s-zh">${p[0]}・${p[2]}</div>${SAY_BTN}`}
- v.addEventListener("click",e=>{const sb=e.target.closest("[data-say]");if(sb){sayJa(say,sb);return}if(e.target.closest(".sm-x")||!e.target.closest("a")){try{speechSynthesis.cancel()}catch(_){};v.remove()}});
+ if(k==="hotel"){const H=SOS_HOTEL;say=HOTEL_SAY;v.innerHTML=`${x}<div class="s-body sos-text" tabindex="-1"><div class="s-lead">この住所までお願いします。</div><div class="s-big">${H.jp}</div><div class="s-mid">${H.zip}<br>${H.ad.replace("中区","中区<br>")}</div><div class="s-mid">TEL ${H.tel}</div><div class="s-zh">請帶我到這個地址（伏見站 10 號出口附近）</div>${SAY_BTN}</div>`}
+ else{const p=SOS_PHRASES[+k];say=p[1];v.innerHTML=`${x}<div class="s-body sos-text" tabindex="-1"><div class="s-big">${p[1]}</div><div class="s-zh">${p[0]}・${p[2]}</div>${SAY_BTN}</div>`}
+ v.addEventListener("click",e=>{const sb=e.target.closest("[data-say]");if(sb){sayJa(say,sb);return}if(e.target.closest(".sm-x"))close()});
  document.body.appendChild(v);
+ /* 焦點放在大字上：讀螢幕會直接讀出地址 */
+ const close=modal(v,()=>{try{speechSynthesis.cancel()}catch(_){};v.remove()},".s-body");
 }
 function openSos(){
  if(sosSheet)return;setupFlag("sos");sosEditing=false;sosTab="talk";
  const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","緊急與日文資訊");
  v.innerHTML=`<div class="sm-card sos"></div>`;sosSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";paintSos();
- const close=()=>{v.remove();sosSheet=null;sosEditing=false;document.body.style.overflow=""};
+ const close=modal(v,()=>{v.remove();sosSheet=null;sosEditing=false;document.body.style.overflow=""},".sm-head .sm-x");
  v.addEventListener("click",async e=>{
   if(e.target===v||e.target.closest(".sm-head .sm-x")){close();return}
   const sh=e.target.closest("[data-sos-show]");if(sh){const p=SOS_PHRASES[+sh.dataset.sosShow];sosShow(p&&p[4]==="hotel"?"hotel":sh.dataset.sosShow);return}
