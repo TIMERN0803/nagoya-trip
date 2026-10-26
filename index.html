@@ -397,6 +397,7 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .primary:disabled{background:var(--brown-soft);color:var(--muted);box-shadow:none;cursor:not-allowed}
 .form .msg{font-size:13px;color:var(--mint-ink);font-weight:700;margin-top:8px;min-height:1em}
 .form .msg.err{color:var(--coral-ink)}
+.form .msg .msg-hint{color:var(--muted);font-weight:500}.form .msg .msg-hint .linkbtn{font-size:13px;font-weight:700}
 
 .day-group h4{font-family:var(--f-display);font-weight:900;font-size:14px;margin:0 0 8px;display:flex;justify-content:space-between}
 .day-group h4 span{color:var(--muted);font-variant-numeric:tabular-nums}
@@ -2627,7 +2628,10 @@ app.addEventListener("submit",async e=>{
  const id=newId();put("expenses/"+id,rec);expenses.push({...rec,id});store.set("exp",expenses);lastSave=Date.now();
  draft.amt="";draft.note="";draft.tf=false;const tr=document.getElementById("f-tf-row");if(tr){tr.hidden=true;tr.querySelector("[data-tf-toggle]").setAttribute("aria-pressed","false");tr.querySelector(".switch").classList.remove("on")}
  document.getElementById("f-amt").value="";document.getElementById("f-note").value="";
- msg.textContent=`已記下 ${yen(amt)}${syncLater()}`;renderAcct();
+ msg.textContent=`已記下 ${yen(amt)}${syncLater()}`;
+ /* 自己付現金、但還沒設定錢包：在訊息後面放一個「設定錢包」，不擋住繼續記帳 */
+ if(rec.pay==="cash"&&me&&rec.who===me&&!(cashIn(me)>0)){msg.insertAdjacentHTML("beforeend",`<span class="msg-hint">・還沒設定錢包，現金剩多少算不出來 <button type="button" class="linkbtn" data-wallet-open>設定錢包</button></span>`)}
+ renderAcct();
 });
 async function removeExpense(id){
  const ex=expenses.find(e=>e.id===id);
@@ -3227,12 +3231,15 @@ function paintSos(){if(sosSheet){const c=sosSheet.querySelector(".sm-card");c.in
 const sayText=t=>String(t).replace(/〇〇/g,"ここ");
 const HOTEL_SAY="この住所までお願いします。愛知県名古屋市中区錦、一丁目、十三の十八。ランプライトブックスホテル名古屋です。";
 function jaVoice(){try{return (speechSynthesis.getVoices()||[]).find(v=>/^ja(-|_|$)/i.test(v.lang))||null}catch(_){return null}}
+/* 目前正在播放的那一句：連點時舊的一句被 cancel() 會觸發 onerror，只理會目前這一句，按鈕才不會錯顯示「再聽一次」 */
+let curSay=null;
 function sayJa(text,btn){
  const ss=window.speechSynthesis;if(!ss||!window.SpeechSynthesisUtterance){if(btn)btn.querySelector("span").textContent="這支手機不支援語音";return}
  const vs=ss.getVoices()||[],v=jaVoice();
  if(vs.length&&!v){if(btn)btn.querySelector("span").textContent="沒有日文語音，請到手機設定下載";return}
  ss.cancel();const u=new SpeechSynthesisUtterance(sayText(text));u.lang="ja-JP";u.rate=.85;if(v)u.voice=v;
- if(btn){btn.classList.add("on");btn.querySelector("span").textContent="播放中…";u.onend=u.onerror=()=>{btn.classList.remove("on");btn.querySelector("span").textContent="再聽一次"}}
+ curSay=u;
+ if(btn){btn.classList.add("on");btn.querySelector("span").textContent="播放中…";u.onend=u.onerror=()=>{if(curSay!==u)return;curSay=null;btn.classList.remove("on");btn.querySelector("span").textContent="再聽一次"}}
  ss.speak(u);
 }
 const SAY_BTN=`<button type="button" class="s-say" data-say><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor"/><path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg><span>播放日文</span></button>`;
