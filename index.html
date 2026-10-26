@@ -104,7 +104,7 @@
   --accent:#946645; --accent-deep:#6B4730; --accent-soft:#F1E3D3;
   --st-now:#F4C04A; --st-now-soft:#FDF3D6; --st-next:var(--mint-ink); --st-next-glow:#B6E0D3;
   --shadow-float:0 10px 24px -10px rgba(63,49,39,.35);
-  --coral-soft:#FDE6DC; --coral-line:#F0B49E; --coral-ink:#A64A2E;
+  --coral-soft:#FDE6DC; --coral-line:#F0B49E; --coral-ink:#A64A2E; --sos-line:#E07A5F;
   --c-move-bg:#DCEBF7; --c-move:#2D5F8A;
   --c-go-bg:#DDF0E2;   --c-go:#2E6B45;
   --c-eat-bg:#FDE3D2;  --c-eat:#A24E1F;
@@ -886,15 +886,13 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .stay-ord .sos-ord{font-size:13.5px;padding:9px 12px}
 .stay-row{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .stay-sos{border:0;border-radius:12px;background:var(--sunk);color:var(--ink);font:inherit;font-family:var(--f-display);font-weight:900;font-size:13.5px;padding:8px 12px;cursor:pointer}
-.hud-sos{margin-left:auto;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:52px;height:52px;border-radius:18px;border:var(--olw,2.5px) solid var(--ol);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:11.5px;cursor:pointer;transition:transform .08s,box-shadow .08s}
-.hud-sos svg{width:22px;height:22px}
-.hud-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
-/* 各頁標題列的求助：珊瑚色小膠囊，高 44 */
-.bar-sos{flex:none;display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 12px 0 8px;border-radius:999px;border:2.5px solid var(--ol);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--ol);font-family:var(--f-display);font-weight:900;font-size:14px;cursor:pointer;transition:transform .08s,box-shadow .08s}
-.bar-sos span{display:flex}.bar-sos svg{width:20px;height:20px}
-.bar-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
+/* 求助（首頁和當天行程頁同一個樣式）：icon 在左、文字在右，珊瑚色外框和陰影，和其他棕色外框的按鈕明顯不同 */
+.hud-sos,.bar-sos{flex:none;display:inline-flex;align-items:center;gap:4px;height:44px;padding:0 13px 0 9px;border-radius:999px;border:2.5px solid var(--sos-line);background:var(--coral-soft);color:var(--coral-ink);box-shadow:0 3px 0 var(--sos-line);font-family:var(--f-display);font-weight:900;font-size:14px;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.hud-sos{margin-left:auto}
+.hud-sos span,.bar-sos span{display:flex}.hud-sos svg,.bar-sos svg{width:20px;height:20px}
+.hud-sos:active,.bar-sos:active{transform:translateY(2px);box-shadow:0 1px 0 var(--sos-line)}
 /* 窄螢幕：求助只留圖示、天數縮短成「第 3 天」 */
-@media (max-width:360px){.bar-sos{width:44px;padding:0;justify-content:center}.bar-sos b{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.bar .dc-of{display:none}}
+@media (max-width:360px){.bar .dc-of{display:none}}
 .sos{max-height:92vh;overflow-y:auto;overscroll-behavior:contain;gap:14px}
 /* 標題＋分頁固定在面板頂端，只捲下面的內容；捲動後下緣出現淡陰影 */
 .sos-top{display:flex;flex-direction:column;gap:12px}
@@ -1277,6 +1275,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
  .pass .row{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:4px}.pass .ap{font-size:22px;min-width:0}.pass .ap small{font-size:11px;overflow-wrap:anywhere}
  .pe-row{flex-wrap:wrap}
  nav.tabs .in button[aria-selected="true"]::after{width:min(44px,100%)}
+ .hud-sos,.bar-sos{width:44px;padding:0;justify-content:center}.hud-sos b,.bar-sos b{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
  .pack-sum{gap:8px;padding:10px}.pack-sum .pe-art{width:48px;height:40px}.pt-toggle{max-width:100%;min-width:0}.bar:has(.bar-r){flex-wrap:wrap;row-gap:8px}.bar:has(.bar-r) .bar-r{width:100%;justify-content:flex-end}
  .rate{flex-wrap:wrap;row-gap:6px;white-space:nowrap}}
 </style>
@@ -1881,7 +1880,7 @@ function hudHTML(){
  const pl=itemsOf("prep"),bl=itemsOf("buy"),n=pl.filter(r=>done[r.id]).length,spent=expenses.reduce((a,e)=>a+e.amt,0);
  const day=cdParts().ms>0?`還有 ${cdParts().d} 天`:todayIdx>=0?`第 ${todayIdx+1} 天`:"旅程完成";
  const pill=(ic,cls,v,attr,lab)=>`<button class="hud-pill ${cls}" type="button" ${attr} aria-label="${lab}"><span class="hp-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#${ic}"/></svg></span><b>${v}</b></button>`;
- return `<header class="hud"><span class="hud-badge"><svg role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg></span><div class="hud-t"><h1>名古屋看花花</h1><small>11/17 – 11/24<span class="hud-of">・兩個人的旅行</span></small></div><button type="button" class="hud-sos" data-sos aria-label="緊急與日文資訊"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5M12 16.4v.1"/></svg>求助</button></header>
+ return `<header class="hud"><span class="hud-badge"><svg role="img" aria-label="豆花與芝麻"><use href="#heads"/></svg></span><div class="hud-t"><h1>名古屋看花花</h1><small>11/17 – 11/24<span class="hud-of">・兩個人的旅行</span></small></div><button type="button" class="hud-sos" data-sos aria-label="求助：飯店地址、緊急電話、日文"><span>${SOS_ICO}</span><b>求助</b></button></header>
  <div class="hud-row">${pill("i-check","hp-todo",`${n} / ${pl.length}`,'data-go="list"',`待辦完成 ${n} 項，共 ${pl.length} 項`)}${pill("k-buy","hp-buy",`${bl.filter(r=>done[r.id]).length} / ${bl.length}`,'data-go-group="buy"',`要買的已買 ${bl.filter(r=>done[r.id]).length} 項，共 ${bl.length} 項`)}${me&&cashIn(me)>0?pill("i-cash",`hp-yen${cashLeft(me)<LOW_CASH?" low":""}`,cashTxt(cashLeft(me)),'data-wallet-open',`我的現金${cashLeft(me)<0?cashTxt(cashLeft(me)):`剩 ${yen(cashLeft(me))}`}，打開錢包`):pill("t-acct","hp-yen",yen(spent),'data-go="acct"',`目前花費 ${yen(spent)}`)}</div>`;
 }
 function tripBarHTML(){
