@@ -2136,27 +2136,34 @@ function afterWalletChange(){paintWalletSheet();if(tab==="acct"||(tab==="plan"&&
 const modals=[];
 function modal(v,close,focusSel){
  /* 打開面板的按鈕：通常是目前的焦點；如果開面板時畫面重畫、焦點掉到 body，就用剛剛點的那顆 */
- const ae=document.activeElement,back=ae&&ae!==document.body&&!v.contains(ae)?ae:lastClicked,m={v};
+ const ae=document.activeElement,lc0=lastClickedEl(),lc=lc0&&!v.contains(lc0)?lc0:null;
+ let back=ae&&ae!==document.body&&!v.contains(ae)?ae:lc;const m={v};
  /* 原本的按鈕可能在面板開著時被重畫掉：記下它的 data- 屬性，關閉時找同一顆新的按鈕 */
- const backSel=back&&back.attributes?[...back.attributes].filter(a=>a.name.startsWith("data-")).map(a=>`[${a.name}${a.value?`="${CSS.escape(a.value)}"`:""}]`).join(""):"";
+ const backSel=back?dataSel(back):(ae===document.body||!ae?lastClickSel:"");
  v.setAttribute("aria-modal","true");
- m.close=()=>{const i=modals.indexOf(m);if(i>=0)modals.splice(i,1);close();
-  while(modals.length&&!modals[modals.length-1].v.isConnected)modals.pop();
+ m.close=()=>{const i=modals.indexOf(m);if(i<0)return;modals.splice(i,1);close();
+  /* 關掉的面板裡的按鈕不要再被記住，不然下一個面板會連帶留住它（記憶體不會釋放） */
+  {const lc=lastClickedEl();if(!lc||v.contains(lc)){lastClickRef=null;lastClickSel=""}}
+  while(modals.length&&!(modals[modals.length-1].v&&modals[modals.length-1].v.isConnected))modals.pop();
   const top=modals[modals.length-1],scope=top?top.v:document;
   let t=back&&back.isConnected&&scope.contains(back)?back:null;
   if(!t&&backSel)t=[...scope.querySelectorAll(backSel)].find(e=>e.getClientRects().length)||null;
   if(!t&&top)t=top.v.querySelector(".sm-x")||top.v.querySelector(FOCUSABLE);
+  back=null;m.v=null;
   if(t&&typeof t.focus==="function")t.focus({preventScroll:true})};
  modals.push(m);
  const focusIn=()=>{if(v.isConnected&&!v.contains(document.activeElement)){const t=(focusSel&&v.querySelector(focusSel))||v.querySelector(".sm-x")||v.querySelector("button,a[href],input");if(t)t.focus({preventScroll:true})}};
- focusIn();requestAnimationFrame(focusIn);
+ focusIn();
  return m.close;
 }
-let lastClicked=null;
-document.addEventListener("click",e=>{const t=e.target&&e.target.closest&&e.target.closest("button,a[href],[role=button],[tabindex]");if(t)lastClicked=t},true);
+/* 最後點的按鈕：用弱參照，畫面拿掉後不會被它留在記憶體裡 */
+let lastClickRef=null,lastClickSel="";
+const dataSel=el=>el&&el.attributes?[...el.attributes].filter(a=>a.name.startsWith("data-")).map(a=>`[${a.name}${a.value?`="${CSS.escape(a.value)}"`:""}]`).join(""):"";
+const lastClickedEl=()=>{const t=lastClickRef&&(lastClickRef.deref?lastClickRef.deref():lastClickRef);return t&&t.isConnected?t:null};
+document.addEventListener("click",e=>{const t=e.target&&e.target.closest&&e.target.closest("button,a[href],[role=button],[tabindex]");if(t){lastClickRef=typeof WeakRef==="function"?new WeakRef(t):t;lastClickSel=dataSel(t)}},true);
 const FOCUSABLE='button:not([disabled]),a[href],input:not([disabled]):not([type=hidden]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 document.addEventListener("keydown",e=>{
- while(modals.length&&!modals[modals.length-1].v.isConnected)modals.pop();
+ while(modals.length&&!(modals[modals.length-1].v&&modals[modals.length-1].v.isConnected))modals.pop();
  const m=modals[modals.length-1];if(!m)return;
  if(e.key==="Escape"){e.preventDefault();e.stopPropagation();m.close();return}
  if(e.key!=="Tab")return;
