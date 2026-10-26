@@ -25,7 +25,7 @@ CASES=[
  ("11/10 出發前",ft.jst(11,10,22,30),None),
  ("11/25 結束後",ft.jst(11,25,22,30),None),
 ]
-SCENES=[(5,"morning"),(10,"morning"),(11,"noon"),(13,"noon"),(14,"afternoon"),(16,"afternoon"),(17,"dinner"),(19,"dinner"),(20,"night"),(23,"night"),(2,"night"),(4,"night")]
+SCENES=[(5,"morning"),(10,"morning"),(11,"noon"),(13,"noon"),(14,"afternoon"),(16,"afternoon"),(17,"dinner"),(19,"dinner"),(20,"dinner"),(21,"night"),(23,"night"),(2,"night"),(4,"night")]
 async def home(pg):
     if not await pg.query_selector('.hero'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
 async def main():
@@ -108,11 +108,11 @@ async def main():
         ft.rec("首頁插圖","晚餐的貓點一下會跳",await pg.evaluate('document.querySelector(".hero-cats").classList.contains("hop")'))
         ft.rec("首頁插圖","晚餐沒有 JS 錯誤",not pg.errs,pg.errs[:2])
         await ft.close(pg)
-        pg=await ft.newpage(b,ft.jst(11,10,19,59));await pg.wait_for_timeout(300);await home(pg)
+        pg=await ft.newpage(b,ft.jst(11,10,20,59));await pg.wait_for_timeout(300);await home(pg)
         a=await pg.evaluate('document.querySelector(".hero .scene").dataset.period')
         await pg.clock.fast_forward("01:30");await pg.wait_for_timeout(600)
         c=await pg.evaluate('document.querySelector(".hero .scene").dataset.period')
-        ft.rec("首頁插圖","19:59 晚餐，過 20:00 自動換睡覺",a=="dinner" and c=="night",[a,c])
+        ft.rec("首頁插圖","20:59 晚餐，過 21:00 自動換睡覺",a=="dinner" and c=="night",[a,c])
         await ft.close(pg)
         await b.close()
 asyncio.run(main())
