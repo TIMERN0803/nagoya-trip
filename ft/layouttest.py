@@ -35,7 +35,7 @@ async def widths(b):
         rec("版面", f"{w}px ¥12,345,678：總額、誰付多少、單筆金額都在畫面內", r == 0, r)
         await ctx.close()
 
-TARGETS = ".pick,.hud-pill,.edit-btn,.leg a,.da-done,.linkbtn,.sort-btn,.chip,.bar .back,.drag-h,.hud-sos,.bar-sos,.wchip,.sync[data-sync-info]"
+TARGETS = ".pick:not([data-pick=cat] .pick),.hud-pill,.edit-btn,.leg a,.da-done,.linkbtn,.sort-btn,.chip,.bar .back,.drag-h,.hud-sos,.bar-sos,.wchip,.sync[data-sync-info]"
 HIT = '''(sel)=>{const out=[];for(const e of document.querySelectorAll(sel)){const r=e.getBoundingClientRect();if(!r.width||r.top<70||r.bottom>innerHeight-110)continue;
  const cx=r.left+r.width/2,cy=r.top+r.height/2;const ok=[cy-21,cy+21].every(y=>{const h=document.elementFromPoint(cx,y);return h&&(e===h||e.contains(h))});
  if(!ok)out.push((e.className||e.tagName)+"「"+(e.innerText||e.getAttribute("aria-label")||"").trim().slice(0,10)+"」"+Math.round(r.height))}return out}'''
@@ -55,8 +55,19 @@ async def touch(b):
     # 記帳表單的選項、錢包的模式切換
     ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 20), init=seed(DB))
     await pg.evaluate('tab="acct";render()'); await pg.wait_for_timeout(200)
+    # 使用者決定：選項外觀維持原本高度，只把可點範圍放大到 44
     h = await pg.evaluate('[...document.querySelectorAll("#acct-form .pick")].map(e=>Math.round(e.getBoundingClientRect().height))')
-    rec("觸控", "記帳的類別、付款人、分攤、付款方式選項都至少 44 高", h and min(h) >= 44, sorted(set(h)))
+    rec("觸控", "記帳選項維持原本外觀高度（小於 44）", h and max(h) < 44, sorted(set(h)))
+    SEL = '#acct-form .picks:not([data-pick="cat"]) .pick'
+    bad = await pg.evaluate(HIT, SEL)
+    for i in range(3):
+        await pg.evaluate('scrollBy(0,innerHeight*0.5)'); await pg.wait_for_timeout(120); bad += await pg.evaluate(HIT, SEL)
+    rec("觸控", "記帳的付款人、分攤、付款方式：可點範圍至少 44 高", not bad, sorted(set(bad)))
+    # 類別會排成兩列，可點範圍放大到列距的一半（約 38），而且不會點到另一列
+    await pg.evaluate('document.querySelector(\'[data-pick="cat"]\').scrollIntoView({block:"center"})'); await pg.wait_for_timeout(120)
+    r = await pg.evaluate("""(()=>{const out=[];for(const e of document.querySelectorAll('[data-pick="cat"] .pick')){const r=e.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;
+      const own=[cy-17,cy+17].every(y=>{const h=document.elementFromPoint(cx,y);return h&&(h===e||e.contains(h))});out.push(own)}return out})()""")
+    rec("觸控", "記帳類別：可點範圍約 38 高（列距的一半）、不會點到另一列", r and all(r), r)
     await ctx.close()
 
 def lum(c):
