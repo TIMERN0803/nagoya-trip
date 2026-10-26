@@ -22,7 +22,7 @@ async def main():
         ft.rec("求助分類","緊急分頁只放緊急句子（6 句）",n==6 and "救急車" in t and "予約" not in t and "荷物" not in t,n)
         await pg.click('.sos-ph button:nth-child(1)');await pg.wait_for_timeout(200)
         ft.rec("求助分類","緊急句子點了會放大","救急車" in await pg.inner_text('.sos-show'))
-        await pg.click('.sos-show');await pg.wait_for_timeout(150)
+        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(150)
         # 切到日常日文
         await pg.evaluate('document.querySelector(".sos").scrollTop=99999')
         await pg.click('[data-sos-tab="talk"]');await pg.wait_for_timeout(300)
@@ -60,7 +60,7 @@ async def main():
         ft.rec("求助分類","選中的標籤有 aria-pressed",pr==["飯店"],pr)
         await pg.click('.sos-ph button:nth-child(1)');await pg.wait_for_timeout(200)
         ft.rec("求助分類","寄放行李句子放大顯示日文","荷物を預かってもらえますか" in await pg.inner_text('.sos-show'))
-        await pg.click('.sos-show');await pg.wait_for_timeout(150)
+        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(150)
         await pg.click('[data-sos-grp="eat"]');await pg.wait_for_timeout(250)
         t=await pg.evaluate(TXT)
         ft.rec("求助分類","選「餐廳」有預約相關句子","予約しています" in t and "席はありますか" in t and "荷物" not in t)

@@ -29,7 +29,7 @@ async def main():
         await pg.click('.sos-show [data-say]');await pg.wait_for_timeout(100)
         ft.rec("語音","可以重複播放",len(await pg.evaluate('window._said'))==2)
         c0=await pg.evaluate('window._cancel')
-        await pg.click('.sos-show .s-big');await pg.wait_for_timeout(150)
+        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(150)  # 現在只有 × 才關閉
         ft.rec("語音","關閉放大畫面會停止播放",not await pg.query_selector('.sos-show') and await pg.evaluate('window._cancel')>c0)
         # 〇〇 唸成 ここ
         await pg.click('[data-sos-grp="go"]');await pg.wait_for_timeout(200)

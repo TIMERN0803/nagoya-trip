@@ -33,7 +33,7 @@ async def main():
         ft.rec("S 求助","全螢幕可以關閉",not await pg.query_selector('.sos-show'))
         await pg.click('.sos-ph button:nth-child(1)');await pg.wait_for_timeout(200)
         ft.rec("S 求助","點日文句子會放大","救急車" in await pg.inner_text('.sos-show'))
-        await pg.click('.sos-show');await pg.click('.sos .sm-head .sm-x');await pg.wait_for_timeout(200)
+        await pg.click('.sos-show .sm-x');await pg.click('.sos .sm-head .sm-x');await pg.wait_for_timeout(200)
         ft.rec("S 求助","面板可以關閉、頁面恢復捲動",not await pg.query_selector('.sos') and await pg.evaluate('document.body.style.overflow')=="")
         # 重新整理後還記得
         await pg.reload();await pg.wait_for_timeout(900)
