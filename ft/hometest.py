@@ -25,7 +25,7 @@ CASES=[
  ("11/10 出發前",ft.jst(11,10,22,30),None),
  ("11/25 結束後",ft.jst(11,25,22,30),None),
 ]
-SCENES=[(5,"morning"),(10,"morning"),(11,"noon"),(13,"noon"),(14,"afternoon"),(16,"afternoon"),(17,"night"),(23,"night"),(2,"night"),(4,"night")]
+SCENES=[(5,"morning"),(10,"morning"),(11,"noon"),(13,"noon"),(14,"afternoon"),(16,"afternoon"),(17,"dinner"),(19,"dinner"),(20,"night"),(23,"night"),(2,"night"),(4,"night")]
 async def home(pg):
     if not await pg.query_selector('.hero'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
 async def main():
@@ -97,7 +97,22 @@ async def main():
         a=await pg.evaluate('document.querySelector(".hero .scene").dataset.period')
         await pg.clock.fast_forward("01:30");await pg.wait_for_timeout(600)
         c=await pg.evaluate('document.querySelector(".hero .scene").dataset.period')
-        ft.rec("首頁插圖","16:59 下午，過 17:00 自動換晚上",a=="afternoon" and c=="night",[a,c])
+        ft.rec("首頁插圖","16:59 下午，過 17:00 自動換晚餐",a=="afternoon" and c=="dinner",[a,c])
+        await ft.close(pg)
+        # 晚餐插圖：外觀、會跳、20:00 換成睡覺
+        pg=await ft.newpage(b,ft.jst(11,19,18,30));await pg.wait_for_timeout(300);await home(pg)
+        info=await pg.evaluate('''(()=>{const s=document.querySelector(".hero .scene");return {p:s.dataset.period,sky:!!s.querySelector('[fill="url(#gDusk)"]'),grad:!!document.getElementById("gDusk"),cats:s.querySelectorAll(".hero-cats .cat-a,.hero-cats .cat-b").length,lantern:!!s.querySelector(".lantern"),sleep:!!s.querySelector(".sleeping")}})()''')
+        ft.rec("首頁插圖","旅途中 18:30 是晚餐：暮色天空、燈籠、兩隻貓醒著",info['p']=="dinner" and info['sky'] and info['grad'] and info['cats']==2 and info['lantern'] and not info['sleep'],info)
+        await pg.screenshot(path=OUT+'hero_dinner.png')
+        await pg.click('.hero-cats .cat-b',force=True);await pg.wait_for_timeout(100)
+        ft.rec("首頁插圖","晚餐的貓點一下會跳",await pg.evaluate('document.querySelector(".hero-cats").classList.contains("hop")'))
+        ft.rec("首頁插圖","晚餐沒有 JS 錯誤",not pg.errs,pg.errs[:2])
+        await ft.close(pg)
+        pg=await ft.newpage(b,ft.jst(11,10,19,59));await pg.wait_for_timeout(300);await home(pg)
+        a=await pg.evaluate('document.querySelector(".hero .scene").dataset.period')
+        await pg.clock.fast_forward("01:30");await pg.wait_for_timeout(600)
+        c=await pg.evaluate('document.querySelector(".hero .scene").dataset.period')
+        ft.rec("首頁插圖","19:59 晚餐，過 20:00 自動換睡覺",a=="dinner" and c=="night",[a,c])
         await ft.close(pg)
         await b.close()
 asyncio.run(main())
