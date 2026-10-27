@@ -169,11 +169,13 @@ async def days(b):
     await pg.click('.day-btn[data-day="3"]')
     g = await pg.evaluate('(()=>{const g=document.querySelector(".day-ghost");if(!g)return null;const ka=document.getElementById("dayBody").getAnimations().flatMap(a=>a.effect.getKeyframes().flatMap(k=>Object.keys(k))).filter(x=>!["offset","easing","composite","computedOffset"].includes(x));return {inert:g.inert,hid:g.getAttribute("aria-hidden"),ids:g.querySelectorAll("[id]").length+(g.id?1:0),props:[...new Set(ka)],one:document.querySelectorAll("#dayBody").length}})()')
     rec("換天", "舊內容往旁邊滑走、新內容同時滑進（只動 transform、不淡入淡出）", g and g["props"] == ["transform"], g)
+    rec("換天", "滑動只在內容寬度裡（不滑進左右留白，iOS 才不會留殘影）", await pg.evaluate('getComputedStyle(document.getElementById("dayBody").parentElement).overflowX') == "clip")
     rec("換天", "滑走的舊內容不能點、沒有重複 id", g and g["inert"] and g["hid"] == "true" and g["ids"] == 0 and g["one"] == 1, g)
     for d in (4, 5, 6): await pg.click(f'.day-btn[data-day="{d}"]')
     n = await pg.evaluate('document.querySelectorAll(".day-ghost").length')
     await pg.wait_for_timeout(750)
     rec("換天", "連點換天：最多一個舊內容、結束後清乾淨", n <= 1 and await pg.evaluate('document.querySelectorAll(".day-ghost").length') == 0, n)
+    rec("換天", "結束後拿掉裁切（sticky 和陰影照常）", await pg.evaluate('document.getElementById("dayBody").parentElement.style.overflowX') == "")
     # iOS Safari 的 animation.finished 有時不觸發：模擬動畫卡住（暫停、finished 永遠不 resolve），舊內容也要在時間到後移除，不留殘影
     await pg.click('.day-btn[data-day="2"]')
     await pg.evaluate('document.querySelectorAll(".day-ghost").forEach(g=>g.getAnimations().forEach(a=>a.pause()))')

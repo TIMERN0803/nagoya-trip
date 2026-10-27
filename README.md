@@ -2,7 +2,8 @@
 放在 /home/claude/build（腳本內路徑寫死這個位置）。
 - 本機伺服器：cd /home/claude/nagoya-trip && python3 -m http.server 8766
 - 功能測試：cd /home/claude/build/ft && python3 fulltest.py（177 項）
-- 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest
+- 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest
+- loadtest：開啟畫面與開啟速度（很快畫好時開啟畫面不出現、下載很慢時豆花和芝麻出現並往上滑走、減少動態直接拿掉、字型樣式不擋畫面、訊號差超過 1.5 秒 Service Worker 先用快取）。會自己開 ft/slowsrv.py（8768 埠，/__slow?on=1 讓回應晚 4 秒，網址帶 ?split 讓首頁分兩段送）
 - transtest：換頁與彈窗轉場＋記帳拆成清單頁和「記一筆」填寫面板（換頁 0.5 秒、換天 0.45 秒、彈窗滑上 0.5 秒輕彈、滑下 0.25 秒；只動 transform 不淡入淡出；底部分頁切換不播；再記一筆、記下這筆、修改、放棄前先問、Esc、權限停用、重畫時面板不被換掉）。時間規則：直接 render() 換頁後等 700ms；關面板後等 350ms；開面板後等 650ms 再量位置
 - listtabtest：清單頁籤（待辦／要買的兩個頁籤、行李卡片在上方、只有頁籤固定、首頁入口帶到對應頁籤、記住上次頁籤、鍵盤、320 寬度）
 - 記帳表單現在在「記一筆」面板裡：synctest 的 expopen(pg)／expclose(pg)、fulltest 的 openexp(pg) 會先打開面板；「記下這筆」後面板關閉，結果在記帳頁 #acct-note（synctest.NOTE）
