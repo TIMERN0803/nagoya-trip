@@ -1366,11 +1366,8 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 @keyframes spbob{0%,100%{transform:none}50%{transform:translateY(-6px) rotate(-4deg)}}
 #splash b{font-size:21px;font-weight:900;letter-spacing:.04em}
 #splash span{font-size:13px;color:#8C7B6B;font-weight:700}
-/* 畫好後：豆花和芝麻開心跳一下，開啟畫面收成圓圈縮到牠們身上，露出首頁（不淡出、不整片滑走） */
-#splash.out{animation:spout .6s cubic-bezier(.55,0,.35,1) .18s forwards;visibility:visible;clip-path:circle(150% at 50% 46%)}
-#splash.out .sp-a,#splash.out .sp-b{animation:sphop .36s cubic-bezier(.3,1.5,.5,1)}
-#splash.out .sp-b{animation-delay:.05s}
-@keyframes sphop{40%{transform:translateY(-12px) scale(1.06,.96)}}
+/* 畫好後：豆花和芝麻照原本的節奏點頭，開啟畫面收成圓圈縮到牠們身上，露出首頁（不淡出、不整片滑走、不另外跳一下） */
+#splash.out{animation:spout .6s cubic-bezier(.55,0,.35,1) forwards;visibility:visible;clip-path:circle(150% at 50% 46%)}
 @keyframes spout{to{clip-path:circle(0% at 50% 46%)}}
 @media (prefers-reduced-motion:reduce){#splash .sp-a,#splash .sp-b{animation:none}}
 </style>
@@ -2668,8 +2665,8 @@ function holdOld(go){
  clearTimeout(vtTimer);vtTimer=setTimeout(endVt,540);
 }
 function endVt(){clearTimeout(vtTimer);document.querySelectorAll(".vt-old").forEach(e=>e.remove());app.parentElement.classList.remove("vt");const v=app.querySelector(".view.vt-in");if(v)v.classList.remove("vt-in")}
-/* 第一次畫好：0.3 秒內畫好就直接拿掉開啟畫面（使用者根本沒看到）；比較慢才播退場（貓咪跳一下、收成圓圈） */
-function hideSplash(){const sp=document.getElementById("splash");if(!sp)return;if(performance.now()<300||reduce()||getComputedStyle(sp).visibility==="hidden"){sp.remove();return}sp.classList.add("out");setTimeout(()=>sp.remove(),850)}
+/* 第一次畫好：0.3 秒內畫好就直接拿掉開啟畫面（使用者根本沒看到）；比較慢才播退場（收成圓圈） */
+function hideSplash(){const sp=document.getElementById("splash");if(!sp)return;if(performance.now()<300||reduce()||getComputedStyle(sp).visibility==="hidden"){sp.remove();return}sp.classList.add("out");setTimeout(()=>sp.remove(),700)}
 function render(keep,restore){
  const y=scrollY;
  if(!keep&&curKey)scrollMem[curKey]=y;
