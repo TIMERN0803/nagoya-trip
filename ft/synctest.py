@@ -47,10 +47,13 @@ async def expclose(pg):
         if await pg.is_visible('.exp-sheet:not(.leaving) .exp-confirm'): await pg.click('[data-exp-discard]')
         await pg.wait_for_timeout(350)
 NOTE = 'document.getElementById("acct-note")?.innerText||""'
-async def opn(ctx, t, init="", pre="", url="http://localhost:8766/", wait=900):
+# 開啟動畫每次重新開啟 App 都會播約 1.2 秒、蓋住畫面；一般測試當作「已經開過」跳過它（loadtest 會用 splash=True 測動畫本身）
+LAUNCHED = 'try{sessionStorage.setItem("ngy:launched","1")}catch(e){}'
+async def opn(ctx, t, init="", pre="", url="http://localhost:8766/", wait=900, splash=False):
     pg = await ctx.new_page(); pg.errs = []
     pg.on('pageerror', lambda e: pg.errs.append(str(e)))
     await pg.clock.install(time=t)
+    if not splash: await pg.add_init_script(LAUNCHED)
     if pre: await pg.add_init_script(pre)
     s = 'try{if(!sessionStorage.getItem("s")){localStorage.setItem("ngy:tour","1");localStorage.setItem("ngy:me","zhang");localStorage.setItem("ngy:code",%s);%ssessionStorage.setItem("s",1)}}catch(e){}' % (json.dumps(CODE), init)
     await pg.add_init_script(s)

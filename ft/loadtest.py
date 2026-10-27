@@ -1,59 +1,108 @@
-# 開啟速度與開啟畫面：
-# 1. 很快畫好（0.3 秒內）時開啟畫面完全不出現（不會閃一下）
-# 2. 下載很慢時看得到豆花和芝麻的開啟畫面，畫好後整片往上滑走（不淡出）、之後移除
-# 3. 減少動態：直接拿掉
-# 4. 訊號差（網路超過 1.5 秒）時，Service Worker 先用快取打開，不會一直白畫面等
-# 5. 字型樣式不擋畫面（media=print 載好才換 all）
+# 開啟動畫與開啟速度：
+# 1. App 重新開啟時：豆花和芝麻（只有貓咪，沒有字）在畫面正中央點頭，從開啟算起約 1.2 秒才收，收成圓圈縮到牠們身上（不淡出）
+# 2. 載入本來就超過 1.2 秒：畫好就立刻收，不會再多等
+# 3. 點一下跳過；同一次使用中重新整理不再播；減少動態直接拿掉
+# 4. iOS 啟動圖：各尺寸都有、和開啟動畫同一個畫面
+# 5. 訊號差（網路超過 1.5 秒）時，Service Worker 先用快取打開；字型樣式不擋畫面
 # 一律用假資料庫（synctest.mkctx 的攔截）；慢速網站用 slowsrv.py（8768 埠）
-import asyncio, subprocess, time
+import asyncio, subprocess, time, os, re
 import fulltest as ft
 import synctest as S
 from playwright.async_api import async_playwright
+from PIL import Image
 rec = ft.rec
 B, META, seed, opn = S.B, S.META, S.seed, S.opn
-WATCH = '''(()=>{window.__spv=false;window.__spout=false;const t=setInterval(()=>{const s=document.getElementById("splash");if(!s)return;const cs=getComputedStyle(s);if(cs.visibility==="visible")window.__spv=true;if(s.classList.contains("out"))window.__spout=cs.animationName},10);setTimeout(()=>clearInterval(t),5000)})();'''
+SITE = "/home/claude/nagoya-trip"
+# 記錄開啟動畫的時間點（從開啟算起的毫秒）：第一次看到、開始收、移除
+WATCH = '''(()=>{window.__sp={};const t=setInterval(()=>{const s=document.getElementById("splash"),n=Math.round(performance.now());if(!s){if(window.__sp.seen&&!window.__sp.gone)window.__sp.gone=n;return}if(!window.__sp.seen)window.__sp.seen=n;if(s.classList.contains("out")&&!window.__sp.out){window.__sp.out=n;window.__sp.anim=getComputedStyle(s).animationName}},10);setTimeout(()=>clearInterval(t),6000)})();'''
+SP = 'window.__sp'
 
-async def fast(b):
-    ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 12), init=seed(META) + WATCH)
-    rec("開啟畫面", "很快畫好時：開啟畫面完全不出現、已經移除", not await pg.evaluate('window.__spv') and not await pg.query_selector('#splash'), await pg.evaluate('window.__spv'))
-    rec("開啟畫面", "頁面正常畫出來", await pg.query_selector('#app .view') is not None)
-    rec("開啟畫面", "沒有錯誤", not pg.errs, pg.errs[:2])
-    await pg.close()
-    # 開啟畫面的豆花和芝麻要跟 App 裡畫的一樣：和 App 產生的 head-w／head-b 圖案逐字比對
-    pg = await ctx.new_page(); await pg.route("**/*", lambda r: r.continue_())
-    await pg.goto("http://localhost:8768/?split", wait_until="commit"); await pg.wait_for_selector('#app .view', timeout=10000)
-    html = await pg.content()
+async def launch(b, url="http://localhost:8766/", reduced=False, keep=False):
+    ctx = await S.mkctx(b); await ctx.add_init_script(seed(META) + 'try{localStorage.setItem("ngy:tour","1");localStorage.setItem("ngy:me","zhang");localStorage.setItem("ngy:code","%s")}catch(e){}' % S.CODE + WATCH)
+    pg = await ctx.new_page(); pg.errs = []; pg.on("pageerror", lambda e: pg.errs.append(str(e)))
+    if reduced: await pg.emulate_media(reduced_motion="reduce")
+    await pg.goto(url, wait_until="commit")
+    return ctx, pg
+
+async def normal(b):
+    ctx, pg = await launch(b)
+    await pg.wait_for_timeout(500)
+    st = await pg.evaluate('(()=>{const s=document.getElementById("splash");return s?{vis:getComputedStyle(s).visibility,txt:s.innerText.trim(),cats:s.querySelectorAll(".sp-a,.sp-b").length,app:!!document.querySelector("#app .view")}:null})()')
+    rec("開啟動畫", "App 開啟時馬上出現，只有中間的豆花和芝麻（沒有字）", st and st["vis"] == "visible" and st["txt"] == "" and st["cats"] == 2, st)
+    rec("開啟動畫", "頁面在後面已經畫好（動畫只是蓋著，不是在等）", st and st["app"], st)
+    r = await pg.evaluate('(()=>{const s=document.querySelector("#splash svg").getBoundingClientRect();return {cx:Math.round(s.left+s.width/2-innerWidth/2),cy:Math.round(s.top+s.height/2-innerHeight/2)}})()')
+    rec("開啟動畫", "豆花和芝麻在畫面正中央（和 iOS 啟動圖對齊）", abs(r["cx"]) <= 1 and abs(r["cy"]) <= 1, r)
+    await pg.wait_for_timeout(1700)
+    sp = await pg.evaluate(SP)
+    rec("開啟動畫", "從開啟算起約 1.2 秒才開始收（1.15～1.45 秒）", sp.get("out") and 1150 <= sp["out"] <= 1450, sp)
+    rec("開啟動畫", "收成圓圈縮到貓咪身上（不淡出）", sp.get("anim") == "spout", sp)
+    rec("開啟動畫", "收完移除、不擋點擊", sp.get("gone") and sp["gone"] - sp["out"] <= 1000 and not await pg.query_selector('#splash'), sp)
+    kf = await pg.evaluate('[...document.styleSheets].flatMap(s=>{try{return [...s.cssRules]}catch(e){return []}}).filter(r=>r.name==="spout").map(r=>r.cssText).join("")')
+    rec("開啟動畫", "退場是圓圈收合、不用透明度", "clip-path" in kf and "opacity" not in kf, kf)
+    # 同一次使用中重新整理（例如網路恢復自動重新整理）：不再播
+    await pg.reload(); await pg.wait_for_timeout(300)
+    rec("開啟動畫", "同一次使用中重新整理：不再播", not await pg.query_selector('#splash'))
+    rec("開啟動畫", "沒有錯誤", not pg.errs, pg.errs[:2])
+    # 字型、豆花和芝麻跟 App 裡的圖一模一樣
+    rec("字型", "字型樣式不擋畫面（載好後換成 all）", await pg.evaluate('(()=>{const l=document.querySelector(\'link[href*="fonts.googleapis"]\');return l&&l.getAttribute("onload")&&l.getAttribute("onload").includes("media")})()'))
     same = await pg.evaluate("""(h)=>{const d=new DOMParser().parseFromString(h,"text/html");const sp=d.getElementById("splash");if(!sp)return "no splash in html";
       const a=sp.querySelector(".sp-a svg").innerHTML.replaceAll("sp-rough","rough"),b=sp.querySelector(".sp-b svg").innerHTML.replaceAll("sp-rough","rough");
-      return a===document.getElementById("head-w").innerHTML&&b===document.getElementById("head-b").innerHTML}""", await (await pg.request.get("http://localhost:8768/")).text())
-    rec("開啟畫面", "豆花和芝麻跟 App 裡的圖一模一樣（含手繪抖動濾鏡）", same is True, same)
-    rec("字型", "字型樣式不擋畫面（載好後換成 all）", await pg.evaluate('(()=>{const l=document.querySelector(\'link[href*="fonts.googleapis"]\');return l&&l.getAttribute("onload")&&l.getAttribute("onload").includes("media")})()'))
+      return a===document.getElementById("head-w").innerHTML&&b===document.getElementById("head-b").innerHTML}""", await (await pg.request.get("http://localhost:8766/")).text())
+    rec("開啟動畫", "豆花和芝麻跟 App 裡的圖一模一樣（含手繪抖動濾鏡）", same is True, same)
+    await ctx.close()
+
+async def skip(b):
+    ctx, pg = await launch(b)
+    await pg.wait_for_selector('#app .view'); await pg.wait_for_timeout(250)
+    await pg.mouse.click(200, 200)
+    sp = await pg.evaluate(SP); await pg.wait_for_timeout(50); sp = await pg.evaluate(SP)
+    rec("開啟動畫", "點一下就跳過：馬上開始收", sp.get("out") and sp["out"] < 1000, sp)
+    await pg.wait_for_timeout(800)
+    rec("開啟動畫", "跳過後很快就能用", not await pg.query_selector('#splash'))
+    await ctx.close()
+    # 畫面還沒畫好就點：畫好立刻收
+    ctx, pg = await launch(b, "http://localhost:8768/?split")
+    await pg.wait_for_selector('#splash'); await pg.wait_for_timeout(300); await pg.mouse.click(200, 200)
+    await pg.wait_for_selector('#app .view', timeout=10000); await pg.wait_for_timeout(80)
+    sp = await pg.evaluate(SP); ready = await pg.evaluate('Math.round(performance.now())')
+    rec("開啟動畫", "還沒畫好就點跳過：畫好立刻收", sp.get("out") is not None, sp)
     await ctx.close()
 
 async def slow(b, reduced=False):
-    ctx = await S.mkctx(b); await ctx.add_init_script(seed(META) + WATCH)
-    pg = await ctx.new_page()
-    if reduced: await pg.emulate_media(reduced_motion="reduce")
-    errs = []; pg.on("pageerror", lambda e: errs.append(str(e)))
-    await pg.goto("http://localhost:8768/?split", wait_until="commit")
-    await pg.wait_for_timeout(600)
-    shown = await pg.evaluate('(()=>{const s=document.getElementById("splash");return s?getComputedStyle(s).visibility:null})()')
-    txt = await pg.evaluate('document.getElementById("splash")?.innerText||""')
+    ctx, pg = await launch(b, "http://localhost:8768/?split", reduced=reduced)
     await pg.wait_for_selector('#app .view', timeout=10000)
+    t_ready = await pg.evaluate('Math.round(performance.now())')
+    await pg.wait_for_timeout(900)
+    sp = await pg.evaluate(SP)
     if not reduced:
-        rec("開啟畫面", "下載很慢時：0.3 秒後出現豆花和芝麻的開啟畫面", shown == "visible" and "名古屋看花花" in txt and "準備行程" in txt, [shown, txt])
-        await pg.wait_for_timeout(100)
-        rec("開啟畫面", "畫好後收成圓圈縮到豆花和芝麻身上（不淡出）", await pg.evaluate('window.__spout') == "spout", await pg.evaluate('window.__spout'))
-        rec("開啟畫面", "退場時貓咪維持原本的點頭循環，不另外跳一下", await pg.evaluate('(()=>{const a=document.querySelector("#splash .sp-a");return a?getComputedStyle(a).animationName:"gone"})()') in ("spbob", "gone"))
-        kf = await pg.evaluate('[...document.styleSheets].flatMap(s=>{try{return [...s.cssRules]}catch(e){return []}}).filter(r=>r.name==="spout").map(r=>r.cssText).join("")')
-        rec("開啟畫面", "退場是圓圈收合、不用透明度", "clip-path" in kf and "opacity" not in kf, kf)
-        await pg.wait_for_timeout(800)
-        hit = await pg.evaluate('(()=>{const e=document.elementFromPoint(innerWidth/2,innerHeight/2);return e?(e.closest("#splash")?"splash":(e.className&&e.className.baseVal!==undefined?e.className.baseVal:e.className)||e.tagName):null})()')
-        rec("開啟畫面", "滑走後移除，不擋點擊", not await pg.query_selector('#splash') and hit != "splash", hit)
+        rec("開啟動畫", "載入本來就慢（超過 1.2 秒）：畫好就收，不再多等", sp.get("out") and sp["out"] - t_ready <= 150 and t_ready >= 1150, {"畫好": t_ready, **sp})
+        rec("開啟動畫", "退場時貓咪維持原本的點頭循環，不另外跳一下", "sphop" not in await (await pg.request.get("http://localhost:8766/")).text())
     else:
-        rec("開啟畫面", "減少動態：畫好就直接拿掉，不滑動", not await pg.query_selector('#splash') and not await pg.evaluate('window.__spout'))
-    rec("開啟畫面", "沒有錯誤" + ("（減少動態）" if reduced else ""), not errs, errs[:2])
+        rec("開啟動畫", "減少動態：時間到直接拿掉，不播收合", sp.get("gone") and not sp.get("out"), sp)
+    rec("開啟動畫", "沒有錯誤" + ("（減少動態）" if reduced else ""), not pg.errs, pg.errs[:2])
     await ctx.close()
+
+async def startup_images(b):
+    html = open(os.path.join(SITE, "index.html"), encoding="utf-8").read()
+    tags = re.findall(r'<link rel="apple-touch-startup-image" media="\(device-width: (\d+)px\) and \(device-height: (\d+)px\) and \(-webkit-device-pixel-ratio: (\d)\) and \(orientation: portrait\)" href="([^"]+)">', html)
+    bad = []
+    for w, h, d, f in tags:
+        p = os.path.join(SITE, f)
+        if not os.path.exists(p): bad.append(f + " 不存在"); continue
+        im = Image.open(p)
+        if im.size != (int(w) * int(d), int(h) * int(d)): bad.append(f"{f} 尺寸 {im.size}")
+    rec("啟動圖", "iOS 啟動圖：iPhone SE 到 Pro Max 各尺寸都有、像素尺寸正確", len(tags) >= 11 and not bad, {"張數": len(tags), "問題": bad})
+    # 啟動圖和開啟動畫同一個畫面：402×874@3 時，貓咪的位置一樣（比對中間一列像素的非米色範圍）
+    ctx, pg = await launch(b)
+    await pg.set_viewport_size({"width": 402, "height": 874}); await pg.wait_for_timeout(150)
+    await pg.evaluate('document.querySelectorAll("#splash .sp-a,#splash .sp-b").forEach(e=>e.style.animation="none")')
+    shot = "/tmp/claude-0/-home-claude/3424b5fd-29a2-5a06-a9e1-4e1d3697a3c3/scratchpad/sp_live.png"
+    await pg.screenshot(path=shot); await ctx.close()
+    def span(im, scale):
+        im = im.convert("RGB"); W, H = im.size; y = H // 2; xs = [x for x in range(W) if sum(abs(a - b) for a, b in zip(im.getpixel((x, y)), (248, 243, 236))) > 60]
+        return (round(min(xs) / scale), round(max(xs) / scale)) if xs else None
+    a = span(Image.open(shot), 1); s3 = span(Image.open(os.path.join(SITE, "splash/402x874@3.png")), 3)
+    rec("啟動圖", "啟動圖和開啟動畫的貓咪位置一樣（按下圖示到動畫接得起來）", a and s3 and abs(a[0] - s3[0]) <= 2 and abs(a[1] - s3[1]) <= 2, {"動畫": a, "啟動圖": s3})
 
 async def sw_slow(b):
     ctx = await S.mkctx(b, sw="allow")
@@ -73,7 +122,7 @@ async def main():
     try:
         async with async_playwright() as p:
             b = await p.chromium.launch()
-            for f, a in [(fast, ()), (slow, ()), (slow, (True,)), (sw_slow, ())]:
+            for f, a in [(normal, ()), (skip, ()), (slow, ()), (slow, (True,)), (startup_images, ()), (sw_slow, ())]:
                 try: await f(b, *a)
                 except Exception as e: rec("執行", f.__name__ + " 沒有例外", False, repr(e)[:300])
             await b.close()
