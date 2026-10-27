@@ -2170,7 +2170,8 @@ async function switchDay(i){
  if(bodyTop<stripBottom)scrollTo({top:scrollY+(body.getBoundingClientRect().top-stripBottom)-4});
  if(anim){const o={duration:450,easing:"cubic-bezier(.25,.85,.3,1)"};
   body.animate([{transform:`translateX(${dir*100}%)`},{transform:"translateX(0)"}],o);
-  ghost.animate([{transform:"translateX(0)"},{transform:`translateX(${-dir*100}%)`}],{...o,fill:"forwards"}).finished.then(()=>ghost.remove(),()=>ghost.remove())}
+  /* 舊內容一定要移除：iOS Safari 的 animation.finished 有時不會觸發，舊內容會停在左邊留下殘影，所以用計時器保底 */
+  const kill=()=>ghost.remove();ghost.animate([{transform:"translateX(0)"},{transform:`translateX(${-dir*100}%)`}],{...o,fill:"forwards"}).finished.then(kill,kill);setTimeout(kill,o.duration+80)}
 }
 function wxHTML(){
  const any=DAYS.some(x=>wxFor(x).live);
