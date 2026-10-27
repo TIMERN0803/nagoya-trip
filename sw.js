@@ -1,4 +1,4 @@
-/* 離線快取：頁面先抓最新、沒網路時用快取；字型與 Firebase 程式庫用快取並在背景更新 */
+/* 離線快取：頁面先抓最新（訊號差超過 1.5 秒就先用快取）、沒網路時用快取；字型與 Firebase 程式庫用快取並在背景更新 */
 const VERSION = "ngy-v55";
 /* 字型與 Firebase 程式庫放在獨立的快取，版本更新時不刪（不然更新後第一次沒網路就無法同步） */
 const LIB = "ngy-lib";
@@ -28,15 +28,19 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // 自己的頁面與檔案：網路優先，失敗時用快取
+  // 自己的頁面與檔案：網路優先；有快取時最多等網路 1.5 秒，太慢（訊號差）就先用快取打開，
+  // 網路回來後照樣更新快取，下次打開就是新版。沒有快取時等網路，失敗才用首頁
   if (url.origin === self.location.origin) {
-    e.respondWith(
-      fetch(req, { cache: "no-cache" }).then((res) => {
-        const copy = res.clone();
-        caches.open(VERSION).then((c) => c.put(req, copy));
-        return res;
-      }).catch(() => caches.match(req).then((r) => r || caches.match("./index.html")))
-    );
+    const net = fetch(req, { cache: "no-cache" }).then((res) => {
+      if (res.ok) { const copy = res.clone(); caches.open(VERSION).then((c) => c.put(req, copy)); }
+      return res;
+    });
+    e.waitUntil(net.then(() => {}, () => {}));
+    e.respondWith(caches.match(req).then((hit) => {
+      if (!hit) return net.catch(() => caches.match("./index.html"));
+      const slow = new Promise((r) => setTimeout(() => r(hit), 1500));
+      return Promise.race([net.then((res) => (res.ok ? res : hit), () => hit), slow]);
+    }));
     return;
   }
 

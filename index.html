@@ -92,7 +92,8 @@
 @media (prefers-reduced-motion:reduce){.hud-pill,.g-home .tile,.g-home .rm-row{transition:none}}
 </style>
 <title>名古屋看花花</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap">
+<!-- 字型樣式不擋住畫面：先用系統字顯示，字型載好再換上（離線快取後幾乎立刻就好） -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap"></noscript>
 <style>
 /* Layout: 淺色手帳。首頁＝倒數卡（插畫＋左文字右大數字）＋ 8 天地點插畫格；點格子進入當日。底部 5 格分頁列，選中的那格換成彩色插畫圖示並浮出。
    單一淺色主題。類別色只用在標籤與記帳，介面本體只有棕＋薄荷。 */
@@ -1354,8 +1355,29 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
  .pack-sum{gap:8px;padding:10px}.pack-sum .pe-art{width:48px;height:40px}.pt-toggle{max-width:100%;min-width:0}.bar:has(.bar-r){flex-wrap:wrap;row-gap:8px}.bar:has(.bar-r) .bar-r{width:100%;justify-content:flex-end}
  .rate{flex-wrap:wrap;row-gap:6px;white-space:nowrap}}
 </style>
+<style>
+/* ===== 開啟畫面：頁面還沒畫好時，豆花和芝麻點點頭陪你等。0.3 秒內就畫好的話完全不出現（不會閃一下） ===== */
+#splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#F8F3EC;visibility:hidden;animation:spshow 0s .3s forwards}
+@keyframes spshow{to{visibility:visible}}
+#splash .sp-in{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:"Zen Maru Gothic",system-ui,-apple-system,sans-serif;color:#3F3127;text-align:center}
+#splash svg{width:136px;height:66px;margin-bottom:6px;overflow:visible}
+#splash .sp-a,#splash .sp-b{transform-box:fill-box;transform-origin:50% 100%;animation:spbob 1.1s ease-in-out infinite}
+#splash .sp-b{animation-delay:-.55s}
+@keyframes spbob{0%,100%{transform:none}50%{transform:translateY(-6px) rotate(-4deg)}}
+#splash b{font-size:21px;font-weight:900;letter-spacing:.04em}
+#splash span{font-size:13px;color:#8C7B6B;font-weight:700}
+/* 畫好後整片往上滑走（不淡出） */
+#splash.out{animation:spout .55s cubic-bezier(.4,0,.2,1) forwards;visibility:visible}
+@keyframes spout{to{transform:translateY(-100%)}}
+@media (prefers-reduced-motion:reduce){#splash .sp-a,#splash .sp-b{animation:none}}
+</style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-in">
+ <svg viewBox="0 0 136 66"><g class="sp-a" stroke="#8C6D55" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"><path d="M16 34 13 10 30 22M56 34 59 10 42 22" fill="#fff"/><path d="M12 42c0-15 10-22 24-22s24 7 24 22c0 11-10 18-24 18S12 53 12 42z" fill="#fff"/><circle cx="27" cy="40" r="2.6" fill="#4A3B30" stroke="none"/><circle cx="45" cy="40" r="2.6" fill="#4A3B30" stroke="none"/><path d="M33 47q3 3 6 0" fill="none" stroke-width="2.6"/></g><g class="sp-b" stroke="#3B3330" stroke-width="3.4" stroke-linejoin="round" stroke-linecap="round"><path d="M80 34 77 10 94 22M120 34 123 10 106 22" fill="#3B3330"/><path d="M76 42c0-15 10-22 24-22s24 7 24 22c0 11-10 18-24 18S76 53 76 42z" fill="#3B3330"/><circle cx="91" cy="40" r="3.2" fill="#F6D58A" stroke="none"/><circle cx="109" cy="40" r="3.2" fill="#F6D58A" stroke="none"/><path d="M97 47q3 3 6 0" fill="none" stroke="#F6D58A" stroke-width="2.6"/></g></svg>
+ <b>名古屋看花花</b><span>豆花和芝麻正在準備行程…</span>
+</div></div>
+<script>/* 保險：萬一程式出錯，開啟畫面最多停 8 秒，不會一直擋住 */setTimeout(function(){var s=document.getElementById("splash");if(s)s.remove()},8000)</script>
 
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -2164,14 +2186,15 @@ async function switchDay(i){
  /* 換天像翻頁：舊的當天內容往旁邊滑走、新的從另一邊同時滑進來（不淡入淡出）；舊內容是暫時的複本，不能點 */
  const par=body.parentElement;par.querySelectorAll(".day-ghost").forEach(e=>e.remove());
  const anim=!reduce()&&body.animate;let ghost=null;
- if(anim){if(getComputedStyle(par).position==="static")par.style.position="relative";ghost=body.cloneNode(true);ghost.removeAttribute("id");ghost.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));ghost.className="day-ghost";ghost.inert=true;ghost.setAttribute("aria-hidden","true");
+ /* 滑動只在內容寬度裡發生（overflow-x:clip，不影響 sticky）：iOS Safari 會把滑進左右留白的畫面留成殘影 */
+ if(anim){if(getComputedStyle(par).position==="static")par.style.position="relative";par.style.overflowX="clip";ghost=body.cloneNode(true);ghost.removeAttribute("id");ghost.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));ghost.className="day-ghost";ghost.inert=true;ghost.setAttribute("aria-hidden","true");
   ghost.style.cssText=`position:absolute;left:${body.offsetLeft}px;top:${body.offsetTop}px;width:${body.offsetWidth}px;pointer-events:none`;par.appendChild(ghost)}
  body.innerHTML=dayBodyHTML();bindSched();pinCheck();
  if(bodyTop<stripBottom)scrollTo({top:scrollY+(body.getBoundingClientRect().top-stripBottom)-4});
  if(anim){const o={duration:450,easing:"cubic-bezier(.25,.85,.3,1)"};
   body.animate([{transform:`translateX(${dir*100}%)`},{transform:"translateX(0)"}],o);
   /* 舊內容一定要移除：iOS Safari 的 animation.finished 有時不會觸發，舊內容會停在左邊留下殘影，所以用計時器保底 */
-  const kill=()=>ghost.remove();ghost.animate([{transform:"translateX(0)"},{transform:`translateX(${-dir*100}%)`}],{...o,fill:"forwards"}).finished.then(kill,kill);setTimeout(kill,o.duration+80)}
+  const kill=()=>{ghost.remove();if(!par.querySelector(".day-ghost"))par.style.overflowX=""};ghost.animate([{transform:"translateX(0)"},{transform:`translateX(${-dir*100}%)`}],{...o,fill:"forwards"}).finished.then(kill,kill);setTimeout(kill,o.duration+80)}
 }
 function wxHTML(){
  const any=DAYS.some(x=>wxFor(x).live);
@@ -2635,6 +2658,8 @@ function holdOld(go){
  clearTimeout(vtTimer);vtTimer=setTimeout(endVt,540);
 }
 function endVt(){clearTimeout(vtTimer);document.querySelectorAll(".vt-old").forEach(e=>e.remove());app.parentElement.classList.remove("vt");const v=app.querySelector(".view.vt-in");if(v)v.classList.remove("vt-in")}
+/* 第一次畫好：0.3 秒內畫好就直接拿掉開啟畫面（使用者根本沒看到）；比較慢才讓它往上滑走 */
+function hideSplash(){const sp=document.getElementById("splash");if(!sp)return;if(performance.now()<300||reduce()||getComputedStyle(sp).visibility==="hidden"){sp.remove();return}sp.classList.add("out");setTimeout(()=>sp.remove(),600)}
 function render(keep,restore){
  const y=scrollY;
  if(!keep&&curKey)scrollMem[curKey]=y;
@@ -2987,7 +3012,7 @@ if(todayIdx>=0){view="day";dayIdx=todayIdx}
 /* 為了恢復同步而自動重新整理時，回到原本的分頁和位置 */
 try{const r=JSON.parse(sessionStorage.getItem("ngy:resume")||"null");sessionStorage.removeItem("ngy:resume");
  if(r&&Math.abs(Date.now()-r.at)<60000&&["plan","wx","move","acct","list"].includes(r.tab)){startTab=r.tab==="plan"?null:r.tab;view=r.view==="day"?"day":"home";if(DAYS[r.dayIdx])dayIdx=r.dayIdx;resumeY=+r.y||0}}catch(_){}
-render();
+render();hideSplash();
 document.addEventListener("DOMContentLoaded",()=>{if(startTab){tab=startTab;render()}if(resumeY)requestAnimationFrame(()=>scrollTo(0,resumeY))});
 connect();
 
