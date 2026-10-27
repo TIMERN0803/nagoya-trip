@@ -97,9 +97,9 @@ async def sheets(b):
     # 行事曆從出發前設定裡打開：疊兩層，Esc 一層一層關
     await pg.evaluate('openSetup()'); await pg.wait_for_timeout(250); await pg.evaluate('openCalSheet()'); await pg.wait_for_timeout(250)
     n2 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
-    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(150)
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(250); await pg.wait_for_timeout(150)
     n1 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
-    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(150)
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(250); await pg.wait_for_timeout(150)
     n0 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
     rec("面板", "兩層面板：Esc 一次關一層", [n2, n1, n0] == [2, 1, 0], [n2, n1, n0])
     # 點背景關閉仍然有效、按 × 關閉後焦點回去
@@ -123,20 +123,21 @@ async def viewer(b):
     async def L():
         await c.send("HeapProfiler.collectGarbage"); m = await c.send("Performance.getMetrics"); return {x["name"]: x["value"] for x in m["metrics"]}["JSEventListeners"]
     a = await L()
-    for i in range(30): await pg.evaluate('openViewer("ghibli-map.jpg","x");document.querySelector(".viewer .vclose").click()')
-    for i in range(20): await pg.evaluate('openSos();document.querySelector(".sheet-modal .sm-x").click();openWallet();document.querySelector(".sheet-modal .sm-x").click()')
-    await pg.wait_for_timeout(300); z = await L()
+    for i in range(30): await pg.evaluate('openViewer("ghibli-map.jpg","x");document.querySelector(".viewer:not(.leaving) .vclose").click()')
+    for i in range(20): await pg.evaluate('openSos();document.querySelector(".sheet-modal:not(.leaving) .sm-x").click();openWallet();document.querySelector(".sheet-modal:not(.leaving) .sm-x").click()')
+    # 關閉有 0.18 秒退場動畫（測試用假時鐘），先讓計時器跑完再量
+    await pg.clock.run_for(300); await pg.wait_for_timeout(300); z = await L()
     rec("地圖檢視器", "連續開關 30 次地圖＋40 次面板：沒有殘留畫面、listener 不增加", abs(z - a) <= 5 and await pg.evaluate('document.querySelectorAll(".viewer,.sheet-modal").length') == 0 and await pg.evaluate('modals.length') == 0, [a, z])
     await c.detach(); await ctx.close()
     # 出發前、沒有任何按鈕有焦點時連續開關（上次會讓每個面板留住前一個面板）
-    for nm, js, t in [("求助", 'openSos();document.querySelector(".sheet-modal .sm-x").click()', ft.jst(11, 10, 12)), ("錢包", 'openWallet();document.querySelector(".sheet-modal .sm-x").click()', ft.jst(11, 10, 12)),
-                      ("出發前設定", 'openSetup();document.querySelector(".sheet-modal .sm-x").click()', ft.jst(11, 10, 12)), ("給司機看", 'sosShow("hotel");document.querySelector(".sos-show .sm-x").click()', ft.jst(11, 10, 12)),
-                      ("地圖", 'openViewer("ghibli-map.jpg","x");document.querySelector(".viewer .vclose").click()', ft.jst(11, 10, 12)), ("回顧故事", 'openStory();document.querySelector(".story .st-x").click()', ft.jst(11, 26, 12))]:
+    for nm, js, t in [("求助", 'openSos();document.querySelector(".sheet-modal:not(.leaving) .sm-x").click()', ft.jst(11, 10, 12)), ("錢包", 'openWallet();document.querySelector(".sheet-modal:not(.leaving) .sm-x").click()', ft.jst(11, 10, 12)),
+                      ("出發前設定", 'openSetup();document.querySelector(".sheet-modal:not(.leaving) .sm-x").click()', ft.jst(11, 10, 12)), ("給司機看", 'sosShow("hotel");document.querySelector(".sos-show:not(.leaving) .sm-x").click()', ft.jst(11, 10, 12)),
+                      ("地圖", 'openViewer("ghibli-map.jpg","x");document.querySelector(".viewer:not(.leaving) .vclose").click()', ft.jst(11, 10, 12)), ("回顧故事", 'openStory();document.querySelector(".story:not(.leaving) .st-x").click()', ft.jst(11, 26, 12))]:
         ctx = await S.mkctx(b); pg = await opn(ctx, t, init=seed(META)); await home(pg)
         c = await ctx.new_cdp_session(pg); await c.send("Performance.enable")
         a = await L2(c)
         for i in range(30): await pg.evaluate(js)
-        await pg.wait_for_timeout(400); z = await L2(c)
+        await pg.clock.run_for(300); await pg.wait_for_timeout(400); z = await L2(c)
         rec("記憶體", f"{nm}：沒有焦點時連續開關 30 次，listener 不增加", z - a <= 3, [a, z])
         await c.detach(); await ctx.close()
 async def L2(c):
