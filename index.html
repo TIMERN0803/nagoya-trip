@@ -885,12 +885,11 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
 @keyframes vpushOut{to{transform:translateX(-20%)}}
 @keyframes vbackOut{to{transform:translateX(100%)}}
 @keyframes vdim{to{opacity:.06}}
-/* ===== 彈窗：底部面板和全螢幕畫面都整片從下方滑上來（0.5 秒，底部面板最後輕輕彈一下）、關閉較快滑下去（0.25 秒，退場要比進場快）；只有背景遮罩漸暗，內容不淡入淡出 ===== */
+/* ===== 彈窗：底部面板和全螢幕畫面都整片從下方滑上來（0.5 秒，柔和減速停住、不回彈）、關閉較快滑下去（0.25 秒，退場要比進場快）；只有背景遮罩漸暗，內容不淡入淡出 ===== */
 .sheet-modal{animation:dimin .3s ease}
 @keyframes dimin{from{background-color:rgba(43,36,32,0)}}
 @keyframes dimout{to{background-color:rgba(43,36,32,0)}}
-.sm-card{animation:sheetbob .5s cubic-bezier(.25,.85,.3,1);box-shadow:0 40px 0 0 var(--card)}
-@keyframes sheetbob{0%{transform:translateY(100%)}72%{transform:translateY(-10px)}100%{transform:none}}
+.sm-card{animation:sheetin .5s var(--ease-ios)}
 @keyframes sheetin{from{transform:translateY(100%)}to{transform:none}}
 .viewer,.sos-show,.story{animation:sheetin .5s var(--ease-ios)}
 .leaving{pointer-events:none!important}
