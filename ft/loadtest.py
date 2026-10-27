@@ -43,7 +43,8 @@ async def slow(b, reduced=False):
     if not reduced:
         rec("開啟畫面", "下載很慢時：0.3 秒後出現豆花和芝麻的開啟畫面", shown == "visible" and "名古屋看花花" in txt and "準備行程" in txt, [shown, txt])
         await pg.wait_for_timeout(100)
-        rec("開啟畫面", "畫好後豆花和芝麻跳一下、收成圓圈縮到牠們身上（不淡出）", await pg.evaluate('window.__spout') == "spout", await pg.evaluate('window.__spout'))
+        rec("開啟畫面", "畫好後收成圓圈縮到豆花和芝麻身上（不淡出）", await pg.evaluate('window.__spout') == "spout", await pg.evaluate('window.__spout'))
+        rec("開啟畫面", "退場時貓咪維持原本的點頭循環，不另外跳一下", await pg.evaluate('(()=>{const a=document.querySelector("#splash .sp-a");return a?getComputedStyle(a).animationName:"gone"})()') in ("spbob", "gone"))
         kf = await pg.evaluate('[...document.styleSheets].flatMap(s=>{try{return [...s.cssRules]}catch(e){return []}}).filter(r=>r.name==="spout").map(r=>r.cssText).join("")')
         rec("開啟畫面", "退場是圓圈收合、不用透明度", "clip-path" in kf and "opacity" not in kf, kf)
         await pg.wait_for_timeout(800)
