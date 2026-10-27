@@ -2705,7 +2705,10 @@ function render(keep,restore){
  if(tab==="list"&&focusItem&&Date.now()<focusUntil){const id=focusItem;setTimeout(()=>{const cb=document.getElementById("c-"+id),row=cb&&cb.closest(".chk-row");if(!row)return;const rt=row.getBoundingClientRect().top;if(rt<100||rt>innerHeight*.45)scrollTo(0,rt+scrollY-110);row.classList.add("ping")},30)}
  scrollTo(0,keep?y:(restore?(scrollMem[curKey]||0):0));
  if(pops.length)reapplyPops();
+ /* 自己的行李都裝好時，每次進到清單或行李頁，行李箱和貓咪都跳一下（同步重畫不跳；行李頁等滑進來再跳） */
+ if(!keep&&prevKey!==curKey&&tab==="list"&&me&&myPackDone()){const sel=listSub==="pack"?".pack-sum .pe-art":".pack-entry .pe-art";setTimeout(()=>popEl(app.querySelector(sel),"yay",sel),go==="go-fwd"&&!reduce()?420:0)}
 }
+function myPackDone(){const rows=itemsOf("pack");return !!me&&rows.length>0&&packCnt(rows,me)===rows.length}
 function topGap(){const st=app.querySelector(".strip")?.offsetHeight||0,d=document.getElementById("sched");if(!d)return st;if(d.open){d.open=false;store.set("schedOpen",false)}return st+d.querySelector("summary").offsetHeight}
 function syncStrip(){const st=app.querySelector(".strip");if(st)document.documentElement.style.setProperty("--strip-h",st.offsetHeight+"px");pinCheck()}
 function pinCheck(){const d=document.getElementById("sched"),pin=app.querySelector(".sched-pin");if(!d||!pin)return;const top=parseFloat(getComputedStyle(d).top)||0;d.classList.toggle("stuck",pin.getBoundingClientRect().top+16<top)}
