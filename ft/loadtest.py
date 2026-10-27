@@ -1,6 +1,6 @@
 # 開啟動畫與開啟速度：
-# 1. App 重新開啟時：豆花和芝麻（只有貓咪，沒有字）在畫面正中央點頭，從開啟算起約 1.2 秒才收，收成圓圈縮到牠們身上（不淡出）
-# 2. 載入本來就超過 1.2 秒：畫好就立刻收，不會再多等
+# 1. App 重新開啟時：豆花和芝麻（只有貓咪，沒有字）在畫面正中央點頭，從開啟算起約 1.2 秒直接切到首頁（不播收合、不淡出）
+# 2. 載入本來就超過 1.2 秒：畫好就立刻切，不會再多等
 # 3. 點一下跳過；同一次使用中重新整理不再播；減少動態直接拿掉
 # 4. iOS 啟動圖：各尺寸都有、和開啟動畫同一個畫面
 # 5. 訊號差（網路超過 1.5 秒）時，Service Worker 先用快取打開；字型樣式不擋畫面
@@ -34,11 +34,8 @@ async def normal(b):
     rec("開啟動畫", "豆花和芝麻在畫面正中央（和 iOS 啟動圖對齊）", abs(r["cx"]) <= 1 and abs(r["cy"]) <= 1, r)
     await pg.wait_for_timeout(1700)
     sp = await pg.evaluate(SP)
-    rec("開啟動畫", "從開啟算起約 1.2 秒才開始收（1.15～1.45 秒）", sp.get("out") and 1150 <= sp["out"] <= 1450, sp)
-    rec("開啟動畫", "收成圓圈縮到貓咪身上（不淡出）", sp.get("anim") == "spout", sp)
-    rec("開啟動畫", "收完移除、不擋點擊", sp.get("gone") and sp["gone"] - sp["out"] <= 1000 and not await pg.query_selector('#splash'), sp)
-    kf = await pg.evaluate('[...document.styleSheets].flatMap(s=>{try{return [...s.cssRules]}catch(e){return []}}).filter(r=>r.name==="spout").map(r=>r.cssText).join("")')
-    rec("開啟動畫", "退場是圓圈收合、不用透明度", "clip-path" in kf and "opacity" not in kf, kf)
+    rec("開啟動畫", "從開啟算起約 1.2 秒直接切到首頁（1.15～1.45 秒）", sp.get("gone") and 1150 <= sp["gone"] <= 1450, sp)
+    rec("開啟動畫", "直接切掉，不播收合動畫", not sp.get("out") and not await pg.query_selector('#splash'), sp)
     # 同一次使用中重新整理（例如網路恢復自動重新整理）：不再播
     await pg.reload(); await pg.wait_for_timeout(300)
     rec("開啟動畫", "同一次使用中重新整理：不再播", not await pg.query_selector('#splash'))
@@ -56,7 +53,7 @@ async def skip(b):
     await pg.wait_for_selector('#app .view'); await pg.wait_for_timeout(250)
     await pg.mouse.click(200, 200)
     sp = await pg.evaluate(SP); await pg.wait_for_timeout(50); sp = await pg.evaluate(SP)
-    rec("開啟動畫", "點一下就跳過：馬上開始收", sp.get("out") and sp["out"] < 1000, sp)
+    rec("開啟動畫", "點一下就跳過：馬上切掉", sp.get("gone") and sp["gone"] < 1000, sp)
     await pg.wait_for_timeout(800)
     rec("開啟動畫", "跳過後很快就能用", not await pg.query_selector('#splash'))
     await ctx.close()
@@ -65,7 +62,7 @@ async def skip(b):
     await pg.wait_for_selector('#splash'); await pg.wait_for_timeout(300); await pg.mouse.click(200, 200)
     await pg.wait_for_selector('#app .view', timeout=10000); await pg.wait_for_timeout(80)
     sp = await pg.evaluate(SP); ready = await pg.evaluate('Math.round(performance.now())')
-    rec("開啟動畫", "還沒畫好就點跳過：畫好立刻收", sp.get("out") is not None, sp)
+    rec("開啟動畫", "還沒畫好就點跳過：畫好立刻切掉", sp.get("gone") is not None and not await pg.query_selector('#splash'), sp)
     await ctx.close()
 
 async def slow(b, reduced=False):
@@ -75,10 +72,11 @@ async def slow(b, reduced=False):
     await pg.wait_for_timeout(900)
     sp = await pg.evaluate(SP)
     if not reduced:
-        rec("開啟動畫", "載入本來就慢（超過 1.2 秒）：畫好就收，不再多等", sp.get("out") and sp["out"] - t_ready <= 150 and t_ready >= 1150, {"畫好": t_ready, **sp})
-        rec("開啟動畫", "退場時貓咪維持原本的點頭循環，不另外跳一下", "sphop" not in await (await pg.request.get("http://localhost:8766/")).text())
+        rec("開啟動畫", "載入本來就慢（超過 1.2 秒）：畫好就切，不再多等", sp.get("gone") and sp["gone"] - t_ready <= 150 and t_ready >= 1150, {"畫好": t_ready, **sp})
+        page_src = await (await pg.request.get("http://localhost:8766/")).text()
+        rec("開啟動畫", "結束不另外跳一下、不播收合", not any(k in page_src for k in ("sphop", "spout")))
     else:
-        rec("開啟動畫", "減少動態：時間到直接拿掉，不播收合", sp.get("gone") and not sp.get("out"), sp)
+        rec("開啟動畫", "減少動態：時間到一樣直接切掉", sp.get("gone") and not sp.get("out"), sp)
     rec("開啟動畫", "沒有錯誤" + ("（減少動態）" if reduced else ""), not pg.errs, pg.errs[:2])
     await ctx.close()
 
