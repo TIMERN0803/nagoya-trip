@@ -174,6 +174,13 @@ async def days(b):
     n = await pg.evaluate('document.querySelectorAll(".day-ghost").length')
     await pg.wait_for_timeout(750)
     rec("換天", "連點換天：最多一個舊內容、結束後清乾淨", n <= 1 and await pg.evaluate('document.querySelectorAll(".day-ghost").length') == 0, n)
+    # iOS Safari 的 animation.finished 有時不觸發：模擬動畫卡住（暫停、finished 永遠不 resolve），舊內容也要在時間到後移除，不留殘影
+    await pg.click('.day-btn[data-day="2"]')
+    await pg.evaluate('document.querySelectorAll(".day-ghost").forEach(g=>g.getAnimations().forEach(a=>a.pause()))')
+    stuck = await pg.evaluate('document.querySelectorAll(".day-ghost").length')
+    await pg.wait_for_timeout(700)
+    rec("換天", "動畫卡住（finished 不觸發）時，舊內容仍在 0.53 秒後移除、不留殘影", stuck == 1 and await pg.evaluate('document.querySelectorAll(".day-ghost").length') == 0, stuck)
+    await pg.click('.day-btn[data-day="6"]'); await pg.wait_for_timeout(750)
     rec("換天", "最後顯示的是點的那一天", "11/23" in await pg.evaluate('document.getElementById("dayBody").innerText') or await pg.evaluate('dayIdx') == 6, await pg.evaluate('dayIdx'))
     rec("換天", "沒有橫向捲軸", await pg.evaluate('document.documentElement.scrollWidth<=innerWidth'))
     rec("換天", "沒有錯誤", not pg.errs, pg.errs[:2])
