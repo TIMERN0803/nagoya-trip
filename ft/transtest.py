@@ -190,6 +190,40 @@ async def days(b):
     rec("換天", "沒有錯誤", not pg.errs, pg.errs[:2])
     await ctx.close()
 
+async def micro(b):
+    """彈一下只留給剛完成一件事的小東西：打勾、裝好行李、記好一筆、行李全部裝好"""
+    pg = await ft.newpage(b, ft.jst(11, 10, 12)); ctx = pg.ctx  # 有預設清單和行李項目
+    await pg.click('nav.tabs button[data-tab="list"]'); await pg.wait_for_timeout(300)
+    cid = await pg.evaluate('document.querySelector(".chk input[type=checkbox]:not(:checked)")?.id')
+    await pg.check('#' + cid); await pg.wait_for_timeout(60)
+    st = await pg.evaluate(f'({{me:document.getElementById("{cid}").classList.contains("pop"),an:getComputedStyle(document.getElementById("{cid}")).animationName,others:[...document.querySelectorAll(".chk input.pop")].length}})')
+    rec("小回饋", "清單打勾：剛勾的框「啵」一下，其他框不動", st["me"] and st["an"] == "tickpop" and st["others"] == 1, st)
+    await pg.uncheck('#' + cid); await pg.wait_for_timeout(60)
+    rec("小回饋", "取消打勾不彈", not await pg.evaluate(f'document.getElementById("{cid}").classList.contains("pop")'))
+    # 行李：剩最後一項
+    await pg.click('[data-pack-open]'); await pg.wait_for_timeout(750)
+    # 先把自己的行李除了第一項都裝好（照 App 的方式寫進資料庫，同步重畫後也一樣）
+    last = await pg.evaluate('(()=>{const rows=itemsOf("pack");rows.forEach((r,i)=>{const k=packKey(r.id,me);done[k]=i>0;put("checks/"+k,{done:i>0})});render(true);return rows[0].id})()')
+    await pg.wait_for_timeout(300); other = await pg.evaluate('itemsOf("pack")[1].id')
+    await pg.click(f'[data-pack="{other}"][data-who="zhang"]'); await pg.wait_for_timeout(60)
+    await pg.click(f'[data-pack="{other}"][data-who="zhang"]'); await pg.wait_for_timeout(60)
+    rec("小回饋", "還沒全部裝好：行李箱不跳", not await pg.evaluate('!!document.querySelector(".pack-sum .pe-art.yay")'))
+    await pg.click(f'[data-pack="{last}"][data-who="zhang"]'); await pg.wait_for_timeout(60)
+    st = await pg.evaluate(f'({{btn:getComputedStyle(document.querySelector(\'[data-pack="{last}"][data-who="zhang"]\')).animationName,art:document.querySelector(".pack-sum .pe-art.yay")?getComputedStyle(document.querySelector(".pack-sum .pe-art")).animationName:null}})')
+    rec("小回饋", "裝好行李：按鈕「啵」一下", st["btn"] == "tickpop", st)
+    rec("小回饋", "最後一項裝好：行李箱和貓咪跳一下", st["art"] == "hop", st)
+    await pg.wait_for_timeout(1400)
+    rec("小回饋", "跳完拿掉 class（之後重畫不會再跳）", not await pg.evaluate('!!document.querySelector(".pop,.yay")'))
+    rec("小回饋", "沒有錯誤", not pg.errs, pg.errs[:2])
+    await ctx.close()
+    # 記帳：新的那筆從上方落下
+    ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 12), init=seed(META))
+    await pg.click('nav.tabs button[data-tab="acct"]'); await pg.wait_for_timeout(300)
+    await S.expopen(pg); await pg.fill('#f-amt', '500'); await pg.click('#f-save'); await pg.wait_for_timeout(150)
+    an = await pg.evaluate('(()=>{const r=document.querySelector(".ex.ping");return r?getComputedStyle(r).animationName:null})()')
+    rec("小回饋", "記下這筆：新的那筆從上方輕輕落下、彈一下就定位（加上亮一下）", an and "exdrop" in an and "rowping" in an, an)
+    await ctx.close()
+
 async def reduced(b):
     ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 10, 12), init=seed(META))
     await pg.emulate_media(reduced_motion="reduce")
@@ -215,7 +249,7 @@ async def narrow(b):
 async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        for f in [pages, sheets, acct, days, reduced, narrow]:
+        for f in [pages, sheets, acct, days, micro, reduced, narrow]:
             try: await f(b)
             except Exception as e: rec("執行", f.__name__ + " 沒有例外", False, repr(e)[:300])
         await b.close()
