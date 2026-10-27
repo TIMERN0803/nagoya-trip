@@ -847,6 +847,12 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
 .acct-note .err{color:var(--coral-ink)}
 .acct-note .msg-hint{color:var(--muted);font-weight:500}.acct-note .linkbtn{font-size:13px;font-weight:700}
 .ex.ping{animation:rowping 1.6s ease;border-radius:12px}
+/* 彈一下只留給「剛完成一件事」的小東西：打勾、裝好行李、記好一筆、行李全部裝好 */
+.ex.ping.drop{animation:exdrop .5s cubic-bezier(.3,1.4,.5,1),rowping 1.6s ease}
+@keyframes exdrop{0%{transform:translateY(-16px)}60%{transform:translateY(3px)}100%{transform:none}}
+.pop{animation:tickpop .32s cubic-bezier(.3,1.6,.5,1)}
+@keyframes tickpop{0%{transform:scale(.82)}55%{transform:scale(1.16)}100%{transform:none}}
+.pe-art.yay{transform-box:fill-box;transform-origin:50% 100%;animation:hop .6s cubic-bezier(.3,1.5,.5,1) 2}
 .exp-sheet .sm-card{height:92vh;height:92dvh;padding:0;gap:0;overflow:hidden;position:relative}
 .exp-form{display:flex;flex-direction:column;height:100%;min-height:0}
 .exp-head{flex:none;display:flex;align-items:center;gap:8px;padding:14px max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px));border-bottom:2px dashed var(--line)}
@@ -2287,7 +2293,15 @@ function askDiscard(){const c=expSheet&&expSheet.querySelector(".exp-confirm");i
 function tryCloseExp(){if(!expSheet)return;if(expDirty())askDiscard();else expSheet._close()}
 function closeExp(){if(expSheet)expSheet._close()}
 /* 存好後：清單裡那一筆亮一下，捲到看得到的地方 */
-function pingExp(id){requestAnimationFrame(()=>{const r=app.querySelector(`.ex[data-edit="${CSS.escape(id)}"]`);if(!r)return;const b=r.getBoundingClientRect();if(b.top<80||b.bottom>innerHeight-180)r.scrollIntoView({block:"center",behavior:reduce()?"auto":"smooth"});r.classList.remove("ping");void r.offsetWidth;r.classList.add("ping")})}
+/* 小小的完成回饋：剛打勾的框、剛裝好的行李按鈕「啵」一下；行李全部裝好時行李箱和貓咪跳一下。只加在剛點的那一個，不會整頁重畫時全部一起彈 */
+/* 剛點完時同步資料會讓畫面重畫（元素被換掉）：記住「誰在彈、從什麼時候開始」，重畫後接著播（用負的 animation-delay 從同一個進度繼續），不會被吃掉也不會重彈一次 */
+let pops=[];
+function popEl(el,cls="pop",sel){if(!el)return;sel=sel||popSel(el);if(!sel)return;pops=pops.filter(p=>p.sel!==sel);const p={sel,cls:cls.split(" "),t0:performance.now(),dur:1300};pops.push(p);applyPop(el,p,true);setTimeout(()=>{pops=pops.filter(x=>x!==p);const e=app.querySelector(sel);if(e){e.classList.remove(...p.cls);e.style.animationDelay=""}},p.dur)}
+function popSel(el){if(el.id)return "#"+CSS.escape(el.id);if(el.dataset.pack)return `[data-pack="${CSS.escape(el.dataset.pack)}"][data-who="${el.dataset.who}"]`;if(el.closest(".pack-sum")&&el.classList.contains("pe-art"))return ".pack-sum .pe-art";return ""}
+function applyPop(el,p,fresh){if(fresh){el.classList.remove(...p.cls);void el.getBoundingClientRect();el.style.animationDelay=""}else el.style.animationDelay=`-${Math.round(performance.now()-p.t0)}ms`;el.classList.add(...p.cls)}
+function unpop(sel){pops=pops.filter(p=>p.sel!==sel);const e=app.querySelector(sel);if(e){e.classList.remove("pop","yay","ping","drop");e.style.animationDelay=""}}
+function reapplyPops(){const now=performance.now();pops=pops.filter(p=>now-p.t0<p.dur);for(const p of pops){const el=app.querySelector(p.sel);if(el&&!p.cls.every(c=>el.classList.contains(c)))applyPop(el,p,false)}}
+function pingExp(id){requestAnimationFrame(()=>{const r=app.querySelector(`.ex[data-edit="${CSS.escape(id)}"]`);if(!r)return;const b=r.getBoundingClientRect();if(b.top<80||b.bottom>innerHeight-180)r.scrollIntoView({block:"center",behavior:reduce()?"auto":"smooth"});popEl(r,"ping drop",`.ex[data-edit="${CSS.escape(id)}"]`)})}
 /* header 上的「我的現金」入口：錢包插畫＋餘額 */
 function walletChip(){
  const set=me&&cashIn(me)>0,left=set?cashLeft(me):0,low=set&&left<LOW_CASH;
@@ -2398,6 +2412,7 @@ function renderAcct(){
  list.innerHTML=days.map(d=>{const es=expenses.filter(e=>e.day===d).sort((a,b)=>(b.ts||0)-(a.ts||0));const x=DAYS.find(z=>z.d===d);
   return `<div class="day-group"><h4>${esc(d)}${x?`（${x.w}）`:""}<span>${yen(es.reduce((a,e)=>a+e.amt,0))}</span></h4>${es.map(e=>{const c=ECAT.find(z=>z[0]===e.cat)||ECAT[5];const p=PEOPLE.find(z=>z[0]===e.who)||PEOPLE[0];
    return `<div class="ex${editingId===e.id?" editing":""}"${canWrite?` data-edit="${esc(e.id)}" role="button" tabindex="0"`:""}><span class="ic ${c[3]}"><svg><use href="#${c[2]}"/></svg></span><div class="m"><b>${esc(e.note||c[1])}${e.tf?`<span class="tf-badge">免稅</span>`:""}</b><small>${p[1]}${e.pay==="cash"?"付現":e.pay==="card"?"刷卡":"付"}，${e.split==="both"?"兩人平分":"自己的"}${canWrite?"，點一下修改":""}</small></div><div class="a">${yen(e.amt)}${canWrite?`<button type="button" class="del${pendingDel===e.id?" sure":""}" data-del="${esc(e.id)}">${pendingDel===e.id?"確定刪除":"刪除"}</button>`:""}</div></div>`}).join("")}</div>`}).join('<div class="gap"></div>');
+ if(pops.length)reapplyPops();
 }
 function itemForm(g,it){
  const isNew=!it;it=it||{title:"",note:"",due:""};
@@ -2689,6 +2704,7 @@ function render(keep,restore){
  if(sortFocusId&&sortGroup){const h=app.querySelector(`[data-sort-id="${CSS.escape(sortFocusId)}"] .drag-h`);if(h&&(document.activeElement===document.body||!document.activeElement))h.focus({preventScroll:true})}
  if(tab==="list"&&focusItem&&Date.now()<focusUntil){const id=focusItem;setTimeout(()=>{const cb=document.getElementById("c-"+id),row=cb&&cb.closest(".chk-row");if(!row)return;const rt=row.getBoundingClientRect().top;if(rt<100||rt>innerHeight*.45)scrollTo(0,rt+scrollY-110);row.classList.add("ping")},30)}
  scrollTo(0,keep?y:(restore?(scrollMem[curKey]||0):0));
+ if(pops.length)reapplyPops();
 }
 function topGap(){const st=app.querySelector(".strip")?.offsetHeight||0,d=document.getElementById("sched");if(!d)return st;if(d.open){d.open=false;store.set("schedOpen",false)}return st+d.querySelector("summary").offsetHeight}
 function syncStrip(){const st=app.querySelector(".strip");if(st)document.documentElement.style.setProperty("--strip-h",st.offsetHeight+"px");pinCheck()}
@@ -2744,7 +2760,7 @@ app.addEventListener("click",e=>{
  if(e.target.closest("[data-pack-todo]")){packTodo=!packTodo;try{localStorage.setItem("ngy:packTodo",packTodo?"1":"0")}catch(_){};render(true);return}
  const gg=e.target.closest("[data-go-group]");if(gg){setListTab(gg.dataset.goGroup);tab="list";listSub=null;editItem=null;render();scrollTo(0,0);return}
  const gi=e.target.closest("[data-go-item]");if(gi){focusItem=gi.dataset.goItem;focusUntil=Date.now()+2500;const it=items.find(x=>x.id===focusItem);if(it&&it.group==="pack"){listSub="pack"}else{setListTab(it&&it.group||"prep");listSub=null}tab="list";editItem=null;render();return}
- const pkb=e.target.closest("[data-pack]");if(pkb){const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);put("checks/"+k,{done:v});return}
+ const pkb=e.target.closest("[data-pack]");if(pkb){const who=pkb.dataset.who,id=pkb.dataset.pack,rows=itemsOf("pack"),wasAll=rows.length&&packCnt(rows,who)===rows.length;const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);put("checks/"+k,{done:v});if(!done[packKey(id,who)])unpop(`[data-pack="${CSS.escape(id)}"][data-who="${who}"]`);else{popEl(app.querySelector(`[data-pack="${CSS.escape(id)}"][data-who="${who}"]`));if(who===me&&!wasAll&&packCnt(itemsOf("pack"),who)===rows.length)popEl(app.querySelector(".pack-sum .pe-art"),"yay",".pack-sum .pe-art")}return}
  const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);put("checks/"+id,{done:true});return}
  if(e.target.closest("[data-wallet-open]")){openWallet();return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
@@ -2774,6 +2790,7 @@ app.addEventListener("change",async e=>{
   rateErr="";if(v>0){rate=v;store.set("rate",rate);rateMeta={auto:false,ts:Date.now(),src:""};store.set("rateMeta",rateMeta);renderAcct();if(canWrite)put("settings/rate",{jpyTwd:v,auto:false,ts:rateMeta.ts})}else{t.value=rate}return}
  if(!t.matches(".chk input[type=checkbox]"))return;
  const id=t.id.slice(2);done[id]=t.checked;store.set("done",done);refresh();
+ if(t.checked)popEl(document.getElementById("c-"+id));else unpop("#"+CSS.escape("c-"+id));
  put("checks/"+id,{done:t.checked});
 });
 app.addEventListener("submit",async e=>{
