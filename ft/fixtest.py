@@ -14,7 +14,7 @@ async def home(pg):
 
 async def amount(b):
     ctx = await mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 12), init=seed(META))
-    await tab(pg, "acct")
+    await tab(pg, "acct"); await S.expopen(pg)
     for raw, err in [("1.5", "小數"), ("12.5", "小數"), ("-100", "負數"), ("1e3", "只能輸入數字"), ("1.5萬", "例如"), ("999999999", "最多"), ("12,34", "逗號"), ("0", "請先輸入金額"), ("   ", "請先輸入金額")]:
         n = len(await exps(pg))
         await pg.fill('#f-amt', raw); await pg.fill('#f-note', '不該存'); await pg.click('#f-save'); await pg.wait_for_timeout(150)
@@ -23,12 +23,13 @@ async def amount(b):
     await pg.fill('#f-amt', ''); await pg.type('#f-amt', '１２３'); v = await pg.input_value('#f-amt')
     rec("金額", "全形數字輸入時轉成半形", v == "123", v)
     for raw, want in [("１２３", 123), ("3,000", 3000), ("¥1,200", 1200), ("99,999,999", 99999999), ("4999", 4999)]:
-        await pg.fill('#f-amt', raw); await pg.fill('#f-note', f"ok{raw}"); await pg.click('#f-save'); await pg.wait_for_timeout(200)
+        await S.expopen(pg); await pg.fill('#f-amt', raw); await pg.fill('#f-note', f"ok{raw}"); await pg.click('#f-save'); await pg.wait_for_timeout(200)
         got = [v["amt"] for v in (await exps(pg)).values() if v.get("note") == f"ok{raw}"]
         rec("金額", f"「{raw}」存成 {want}", got == [want], got)
         await pg.wait_for_timeout(500)
-    await pg.fill('#f-amt', '5,000'); tf = await pg.is_visible('#f-tf-row')
+    await S.expopen(pg); await pg.fill('#f-amt', '5,000'); tf = await pg.is_visible('#f-tf-row')
     rec("金額", "千分位 5,000 也會出現免稅開關", tf)
+    await S.expclose(pg)
     # 錢包
     await pg.click('.wchip'); await pg.wait_for_timeout(200)
     await pg.fill('.ws .w-form input', '1.5萬'); await pg.click('.ws .w-form .primary'); await pg.wait_for_timeout(200)
@@ -52,9 +53,9 @@ async def edit_defaults(b):
     rec("編輯", "改完星星 11/18 的帳，新帳預設回到自己、平分、付現、今天", d == {"who": "zhang", "split": "both", "day": "11/21", "pay": "cash"}, d)
     s1 = (await exps(pg))["s1"]
     rec("編輯", "只改金額：雲端金額 2500，其他欄位不變", s1["amt"] == 2500 and s1["who"] == "star" and s1["day"] == "11/18" and s1["note"] == "星星的", s1)
-    await pg.click('.ex[data-edit="s1"]'); await pg.wait_for_timeout(200); await pg.click('#f-cancel'); await pg.wait_for_timeout(200)
+    await pg.click('.ex[data-edit="s1"]'); await pg.wait_for_timeout(600); await S.expclose(pg)
     d = await pg.evaluate('({who:draft.who,day:draft.day,amt:draft.amt})')
-    rec("編輯", "按「取消修改」後回到預設", d == {"who": "zhang", "day": "11/21", "amt": ""}, d)
+    rec("編輯", "沒改就關掉修改面板後回到預設", d == {"who": "zhang", "day": "11/21", "amt": ""}, d)
     await ctx.close()
 
 async def conflict(b):
@@ -82,9 +83,9 @@ async def conflict(b):
     await a.click('[data-del="e1"]'); await a.wait_for_timeout(300)
     if await a.query_selector('[data-del="e1"]'): await a.click('[data-del="e1"]')
     await a.wait_for_timeout(5800)
-    st = await s.evaluate('({editing:editingId,msg:document.getElementById("f-msg").innerText,btn:document.getElementById("f-save").innerText})')
-    rec("同時修改", "對方刪掉正在修改的帳：退出修改並提示", st["editing"] is None and "對方刪掉" in st["msg"], st)
-    await s.fill('#f-amt', '3100'); await s.fill('#f-note', '新的一筆'); await s.click('#f-save'); await s.wait_for_timeout(500)
+    st = await s.evaluate('({editing:editingId,msg:document.getElementById("acct-note")?.innerText||"",open:!!document.querySelector(".exp-sheet:not(.leaving)")})')
+    rec("同時修改", "對方刪掉正在修改的帳：關掉修改面板並提示", st["editing"] is None and "對方刪掉" in st["msg"] and not st["open"], st)
+    await S.expopen(s); await s.fill('#f-amt', '3100'); await s.fill('#f-note', '新的一筆'); await s.click('#f-save'); await s.wait_for_timeout(500)
     rec("同時修改", "被刪掉的那筆不會被寫回來", "e1" not in await exps(a))
     rec("同時修改", "沒有錯誤", not a.errs and not s.errs, (a.errs + s.errs)[:2])
     await ctx.close()
@@ -154,7 +155,7 @@ async def tel_and_cash(b):
     await pg.evaluate("openSos()"); await pg.wait_for_timeout(300); await pg.click("[data-sos-tab=emg]"); await pg.wait_for_timeout(300)
     hrefs = await pg.evaluate('[...document.querySelectorAll(".sos-tel")].map(a=>a.getAttribute("href")).filter(Boolean)')
     rec("求助", "旅平險電話分機用「,」隔開", "tel:+886227551299,3" in hrefs, hrefs[-2:])
-    await pg.evaluate('document.querySelector(".sheet-modal .sm-x")?.click()'); await pg.wait_for_timeout(200)
+    await pg.evaluate('document.querySelector(".sheet-modal .sm-x")?.click()'); await pg.wait_for_timeout(350)
     await tab(pg, "acct"); chip = await pg.inner_text('.wchip')
     await pg.click('.wchip'); await pg.wait_for_timeout(200); hero = await pg.inner_text('.ws-hero')
     await home(pg); hp = await pg.evaluate('document.querySelector(".hp-yen")?.innerText||""')
@@ -195,7 +196,7 @@ async def code_flow(b):
     await ctx.close()
     # 有變更還沒同步時不能換代碼
     ctx = await mkctx(b, fs=S.FSO); pg = await opn(ctx, ft.twt(11, 5, 20), init=seed(META), wait=1200)
-    await pg.evaluate('__goOffline()'); await tab(pg, "acct"); await pg.fill('#f-amt', '100'); await pg.click('#f-save'); await pg.wait_for_timeout(200)
+    await pg.evaluate('__goOffline()'); await tab(pg, "acct"); await S.expopen(pg); await pg.fill('#f-amt', '100'); await pg.click('#f-save'); await pg.wait_for_timeout(400)
     await pg.click('[data-sync-info]'); await pg.wait_for_timeout(200)
     info = await pg.evaluate('document.getElementById("code-info")?.innerText||""')
     rec("代碼", "還有變更沒同步時不提供換代碼", "還沒同步" in info and not await pg.query_selector('[data-code-change]'), info.replace("\n", " "))
@@ -203,7 +204,7 @@ async def code_flow(b):
 
 async def no_me(b):
     ctx = await mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 12), init=seed(META) + 'localStorage.removeItem("ngy:me");')
-    await tab(pg, "acct")
+    await tab(pg, "acct"); await S.expopen(pg)
     sel = await pg.evaluate('document.querySelector("[data-pick=who] [aria-pressed=true]")?.dataset.v||null')
     rec("身分", "沒選身分時「誰付的」不預設阿彰", sel is None, sel)
     await pg.fill('#f-amt', '800'); await pg.fill('#f-note', '星星第一筆'); await pg.click('#f-save'); await pg.wait_for_timeout(200)
@@ -218,9 +219,9 @@ async def rapid(b):
     await tab(pg, "list"); await pg.click('[data-list-tab="buy"]'); await pg.wait_for_timeout(200); await pg.click('[data-item-new="buy"]'); await pg.fill('.chk-form input[name=title]', '連點')
     await pg.evaluate('(()=>{const b=document.querySelector(".chk-form .primary");for(let i=0;i<10;i++)b.click()})()'); await pg.wait_for_timeout(600)
     rec("連點", "「新增」同一輪點 10 次只新增 1 筆", sum(1 for k, v in (await cloud(pg)).items() if "/items/" in k and v.get("title") == "連點") == 1)
-    await tab(pg, "acct"); await pg.fill('#f-amt', '450'); await pg.fill('#f-note', '連點記帳')
+    await tab(pg, "acct"); await S.expopen(pg); await pg.fill('#f-amt', '450'); await pg.fill('#f-note', '連點記帳')
     await pg.evaluate('(()=>{const b=document.getElementById("f-save");b.click();b.click();b.click()})()'); await pg.wait_for_timeout(300)
-    m = await pg.inner_text('#f-msg')
+    m = await pg.evaluate(S.NOTE)
     rec("連點", "「記下這筆」連點只記 1 筆，訊息仍是已記下", sum(1 for v in (await exps(pg)).values() if v.get("note") == "連點記帳") == 1 and "已記下" in m, m)
     await ctx.close()
     ctx = await mkctx(b); pg = await opn(ctx, ft.jst(11, 17, 23, 30), init=seed(META))

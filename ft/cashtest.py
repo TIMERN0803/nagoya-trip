@@ -1,5 +1,6 @@
 import asyncio,json,sys
 import fulltest as ft
+import synctest as S
 from playwright.async_api import async_playwright
 R=[];SH='/home/claude/build/'
 def ok(n,c,x=""):R.append((n,bool(c)));print(("PASS " if c else "FAIL ")+n+(" "+str(x) if not c else ""))
@@ -7,14 +8,14 @@ async def gohome(pg):
     await pg.click('[data-tab="plan"]');await pg.wait_for_timeout(400)
     if not await pg.query_selector('.g-home'):await pg.click('[data-home]');await pg.wait_for_timeout(400)
 async def add_exp(pg,amt,pay):
-    await pg.fill('#f-amt',str(amt));await pg.click(f'[data-pick="pay"] [data-v="{pay}"]')
-    await pg.click('#f-save');await pg.wait_for_timeout(400)
+    await S.expopen(pg);await pg.fill('#f-amt',str(amt));await pg.click(f'[data-pick="pay"] [data-v="{pay}"]')
+    await pg.click('#f-save');await pg.wait_for_timeout(600)
 async def wallet_set(pg,mode,v):
     await pg.click('.wchip');await pg.wait_for_timeout(250)
     if await pg.locator('.ws [data-wallet-edit]').count():await pg.click(f'.ws [data-wallet-edit][data-mode="{mode}"]');await pg.wait_for_timeout(150)
     await pg.fill('.ws .w-form input',str(v));await pg.click('.ws .w-form .primary');await pg.wait_for_timeout(400)
 async def close(pg):
-    await pg.click('.ws .sm-x');await pg.wait_for_timeout(200)
+    await pg.click('.ws .sm-x');await pg.wait_for_timeout(350)  # 面板關閉有 0.25 秒滑下
 async def main(shots=True):
     async with async_playwright() as p:
         b=await p.chromium.launch()
@@ -34,12 +35,14 @@ async def main(shots=True):
         await pg0.click('.ws [data-wallet-me="zhang"]');await pg0.wait_for_timeout(300)
         ok("picked: saved",await pg0.evaluate('localStorage.getItem("ngy:me")')=="zhang")
         ok("picked: set form shown",await pg0.locator('.ws .w-form input').count()==1)
-        ok("picked: form payer zhang",await pg0.get_attribute('[data-pick="who"] [data-v="zhang"]','aria-pressed')=="true")
+        ok("picked: form payer zhang",await pg0.evaluate('freshDraft().who')=="zhang")  # 填寫面板每次打開都用預設值
         if shots:await pg0.screenshot(path=SH+'ws_set.png')
         await pg0.close()
         pg=await ft.newpage(b,ft.jst(11,19,12,10),ctx=ctx)
         await pg.click('[data-tab="acct"]');await pg.wait_for_timeout(500)
+        await S.expopen(pg)
         ok("pay pick default cash",await pg.get_attribute('[data-pick="pay"] [data-v="cash"]','aria-pressed')=="true")
+        await S.expclose(pg)
         await wallet_set(pg,"set",40000)
         ok("set 40000","¥40,000" in await pg.inner_text('.ws-hero'))
         ok("chip updates","¥40,000" in await pg.inner_text('.wchip'))
@@ -59,7 +62,7 @@ async def main(shots=True):
         if shots:await pg.screenshot(path=SH+'ws_main.png')
         stored=await pg.evaluate('JSON.parse(localStorage.getItem("mockdb")||"{}")["trips/neko-test/wallet/zhang"]')
         ok("saved to firestore",stored and stored.get("cashIn")==50000,stored)
-        await pg.mouse.click(200,60);await pg.wait_for_timeout(200)
+        await pg.mouse.click(200,60);await pg.wait_for_timeout(350)
         ok("backdrop closes",await pg.locator('.ws').count()==0)
         if shots:await pg.screenshot(path=SH+'ws_bar.png',clip={'x':0,'y':0,'width':390,'height':120})
         await add_exp(pg,43000,"cash")

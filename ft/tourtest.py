@@ -35,7 +35,7 @@ async def main():
         ft.rec("T 使用教學","記住已經看過",await pg.evaluate('localStorage.getItem("ngy:tour")')=="1")
         await pg.click('[data-tour-open]');await pg.wait_for_timeout(500)
         ft.rec("T 使用教學","設定清單裡的「看使用教學」可以再打開",await pg.query_selector('.coach') and not await pg.query_selector('.su-sheet'))
-        await pg.keyboard.press('Escape');await pg.wait_for_timeout(300)
+        await pg.keyboard.press('Escape');await pg.wait_for_timeout(350)
         ft.rec("T 使用教學","Esc 可以關閉、背景恢復捲動",not await pg.query_selector('.coach') and await pg.evaluate('document.body.style.overflow')=="")
         await pg.reload();await pg.clock.run_for(1500);await pg.wait_for_timeout(400)
         ft.rec("T 使用教學","看過之後重新打開不會再出現",not await pg.query_selector('.coach'))

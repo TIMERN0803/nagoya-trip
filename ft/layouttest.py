@@ -21,7 +21,7 @@ async def widths(b):
     for w in [320, 360, 195]:
         ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 20), init=seed(DB)); await pg.set_viewport_size({"width": w, "height": 740})
         for name, js in PAGES:
-            await pg.evaluate(js + ';render();scrollTo(0,0)'); await pg.wait_for_timeout(250)
+            await pg.evaluate(js + ';render();scrollTo(0,0)'); await pg.wait_for_timeout(700)  # 換頁轉場 0.5 秒，結束後再量
             r = await pg.evaluate(HEAD)
             # 200% 縮放（195px）時標題可以換行（WCAG 只要求不用左右捲動）
             rec("版面", f"{w}px {name}：沒有水平捲動、標題列不超出" + ("、標題一行" if w >= 320 else ""), r["sw"] <= w and r["hover"] == 0 and (w < 320 or r["lines"] <= 1), r)
@@ -43,7 +43,7 @@ async def touch(b):
     for t, tz, pages in [(ft.jst(11, 19, 20), "Asia/Tokyo", PAGES), (ft.twt(10, 26, 20), "Asia/Taipei", [("出發前首頁", 'tab="plan";view="home"'), ("出發前清單", 'tab="list";listSub=null')])]:
         ctx = await S.mkctx(b, tz=tz); pg = await opn(ctx, t, init=seed(DB))
         for name, js in pages:
-            await pg.evaluate(js + ';render();scrollTo(0,0)'); await pg.wait_for_timeout(500)  # 換頁時上一頁暫留 0.42 秒播退場，等它收掉再量
+            await pg.evaluate(js + ';render();scrollTo(0,0)'); await pg.wait_for_timeout(700)  # 換頁時上一頁暫留 0.54 秒播退場，等它收掉再量
             bad = []
             for y in range(0, 6):
                 bad += await pg.evaluate(HIT, TARGETS)
@@ -54,20 +54,26 @@ async def touch(b):
         await ctx.close()
     # 記帳表單的選項、錢包的模式切換
     ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 20), init=seed(DB))
-    await pg.evaluate('tab="acct";render()'); await pg.wait_for_timeout(200)
+    await pg.evaluate('tab="acct";render()'); await pg.wait_for_timeout(200); await S.expopen(pg)
+    # 記帳填寫面板：可點範圍在面板裡捲動檢查（面板自己的捲動區是 .exp-body）
     # 使用者決定：選項外觀維持原本高度，只把可點範圍放大到 44
     h = await pg.evaluate('[...document.querySelectorAll("#acct-form .pick")].map(e=>Math.round(e.getBoundingClientRect().height))')
     rec("觸控", "記帳選項維持原本外觀高度（小於 44）", h and max(h) < 44, sorted(set(h)))
     SEL = '#acct-form .picks:not([data-pick="cat"]) .pick'
     bad = await pg.evaluate(HIT, SEL)
     for i in range(3):
-        await pg.evaluate('scrollBy(0,innerHeight*0.5)'); await pg.wait_for_timeout(120); bad += await pg.evaluate(HIT, SEL)
+        await pg.evaluate('document.querySelector(".exp-body").scrollBy(0,innerHeight*0.3)'); await pg.wait_for_timeout(120); bad += await pg.evaluate(HIT, SEL)
     rec("觸控", "記帳的付款人、分攤、付款方式：可點範圍至少 44 高", not bad, sorted(set(bad)))
     # 類別會排成兩列，可點範圍放大到列距的一半（約 38），而且不會點到另一列
     await pg.evaluate('document.querySelector(\'[data-pick="cat"]\').scrollIntoView({block:"center"})'); await pg.wait_for_timeout(120)
     r = await pg.evaluate("""(()=>{const out=[];for(const e of document.querySelectorAll('[data-pick="cat"] .pick')){const r=e.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;
       const own=[cy-17,cy+17].every(y=>{const h=document.elementFromPoint(cx,y);return h&&(h===e||e.contains(h))});out.push(own)}return out})()""")
     rec("觸控", "記帳類別：可點範圍約 38 高（列距的一半）、不會點到另一列", r and all(r), r)
+    # 填寫面板的關閉、記下、再記一筆、記一筆按鈕：至少 44
+    hs = await pg.evaluate('[...document.querySelectorAll(".exp-sheet [data-exp-x],.exp-sheet .exp-hsave,.exp-sheet .exp-foot button")].map(e=>Math.round(e.getBoundingClientRect().height))')
+    await S.expclose(pg)
+    hs += [await pg.evaluate('Math.round(document.querySelector(".acct-fab").getBoundingClientRect().height)')]
+    rec("觸控", "記帳面板的關閉／記下／再記一筆、「記一筆」按鈕：至少 40 高（關閉鈕沿用全站 40）", hs and min(hs) >= 40, hs)
     await ctx.close()
 
 def lum(c):

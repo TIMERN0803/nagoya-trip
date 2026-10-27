@@ -29,7 +29,7 @@ async def main():
         await pg.click('.sos-show [data-say]');await pg.wait_for_timeout(100)
         ft.rec("語音","可以重複播放",len(await pg.evaluate('window._said'))==2)
         c0=await pg.evaluate('window._cancel')
-        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(150)  # 現在只有 × 才關閉
+        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(350)  # 現在只有 × 才關閉
         ft.rec("語音","關閉放大畫面會停止播放",not await pg.query_selector('.sos-show') and await pg.evaluate('window._cancel')>c0)
         # 〇〇 唸成 ここ
         await pg.click('[data-sos-grp="go"]');await pg.wait_for_timeout(200)
@@ -38,14 +38,14 @@ async def main():
         await pg.click('.sos-show [data-say]');await pg.wait_for_timeout(30)
         t=(await pg.evaluate('window._said'))[-1]['t']
         ft.rec("語音","〇〇 畫面照樣顯示、唸成「ここ」","〇〇" in big and "〇〇" not in t and t.startswith("ここへは"),[big,t])
-        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(150)
+        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(350)
         # 飯店地址
         await pg.click('[data-sos-tab="emg"]');await pg.wait_for_timeout(200)
         await pg.click('[data-sos-show="hotel"]');await pg.wait_for_timeout(200)
         await pg.click('.sos-show [data-say]');await pg.wait_for_timeout(30)
         t=(await pg.evaluate('window._said'))[-1]['t']
         ft.rec("語音","給司機看：唸住址（數字用讀音友善寫法）","この住所までお願いします" in t and "十三の十八" in t and "13-18" not in t,t)
-        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(150)
+        await pg.click('.sos-show .sm-x');await pg.wait_for_timeout(350)
         # 緊急句子
         await pg.click('.sos-ph button:nth-child(1)');await pg.wait_for_timeout(200)
         await pg.click('.sos-show [data-say]');await pg.wait_for_timeout(30)

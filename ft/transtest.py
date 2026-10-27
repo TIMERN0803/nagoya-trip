@@ -1,4 +1,4 @@
-# 換頁與彈窗轉場：往深一層整頁從右推入（舊頁往左退）、返回舊頁往右滑走、底部分頁切換不播、點記帳滑到輸入金額、換天左右翻頁、全部不淡入淡出；同步重畫不播；彈窗關閉有退場動畫且一定會移除；
+# 換頁與彈窗轉場（溫柔版：換頁 0.5 秒、換天 0.45 秒、彈窗滑上 0.5 秒輕彈、滑下 0.25 秒）：往深一層整頁從右推入（舊頁往左退）、返回舊頁往右滑走、底部分頁切換不播、記帳分成清單頁和「記一筆」填寫面板、換天左右翻頁、全部不淡入淡出；同步重畫不播；彈窗關閉有退場動畫且一定會移除；
 # 退場中的面板點不到、不擋下一個面板；減少動態時直接移除；轉場只動 opacity／transform；滑入時沒有橫向捲軸
 # 一律用假資料庫（synctest.mkctx 的攔截）
 import asyncio
@@ -21,43 +21,43 @@ async def pages(b):
     o = await pg.evaluate('(()=>{const L=document.querySelector(".vt-old");return L?{n:document.querySelectorAll(".vt-old").length,hid:L.getAttribute("aria-hidden"),inert:L.querySelector(".view").inert,pe:getComputedStyle(L).pointerEvents,anim:getComputedStyle(L.querySelector(".view")).animationName,inApp:!!document.querySelector("#app .vt-old")}:null})()')
     rec("換頁", "推入時舊頁暫留在下層往左退（不能點、對輔助技術隱藏、不在 #app 裡）", o and o["n"] == 1 and o["hid"] == "true" and o["inert"] and o["pe"] == "none" and o["anim"] == "vpushOut" and not o["inApp"], o)
     rec("換頁", "推入時新頁不透明、蓋住舊頁", await pg.evaluate('getComputedStyle(document.querySelector("#app .view")).backgroundColor!=="rgba(0, 0, 0, 0)"'))
-    await pg.wait_for_timeout(500)
+    await pg.wait_for_timeout(700)
     rec("換頁", "轉場結束舊頁移除、新頁恢復一般版面", await pg.evaluate('!document.querySelector(".vt-old")&&!document.querySelector(".view.vt-in")&&!document.querySelector(".shell.vt")'))
     await pg.click('[data-home]'); c = await pg.evaluate(cls)
     rec("換頁", "當天行程按返回：從左邊滑進（go-back）", "go-back" in c, c)
     rec("換頁", "返回時舊頁在上層往右滑走", await pg.evaluate('getComputedStyle(document.querySelector(".vt-old.go-back>.view")).animationName') == "vbackOut")
-    await pg.wait_for_timeout(500)
+    await pg.wait_for_timeout(700)
     await pg.click('nav.tabs button[data-tab="wx"]'); c = await pg.evaluate(cls)
     rec("換頁", "切底部分頁：不播動畫、不留舊頁", await pg.evaluate('getComputedStyle(document.querySelector("#app .view")).animationName') == "none" and not await pg.evaluate('!!document.querySelector(".vt-old")'), c)
     await pg.wait_for_timeout(400)
     await pg.click('nav.tabs button[data-tab="list"]'); await pg.wait_for_timeout(300)
     await pg.evaluate('listSub="pack";render()'); c = await pg.evaluate(cls)
     rec("換頁", "清單進行李頁：從右邊滑進", "go-fwd" in c, c)
-    await pg.wait_for_timeout(500)
+    await pg.wait_for_timeout(700)
     await pg.evaluate('render(true)'); c = await pg.evaluate(cls)
     rec("換頁", "同步資料進來重畫（keep）：不播轉場", "go-" not in c and await pg.evaluate('document.querySelector("#app .view").style.animationName==="none"||document.querySelector("#app .view").style.animation.includes("none")'), c)
     await pg.evaluate('render()'); c = await pg.evaluate(cls)
     rec("換頁", "同一頁重畫：不播動畫", "go-" not in c and await pg.evaluate('getComputedStyle(document.querySelector("#app .view")).animationName') == "none", c)
     # 從當天行程按底部「行程」回首頁：是切分頁，不播
-    await pg.evaluate('tab="plan";view="day";dayIdx=2;render()'); await pg.wait_for_timeout(500)
+    await pg.evaluate('tab="plan";view="day";dayIdx=2;render()'); await pg.wait_for_timeout(700)
     await pg.click('nav.tabs button[data-tab="plan"]')
     rec("換頁", "當天行程按底部「行程」回首頁：直接換、不滑動", not await pg.evaluate('!!document.querySelector(".vt-old")') and await pg.evaluate('getComputedStyle(document.querySelector("#app .view")).animationName') == "none")
     # 點「行程」後再點一天：照樣推入（切分頁的旗標不會殘留）
     await pg.click('nav.tabs button[data-tab="plan"]'); await pg.wait_for_timeout(200)
     await pg.click('.g-home .grid .tile[data-day="3"]')
     rec("換頁", "同一分頁再點一下後點某天：照樣推入", "go-fwd" in await pg.evaluate(cls))
-    await pg.wait_for_timeout(500)
+    await pg.wait_for_timeout(700)
     # 連續快速換頁：最多只暫留一頁，結束後全部清掉
-    await pg.evaluate('tab="plan";view="home";render()'); await pg.wait_for_timeout(500)
+    await pg.evaluate('tab="plan";view="home";render()'); await pg.wait_for_timeout(700)
     for i in range(4):
         await pg.evaluate(f'view="day";dayIdx={i};render();view="home";render()')
     n = await pg.evaluate('document.querySelectorAll(".vt-old").length')
-    await pg.wait_for_timeout(600)
+    await pg.wait_for_timeout(750)
     rec("換頁", "連續快速換頁：畫面上最多兩頁、結束後清乾淨", n <= 1 and await pg.evaluate('!document.querySelector(".vt-old")&&document.querySelectorAll("#app .view").length===1'), n)
     # 推入中同步資料進來重畫：新頁仍不透明，舊頁照樣收掉
     await pg.evaluate('view="day";dayIdx=1;render();render(true)')
     rec("換頁", "推入中同步重畫：新頁仍蓋住舊頁", await pg.evaluate('!!document.querySelector("#app .view.vt-in")'))
-    await pg.wait_for_timeout(600)
+    await pg.wait_for_timeout(750)
     rec("換頁", "之後舊頁和暫時樣式都移除", await pg.evaluate('!document.querySelector(".vt-old")&&!document.querySelector(".view.vt-in")'))
     # 轉場結束後 .view 沒有殘留位移（sticky、固定元素位置正常）
     await pg.wait_for_timeout(100)
@@ -79,23 +79,23 @@ async def sheets(b):
         rec("彈窗關閉", f"{nm}：退場後一定移除", await pg.evaluate(f'document.querySelectorAll("{sel}").length') == 0)
     # 底部面板：卡片整片從下方滑上來
     await pg.evaluate('openSos()')
-    rec("彈窗打開", "底部面板從下方滑上來、背景遮罩漸暗", await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal .sm-card")).animationName') == "sheetin" and await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal")).animationName') == "dimin")
-    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(100)
+    rec("彈窗打開", "底部面板從下方滑上來（輕輕彈一下）、背景遮罩漸暗", await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal .sm-card")).animationName') == "sheetbob" and await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal")).animationName') == "dimin")
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(350)
     await pg.evaluate('openViewer("ghibli-map.jpg","x")')
     rec("彈窗打開", "全螢幕的也從下方滑上來（不淡入）", await pg.evaluate('getComputedStyle(document.querySelector(".viewer")).animationName') == "sheetin")
-    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(100)
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(350)
     # 底部面板：卡片往下滑
-    await pg.evaluate('openSos()'); await pg.wait_for_timeout(300); await pg.click('.sheet-modal .sm-x')
+    await pg.evaluate('openSos()'); await pg.wait_for_timeout(350); await pg.click('.sheet-modal .sm-x')
     rec("彈窗關閉", "底部面板的卡片往下滑", await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal.leaving .sm-card")).animationName') == "sheetdown")
     # 退場中立刻再開：新的面板正常可用，舊的不會被點到
     await pg.evaluate('openSos()'); await pg.wait_for_timeout(50)
     n = await pg.evaluate('document.querySelectorAll(".sheet-modal:not(.leaving)").length')
     await pg.evaluate('document.querySelector(".sheet-modal.leaving .sm-x").click()')
     rec("彈窗關閉", "退場中馬上再打開：新面板正常、點退場中的舊面板沒反應", n == 1 and await pg.evaluate('modals.length') == 1 and await pg.evaluate('!!document.querySelector(".sheet-modal:not(.leaving)")'))
-    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(100)
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(350)
     rec("彈窗關閉", "Esc 關閉後全部移除、捲動恢復", await pg.evaluate('document.querySelectorAll(".sheet-modal").length===0&&document.body.style.overflow===""'))
     # 焦點回到打開它的按鈕（退場不影響）
-    await pg.click('.hud-sos'); await pg.wait_for_timeout(300); await pg.keyboard.press("Escape"); await pg.wait_for_timeout(50)
+    await pg.click('.hud-sos'); await pg.wait_for_timeout(350); await pg.keyboard.press("Escape"); await pg.wait_for_timeout(350)
     rec("彈窗關閉", "關閉時焦點馬上回到原本的按鈕", await pg.evaluate('!!document.activeElement?.closest(".hud-sos")'))
     rec("彈窗關閉", "沒有錯誤", not pg.errs, pg.errs[:2])
     await ctx.close()
@@ -103,27 +103,76 @@ async def sheets(b):
 async def acct(b):
     ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 12), init=seed(META))
     await pg.evaluate('tab="plan";view="home";render()'); await pg.wait_for_timeout(300)
-    await pg.click('nav.tabs button[data-tab="acct"]'); await pg.wait_for_timeout(900)
-    top = await pg.evaluate('document.getElementById("acct-form").getBoundingClientRect().top')
-    rec("記帳", "點記帳分頁：往上滑到輸入金額（表單在畫面頂端）", 0 <= top <= 30 and await pg.evaluate('scrollY') > 0, [top, await pg.evaluate('scrollY')])
-    rec("記帳", "不自動跳出鍵盤（不搶焦點）", await pg.evaluate('document.activeElement?.id') != "f-amt")
-    await pg.evaluate('scrollTo(0,0)'); await pg.wait_for_timeout(200)
-    await pg.click('nav.tabs button[data-tab="acct"]'); await pg.wait_for_timeout(900)
-    top = await pg.evaluate('document.getElementById("acct-form").getBoundingClientRect().top')
-    rec("記帳", "已經在記帳時再點一次：也回到輸入金額", 0 <= top <= 30, top)
+    await pg.click('nav.tabs button[data-tab="acct"]'); await pg.wait_for_timeout(400)
+    st = await pg.evaluate('({form:!!document.getElementById("f-amt"),fab:!!document.querySelector(".acct-fab:not([disabled])"),y:scrollY,list:!!document.getElementById("acct-list")})')
+    rec("記帳", "點記帳分頁：只顯示清單（沒有填寫表單）、有「記一筆」按鈕、停在頂端", not st["form"] and st["fab"] and st["list"] and st["y"] == 0, st)
+    # 打開「記一筆」：從下方滑上來、輕輕彈一下，金額有焦點（跳出數字鍵盤）
+    await pg.click('[data-exp-new]')
+    an = await pg.evaluate('getComputedStyle(document.querySelector(".exp-sheet .sm-card")).animationName')
+    await pg.wait_for_timeout(650)
+    st = await pg.evaluate('({t:document.getElementById("exp-title").innerText,f:document.activeElement?.id,role:document.querySelector(".exp-sheet").getAttribute("role"),again:!!document.querySelector("[data-again]")})')
+    rec("記帳", "「記一筆」面板從下方滑上來、輕輕彈一下", an == "sheetbob", an)
+    rec("記帳", "面板標題「記一筆」、金額有焦點、有「再記一筆」", st["t"] == "記一筆" and st["f"] == "f-amt" and st["role"] == "dialog" and st["again"], st)
+    # 再記一筆：面板不關、金額清空、付款方式留著
+    await pg.click('[data-pick="pay"] [data-v="card"]'); await pg.fill('#f-amt', '1200'); await pg.fill('#f-note', '鰻魚飯')
+    await pg.click('[data-again]'); await pg.wait_for_timeout(300)
+    st = await pg.evaluate('({open:!!document.querySelector(".exp-sheet:not(.leaving)"),amt:document.getElementById("f-amt").value,note:document.getElementById("f-note").value,pay:draft.pay,msg:document.getElementById("f-msg").innerText,f:document.activeElement?.id})')
+    rec("記帳", "再記一筆：面板不關、清空金額和備註、付款方式留著、焦點回到金額", st["open"] and st["amt"] == "" and st["note"] == "" and st["pay"] == "card" and "已記下 ¥1,200" in st["msg"] and st["f"] == "f-amt", st)
+    # 記下這筆：面板滑下關閉，記帳頁顯示已記下、新的那筆亮一下
+    await pg.fill('#f-amt', '800'); await pg.click('#f-save')
+    lv = await pg.evaluate('(()=>{const v=document.querySelector(".exp-sheet.leaving");return v?getComputedStyle(v.querySelector(".sm-card")).animationName:null})()')
+    await pg.wait_for_timeout(500)
+    st = await pg.evaluate('({open:!!document.querySelector(".exp-sheet"),note:document.getElementById("acct-note").innerText,ping:!!document.querySelector(".ex.ping"),n:document.querySelectorAll(".ex[data-edit]").length})')
+    rec("記帳", "記下這筆：面板滑下去關閉", lv == "sheetdown" and not st["open"], [lv, st])
+    rec("記帳", "記帳頁顯示「已記下」、新的那筆亮一下", "已記下 ¥800" in st["note"] and st["ping"] and st["n"] == 2, st)
+    # 沒填東西：按 × 直接關，不問
+    await pg.click('[data-exp-new]'); await pg.wait_for_timeout(650); await pg.click('[data-exp-x]'); await pg.wait_for_timeout(80)  # 退場 0.25 秒中檢查
+    rec("記帳", "沒填東西按 ×：直接關，不問", not await pg.is_visible('.exp-confirm') and await pg.query_selector('.exp-sheet.leaving'))
+    await pg.wait_for_timeout(400)
+    # 修改：點一筆打開「修改這筆」，有刪除；改了金額按 × 會問；Esc 也會問
+    await pg.click('.ex[data-edit] >> nth=0'); await pg.wait_for_timeout(650)
+    st = await pg.evaluate('({t:document.getElementById("exp-title").innerText,del:!!document.querySelector("[data-exp-del]"),again:!!document.querySelector("[data-again]"),save:document.getElementById("f-save").innerText})')
+    rec("記帳", "點一筆：打開「修改這筆」，底部是刪除＋更新（沒有再記一筆）", st["t"] == "修改這筆" and st["del"] and not st["again"] and "更新" in st["save"], st)
+    before = {k: v for k, v in (await S.cloud(pg)).items() if "/expenses/" in k}
+    await pg.fill('#f-amt', '999'); await pg.click('[data-exp-x]'); await pg.wait_for_timeout(350)
+    st = await pg.evaluate('({cf:!document.querySelector(".exp-confirm").hidden,txt:document.querySelector(".exp-confirm").innerText,f:document.activeElement?.hasAttribute("data-exp-keep")})')
+    rec("記帳", "改了沒存按 ×：問「要放棄嗎？」，焦點在「繼續填寫」", st["cf"] and "放棄" in st["txt"] and st["f"], st)
+    await pg.click('[data-exp-keep]'); await pg.wait_for_timeout(150)
+    rec("記帳", "按「繼續填寫」：回到面板、內容還在", await pg.evaluate('document.querySelector(".exp-confirm").hidden&&document.getElementById("f-amt").value==="999"'))
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(350)
+    rec("記帳", "改了沒存按 Esc：也先問，不直接關", await pg.evaluate('!document.querySelector(".exp-confirm").hidden&&!!document.querySelector(".exp-sheet:not(.leaving)")'))
+    await pg.click('[data-exp-discard]'); await pg.wait_for_timeout(500)
+    after = {k: v for k, v in (await S.cloud(pg)).items() if "/expenses/" in k}
+    rec("記帳", "放棄修改：面板關閉、雲端不變", not await pg.query_selector('.exp-sheet') and before == after and await pg.evaluate('editingId===null'))
+    # 點背景：沒填東西直接關
+    await pg.click('[data-exp-new]'); await pg.wait_for_timeout(650); await pg.mouse.click(200, 20); await pg.wait_for_timeout(400)
+    rec("記帳", "沒填東西點背景：直接關", not await pg.query_selector('.exp-sheet'))
+    # 面板開著時同步重畫：面板不會被換掉
+    await pg.click('[data-exp-new]'); await pg.wait_for_timeout(650); await pg.fill('#f-amt', '321')
+    await pg.evaluate('window.__sh=document.querySelector(".exp-sheet");render(true)')
+    rec("記帳", "面板開著時頁面重畫：面板和輸入都還在", await pg.evaluate('window.__sh===document.querySelector(".exp-sheet")&&document.getElementById("f-amt").value==="321"'))
+    await S.expclose(pg)
+    # 沒有記帳權限：「記一筆」停用並寫出原因
+    await pg.evaluate('canWrite=false;render(true)')
+    st = await pg.evaluate('({dis:document.querySelector(".acct-fab").disabled,note:document.getElementById("acct-note").innerText,hid:document.getElementById("acct-note").hidden})')
+    rec("記帳", "沒有記帳權限：「記一筆」停用並寫出原因", st["dis"] and "沒有記帳權限" in st["note"] and not st["hid"], st)
+    await pg.evaluate('canWrite=true;render(true)')
+    # 換到別的分頁再回來：已記下的提示清掉
+    await pg.click('nav.tabs button[data-tab="wx"]'); await pg.click('nav.tabs button[data-tab="acct"]'); await pg.wait_for_timeout(200)
+    rec("記帳", "換分頁回來：已記下的提示清掉", await pg.evaluate('document.getElementById("acct-note").hidden'))
     rec("記帳", "沒有錯誤", not pg.errs, pg.errs[:2])
     await ctx.close()
 
 async def days(b):
     ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 12), init=seed(META))
-    await pg.evaluate('tab="plan";view="day";dayIdx=2;render()'); await pg.wait_for_timeout(500)
+    await pg.evaluate('tab="plan";view="day";dayIdx=2;render()'); await pg.wait_for_timeout(700)
     await pg.click('.day-btn[data-day="3"]')
     g = await pg.evaluate('(()=>{const g=document.querySelector(".day-ghost");if(!g)return null;const ka=document.getElementById("dayBody").getAnimations().flatMap(a=>a.effect.getKeyframes().flatMap(k=>Object.keys(k))).filter(x=>!["offset","easing","composite","computedOffset"].includes(x));return {inert:g.inert,hid:g.getAttribute("aria-hidden"),ids:g.querySelectorAll("[id]").length+(g.id?1:0),props:[...new Set(ka)],one:document.querySelectorAll("#dayBody").length}})()')
     rec("換天", "舊內容往旁邊滑走、新內容同時滑進（只動 transform、不淡入淡出）", g and g["props"] == ["transform"], g)
     rec("換天", "滑走的舊內容不能點、沒有重複 id", g and g["inert"] and g["hid"] == "true" and g["ids"] == 0 and g["one"] == 1, g)
     for d in (4, 5, 6): await pg.click(f'.day-btn[data-day="{d}"]')
     n = await pg.evaluate('document.querySelectorAll(".day-ghost").length')
-    await pg.wait_for_timeout(600)
+    await pg.wait_for_timeout(750)
     rec("換天", "連點換天：最多一個舊內容、結束後清乾淨", n <= 1 and await pg.evaluate('document.querySelectorAll(".day-ghost").length') == 0, n)
     rec("換天", "最後顯示的是點的那一天", "11/23" in await pg.evaluate('document.getElementById("dayBody").innerText') or await pg.evaluate('dayIdx') == 6, await pg.evaluate('dayIdx'))
     rec("換天", "沒有橫向捲軸", await pg.evaluate('document.documentElement.scrollWidth<=innerWidth'))
@@ -137,7 +186,7 @@ async def reduced(b):
     await pg.click('.g-home .grid .tile[data-day="2"]')
     rec("減少動態", "換頁不暫留舊頁", not await pg.evaluate('!!document.querySelector(".vt-old")'))
     rec("減少動態", "換頁不播動畫", await pg.evaluate('getComputedStyle(document.querySelector("#app .view")).animationName') == "none")
-    await pg.evaluate('openSos()'); await pg.wait_for_timeout(100); await pg.click('.sheet-modal .sm-x')
+    await pg.evaluate('openSos()'); await pg.wait_for_timeout(350); await pg.click('.sheet-modal .sm-x')
     rec("減少動態", "彈窗關閉直接移除", await pg.evaluate('document.querySelectorAll(".sheet-modal").length') == 0)
     await ctx.close()
 

@@ -8,10 +8,10 @@ from playwright.async_api import async_playwright
 rec = ft.rec
 B, META, seed, opn, tab = S.B, S.META, S.seed, S.opn, S.tab
 WALLET = {**META, f"{B}/wallet/zhang": {"cashIn": 30000, "ts": 1}}
-async def home(pg): await pg.evaluate('tab="plan";view="home";render()'); await pg.wait_for_timeout(200)
-async def day(pg, i=2): await pg.evaluate(f'tab="plan";view="day";dayIdx={i};render()'); await pg.wait_for_timeout(200)
+async def home(pg): await pg.evaluate('tab="plan";view="home";render()'); await pg.wait_for_timeout(700)  # 換頁轉場 0.5 秒
+async def day(pg, i=2): await pg.evaluate(f'tab="plan";view="day";dayIdx={i};render()'); await pg.wait_for_timeout(700)
 async def pack(pg):
-    await pg.evaluate('tab="list";listSub="pack";render()'); await pg.wait_for_timeout(300)
+    await pg.evaluate('tab="list";listSub="pack";render()'); await pg.wait_for_timeout(700)
 PAGES = [("首頁", home), ("當天行程", day), ("天氣", lambda p: tab(p, "wx")), ("交通", lambda p: tab(p, "move")), ("記帳", lambda p: tab(p, "acct")), ("清單", lambda p: tab(p, "list")), ("行李", pack)]
 active = 'document.activeElement?(document.activeElement.className||document.activeElement.tagName):""'
 
@@ -30,7 +30,7 @@ async def entry(b):
     await pg.click('.sos-quick .sq-main'); await pg.wait_for_timeout(300)
     t = await pg.evaluate('document.querySelector(".sos-show")?.innerText||""')
     rec("求助入口", "行程頁按 2 下就是給司機看的飯店地址", "この住所までお願いします" in t and "錦1丁目13-18" in t, t[:60])
-    await pg.click('.sos-show .sm-x'); await pg.wait_for_timeout(200)
+    await pg.click('.sos-show .sm-x'); await pg.wait_for_timeout(350)
     q2 = await pg.evaluate('document.querySelector(".sos").innerText')
     rec("求助入口", "日常日文分頁不出現緊急電話", "緊急電話" not in q2 and "110" not in q2)
     await pg.click('[data-sos-tab="emg"]'); await pg.wait_for_timeout(200)
@@ -50,16 +50,16 @@ async def driver(b):
         rec("給司機看", f"點到 {sel} 不會關閉", await pg.query_selector('.sos-show') is not None)
     await pg.mouse.click(30, 820); await pg.wait_for_timeout(120)
     rec("給司機看", "點到空白處不會關閉", await pg.query_selector('.sos-show') is not None)
-    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(350)
     rec("給司機看", "Esc 只關掉全螢幕，求助面板還在", not await pg.query_selector('.sos-show') and await pg.query_selector('.sheet-modal .sos') is not None)
     rec("給司機看", "關閉後焦點回到求助面板裡", await pg.evaluate('!!document.activeElement?.closest(".sheet-modal")'), await pg.evaluate(active))
-    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(350)
     rec("給司機看", "再按 Esc 關掉求助面板，焦點回到求助按鈕", not await pg.query_selector('.sheet-modal') and await pg.evaluate('!!document.activeElement?.matches("[data-sos]")'), await pg.evaluate(active))
     # 直向：內容放得下時置中、× 點得到
     await pg.click('.bar [data-sos]'); await pg.wait_for_timeout(300); await pg.click('.sos-quick .sq-main'); await pg.wait_for_timeout(300)
     p = await pg.evaluate('(()=>{const v=document.querySelector(".sos-show"),b=v.querySelector(".s-body").getBoundingClientRect(),x=v.querySelector(".sm-x").getBoundingClientRect();return{top:Math.round(b.top),bot:Math.round(b.bottom),vh:innerHeight,scroll:v.scrollHeight>v.clientHeight,xr:Math.round(x.right),xt:Math.round(x.top)}})()')
     rec("給司機看", "直向 390×844：內容置中、不用捲動", p["top"] > 72 and p["bot"] < p["vh"] and not p["scroll"], p)
-    await pg.click('.sos-show .sm-x'); await pg.wait_for_timeout(200)
+    await pg.click('.sos-show .sm-x'); await pg.wait_for_timeout(350)
     rec("給司機看", "按 × 關閉", not await pg.query_selector('.sos-show'))
     # 橫向：第一行看得到、可以捲到底、捲動時 × 一直在
     for w, h in [(844, 390), (667, 375), (568, 320)]:
@@ -70,7 +70,7 @@ async def driver(b):
         z = await pg.evaluate('(()=>{const v=document.querySelector(".sos-show"),s=v.querySelector(".s-say").getBoundingClientRect(),x=v.querySelector(".sm-x").getBoundingClientRect(),hit=document.elementFromPoint(x.x+x.width/2,x.y+x.height/2);return{say:Math.round(s.bottom),vh:innerHeight,xhit:!!hit?.closest(".sm-x"),ltop:Math.round(v.querySelector(".s-lead").getBoundingClientRect().right)}})()')
         rec("給司機看", f"橫向 {w}×{h}：「この住所までお願いします」在畫面內", 0 <= a["lead"] < h, a)
         rec("給司機看", f"橫向 {w}×{h}：捲到底看得到播放按鈕、× 點得到", z["say"] <= z["vh"] and z["xhit"], z)
-        await pg.click('.sos-show .sm-x'); await pg.wait_for_timeout(150)
+        await pg.click('.sos-show .sm-x'); await pg.wait_for_timeout(350)
     rec("給司機看", "沒有錯誤", not pg.errs, pg.errs[:2])
     await ctx.close()
 
@@ -91,23 +91,23 @@ async def sheets(b):
             await pg.keyboard.press("Shift+Tab")
             if not await pg.evaluate('!!document.activeElement?.closest(".sheet-modal")'): outside += 1
         rec("面板", f"{name}：Tab／Shift+Tab 不會跑到面板後面", outside == 0, outside)
-        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
+        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(350)
         back = await pg.evaluate(f'!!document.activeElement?.matches({opener!r})')
         rec("面板", f"{name}：Esc 關閉、焦點回到原本的按鈕", not await pg.query_selector('.sheet-modal') and back, await pg.evaluate(active))
     # 行事曆從出發前設定裡打開：疊兩層，Esc 一層一層關
     await pg.evaluate('openSetup()'); await pg.wait_for_timeout(250); await pg.evaluate('openCalSheet()'); await pg.wait_for_timeout(250)
     n2 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
-    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(150)
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(350)
     n1 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
-    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(150)
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(350)
     n0 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
     rec("面板", "兩層面板：Esc 一次關一層", [n2, n1, n0] == [2, 1, 0], [n2, n1, n0])
     # 點背景關閉仍然有效、按 × 關閉後焦點回去
-    await pg.click('[data-sos]'); await pg.wait_for_timeout(250); await pg.mouse.click(195, 10); await pg.wait_for_timeout(200)
+    await pg.click('[data-sos]'); await pg.wait_for_timeout(250); await pg.mouse.click(195, 10); await pg.wait_for_timeout(350)
     rec("面板", "點面板外的暗處仍可關閉", not await pg.query_selector('.sheet-modal'))
     # 正在輸入時按 Esc：關閉面板（不會卡住）
     await pg.click('[data-wallet-open]'); await pg.wait_for_timeout(250)
-    await pg.click('.ws [data-wallet-edit][data-mode="add"]'); await pg.wait_for_timeout(200); await pg.focus('.ws .w-form input'); await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
+    await pg.click('.ws [data-wallet-edit][data-mode="add"]'); await pg.wait_for_timeout(350); await pg.focus('.ws .w-form input'); await pg.keyboard.press("Escape"); await pg.wait_for_timeout(350)
     rec("面板", "錢包輸入中按 Esc 也能關閉", not await pg.query_selector('.sheet-modal'))
     rec("面板", "沒有錯誤", not pg.errs, pg.errs[:2])
     await ctx.close()
@@ -117,7 +117,7 @@ async def viewer(b):
     await day(pg, 1)
     await pg.click('[data-map]'); await pg.wait_for_timeout(300)
     rec("地圖檢視器", "打開後焦點在關閉鈕、aria-modal", await pg.evaluate('document.activeElement?.classList.contains("vclose")&&document.querySelector(".viewer").getAttribute("aria-modal")==="true"'))
-    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(350)
     rec("地圖檢視器", "Esc 關閉、焦點回到地圖按鈕", not await pg.query_selector('.viewer') and await pg.evaluate('!!document.activeElement?.closest("[data-map]")'), await pg.evaluate(active))
     c = await ctx.new_cdp_session(pg); await c.send("Performance.enable")
     async def L():

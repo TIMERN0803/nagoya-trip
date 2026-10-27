@@ -47,7 +47,7 @@ async def main():
         await pg.keyboard.press('End');await pg.wait_for_timeout(300)
         ft.rec("清單頁籤","End 到最後一個頁籤",await pg.evaluate(SEL)=="buy")
         # 行李卡片：點進行李頁、返回後頁籤不變
-        await pg.click('[data-pack-open]');await pg.wait_for_timeout(400)
+        await pg.click('[data-pack-open]');await pg.wait_for_timeout(700)
         ft.rec("清單頁籤","點行李卡片進入原本的行李頁",await pg.query_selector('.pk-bar [data-pack-close]') and not await pg.query_selector('.ltab-strip'))
         await pg.click('[data-pack-close]');await pg.wait_for_timeout(400)
         ft.rec("清單頁籤","從行李頁返回，還是要買的頁籤",await pg.evaluate(SEL)=="buy" and await pg.query_selector('.pack-entry'))

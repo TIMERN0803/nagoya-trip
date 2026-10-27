@@ -57,13 +57,13 @@ async def main():
         ft.rec("U 復原","復原的是最後刪的那筆",await pg.query_selector(f'[data-item-edit="{ids[1]}"]') and not await pg.query_selector(f'[data-item-edit="{ids[0]}"]'))
         # 記帳
         await pg.click('nav.tabs button[data-tab="acct"]');await pg.wait_for_timeout(400)
-        await pg.fill('#f-amt','1234');await pg.fill('#f-note','復原測試');await pg.click('#f-save');await pg.wait_for_timeout(500)
+        await ft.openexp(pg);await pg.fill('#f-amt','1234');await pg.fill('#f-note','復原測試');await pg.click('#f-save');await pg.wait_for_timeout(500)
         n0=await pg.evaluate('document.querySelectorAll(".ex[data-edit]").length')
-        await pg.click('.ex[data-edit] >> nth=0');await pg.wait_for_timeout(300)
-        await (await pg.query_selector('[data-del]')).click();await pg.wait_for_timeout(500)
+        await pg.click('.ex[data-edit] >> nth=0');await pg.wait_for_timeout(600)
+        await pg.click('[data-exp-del]');await pg.wait_for_timeout(500)  # 修改面板裡的「刪除這筆」
         n1=await pg.evaluate('document.querySelectorAll(".ex[data-edit]").length')
         ft.rec("U 復原","記帳：按一次刪除",n1==n0-1,f"{n0}→{n1}")
-        ft.rec("U 復原","記帳：刪掉正在修改的那筆，表單回到新增",await pg.evaluate('document.getElementById("f-cancel").hidden && document.getElementById("f-amt").value===""'))
+        ft.rec("U 復原","記帳：在修改面板刪除，面板關閉、不留在修改狀態",await pg.evaluate('!document.querySelector(".exp-sheet:not(.leaving)") && editingId===null'))
         ft.rec("U 復原","記帳：提示顯示金額","¥1,234" in await pg.inner_text('.undo-bar'))
         await pg.click('.undo-bar button');await pg.wait_for_timeout(600)
         n2=await pg.evaluate('document.querySelectorAll(".ex[data-edit]").length')

@@ -3,8 +3,9 @@
 - 本機伺服器：cd /home/claude/nagoya-trip && python3 -m http.server 8766
 - 功能測試：cd /home/claude/build/ft && python3 fulltest.py（177 項）
 - 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest
-- transtest：換頁與彈窗轉場（往深一層整頁推入、返回舊頁往右滑走、底部分頁切換不播、點記帳滑到輸入金額、換天左右翻頁、全部只動 transform 不淡入淡出；彈窗從下方滑上、關閉 0.18 秒滑下後一定移除、退場中點不到、減少動態直接移除、320 寬無橫向捲軸）。換頁時上一頁會在 .vt-old 暫留 0.42 秒，測試直接 render() 換頁後要等 500ms 再量；彈窗關閉用假時鐘時要 clock.run_for(300)；連點時用 :not(.leaving) 選還開著的面板
+- transtest：換頁與彈窗轉場＋記帳拆成清單頁和「記一筆」填寫面板（換頁 0.5 秒、換天 0.45 秒、彈窗滑上 0.5 秒輕彈、滑下 0.25 秒；只動 transform 不淡入淡出；底部分頁切換不播；再記一筆、記下這筆、修改、放棄前先問、Esc、權限停用、重畫時面板不被換掉）。時間規則：直接 render() 換頁後等 700ms；關面板後等 350ms；開面板後等 650ms 再量位置
 - listtabtest：清單頁籤（待辦／要買的兩個頁籤、行李卡片在上方、只有頁籤固定、首頁入口帶到對應頁籤、記住上次頁籤、鍵盤、320 寬度）
+- 記帳表單現在在「記一筆」面板裡：synctest 的 expopen(pg)／expclose(pg)、fulltest 的 openexp(pg) 會先打開面板；「記下這筆」後面板關閉，結果在記帳頁 #acct-note（synctest.NOTE）
 - smalltest：v44 第三批 3C（沒設定錢包時記現金帳的「設定錢包」入口、語音連點狀態）
 - layouttest：v44 第三批 3B（320px／200% 縮放無水平捲動、可點範圍 44、首頁「今天」對比、排序鍵盤）
 - helptest：v44 第三批 3A（首頁和當天行程頁的求助、飯店捷徑、給司機看只按 × 關閉與橫向捲動、面板 Esc／焦點、窄螢幕標題列）

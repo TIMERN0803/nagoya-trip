@@ -152,12 +152,17 @@ async def D_mood_sync(b):
     rec("D 心情與同步","沒有錯誤",not a.errs and not bpg.errs,(a.errs+bpg.errs)[:2])
     await ctx.close()
 
+async def openexp(pg):
+    # 記帳分成清單頁和「記一筆」填寫面板：面板沒開就按「記一筆」
+    if not await pg.query_selector('.exp-sheet:not(.leaving) #f-amt'):
+        await pg.click('[data-exp-new]');await pg.wait_for_timeout(600)
+
 async def E_acct(b):
     pg=await newpage(b,jst(11,18,20,0))
     await pg.click('nav.tabs button[data-tab="acct"]');await pg.wait_for_timeout(400)
     async def add(amt,cat,who,split,note):
-        await pg.fill('#f-amt',str(amt));await pg.click(f'[data-pick="cat"] [data-v="{cat}"]');await pg.click(f'[data-pick="who"] [data-v="{who}"]');await pg.click(f'[data-pick="split"] [data-v="{split}"]');await pg.fill('#f-note',note);await pg.click('#f-save');await pg.wait_for_timeout(500)
-    cats=await pg.evaluate('[...document.querySelectorAll("[data-pick=cat] [data-v]")].map(x=>x.dataset.v)')
+        await openexp(pg);await pg.fill('#f-amt',str(amt));await pg.click(f'[data-pick="cat"] [data-v="{cat}"]');await pg.click(f'[data-pick="who"] [data-v="{who}"]');await pg.click(f'[data-pick="split"] [data-v="{split}"]');await pg.fill('#f-note',note);await pg.click('#f-save');await pg.wait_for_timeout(500)
+    await openexp(pg);cats=await pg.evaluate('[...document.querySelectorAll("[data-pick=cat] [data-v]")].map(x=>x.dataset.v)')
     await add(3000,cats[0],"zhang","both","燒肉");await add(1000,cats[1],"star","both","車票");await add(500,cats[2],"star","self","扭蛋")
     s=await pg.evaluate('document.getElementById("acct-sum").innerText.replace(/\\s+/g," ")')
     rec("E 記帳","新增三筆後總額 ¥4,500","4,500" in s,s[:60])
@@ -166,15 +171,13 @@ async def E_acct(b):
     await pg.fill('#f-rate','0.21');await pg.press('#f-rate','Tab');await pg.wait_for_timeout(400)
     s=await pg.evaluate('document.getElementById("acct-sum").innerText.replace(/\\s+/g," ")')
     rec("E 記帳","改匯率 0.21 → NT$ 945","NT$ 945" in s,re.search(r'NT\$ [\d,]+',s).group(0) if 'NT$' in s else s)
-    await pg.click('.ex[data-edit] >> nth=0');await pg.wait_for_timeout(300)
+    await pg.click('.ex[data-edit] >> nth=0');await pg.wait_for_timeout(600)
     await pg.fill('#f-amt','600');await pg.click('#f-save');await pg.wait_for_timeout(500)
     s=await pg.evaluate('document.getElementById("acct-sum").innerText.replace(/\\s+/g," ")')
     rec("E 記帳","修改一筆金額","4,600" in s or "4,100" in s or "3,600" in s or "1,6" in s,s[:40])
     n0=await pg.evaluate('document.querySelectorAll(".ex[data-edit]").length')
-    await pg.click('.ex[data-edit] >> nth=0');await pg.wait_for_timeout(300)
-    dels=await pg.query_selector_all('[data-del]')
-    if dels:
-        await dels[0].click();await pg.wait_for_timeout(500)
+    await pg.click('.ex[data-edit] >> nth=0');await pg.wait_for_timeout(600)
+    await pg.click('[data-exp-del]');await pg.wait_for_timeout(500)
     n1=await pg.evaluate('document.querySelectorAll(".ex[data-edit]").length')
     rec("E 記帳","刪除一筆（按一次＋可復原）",n1==n0-1 and await pg.query_selector('.undo-bar'),f"{n0}→{n1}")
     srv=await pg.evaluate('Object.keys(JSON.parse(localStorage.getItem("mockdb")||"{}")).filter(k=>k.includes("/expenses/")).length')

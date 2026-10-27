@@ -33,11 +33,11 @@ async def main():
         ft.rec("P 出發前設定","星星的首頁卡片看得到阿彰的進度（3/8）","3/8" in await s.inner_text('.setup-entry'),await s.inner_text('.setup-entry'))
         await s.click('[data-setup-open]');await s.wait_for_timeout(300)
         ft.rec("P 出發前設定","星星打開是星星自己的清單，開飛航模式那項顯示阿彰「好了」",await s.evaluate('(()=>{const r=document.querySelector("[data-setup-ck=offline]").closest(".su-row");return !r.classList.contains("done")&&r.querySelector(".su-other").textContent.includes("好了")})()'))
-        await s.click('.su-sheet .sm-head .sm-x');await s.wait_for_timeout(200)
+        await s.click('.su-sheet .sm-head .sm-x');await s.wait_for_timeout(350)
         # 打開求助頁會自動打勾
         await a.click('[data-setup-act="sos"]');await a.wait_for_timeout(400)
         ft.rec("P 出發前設定","按「打開」會開求助頁",await a.query_selector('.sos'))
-        await a.click('.sos .sm-head .sm-x');await a.wait_for_timeout(300)
+        await a.click('.sos .sm-head .sm-x');await a.wait_for_timeout(350)
         db=await dbget(a)
         ft.rec("P 出發前設定","看過求助頁自動打勾",db.get(f"{B}/checks/su-sos@zhang",{}).get("done") is True)
         # 開提醒

@@ -56,7 +56,7 @@ async def main():
         ft.rec("R 旅程回顧","存完顯示提示","已存成圖片" in await pg.inner_text('.st-msg'))
         await pg.click('[data-story-again]');await pg.wait_for_timeout(200)
         ft.rec("R 旅程回顧","「再看一次」回到第 1 頁",await cur(pg)==0)
-        await pg.keyboard.press('Escape');await pg.wait_for_timeout(200)
+        await pg.keyboard.press('Escape');await pg.wait_for_timeout(350)
         ft.rec("R 旅程回顧","Esc 關閉、背景恢復捲動",not await pg.query_selector('.story') and await pg.evaluate('document.body.style.overflow')=="")
         errs=pg.errs
         e=await ft.newpage(b,ft.twt(11,26,9,0),tz="Asia/Taipei",code="neko-empty");await home(e)

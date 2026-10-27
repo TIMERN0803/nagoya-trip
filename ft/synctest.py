@@ -36,6 +36,17 @@ async def mkctx(b, fs=None, lib=None, tz="Asia/Tokyo", sw="block"):
     ctx.lib = st
     return ctx
 
+async def expopen(pg):
+    """記帳分成清單頁和「記一筆」填寫面板：面板沒開就按「記一筆」"""
+    if not await pg.query_selector('.exp-sheet:not(.leaving) #f-amt'):
+        await pg.click('[data-exp-new]'); await pg.wait_for_timeout(600)
+async def expclose(pg):
+    """關掉填寫面板；有填東西會先問，選「放棄」"""
+    if await pg.query_selector('.exp-sheet:not(.leaving)'):
+        await pg.click('.exp-sheet:not(.leaving) [data-exp-x]'); await pg.wait_for_timeout(350)
+        if await pg.is_visible('.exp-sheet:not(.leaving) .exp-confirm'): await pg.click('[data-exp-discard]')
+        await pg.wait_for_timeout(350)
+NOTE = 'document.getElementById("acct-note")?.innerText||""'
 async def opn(ctx, t, init="", pre="", url="http://localhost:8766/", wait=900):
     pg = await ctx.new_page(); pg.errs = []
     pg.on('pageerror', lambda e: pg.errs.append(str(e)))
@@ -57,8 +68,8 @@ async def do_ops(pg, tag, mood_day=2):
     await pg.check('#' + cid); await pg.wait_for_timeout(100)
     await pg.click('[data-list-tab="buy"]'); await pg.wait_for_timeout(100)
     await pg.click('[data-item-new="buy"]'); await pg.fill('.chk-form input[name=title]', tag + "要買"); await pg.click('.chk-form .primary'); await pg.wait_for_timeout(150)
-    await tab(pg, "acct"); await pg.fill('#f-amt', '2200'); await pg.fill('#f-note', tag + "記帳"); await pg.click('#f-save'); await pg.wait_for_timeout(150)
-    msg = await pg.inner_text('#f-msg')
+    await tab(pg, "acct"); await expopen(pg); await pg.fill('#f-amt', '2200'); await pg.fill('#f-note', tag + "記帳"); await pg.click('#f-save'); await pg.wait_for_timeout(400)
+    msg = await pg.evaluate(NOTE)
     await pg.click('.wchip'); await pg.wait_for_timeout(200)
     if await pg.locator('.ws [data-wallet-edit][data-mode="add"]').count(): await pg.click('.ws [data-wallet-edit][data-mode="add"]')
     await pg.fill('.ws .w-form input', '10000'); await pg.click('.ws .w-form .primary'); await pg.wait_for_timeout(200)
@@ -151,7 +162,7 @@ async def lib_fail_typing(b):
     lib = {"mode": "abort"}
     ctx = await mkctx(b, lib=lib)
     pg = await opn(ctx, ft.jst(11, 19, 20), init=seed(BASE), wait=1200)
-    await tab(pg, "acct"); await pg.fill('#f-amt', '777'); await pg.focus('#f-note')
+    await tab(pg, "acct"); await expopen(pg); await pg.fill('#f-amt', '777'); await pg.focus('#f-note')
     await pg.evaluate('window.__mark=1')
     lib["mode"] = "mock"; await pg.evaluate('dispatchEvent(new Event("online"))'); await pg.wait_for_timeout(1500)
     kept = await pg.evaluate('({mark:window.__mark===1,amt:document.getElementById("f-amt")?.value})')
@@ -173,13 +184,14 @@ async def offline_cached(b):
     await pg.evaluate('__goOffline()'); await ctx.set_offline(True); await pg.evaluate('dispatchEvent(new Event("offline"))'); await pg.wait_for_timeout(200)
     s = await pg.evaluate(SYNC); cls = await pg.evaluate('document.querySelector(".sync").className')
     rec("離線", "手機離線時不顯示綠色「同步中」", "同步中" not in s and "離線" in s and " on" not in cls, {"文字": s, "class": cls})
-    await pg.fill('#f-amt', '3000'); await pg.fill('#f-note', '拉麵'); await pg.click('#f-save'); await pg.wait_for_timeout(300)
-    r = await pg.evaluate('({msg:document.getElementById("f-msg").innerText,amt:document.getElementById("f-amt").value,dis:document.getElementById("f-save").disabled})')
-    rec("離線", "按「記下這筆」立刻出現已記下、金額清空、按鈕可用", "已記下" in r["msg"] and r["amt"] == "" and not r["dis"], r)
-    await tab(pg, "plan"); await tab(pg, "acct")
-    rec("離線", "切分頁回來表單是空的（不會再按一次）", await pg.evaluate('document.getElementById("f-amt").value') == "")
+    await expopen(pg); await pg.fill('#f-amt', '3000'); await pg.fill('#f-note', '拉麵'); await pg.click('#f-save'); await pg.wait_for_timeout(500)
+    r = await pg.evaluate('({msg:document.getElementById("acct-note").innerText,open:!!document.querySelector(".exp-sheet:not(.leaving)")})')
+    rec("離線", "按「記下這筆」立刻出現已記下、面板關閉（不等雲端）", "已記下" in r["msg"] and not r["open"], r)
+    await tab(pg, "plan"); await tab(pg, "acct"); await expopen(pg)
+    rec("離線", "再打開記一筆是空的（不會再按一次）", await pg.evaluate('document.getElementById("f-amt").value') == "")
     await pg.click('#f-save'); await pg.wait_for_timeout(200)
     rec("離線", "空白再按只提示輸入金額", "請先輸入金額" in await pg.inner_text('#f-msg'))
+    await expclose(pg)
     await pg.click('.wchip'); await pg.wait_for_timeout(200)
     await pg.click('.ws [data-wallet-edit][data-mode="add"]'); await pg.fill('.ws .w-form input', '10000'); await pg.click('.ws .w-form .primary'); await pg.wait_for_timeout(300)
     rec("離線", "「加進錢包」後表單立刻關閉", not await pg.query_selector('.ws .w-form'))
@@ -250,7 +262,7 @@ async def bad_code(b):
     pg = await opn(ctx, ft.jst(11, 19, 12), pre='window.__deny=1;', init=seed(META), wait=1200)
     await tab(pg, "list"); s = await pg.evaluate(SYNC)
     rec("代碼錯誤", "顯示「旅行代碼不對」表單", "旅行代碼不對" in s, s)
-    await tab(pg, "acct"); await pg.fill('#f-amt', '500'); await pg.fill('#f-note', '代碼錯時記的'); await pg.click('#f-save'); await pg.wait_for_timeout(300)
+    await tab(pg, "acct"); await expopen(pg); await pg.fill('#f-amt', '500'); await pg.fill('#f-note', '代碼錯時記的'); await pg.click('#f-save'); await pg.wait_for_timeout(300)
     rec("代碼錯誤", "期間記的帳留在佇列", await pg.evaluate('Object.values(outbox).some(v=>v.d&&v.d.note==="代碼錯時記的")'))
     await pg.evaluate('window.__deny=0')
     await tab(pg, "list"); await pg.fill('#f-code', CODE); await pg.click('#code-form .primary'); await pg.wait_for_timeout(1500)

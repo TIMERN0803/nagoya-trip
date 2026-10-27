@@ -12,7 +12,7 @@ async def main():
             for nm,fn in SHEETS:
                 pg=await ft.newpage(b,ft.twt(10,25,18,0),tz="Asia/Taipei");await pg.set_viewport_size({'width':w,'height':h})
                 if not await pg.query_selector('.hero'):await pg.click('[data-home]');await pg.wait_for_timeout(300)
-                await pg.evaluate(fn);await pg.wait_for_timeout(450)
+                await pg.evaluate(fn);await pg.wait_for_timeout(650)  # 面板滑上 0.5 秒（最後輕輕彈一下），停穩再量
                 a=await pg.evaluate(M)
                 ft.rec("面板",f"{sz} {nm}：面板完整在畫面內",a['top']>=0 and a['bot']<=a['vh']+1,a)
                 await pg.evaluate('(()=>{const c=document.querySelector(".sheet-modal .sm-card");c.scrollTop=99999;c.dispatchEvent(new Event("scroll"))})()');await pg.wait_for_timeout(250)
@@ -30,7 +30,7 @@ async def main():
         t=await pg.evaluate('(()=>{const h=document.querySelector(".su-sheet>.sm-head");const r=h.getBoundingClientRect();return {txt:h.innerText,top:Math.round(r.top),vis:r.bottom>0}})()')
         ft.rec("面板","出發前設定捲到底仍看得到標題",t['vis'] and "出發前手機設定" in t['txt'],t)
         await pg.screenshot(path='/home/claude/build/setup_sticky.png')
-        await pg.click('.su-sheet .sm-x');await pg.wait_for_timeout(250)
+        await pg.click('.su-sheet .sm-x');await pg.wait_for_timeout(350)
         ft.rec("面板","捲動後點關閉可以關掉",not await pg.query_selector('.sheet-modal'))
         await ft.close(pg)
         # 行李頁標題列
@@ -44,7 +44,7 @@ async def main():
         ft.rec("行李頁","返回鈕點得到、有不透明底色",z['hit'] and z['bg']!="rgba(0, 0, 0, 0)",z)
         ft.rec("行李頁","捲動後出現陰影",z['shade'] and not a['shade'])
         await pg.screenshot(path='/home/claude/build/pack_sticky.png')
-        await pg.click('.pk-bar [data-pack-close]');await pg.wait_for_timeout(500)  # 返回轉場 0.42 秒後舊頁才移除
+        await pg.click('.pk-bar [data-pack-close]');await pg.wait_for_timeout(700)  # 返回轉場 0.54 秒後舊頁才移除
         ft.rec("行李頁","捲動中點返回回到清單",not await pg.query_selector('.pk-bar') and await pg.query_selector('[data-pack-open]'))
         ft.rec("行李頁","沒有 JS 錯誤",not pg.errs,pg.errs[:2])
         await ft.close(pg)
