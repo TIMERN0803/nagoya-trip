@@ -44,7 +44,7 @@ async def main():
         ft.rec("行李頁","返回鈕點得到、有不透明底色",z['hit'] and z['bg']!="rgba(0, 0, 0, 0)",z)
         ft.rec("行李頁","捲動後出現陰影",z['shade'] and not a['shade'])
         await pg.screenshot(path='/home/claude/build/pack_sticky.png')
-        await pg.click('.pk-bar [data-pack-close]');await pg.wait_for_timeout(300)
+        await pg.click('.pk-bar [data-pack-close]');await pg.wait_for_timeout(500)  # 返回轉場 0.42 秒後舊頁才移除
         ft.rec("行李頁","捲動中點返回回到清單",not await pg.query_selector('.pk-bar') and await pg.query_selector('[data-pack-open]'))
         ft.rec("行李頁","沒有 JS 錯誤",not pg.errs,pg.errs[:2])
         await ft.close(pg)

@@ -97,9 +97,9 @@ async def sheets(b):
     # 行事曆從出發前設定裡打開：疊兩層，Esc 一層一層關
     await pg.evaluate('openSetup()'); await pg.wait_for_timeout(250); await pg.evaluate('openCalSheet()'); await pg.wait_for_timeout(250)
     n2 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
-    await pg.keyboard.press("Escape"); await pg.clock.run_for(250); await pg.wait_for_timeout(150)
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(150)
     n1 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
-    await pg.keyboard.press("Escape"); await pg.clock.run_for(250); await pg.wait_for_timeout(150)
+    await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(150)
     n0 = await pg.evaluate('document.querySelectorAll(".sheet-modal").length')
     rec("面板", "兩層面板：Esc 一次關一層", [n2, n1, n0] == [2, 1, 0], [n2, n1, n0])
     # 點背景關閉仍然有效、按 × 關閉後焦點回去

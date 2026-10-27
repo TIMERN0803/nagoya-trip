@@ -43,7 +43,7 @@ async def touch(b):
     for t, tz, pages in [(ft.jst(11, 19, 20), "Asia/Tokyo", PAGES), (ft.twt(10, 26, 20), "Asia/Taipei", [("出發前首頁", 'tab="plan";view="home"'), ("出發前清單", 'tab="list";listSub=null')])]:
         ctx = await S.mkctx(b, tz=tz); pg = await opn(ctx, t, init=seed(DB))
         for name, js in pages:
-            await pg.evaluate(js + ';render();scrollTo(0,0)'); await pg.wait_for_timeout(250)
+            await pg.evaluate(js + ';render();scrollTo(0,0)'); await pg.wait_for_timeout(500)  # 換頁時上一頁暫留 0.42 秒播退場，等它收掉再量
             bad = []
             for y in range(0, 6):
                 bad += await pg.evaluate(HIT, TARGETS)

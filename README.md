@@ -3,7 +3,7 @@
 - 本機伺服器：cd /home/claude/nagoya-trip && python3 -m http.server 8766
 - 功能測試：cd /home/claude/build/ft && python3 fulltest.py（177 項）
 - 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest
-- transtest：換頁與彈窗轉場（往深一層從右進、返回從左進、切分頁上浮、同步重畫不播；彈窗退場後一定移除、退場中點不到、減少動態直接移除、320 寬無橫向捲軸）。彈窗關閉有 0.18 秒退場，測試用假時鐘時要 clock.run_for(250) 再檢查；連點時用 :not(.leaving) 選還開著的面板
+- transtest：換頁與彈窗轉場（往深一層整頁推入、返回舊頁往右滑走、底部分頁切換不播、點記帳滑到輸入金額、換天左右翻頁、全部只動 transform 不淡入淡出；彈窗從下方滑上、關閉 0.18 秒滑下後一定移除、退場中點不到、減少動態直接移除、320 寬無橫向捲軸）。換頁時上一頁會在 .vt-old 暫留 0.42 秒，測試直接 render() 換頁後要等 500ms 再量；彈窗關閉用假時鐘時要 clock.run_for(300)；連點時用 :not(.leaving) 選還開著的面板
 - listtabtest：清單頁籤（待辦／要買的兩個頁籤、行李卡片在上方、只有頁籤固定、首頁入口帶到對應頁籤、記住上次頁籤、鍵盤、320 寬度）
 - smalltest：v44 第三批 3C（沒設定錢包時記現金帳的「設定錢包」入口、語音連點狀態）
 - layouttest：v44 第三批 3B（320px／200% 縮放無水平捲動、可點範圍 44、首頁「今天」對比、排序鍵盤）
