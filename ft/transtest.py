@@ -214,6 +214,26 @@ async def micro(b):
     rec("小回饋", "最後一項裝好：行李箱和貓咪跳一下", st["art"] == "hop", st)
     await pg.wait_for_timeout(1400)
     rec("小回饋", "跳完拿掉 class（之後重畫不會再跳）", not await pg.evaluate('!!document.querySelector(".pop,.yay")'))
+    await pg.evaluate('render(true)'); await pg.wait_for_timeout(60)
+    rec("小回饋", "已經都裝好、同步重畫：不會再跳", not await pg.evaluate('!!document.querySelector(".yay")'))
+    # 自己都裝好時，每次進到清單或行李頁都跳一下
+    await pg.click('.pk-bar [data-pack-close]'); await pg.wait_for_timeout(100)
+    rec("小回饋", "都裝好後回到清單：行李卡片上的行李箱和貓咪跳一下", await pg.evaluate('(()=>{const a=document.querySelector("#app .pack-entry .pe-art");return a&&a.classList.contains("yay")?getComputedStyle(a).animationName:null})()') == "hop")
+    await pg.wait_for_timeout(1500)
+    await pg.click('#app [data-pack-open]'); await pg.wait_for_timeout(200)
+    early = await pg.evaluate('!!document.querySelector("#app .pack-sum .pe-art.yay")')
+    await pg.wait_for_timeout(400)
+    rec("小回饋", "都裝好後進行李頁：等頁面滑進來再跳", not early and await pg.evaluate('!!document.querySelector("#app .pack-sum .pe-art.yay")'), early)
+    await pg.wait_for_timeout(1500)
+    # 別人還沒裝完不影響：條件是「自己」都裝好
+    await pg.evaluate('(()=>{const r=itemsOf("pack")[0];const k=packKey(r.id,"star");done[k]=false;put("checks/"+k,{done:false})})()'); await pg.wait_for_timeout(300)
+    await pg.click('.pk-bar [data-pack-close]'); await pg.wait_for_timeout(100)
+    rec("小回饋", "只看自己：星星還沒裝完，阿彰都裝好也會跳", await pg.evaluate('!!document.querySelector("#app .pack-entry .pe-art.yay")'))
+    await pg.wait_for_timeout(1500)
+    # 自己還沒裝完：進來不跳
+    await pg.evaluate('(()=>{const r=itemsOf("pack")[0];const k=packKey(r.id,me);done[k]=false;put("checks/"+k,{done:false})})()'); await pg.wait_for_timeout(300)
+    await pg.click('nav.tabs button[data-tab="plan"]'); await pg.wait_for_timeout(200); await pg.click('nav.tabs button[data-tab="list"]'); await pg.wait_for_timeout(100)
+    rec("小回饋", "自己還沒裝完：進清單不跳", not await pg.evaluate('!!document.querySelector(".yay")'))
     rec("小回饋", "沒有錯誤", not pg.errs, pg.errs[:2])
     await ctx.close()
     # 記帳：新的那筆從上方落下
