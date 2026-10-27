@@ -1,4 +1,4 @@
-# 換頁與彈窗轉場（溫柔版：換頁 0.5 秒、換天 0.45 秒、彈窗滑上 0.5 秒輕彈、滑下 0.25 秒）：往深一層整頁從右推入（舊頁往左退）、返回舊頁往右滑走、底部分頁切換不播、記帳分成清單頁和「記一筆」填寫面板、換天左右翻頁、全部不淡入淡出；同步重畫不播；彈窗關閉有退場動畫且一定會移除；
+# 換頁與彈窗轉場（溫柔版：換頁 0.5 秒、換天 0.45 秒、彈窗滑上 0.5 秒（不回彈）、滑下 0.25 秒）：往深一層整頁從右推入（舊頁往左退）、返回舊頁往右滑走、底部分頁切換不播、記帳分成清單頁和「記一筆」填寫面板、換天左右翻頁、全部不淡入淡出；同步重畫不播；彈窗關閉有退場動畫且一定會移除；
 # 退場中的面板點不到、不擋下一個面板；減少動態時直接移除；轉場只動 opacity／transform；滑入時沒有橫向捲軸
 # 一律用假資料庫（synctest.mkctx 的攔截）
 import asyncio
@@ -79,7 +79,7 @@ async def sheets(b):
         rec("彈窗關閉", f"{nm}：退場後一定移除", await pg.evaluate(f'document.querySelectorAll("{sel}").length') == 0)
     # 底部面板：卡片整片從下方滑上來
     await pg.evaluate('openSos()')
-    rec("彈窗打開", "底部面板從下方滑上來（輕輕彈一下）、背景遮罩漸暗", await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal .sm-card")).animationName') == "sheetbob" and await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal")).animationName') == "dimin")
+    rec("彈窗打開", "底部面板從下方滑上來（不回彈）、背景遮罩漸暗", await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal .sm-card")).animationName') == "sheetin" and await pg.evaluate('getComputedStyle(document.querySelector(".sheet-modal")).animationName') == "dimin")
     await pg.keyboard.press("Escape"); await pg.clock.run_for(300); await pg.wait_for_timeout(350)
     await pg.evaluate('openViewer("ghibli-map.jpg","x")')
     rec("彈窗打開", "全螢幕的也從下方滑上來（不淡入）", await pg.evaluate('getComputedStyle(document.querySelector(".viewer")).animationName') == "sheetin")
@@ -111,7 +111,7 @@ async def acct(b):
     an = await pg.evaluate('getComputedStyle(document.querySelector(".exp-sheet .sm-card")).animationName')
     await pg.wait_for_timeout(650)
     st = await pg.evaluate('({t:document.getElementById("exp-title").innerText,f:document.activeElement?.id,role:document.querySelector(".exp-sheet").getAttribute("role"),again:!!document.querySelector("[data-again]")})')
-    rec("記帳", "「記一筆」面板從下方滑上來、輕輕彈一下", an == "sheetbob", an)
+    rec("記帳", "「記一筆」面板從下方滑上來（不回彈）", an == "sheetin", an)
     rec("記帳", "面板標題「記一筆」、金額有焦點、有「再記一筆」", st["t"] == "記一筆" and st["f"] == "f-amt" and st["role"] == "dialog" and st["again"], st)
     # 再記一筆：面板不關、金額清空、付款方式留著
     await pg.click('[data-pick="pay"] [data-v="card"]'); await pg.fill('#f-amt', '1200'); await pg.fill('#f-note', '鰻魚飯')
