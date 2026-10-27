@@ -833,27 +833,48 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
 @keyframes squint{0%,100%{transform:scaleY(1)}20%,70%{transform:scaleY(.15)}}
 @keyframes bob{50%{transform:translateY(-3px)}}
 @keyframes pop{from{transform:scale(.97);opacity:.5}to{transform:none;opacity:1}}
-.view{animation:fadein .16s ease-out}
 /* 換頁轉場：只動 opacity 和 transform（GPU 合成，不重新排版）；只做新頁進場，不同時留兩頁 */
-.shell{overflow-x:clip}/* 左右滑入那 0.2 秒不會撐出橫向捲軸；clip 不影響 sticky */
-.view.go-fwd{animation:vfwd .22s cubic-bezier(.2,.8,.2,1)}
-.view.go-back{animation:vback .22s cubic-bezier(.2,.8,.2,1)}
-.view.go-tab{animation:vtab .2s cubic-bezier(.2,.8,.2,1)}
-@keyframes vfwd{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
-@keyframes vback{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
-@keyframes vtab{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-/* 彈窗關閉：背景淡出、底部面板往下滑；全螢幕的只淡出。動畫中不能點、不擋下一個彈窗 */
+.shell{overflow-x:clip}/* 換頁滑動時不會撐出橫向捲軸；clip 不影響 sticky */
+/* ===== 換頁轉場（參考 iOS 推入／返回與 Material 淡入切換）：只動 transform／opacity，GPU 合成 =====
+   往深一層：新頁從右整頁推入、舊頁往左退 30% 並變暗；返回：舊頁往右滑走、新頁從左 30% 回來；
+   切底部分頁不播動畫（直接換）。不用淡入淡出（看起來會閃一下）。舊頁只在 0.38 秒內暫留（不能點），結束就移除 */
+:root{--ease-ios:cubic-bezier(.32,.72,0,1);--t-push:.38s}
+.view.go-fwd{animation:vpushIn var(--t-push) var(--ease-ios)}
+.view.go-back{animation:vbackIn var(--t-push) var(--ease-ios)}
+@keyframes vpushIn{from{transform:translateX(100%)}to{transform:none}}
+@keyframes vbackIn{from{transform:translateX(-30%)}to{transform:none}}
+/* 滑動中的頁面要不透明、蓋滿螢幕（含左右留白），舊頁才不會透出來 */
+.view.vt-in,.vt-old>.view{background:var(--paper) var(--pat) repeat;background-size:120px 120px;will-change:transform}
+.view.vt-in{margin:-12px calc(-1 * max(16px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));padding:12px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));min-height:100vh}
+.view.go-fwd.vt-in{box-shadow:-10px 0 30px rgba(63,49,39,.14)}
+.shell.vt{position:relative;z-index:1}
+.vt-old{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.vt-old.go-back{z-index:2}
+.vt-old.go-fwd>.view{animation:vpushOut var(--t-push) var(--ease-ios) forwards}
+.vt-old.go-back>.view{animation:vbackOut var(--t-push) var(--ease-ios) forwards;box-shadow:-10px 0 30px rgba(63,49,39,.14)}
+.vt-old.go-fwd::after{content:"";position:absolute;inset:0;background:#2B2420;opacity:0;animation:vdim var(--t-push) var(--ease-ios) forwards}
+@keyframes vpushOut{to{transform:translateX(-30%)}}
+@keyframes vbackOut{to{transform:translateX(100%)}}
+@keyframes vdim{to{opacity:.12}}
+/* ===== 彈窗：底部面板和全螢幕畫面都整片從下方滑上來（0.4 秒）、關閉較快滑下去（0.18 秒，退場要比進場快）；只有背景遮罩漸暗，內容不淡入淡出 ===== */
+.sheet-modal{animation:dimin .3s ease}
+@keyframes dimin{from{background-color:rgba(43,36,32,0)}}
+@keyframes dimout{to{background-color:rgba(43,36,32,0)}}
+.sm-card{animation:sheetin .4s var(--ease-ios)}
+@keyframes sheetin{from{transform:translateY(100%)}to{transform:none}}
+.viewer,.sos-show,.story{animation:sheetin .4s var(--ease-ios)}
 .leaving{pointer-events:none!important}
-.sheet-modal.leaving,.viewer.leaving,.sos-show.leaving,.story.leaving,.coach.leaving{animation:fadeout .18s ease forwards}
+.sheet-modal.leaving{animation:dimout .18s ease forwards}
 .sheet-modal.leaving .sm-card{animation:sheetdown .18s cubic-bezier(.4,0,1,1) forwards}
-@keyframes fadeout{from{opacity:1}to{opacity:0}}
-@keyframes sheetdown{from{transform:none}to{transform:translateY(48px)}}
+.viewer.leaving,.sos-show.leaving,.story.leaving{animation:sheetdown .18s cubic-bezier(.4,0,1,1) forwards}
+.coach.leaving{visibility:hidden}
+@keyframes sheetdown{from{transform:none}to{transform:translateY(100%)}}
 @keyframes fadein{from{opacity:0}to{opacity:1}}
 @keyframes flash{0%,100%{outline-color:transparent}30%{outline-color:var(--accent)}}
 .tile.flash .art{outline:3px solid transparent;outline-offset:2px;animation:flash 1.2s ease}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 /* ===== 全站遊戲風格：外層卡片淺棕外框＋同色陰影；能按的加厚；內層選項只用底色 ===== */
-body{background:var(--paper) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23E3D3BE' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M14 22q6-8 12 0t12 0'/%3E%3Ccircle cx='92' cy='26' r='5'/%3E%3Cpath d='M70 92l6 6m0-6l-6 6'/%3E%3Cpath d='M18 88q4 10 14 4'/%3E%3C/g%3E%3Cg fill='%23E9DBC8'%3E%3Ccircle cx='96' cy='78' r='5'/%3E%3Ccircle cx='89' cy='70' r='2.6'/%3E%3Ccircle cx='96' cy='67' r='2.6'/%3E%3Ccircle cx='103' cy='70' r='2.6'/%3E%3Ccircle cx='50' cy='56' r='2.4'/%3E%3C/g%3E%3C/svg%3E") repeat;background-size:120px 120px}
+:root{--pat:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='none' stroke='%23E3D3BE' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M14 22q6-8 12 0t12 0'/%3E%3Ccircle cx='92' cy='26' r='5'/%3E%3Cpath d='M70 92l6 6m0-6l-6 6'/%3E%3Cpath d='M18 88q4 10 14 4'/%3E%3C/g%3E%3Cg fill='%23E9DBC8'%3E%3Ccircle cx='96' cy='78' r='5'/%3E%3Ccircle cx='89' cy='70' r='2.6'/%3E%3Ccircle cx='96' cy='67' r='2.6'/%3E%3Ccircle cx='103' cy='70' r='2.6'/%3E%3Ccircle cx='50' cy='56' r='2.4'/%3E%3C/g%3E%3C/svg%3E")}body{background:var(--paper) var(--pat) repeat;background-size:120px 120px}
 .bar{min-height:52px;margin-bottom:14px}
 .bar .logo{width:44px;height:44px;padding:9px 4px 3px;border-radius:50%;background:var(--butter);border:2.5px solid var(--ol);box-shadow:0 3px 0 var(--ol);box-sizing:border-box}
 .bar h1{font-size:22px}
@@ -2115,12 +2136,17 @@ async function switchDay(i){
  placeInd(true);
  const body=document.getElementById("dayBody"),strip=app.querySelector(".strip");
  const stripBottom=strip.getBoundingClientRect().bottom,bodyTop=body.getBoundingClientRect().top;
- const token=switching=Symbol();
- if(!reduce()&&body.animate){await body.animate([{opacity:1,transform:"translateX(0)"},{opacity:0,transform:`translateX(${-dir*18}px)`}],{duration:110,easing:"ease-in"}).finished.catch(()=>{});}
- if(token!==switching)return;
+ switching=Symbol();
+ /* 換天像翻頁：舊的當天內容往旁邊滑走、新的從另一邊同時滑進來（不淡入淡出）；舊內容是暫時的複本，不能點 */
+ const par=body.parentElement;par.querySelectorAll(".day-ghost").forEach(e=>e.remove());
+ const anim=!reduce()&&body.animate;let ghost=null;
+ if(anim){if(getComputedStyle(par).position==="static")par.style.position="relative";ghost=body.cloneNode(true);ghost.removeAttribute("id");ghost.querySelectorAll("[id]").forEach(e=>e.removeAttribute("id"));ghost.className="day-ghost";ghost.inert=true;ghost.setAttribute("aria-hidden","true");
+  ghost.style.cssText=`position:absolute;left:${body.offsetLeft}px;top:${body.offsetTop}px;width:${body.offsetWidth}px;pointer-events:none`;par.appendChild(ghost)}
  body.innerHTML=dayBodyHTML();bindSched();pinCheck();
  if(bodyTop<stripBottom)scrollTo({top:scrollY+(body.getBoundingClientRect().top-stripBottom)-4});
- if(!reduce()&&body.animate)body.animate([{opacity:0,transform:`translateX(${dir*18}px)`},{opacity:1,transform:"translateX(0)"}],{duration:220,easing:"cubic-bezier(.2,.8,.2,1)"});
+ if(anim){const o={duration:340,easing:"cubic-bezier(.32,.72,0,1)"};
+  body.animate([{transform:`translateX(${dir*100}%)`},{transform:"translateX(0)"}],o);
+  ghost.animate([{transform:"translateX(0)"},{transform:`translateX(${-dir*100}%)`}],{...o,fill:"forwards"}).finished.then(()=>ghost.remove(),()=>ghost.remove())}
 }
 function wxHTML(){
  const any=DAYS.some(x=>wxFor(x).live);
@@ -2538,15 +2564,33 @@ fab.addEventListener("click",()=>{if(fab.dataset.mode==="home"){/* 連點只開�
 let sortFocusId=null;
 /* 給讀螢幕念的訊息：放在整頁外面，重畫畫面時不會被清掉 */
 function announce(t){let el=document.getElementById("sr-live");if(!el){el=document.createElement("p");el.id="sr-live";el.className="visually-hidden";el.setAttribute("aria-live","polite");document.body.appendChild(el)}el.textContent="";setTimeout(()=>{el.textContent=t},30)}
+/* 換頁時把舊頁暫留在固定層播退場（推入時在下方往左退、返回時在上方往右滑走），0.4 秒後移除；
+   舊頁不能點、對輔助技術隱藏；連續換頁時上一個暫留層立刻拿掉，畫面上最多兩頁 */
+let vtTimer=0,tabNav=false;
+function holdOld(go){
+ document.querySelectorAll(".vt-old").forEach(e=>e.remove());
+ const old=app.querySelector(".view");if(!old)return;
+ const r=old.getBoundingClientRect(),top=Math.min(r.top,0);
+ old.className="view";old.removeAttribute("style");old.inert=true;
+ old.style.cssText=`position:absolute;left:0;top:${top}px;width:100vw;min-height:${innerHeight-top}px;box-sizing:border-box;margin:0;padding:${r.top-top}px ${innerWidth-r.right}px 0 ${r.left}px`;
+ const L=document.createElement("div");L.className="vt-old "+go;L.setAttribute("aria-hidden","true");L.appendChild(old);document.body.appendChild(L);
+ const sh=app.parentElement;sh.classList.add("vt");
+ clearTimeout(vtTimer);vtTimer=setTimeout(endVt,420);
+}
+function endVt(){clearTimeout(vtTimer);document.querySelectorAll(".vt-old").forEach(e=>e.remove());app.parentElement.classList.remove("vt");const v=app.querySelector(".view.vt-in");if(v)v.classList.remove("vt-in")}
 function render(keep,restore){
  const y=scrollY;
  if(!keep&&curKey)scrollMem[curKey]=y;
  const prevKey=curKey;curKey=viewKey();
  /* 轉場方向：往深一層從右邊進、返回從左邊進、同層切換微微上浮；同一頁重畫（同步資料進來）不播 */
  const depth=k=>k==="plan-day"||k==="list-pack"?1:0;
- const go=keep||!prevKey?"":prevKey===curKey?"":depth(curKey)>depth(prevKey)?"go-fwd":depth(curKey)<depth(prevKey)?"go-back":"go-tab";
+ const quiet=tabNav;tabNav=false;
+ const go=keep||quiet||!prevKey||prevKey===curKey?"":depth(curKey)>depth(prevKey)?"go-fwd":depth(curKey)<depth(prevKey)?"go-back":"";
  const html=tab==="plan"?(view==="home"?homeHTML():dayHTML()):tab==="wx"?wxHTML():tab==="move"?moveHTML():tab==="acct"?acctHTML():(listSub==="pack"?packPageHTML():listHTML());
- app.innerHTML=`<div class="view${go?" "+go:""}"${keep?' style="animation:none"':""}>${html}</div>`;
+ const slide=(go==="go-fwd"||go==="go-back")&&!reduce(),inVt=!!document.querySelector(".vt-old");
+ if(slide)holdOld(go);
+ else if(inVt&&!keep)endVt();
+ app.innerHTML=`<div class="view${go?" "+go:""}${slide||(keep&&inVt)?" vt-in":""}"${keep?' style="animation:none"':""}>${html}</div>`;
  document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===tab));
  placeInd(false);
  if(tab==="acct")renderAcct();
@@ -2698,7 +2742,9 @@ async function removeExpense(id){
  expenses=expenses.filter(e=>e.id!==id);store.set("exp",expenses);if(editingId===id){stopEdit();return}renderAcct();
 }
 (()=>{let last=0;document.querySelector("nav.tabs").addEventListener("touchend",e=>{const now=Date.now();if(now-last<350){e.preventDefault();const b=e.target.closest("button");if(b)b.click()}last=now},{passive:false})})();
-document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(t==="plan"){const same=tab==="plan"&&view==="home";tab="plan";view="home";if(same){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}render();scrollTo(0,0);return}if(t==="list"&&tab==="list"&&listSub){listSub=null;render(false,true);return}if(t===tab&&!(t==="plan"&&view==="day")){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}tab=t;render();scrollTo(0,0)});
+/* 底部分頁：切換不播轉場（tabNav）；點「記帳」會往上滑到輸入金額的地方 */
+function anchorAmt(){const f=document.getElementById("acct-form");if(!f)return;scrollTo({top:Math.max(0,f.getBoundingClientRect().top+scrollY-12),behavior:reduce()?"auto":"smooth"})}
+document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{const t=b.dataset.tab;if(t==="plan"){const same=tab==="plan"&&view==="home";tab="plan";view="home";if(same){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}tabNav=true;render();scrollTo(0,0);return}if(t==="list"&&tab==="list"&&listSub){listSub=null;tabNav=true;render(false,true);return}if(t==="acct"){if(tab!=="acct"){tab=t;tabNav=true;render();scrollTo(0,0)}requestAnimationFrame(anchorAmt);return}if(t===tab&&!(t==="plan"&&view==="day")){scrollTo({top:0,behavior:reduce()?"auto":"smooth"});return}tab=t;tabNav=true;render();scrollTo(0,0)});
 
 
 
