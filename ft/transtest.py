@@ -169,6 +169,8 @@ async def days(b):
     await pg.click('.day-btn[data-day="3"]')
     g = await pg.evaluate('(()=>{const g=document.querySelector(".day-ghost");if(!g)return null;const ka=document.getElementById("dayBody").getAnimations().flatMap(a=>a.effect.getKeyframes().flatMap(k=>Object.keys(k))).filter(x=>!["offset","easing","composite","computedOffset"].includes(x));return {inert:g.inert,hid:g.getAttribute("aria-hidden"),ids:g.querySelectorAll("[id]").length+(g.id?1:0),props:[...new Set(ka)],one:document.querySelectorAll("#dayBody").length}})()')
     rec("換天", "舊內容往旁邊滑走、新內容同時滑進（只動 transform、不淡入淡出）", g and g["props"] == ["transform"], g)
+    gap = await pg.evaluate('document.getElementById("dayBody").getAnimations().map(a=>JSON.stringify(a.effect.getKeyframes())).join("")')
+    rec("換天", "新舊兩頁中間留 24px 空隙（不會黏在一起）", "24px" in gap, gap[:120])
     rec("換天", "滑動只在內容寬度裡（不滑進左右留白，iOS 才不會留殘影）", await pg.evaluate('getComputedStyle(document.getElementById("dayBody").parentElement).overflowX') == "clip")
     rec("換天", "滑走的舊內容不能點、沒有重複 id", g and g["inert"] and g["hid"] == "true" and g["ids"] == 0 and g["one"] == 1, g)
     for d in (4, 5, 6): await pg.click(f'.day-btn[data-day="{d}"]')

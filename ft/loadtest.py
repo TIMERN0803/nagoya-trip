@@ -17,8 +17,17 @@ async def fast(b):
     ctx = await S.mkctx(b); pg = await opn(ctx, ft.jst(11, 19, 12), init=seed(META) + WATCH)
     rec("開啟畫面", "很快畫好時：開啟畫面完全不出現、已經移除", not await pg.evaluate('window.__spv') and not await pg.query_selector('#splash'), await pg.evaluate('window.__spv'))
     rec("開啟畫面", "頁面正常畫出來", await pg.query_selector('#app .view') is not None)
-    rec("字型", "字型樣式不擋畫面（載好後換成 all）", await pg.evaluate('(()=>{const l=document.querySelector(\'link[href*="fonts.googleapis"]\');return l&&l.getAttribute("onload")&&l.getAttribute("onload").includes("media")})()'))
     rec("開啟畫面", "沒有錯誤", not pg.errs, pg.errs[:2])
+    await pg.close()
+    # 開啟畫面的豆花和芝麻要跟 App 裡畫的一樣：和 App 產生的 head-w／head-b 圖案逐字比對
+    pg = await ctx.new_page(); await pg.route("**/*", lambda r: r.continue_())
+    await pg.goto("http://localhost:8768/?split", wait_until="commit"); await pg.wait_for_selector('#app .view', timeout=10000)
+    html = await pg.content()
+    same = await pg.evaluate("""(h)=>{const d=new DOMParser().parseFromString(h,"text/html");const sp=d.getElementById("splash");if(!sp)return "no splash in html";
+      const a=sp.querySelector(".sp-a svg").innerHTML.replaceAll("sp-rough","rough"),b=sp.querySelector(".sp-b svg").innerHTML.replaceAll("sp-rough","rough");
+      return a===document.getElementById("head-w").innerHTML&&b===document.getElementById("head-b").innerHTML}""", await (await pg.request.get("http://localhost:8768/")).text())
+    rec("開啟畫面", "豆花和芝麻跟 App 裡的圖一模一樣（含手繪抖動濾鏡）", same is True, same)
+    rec("字型", "字型樣式不擋畫面（載好後換成 all）", await pg.evaluate('(()=>{const l=document.querySelector(\'link[href*="fonts.googleapis"]\');return l&&l.getAttribute("onload")&&l.getAttribute("onload").includes("media")})()'))
     await ctx.close()
 
 async def slow(b, reduced=False):
@@ -34,9 +43,9 @@ async def slow(b, reduced=False):
     if not reduced:
         rec("開啟畫面", "下載很慢時：0.3 秒後出現豆花和芝麻的開啟畫面", shown == "visible" and "名古屋看花花" in txt and "準備行程" in txt, [shown, txt])
         await pg.wait_for_timeout(100)
-        rec("開啟畫面", "畫好後整片往上滑走（不淡出）", await pg.evaluate('window.__spout') == "spout", await pg.evaluate('window.__spout'))
+        rec("開啟畫面", "畫好後豆花和芝麻跳一下、收成圓圈縮到牠們身上（不淡出）", await pg.evaluate('window.__spout') == "spout", await pg.evaluate('window.__spout'))
         kf = await pg.evaluate('[...document.styleSheets].flatMap(s=>{try{return [...s.cssRules]}catch(e){return []}}).filter(r=>r.name==="spout").map(r=>r.cssText).join("")')
-        rec("開啟畫面", "退場只動 transform", "transform" in kf and "opacity" not in kf, kf)
+        rec("開啟畫面", "退場是圓圈收合、不用透明度", "clip-path" in kf and "opacity" not in kf, kf)
         await pg.wait_for_timeout(800)
         hit = await pg.evaluate('(()=>{const e=document.elementFromPoint(innerWidth/2,innerHeight/2);return e?(e.closest("#splash")?"splash":(e.className&&e.className.baseVal!==undefined?e.className.baseVal:e.className)||e.tagName):null})()')
         rec("開啟畫面", "滑走後移除，不擋點擊", not await pg.query_selector('#splash') and hit != "splash", hit)
