@@ -11,6 +11,18 @@
 <meta name="description" content="11/17–11/24 名古屋 8 天行程、天氣、交通、記帳與清單">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<!-- iOS 啟動圖：按下圖示到網頁載好之前顯示，和開啟動畫同一個畫面（米色底＋中間的豆花和芝麻）。由 tools 分支的 ft/mksplash.py 產生 -->
+<link rel="apple-touch-startup-image" media="(device-width: 440px) and (device-height: 956px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/440x956@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 420px) and (device-height: 912px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/420x912@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/402x874@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/430x932@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/393x852@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/428x926@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/390x844@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/375x812@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="splash/414x896@3.png">
+<link rel="apple-touch-startup-image" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/414x896@2.png">
+<link rel="apple-touch-startup-image" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="splash/375x667@2.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>*,*::before,*::after{touch-action:manipulation}html{touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%}:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-family:system-ui,sans-serif;font-size:14px;overscroll-behavior-y:none}img{max-width:100%}[hidden]{display:none!important}
 /* ===== 遊戲化首頁：粗外框、貼紙陰影、收藏卡片（先套用在首頁） ===== */
@@ -1361,19 +1373,17 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
  .rate{flex-wrap:wrap;row-gap:6px;white-space:nowrap}}
 </style>
 <style>
-/* ===== 開啟畫面：頁面還沒畫好時，豆花和芝麻點點頭陪你等。0.3 秒內就畫好的話完全不出現（不會閃一下） ===== */
-#splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#F8F3EC;visibility:hidden;animation:spshow 0s .3s forwards}
-@keyframes spshow{to{visibility:visible}}
-#splash .sp-in{display:flex;flex-direction:column;align-items:center;gap:6px;font-family:"Zen Maru Gothic",system-ui,-apple-system,sans-serif;color:#3F3127;text-align:center}
-#splash svg{width:146px;height:58px;margin-bottom:8px;overflow:visible}
+/* ===== 開啟動畫：App 重新開啟時，畫面正中央的豆花和芝麻點頭約 1.2 秒（從按下圖示算起），點一下可以跳過。
+   iOS 的啟動圖（splash/ 資料夾）是同一個畫面，從按下圖示到動畫結束接得起來，不會先閃白畫面 ===== */
+#splash{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#F8F3EC;cursor:pointer}
+#splash .sp-in{display:grid;place-items:center}
+#splash svg{width:146px;height:58px;overflow:visible}
 #splash .sp-a,#splash .sp-b{transform-box:fill-box;transform-origin:50% 100%;animation:spbob 1.1s ease-in-out infinite}
 #splash .sp-b{animation-delay:-.55s}
 @keyframes spbob{0%,100%{transform:none}50%{transform:translateY(-6px) rotate(-4deg)}}
-#splash b{font-size:21px;font-weight:900;letter-spacing:.04em}
-#splash span{font-size:13px;color:#8C7B6B;font-weight:700}
-/* 畫好後：豆花和芝麻照原本的節奏點頭，開啟畫面收成圓圈縮到牠們身上，露出首頁（不淡出、不整片滑走、不另外跳一下） */
-#splash.out{animation:spout .6s cubic-bezier(.55,0,.35,1) forwards;visibility:visible;clip-path:circle(150% at 50% 46%)}
-@keyframes spout{to{clip-path:circle(0% at 50% 46%)}}
+/* 結束：豆花和芝麻照原本的節奏點頭，開啟畫面收成圓圈縮到牠們身上，露出首頁（不淡出、不整片滑走、不另外跳一下） */
+#splash.out{animation:spout .6s cubic-bezier(.55,0,.35,1) forwards;clip-path:circle(150% at 50% 50%);pointer-events:none}
+@keyframes spout{to{clip-path:circle(0% at 50% 50%)}}
 @media (prefers-reduced-motion:reduce){#splash .sp-a,#splash .sp-b{animation:none}}
 </style>
 </head>
@@ -1386,9 +1396,14 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
   <g class="eyes"><ellipse cx="27" cy="25" rx="7" ry="6.6" fill="#fff" stroke="#2B2420" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"></ellipse><circle class="pupil" cx="24.6" cy="25.6" r="3.4" fill="#2B2420"></circle><ellipse cx="43" cy="25" rx="7" ry="6.6" fill="#fff" stroke="#2B2420" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"></ellipse><circle class="pupil" cx="40.6" cy="25.6" r="3.4" fill="#2B2420"></circle></g>
   <circle cx="33.8" cy="33" r="1.8" fill="#F2A79C"></circle>
   <path d="M13 29 H6.5 M13.5 33.5 L7.5 35.5 M57 29 H63.5 M56.5 33.5 L62.5 35.5" stroke="#2B2420" stroke-width="2.2" stroke-linecap="round"></path></g></svg></g></svg>
- <b>名古屋看花花</b><span>豆花和芝麻正在準備行程…</span>
 </div></div>
-<script>/* 保險：萬一程式出錯，開啟畫面最多停 8 秒，不會一直擋住 */setTimeout(function(){var s=document.getElementById("splash");if(s)s.remove()},8000)</script>
+<script>(function(){var s=document.getElementById("splash");
+/* 只在 App 重新開啟時播：同一次使用中重新整理（例如網路恢復自動重新整理）不再播；App 被關掉再開是新的 session 會播 */
+try{if(sessionStorage.getItem("ngy:launched")){s.remove();return}sessionStorage.setItem("ngy:launched","1")}catch(e){}
+/* 點一下就跳過（例如急著給司機看地址） */
+s.addEventListener("click",function(){window.__spSkip=1;if(window.hideSplash)hideSplash(true)});
+/* 保險：萬一程式出錯，開啟畫面最多停 8 秒，不會一直擋住 */
+setTimeout(function(){if(s.isConnected)s.remove()},8000)})()</script>
 
 
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -2679,8 +2694,12 @@ function holdOld(go){
  clearTimeout(vtTimer);vtTimer=setTimeout(endVt,540);
 }
 function endVt(){clearTimeout(vtTimer);document.querySelectorAll(".vt-old").forEach(e=>e.remove());app.parentElement.classList.remove("vt");const v=app.querySelector(".view.vt-in");if(v)v.classList.remove("vt-in")}
-/* 第一次畫好：0.3 秒內畫好就直接拿掉開啟畫面（使用者根本沒看到）；比較慢才播退場（收成圓圈） */
-function hideSplash(){const sp=document.getElementById("splash");if(!sp)return;if(performance.now()<300||reduce()||getComputedStyle(sp).visibility==="hidden"){sp.remove();return}sp.classList.add("out");setTimeout(()=>sp.remove(),700)}
+/* 開啟動畫：畫面畫好後，等到「按下圖示後 1.2 秒」才收（載入本來就超過 1.2 秒就立刻收，不會再多等）；點一下跳過就立刻收。
+   點的時候畫面還沒畫好，就等畫好立刻收 */
+let splashReady=false;
+function hideSplash(skip){const sp=document.getElementById("splash");if(!sp)return;if(!skip)splashReady=true;if(!splashReady)return;
+ const wait=skip||window.__spSkip?0:Math.max(0,1200-performance.now());
+ setTimeout(()=>{if(!sp.isConnected||sp.classList.contains("out"))return;if(reduce()){sp.remove();return}sp.classList.add("out");setTimeout(()=>sp.remove(),650)},wait)}
 function render(keep,restore){
  const y=scrollY;
  if(!keep&&curKey)scrollMem[curKey]=y;
