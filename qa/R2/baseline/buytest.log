@@ -1,0 +1,8 @@
+PASS 要買的 | 首頁順序：待辦、要買的、花費 | 0 / 0 0 / 6 ¥0
+PASS 要買的 | 點了直接打開「要買的」頁籤 | ['buy', 152]
+PASS 要買的 | 舊備註自動拆成地點和品項 | ['bi-place:高島屋', 'bi-place:名鐵 Sun Road | bi-what:常磐の昔、初昔', 'bi-what:芳明の白']
+PASS 要買的 | 地點可以點開 Google 地圖 | https://www.google.com/maps/search/?api=1&query=%E9%AB%98%E5%B3%B6%E5%B1%8B
+PASS 要買的 | 編輯時帶入拆好的地點和品項 | ['名鐵 Sun Road', '常磐の昔、初昔']
+PASS 要買的 | 儲存成獨立欄位 | {'group': 'buy', 'title': '妙香園（抹茶）', 'note': '', 'order': 101, 'place': '名鐵 Sun Road', 'what': '常磐の昔、初昔、抹茶粉', 'due': '', 'links': None}
+PASS 要買的 | 新增時只填地點也正常顯示 | 白色戀人 中部國際機場
+PASS 要買的 | 沒有錯誤

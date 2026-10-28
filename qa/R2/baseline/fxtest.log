@@ -1,0 +1,16 @@
+PASS F 匯率 | 打開後自動抓到匯率 0.2073
+PASS F 匯率 | 寫進雲端（含來源、自動） | {'jpyTwd': 0.2073, 'auto': True, 'ts': 1795172400253, 'src': 'ExchangeRate-API'}
+PASS F 匯率 | 顯示「自動更新」和更新時間、資料來源 | 自動更新・11/20 20:00
+匯率來源：ExchangeRate-API
+PASS F 匯率 | 星星的手機也是同一個匯率
+PASS F 匯率 | 6 小時內不會重複抓 | {'er': 1}
+PASS F 匯率 | 手動改匯率：停止自動、顯示「改回自動」 | ({'jpyTwd': 0.21, 'auto': False, 'ts': 1795172405625}, '手動設定・11/20 20:00\n改回自動')
+PASS F 匯率 | 手動設定同步到星星的手機
+PASS F 匯率 | 手動設定後過了 7 小時也不會被自動蓋掉
+PASS F 匯率 | 按「改回自動」立刻重抓 | {'jpyTwd': 0.2073, 'auto': True, 'ts': 1795197683418, 'src': 'ExchangeRate-API'}
+PASS F 匯率 | 台幣換算跟著新匯率
+PASS F 匯率 | 主來源失敗時改用備用來源
+PASS F 匯率 | 兩個來源都失敗時沿用原本的 0.2
+PASS F 匯率 | API 回傳不合理的數字時不採用
+PASS F 匯率 | 沒有錯誤
+TOTAL 14 FAIL 0

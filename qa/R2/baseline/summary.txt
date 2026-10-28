@@ -1,0 +1,33 @@
+fulltest rc=0 pass=177 fail=0 94s
+duetest rc=0 pass=10 fail=0 8s
+fabtest rc=0 pass=18 fail=0 15s
+packtest rc=0 pass=16 fail=0 13s
+gotest rc=0 pass=3 fail=0 7s
+buytest rc=0 pass=8 fail=0 6s
+cashtest rc=0 pass=25 fail=0 20s
+sostest rc=0 pass=32 fail=0 15s
+undotest rc=0 pass=34 fail=0 27s
+sorttest rc=0 pass=21 fail=0 15s
+janktest rc=0 pass=5 fail=0 5s
+setuptest rc=0 pass=20 fail=0 25s
+tourtest rc=0 pass=35 fail=0 20s
+tftest rc=0 pass=18 fail=0 17s
+placetest rc=0 pass=7 fail=0 12s
+reviewtest rc=0 pass=23 fail=0 18s
+fxtest rc=0 pass=14 fail=0 91s
+nexttest rc=0 pass=5 fail=0 9s
+hometest rc=0 pass=63 fail=0 64s
+sostabtest rc=0 pass=37 fail=0 14s
+voicetest rc=0 pass=15 fail=0 14s
+sheettest rc=0 pass=63 fail=0 32s
+synctest rc=0 pass=80 fail=0 101s
+fixtest rc=0 pass=64 fail=0 76s
+helptest rc=0 pass=71 fail=0 58s
+layouttest rc=0 pass=47 fail=0 43s
+smalltest rc=0 pass=13 fail=0 16s
+listtabtest rc=0 pass=27 fail=0 25s
+transtest rc=0 pass=82 fail=0 50s
+loadtest rc=0 pass=22 fail=0 25s
+sweep rc=0 21s
+t5 rc=0 19s
+DONE

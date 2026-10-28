@@ -1,0 +1,83 @@
+PASS 換頁 | 首頁點某一天：從右邊滑進（go-fwd） | view go-fwd vt-in
+PASS 換頁 | 轉場只動 transform（不淡入淡出） | ['transform']
+PASS 換頁 | 滑入過程中沒有橫向捲軸
+PASS 換頁 | 推入時舊頁暫留在下層往左退（不能點、對輔助技術隱藏、不在 #app 裡） | {'n': 1, 'hid': 'true', 'inert': True, 'pe': 'none', 'anim': 'vpushOut', 'inApp': False}
+PASS 換頁 | 推入時新頁不透明、蓋住舊頁
+PASS 換頁 | 轉場結束舊頁移除、新頁恢復一般版面
+PASS 換頁 | 當天行程按返回：從左邊滑進（go-back） | view go-back vt-in
+PASS 換頁 | 返回時舊頁在上層往右滑走
+PASS 換頁 | 切底部分頁：不播動畫、不留舊頁 | view
+PASS 換頁 | 清單進行李頁：從右邊滑進 | view go-fwd vt-in
+PASS 換頁 | 同步資料進來重畫（keep）：不播轉場 | view
+PASS 換頁 | 同一頁重畫：不播動畫 | view
+PASS 換頁 | 當天行程按底部「行程」回首頁：直接換、不滑動
+PASS 換頁 | 同一分頁再點一下後點某天：照樣推入
+PASS 換頁 | 連續快速換頁：畫面上最多兩頁、結束後清乾淨 | 1
+PASS 換頁 | 推入中同步重畫：新頁仍蓋住舊頁
+PASS 換頁 | 之後舊頁和暫時樣式都移除
+PASS 換頁 | 轉場結束後沒有殘留 transform
+PASS 換頁 | 沒有錯誤
+PASS 彈窗關閉 | 求助：按關閉後往下滑走（背景遮罩漸淡、內容不淡出） | {'leaving': True, 'role': None, 'pe': 'none', 'anim': 'dimout'}
+PASS 彈窗關閉 | 求助：退場中不再是對話框、點不到 | {'leaving': True, 'role': None, 'pe': 'none', 'anim': 'dimout'}
+PASS 彈窗關閉 | 求助：退場後一定移除
+PASS 彈窗關閉 | 錢包：按關閉後往下滑走（背景遮罩漸淡、內容不淡出） | {'leaving': True, 'role': None, 'pe': 'none', 'anim': 'dimout'}
+PASS 彈窗關閉 | 錢包：退場中不再是對話框、點不到 | {'leaving': True, 'role': None, 'pe': 'none', 'anim': 'dimout'}
+PASS 彈窗關閉 | 錢包：退場後一定移除
+PASS 彈窗關閉 | 地圖：按關閉後往下滑走（背景遮罩漸淡、內容不淡出） | {'leaving': True, 'role': None, 'pe': 'none', 'anim': 'sheetdown'}
+PASS 彈窗關閉 | 地圖：退場中不再是對話框、點不到 | {'leaving': True, 'role': None, 'pe': 'none', 'anim': 'sheetdown'}
+PASS 彈窗關閉 | 地圖：退場後一定移除
+PASS 彈窗關閉 | 給司機看：按關閉後往下滑走（背景遮罩漸淡、內容不淡出） | {'leaving': True, 'role': None, 'pe': 'none', 'anim': 'sheetdown'}
+PASS 彈窗關閉 | 給司機看：退場中不再是對話框、點不到 | {'leaving': True, 'role': None, 'pe': 'none', 'anim': 'sheetdown'}
+PASS 彈窗關閉 | 給司機看：退場後一定移除
+PASS 彈窗打開 | 底部面板從下方滑上來（不回彈）、背景遮罩漸暗
+PASS 彈窗打開 | 全螢幕的也從下方滑上來（不淡入）
+PASS 彈窗關閉 | 底部面板的卡片往下滑
+PASS 彈窗關閉 | 退場中馬上再打開：新面板正常、點退場中的舊面板沒反應
+PASS 彈窗關閉 | Esc 關閉後全部移除、捲動恢復
+PASS 彈窗關閉 | 關閉時焦點馬上回到原本的按鈕
+PASS 彈窗關閉 | 沒有錯誤
+PASS 記帳 | 點記帳分頁：只顯示清單（沒有填寫表單）、有「記一筆」按鈕、停在頂端 | {'form': False, 'fab': True, 'y': 0, 'list': True}
+PASS 記帳 | 「記一筆」面板從下方滑上來（不回彈） | sheetin
+PASS 記帳 | 面板標題「記一筆」、金額有焦點、有「再記一筆」 | {'t': '記一筆', 'f': 'f-amt', 'role': 'dialog', 'again': True}
+PASS 記帳 | 再記一筆：面板不關、清空金額和備註、付款方式留著、焦點回到金額 | {'open': True, 'amt': '', 'note': '', 'pay': 'card', 'msg': '已記下 ¥1,200', 'f': 'f-amt'}
+PASS 記帳 | 記下這筆：面板滑下去關閉 | ['sheetdown', {'open': False, 'note': '已記下 ¥800', 'ping': True, 'n': 2}]
+PASS 記帳 | 記帳頁顯示「已記下」、新的那筆亮一下 | {'open': False, 'note': '已記下 ¥800', 'ping': True, 'n': 2}
+PASS 記帳 | 沒填東西按 ×：直接關，不問
+PASS 記帳 | 點一筆：打開「修改這筆」，底部是刪除＋更新（沒有再記一筆） | {'t': '修改這筆', 'del': True, 'again': False, 'save': '更新這筆'}
+PASS 記帳 | 改了沒存按 ×：問「要放棄嗎？」，焦點在「繼續填寫」 | {'cf': True, 'txt': '改的內容還沒存，要放棄嗎？\n繼續填寫\n放棄修改', 'f': True}
+PASS 記帳 | 按「繼續填寫」：回到面板、內容還在
+PASS 記帳 | 改了沒存按 Esc：也先問，不直接關
+PASS 記帳 | 放棄修改：面板關閉、雲端不變
+PASS 記帳 | 沒填東西點背景：直接關
+PASS 記帳 | 面板開著時頁面重畫：面板和輸入都還在
+PASS 記帳 | 沒有記帳權限：「記一筆」停用並寫出原因 | {'dis': True, 'note': '你可以看，但沒有記帳權限', 'hid': False}
+PASS 記帳 | 換分頁回來：已記下的提示清掉
+PASS 記帳 | 沒有錯誤
+PASS 換天 | 舊內容往旁邊滑走、新內容同時滑進（只動 transform、不淡入淡出） | {'inert': True, 'hid': 'true', 'ids': 0, 'props': ['transform'], 'one': 1}
+PASS 換天 | 新舊兩頁中間留 24px 空隙（不會黏在一起） | [{"offset":null,"easing":"linear","composite":"auto","transform":"translateX(calc(100% + 24px))","computedOffset":0},{"o
+PASS 換天 | 滑動只在內容寬度裡（不滑進左右留白，iOS 才不會留殘影）
+PASS 換天 | 滑走的舊內容不能點、沒有重複 id | {'inert': True, 'hid': 'true', 'ids': 0, 'props': ['transform'], 'one': 1}
+PASS 換天 | 連點換天：最多一個舊內容、結束後清乾淨 | 1
+PASS 換天 | 結束後拿掉裁切（sticky 和陰影照常）
+PASS 換天 | 動畫卡住（finished 不觸發）時，舊內容仍在 0.53 秒後移除、不留殘影 | 1
+PASS 換天 | 最後顯示的是點的那一天 | 6
+PASS 換天 | 沒有橫向捲軸
+PASS 換天 | 沒有錯誤
+PASS 小回饋 | 清單打勾：剛勾的框「啵」一下，其他框不動 | {'me': True, 'an': 'tickpop', 'others': 1}
+PASS 小回饋 | 取消打勾不彈
+PASS 小回饋 | 還沒全部裝好：行李箱不跳
+PASS 小回饋 | 裝好行李：按鈕「啵」一下 | {'btn': 'tickpop', 'art': 'hop'}
+PASS 小回饋 | 最後一項裝好：行李箱和貓咪跳一下 | {'btn': 'tickpop', 'art': 'hop'}
+PASS 小回饋 | 跳完拿掉 class（之後重畫不會再跳）
+PASS 小回饋 | 已經都裝好、同步重畫：不會再跳
+PASS 小回饋 | 都裝好後回到清單：行李卡片上的行李箱和貓咪跳一下
+PASS 小回饋 | 都裝好後進行李頁：等頁面滑進來再跳
+PASS 小回饋 | 只看自己：星星還沒裝完，阿彰都裝好也會跳
+PASS 小回饋 | 自己還沒裝完：進清單不跳
+PASS 小回饋 | 沒有錯誤
+PASS 小回饋 | 記下這筆：新的那筆從上方輕輕落下、彈一下就定位（加上亮一下） | exdrop, rowping
+PASS 減少動態 | 換頁不暫留舊頁
+PASS 減少動態 | 換頁不播動畫
+PASS 減少動態 | 彈窗關閉直接移除
+PASS 換頁 | 320 寬：滑入的每一刻都沒有橫向捲軸 | [0, 0, 0, 0, 0, 0]
+TOTAL 82 FAIL 0

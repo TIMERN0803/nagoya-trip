@@ -1,0 +1,27 @@
+PASS 清單頁籤 | 行李卡片在最上方、頁籤在它下面 | {'pack': True, 'order': True, 'tabs': ['prep', 'buy'], 'role': 'tablist', 'groups': ['prep']}
+PASS 清單頁籤 | 只有待辦、要買的兩個頁籤 | {'pack': True, 'order': True, 'tabs': ['prep', 'buy'], 'role': 'tablist', 'groups': ['prep']}
+PASS 清單頁籤 | 預設是待辦，只顯示待辦清單 | {'pack': True, 'order': True, 'tabs': ['prep', 'buy'], 'role': 'tablist', 'groups': ['prep']}
+PASS 清單頁籤 | 點要買的：只顯示要買的、免稅提醒還在 | ['buy']
+PASS 清單頁籤 | 樣式和緊急資訊頁籤一致：選中焦糖棕底白字、未選透明 | {'bg': 'rgb(148, 102, 69)', 'c': 'rgb(255, 255, 255)', 'offbg': 'rgba(0, 0, 0, 0)', 'h': 44, 'icon': 2}
+PASS 清單頁籤 | 頁籤有圖示、高度至少 44 | {'bg': 'rgb(148, 102, 69)', 'c': 'rgb(255, 255, 255)', 'offbg': 'rgba(0, 0, 0, 0)', 'h': 44, 'icon': 2}
+PASS 清單頁籤 | 勾一項後待辦頁籤的數字加一 | ['0/5', '1/5']
+PASS 清單頁籤 | 切到記帳再回清單，停在要買的
+PASS 清單頁籤 | 重新打開 App 也記得要買的
+PASS 清單頁籤 | 鍵盤左右鍵切換、焦點跟著到新頁籤 | ['prep', 'lt-prep']
+PASS 清單頁籤 | End 到最後一個頁籤
+PASS 清單頁籤 | 點行李卡片進入原本的行李頁
+PASS 清單頁籤 | 從行李頁返回，還是要買的頁籤
+PASS 清單頁籤 | 往下捲：頁籤固定在最上方、有陰影 | {'tab': 0, 'bar': -515, 'pack': -371, 'shade': True, 'y': 527}
+PASS 清單頁籤 | 往下捲：標題和行李卡片會捲走，不固定 | {'tab': 0, 'bar': -515, 'pack': -371, 'shade': True, 'y': 527}
+PASS 清單頁籤 | 固定時頁籤沒有被內容蓋住、點得到 | lt-prep
+PASS 清單頁籤 | 固定時切換頁籤，換成待辦
+PASS 清單頁籤 | 捲回最上面陰影消失
+PASS 清單頁籤 | 沒有 JS 錯誤
+PASS 首頁入口 | 待辦小圓角 → 清單的待辦頁籤（上次停在要買的也一樣） | list
+PASS 首頁入口 | 要買的小圓角 → 要買的頁籤
+PASS 首頁入口 | 地點格子最後的「要買的」改成帶到要買的頁籤
+PASS 首頁入口 | 點「要買的」格子 → 要買的頁籤、從頂端開始
+PASS 首頁入口 | 沒有 JS 錯誤
+PASS 首頁入口 | 到期提醒 → 待辦頁籤，那一項有標示、沒被頁籤擋住 | {'sel': 'prep', 'ping': True, 'top': 576, 'strip': 179}
+PASS 首頁入口 | 到期提醒：沒有 JS 錯誤
+PASS 清單頁籤 | 320 寬度：沒有水平捲動、頁籤文字沒被裁掉 | {'sw': 320, 'iw': 320, 'clip': False}
