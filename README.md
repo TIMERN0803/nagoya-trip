@@ -2,7 +2,14 @@
 放在 /home/claude/build（腳本內路徑寫死這個位置）。
 - 本機伺服器：cd /home/claude/nagoya-trip && python3 -m http.server 8766
 - 功能測試：cd /home/claude/build/ft && python3 fulltest.py（177 項）
-- 專項測試（都在 ft/）：duetest fabtest pulsetest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest scenetest
+- 專項測試（都在 ft/）：duetest fabtest pulsetest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest scenetest conflicttest reloadtest focustest
+- conflicttest：QA R2 修正階段 F1–F3、F5、F7、G1–G5（隨身只送 carry、只送改過的欄位、清單排序只送順序、壞資料讀取時略過不刪雲端、錢包面板重畫保留輸入、匯率世代計數、invalid-argument 只略過那一筆、刪行李同時刪 `@人` 勾選、離線佇列標記旅程代碼、暫時性錯誤退避 5／15／60 秒、連結只放行 https）。用 ft/phonelib.py 的雙手機輔助，共 32 項
+- reloadtest：F4 自動重新整理不吃掉沒存的內容（跨日、起飛倒數歸零、網路恢復後程式庫重載；看內容不看模式旗標），共 15 項
+- focustest：F6 旅程回顧與新手導覽走共用 modal()（Tab／Shift+Tab、Esc、非當頁 inert、焦點回到入口、從設定開導覽的堆疊），共 16 項
+- ft/phonelib.py：conflicttest／reloadtest／focustest 共用的雙手機輔助（開頁、種資料、讀假雲端、時間設定）
+- fs_offline.js 新增 `__reject(code, n)`（讓寫入以指定錯誤碼失敗，測 invalid-argument 與暫時性錯誤）；三份假資料庫（ft/fs.js、ft/fs_offline.js、mock/fs.js）的 writeBatch.set 都支援 `{merge:true}`
+- 全部專項測試現為 35 個；`runall.sh` 以 `EXTRA` 環境變數追加測試
+- R2 重現腳本（qa/R2/b5、b3）：cx06 依設計維持 FAIL；u03 舊腳本的「沒有外洩 = FAIL」是舊語意，不是驗收失敗
 - pulsetest：浮動按鈕第一次出現與換到下一個項目時外圈脈動 10 秒、同一項重新開啟不再脈動（之前漏列在清單裡，2026-10-29 補上）
 - scenetest：首頁插圖網址參數 `?scene=` 只接受 morning／noon／afternoon／dinner／night，其他值（含 HTML、引號、大小寫不同）忽略並顯示目前時段，不會執行或插入元素；出發前與旅途中各測一次（R2 批 4 CODE-01，2026-10-29 新增）
 - loadtest：開啟動畫與開啟速度（App 重新開啟時中間的豆花和芝麻點頭約 1.2 秒、只有貓咪沒有字、時間到淡出 0.4 秒、點一下跳過（0.2 秒淡出）、同一次使用中重新整理不再播、載入本來就慢就畫好立刻淡出；iOS 啟動圖各尺寸都有且和動畫對齊；訊號差超過 1.5 秒先用快取；字型不擋畫面）。會自己開 ft/slowsrv.py（8768 埠）

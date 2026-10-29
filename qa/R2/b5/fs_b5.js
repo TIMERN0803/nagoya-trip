@@ -31,7 +31,7 @@ export function doc(a,b){if(b===undefined){const id=Math.random().toString(36).s
 export function collection(_,p){return {path:p,isCol:true}}
 const deny=()=>Object.assign(new Error("Missing or insufficient permissions."),{code:"permission-denied"});
 export async function setDoc(r,d,o){if(window.__deny)throw deny();if(window.__reject)throw Object.assign(new Error("rejected"),{code:window.__reject});write(r.path,d,o&&o.merge);if(window.__writeDelay)await new Promise(z=>setTimeout(z,window.__writeDelay));await wait()}
-export function writeBatch(){const ops=[];return{set(r,d){ops.push([r,d]);return this},async commit(){if(window.__deny)throw deny();for(const[r,d]of ops)write(r.path,d);await wait()}}}
+export function writeBatch(){const ops=[];return{set(r,d,o){ops.push([r,d,o]);return this},async commit(){if(window.__deny)throw deny();for(const[r,d,o]of ops)write(r.path,d,o&&o.merge);await wait()}}}
 export async function deleteDoc(r){if(window.__deny)throw deny();write(r.path,null);await wait()}
 const snapDoc=p=>{const db=view();return {id:p.split("/").pop(),exists:()=>p in db,data:()=>db[p]}};
 export async function getDoc(r){return snapDoc(r.path)}

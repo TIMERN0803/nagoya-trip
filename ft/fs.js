@@ -11,7 +11,7 @@ export function collection(_,p){return {path:p,isCol:true}}
 /* o.merge：只更新給的欄位（和 Firestore setDoc(...,{merge:true}) 一樣） */
 export async function setDoc(r,d,o){const db=load();db[r.path]=o&&o.merge?{...(db[r.path]||{}),...d}:d;save(db);window.__writes=(window.__writes||0)+1;setTimeout(notify,0);if(window.__writeDelay)await new Promise(z=>setTimeout(z,window.__writeDelay))}
 /* 一次寫入多筆：只通知一次（模擬 Firestore writeBatch） */
-export function writeBatch(){const ops=[];return{set(r,d){ops.push([r,d]);return this},async commit(){const db=load();for(const[r,d]of ops)db[r.path]=d;save(db);window.__writes=(window.__writes||0)+ops.length;setTimeout(notify,0);if(window.__writeDelay)await new Promise(z=>setTimeout(z,window.__writeDelay))}}}
+export function writeBatch(){const ops=[];return{set(r,d,o){ops.push([r,d,o]);return this},async commit(){const db=load();for(const[r,d,o]of ops)db[r.path]=o&&o.merge?{...(db[r.path]||{}),...d}:d;save(db);window.__writes=(window.__writes||0)+ops.length;setTimeout(notify,0);if(window.__writeDelay)await new Promise(z=>setTimeout(z,window.__writeDelay))}}}
 export async function deleteDoc(r){const db=load();delete db[r.path];save(db);setTimeout(notify,0)}
 const snapDoc=p=>{const db=load();return {id:p.split("/").pop(),exists:()=>p in db,data:()=>db[p]}};
 export async function getDoc(r){return snapDoc(r.path)}
