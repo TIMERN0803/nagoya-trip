@@ -9,9 +9,12 @@ async def cur(pg):return await pg.evaluate('[...document.querySelectorAll(".st-p
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch()
-        for lab,t,tz in [("出發前 10/25",ft.twt(10,25,13,0),"Asia/Taipei"),("旅途中 11/20",ft.jst(11,20,20,0),"Asia/Tokyo"),("回國當天 11/24 上午",ft.jst(11,24,9,0),"Asia/Tokyo")]:
+        for lab,t,tz in [("出發前 10/25",ft.twt(10,25,13,0),"Asia/Taipei"),("旅途中 11/20",ft.jst(11,20,20,0),"Asia/Tokyo"),("回國當天 11/24 上午",ft.jst(11,24,9,0),"Asia/Tokyo"),("回國當天 台灣 14:19（JX 321 還沒抵達）",ft.twt(11,24,14,19),"Asia/Taipei")]:
             pg=await ft.newpage(b,t,tz=tz);await home(pg)
             ft.rec("R 旅程回顧",f"{lab} 不顯示回顧入口",not await pg.query_selector('[data-story-open]'));await ft.close(pg)
+        for lab,t,tz in [("回國當天 台灣 14:20（JX 321 抵達）",ft.twt(11,24,14,20),"Asia/Taipei"),("回國當天 日本 15:30",ft.jst(11,24,15,30),"Asia/Tokyo")]:
+            pg=await ft.newpage(b,t,tz=tz);await home(pg)
+            ft.rec("R 旅程回顧",f"{lab} 首頁出現回顧入口（C9a）",await pg.query_selector('#review[data-story-open]'));await ft.close(pg)
         init=f'localStorage.setItem("mockdb",{json.dumps(rs.DB)});'
         ctx=await b.new_context(viewport={'width':390,'height':844},timezone_id="Asia/Taipei",accept_downloads=True)
         await ctx.route("**/firebasejs/**/firebase-app.js",lambda r:r.fulfill(body=ft.APP,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))

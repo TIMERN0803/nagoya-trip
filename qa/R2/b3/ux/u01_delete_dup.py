@@ -1,4 +1,4 @@
-# UX-探針 1：A 刪除 → B 以為不見了又新增同名 → A 按復原（記帳、清單）。兩支「手機」＝同 context 兩頁，ngy:* 分開存
+# UX-探針 1（C11 實作後改成檢查提示出現）：A 刪除 → B 以為不見了又新增同名 → A 按復原（記帳、清單）。兩支「手機」＝同 context 兩頁，ngy:* 分開存
 from uxlib import *
 async def listtxt(pg, sel): return (await pg.inner_text(sel)).replace("\n", " | ")
 async def main():
@@ -20,6 +20,8 @@ async def main():
         print("B 重記後:", await listtxt(Bp, '#acct-list'))
         print("A 此時（復原前）:", await listtxt(A, '#acct-list'), "| snack:", await A.query_selector('.undo-bar') is not None)
         await A.click('.undo-bar button'); await A.wait_for_timeout(800)
+        hint = (await A.evaluate('(()=>{const v=document.querySelector(".undo-bar.hint");return v&&v.querySelector("span").textContent})()'))
+        rec("A1 記帳復原", "C11：A 復原時出現「對方剛記了一筆一樣的」提示", hint and "拉麵" in hint and "重複" in hint, hint)
         la = await listtxt(A, '#acct-list'); lb = await listtxt(Bp, '#acct-list')
         print("A 復原後:", la); print("B 復原後:", lb)
         n = sum(1 for v in (await exps(A)).values() if v.get("note") == "拉麵")
@@ -38,6 +40,8 @@ async def main():
         await Bp.click('[data-item-new="buy"]'); await Bp.fill('.chk-form input[name=title]', '保濕乳液'); await Bp.click('.chk-form .primary'); await Bp.wait_for_timeout(600)
         print("B 重加後:", await clean(Bp))
         await A.click('.undo-bar button'); await A.wait_for_timeout(800)
+        hint = (await A.evaluate('(()=>{const v=document.querySelector(".undo-bar.hint");return v&&v.querySelector("span").textContent})()'))
+        rec("A1 清單復原", "C11：A 復原時出現「對方剛新增了一樣的」提示", hint and "保濕乳液" in hint and "重複" in hint, hint)
         ca, cb = await clean(A), await clean(Bp)
         print("A 復原後:", ca); print("B 復原後:", cb)
         rec("A1 清單復原", "A、B 都看到 2 條保濕乳液", ca.count("保濕乳液") == cb.count("保濕乳液") == 2, (ca.count("保濕乳液"), cb.count("保濕乳液")))
