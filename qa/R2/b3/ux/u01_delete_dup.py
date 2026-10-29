@@ -1,0 +1,48 @@
+# UX-探針 1：A 刪除 → B 以為不見了又新增同名 → A 按復原（記帳、清單）。兩支「手機」＝同 context 兩頁，ngy:* 分開存
+from uxlib import *
+async def listtxt(pg, sel): return (await pg.inner_text(sel)).replace("\n", " | ")
+async def main():
+    async with async_playwright() as p:
+        b = await p.chromium.launch()
+        ctx = await newctx(b)
+        T = jst(11, 19, 20)
+        db = {**META, f"{B}/expenses/e1": {"amt": 1200, "cat": "food", "who": "zhang", "split": "both", "pay": "cash", "day": "11/19", "note": "拉麵", "ts": 1},
+              f"{B}/items/b1": {"group": "buy", "title": "保濕乳液", "note": "", "due": "", "order": 1}}
+        A = await phone(ctx, T, "zhang", "A", init=seed(db), wait=1200)
+        Bp = await phone(ctx, T, "star", "B", wait=1200)
+        for x in (A, Bp): await tab(x, "acct")
+        # --- 記帳 ---
+        await A.click('[data-del="e1"]'); await A.wait_for_timeout(300)
+        if await A.query_selector('[data-del="e1"]'): await A.click('[data-del="e1"]')
+        await A.wait_for_timeout(600)
+        print("B 看到（A 刪除後）:", await listtxt(Bp, '#acct-list'))
+        await S.expopen(Bp); await Bp.fill('#f-amt', '1200'); await Bp.fill('#f-note', '拉麵'); await Bp.click('#f-save'); await Bp.wait_for_timeout(700)
+        print("B 重記後:", await listtxt(Bp, '#acct-list'))
+        print("A 此時（復原前）:", await listtxt(A, '#acct-list'), "| snack:", await A.query_selector('.undo-bar') is not None)
+        await A.click('.undo-bar button'); await A.wait_for_timeout(800)
+        la = await listtxt(A, '#acct-list'); lb = await listtxt(Bp, '#acct-list')
+        print("A 復原後:", la); print("B 復原後:", lb)
+        n = sum(1 for v in (await exps(A)).values() if v.get("note") == "拉麵")
+        tot_a = await A.inner_text('#acct-total') if await A.query_selector('#acct-total') else ''
+        rec("A1 記帳復原", "雲端 2 筆同名拉麵（預期現況）", n == 2, n)
+        rec("A1 記帳復原", "A、B 畫面一致", la.count("拉麵") == lb.count("拉麵") == 2, (la.count("拉麵"), lb.count("拉麵")))
+        print("B 有沒有任何提示（acct-note）:", await Bp.evaluate(S.NOTE))
+        await A.screenshot(path=SHOTS + 'u01_acct_A.png'); await Bp.screenshot(path=SHOTS + 'u01_acct_B.png')
+        # --- 清單 ---
+        for x in (A, Bp): await tab(x, "list"); await x.click('[data-list-tab="buy"]'); await x.wait_for_timeout(300)
+        async def clean(x): return (await x.inner_text('[data-group-id=buy]')).replace("\n", " | ")
+        await A.click('[data-item-edit="b1"]'); await A.wait_for_timeout(300)
+        await A.click('[data-item-del="b1"]'); await A.wait_for_timeout(600)
+        if await A.query_selector('[data-item-del="b1"]'): await A.click('[data-item-del="b1"]'); await A.wait_for_timeout(500)
+        print("B 看到（A 刪清單後）:", await clean(Bp))
+        await Bp.click('[data-item-new="buy"]'); await Bp.fill('.chk-form input[name=title]', '保濕乳液'); await Bp.click('.chk-form .primary'); await Bp.wait_for_timeout(600)
+        print("B 重加後:", await clean(Bp))
+        await A.click('.undo-bar button'); await A.wait_for_timeout(800)
+        ca, cb = await clean(A), await clean(Bp)
+        print("A 復原後:", ca); print("B 復原後:", cb)
+        rec("A1 清單復原", "A、B 都看到 2 條保濕乳液", ca.count("保濕乳液") == cb.count("保濕乳液") == 2, (ca.count("保濕乳液"), cb.count("保濕乳液")))
+        await A.screenshot(path=SHOTS + 'u01_list_A.png')
+        rec("A1", "沒有 JS 錯誤", not A.errs and not Bp.errs, (A.errs + Bp.errs)[:3])
+        await b.close()
+    summary()
+asyncio.run(main())
