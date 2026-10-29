@@ -2,8 +2,9 @@
 放在 /home/claude/build（腳本內路徑寫死這個位置）。
 - 本機伺服器：cd /home/claude/nagoya-trip && python3 -m http.server 8766
 - 功能測試：cd /home/claude/build/ft && python3 fulltest.py（177 項）
-- 專項測試（都在 ft/）：duetest fabtest pulsetest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest
+- 專項測試（都在 ft/）：duetest fabtest pulsetest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest scenetest
 - pulsetest：浮動按鈕第一次出現與換到下一個項目時外圈脈動 10 秒、同一項重新開啟不再脈動（之前漏列在清單裡，2026-10-29 補上）
+- scenetest：首頁插圖網址參數 `?scene=` 只接受 morning／noon／afternoon／dinner／night，其他值（含 HTML、引號、大小寫不同）忽略並顯示目前時段，不會執行或插入元素；出發前與旅途中各測一次（R2 批 4 CODE-01，2026-10-29 新增）
 - loadtest：開啟動畫與開啟速度（App 重新開啟時中間的豆花和芝麻點頭約 1.2 秒、只有貓咪沒有字、時間到淡出 0.4 秒、點一下跳過（0.2 秒淡出）、同一次使用中重新整理不再播、載入本來就慢就畫好立刻淡出；iOS 啟動圖各尺寸都有且和動畫對齊；訊號差超過 1.5 秒先用快取；字型不擋畫面）。會自己開 ft/slowsrv.py（8768 埠）
 - 開啟動畫會蓋住畫面約 1.2 秒：fulltest.newpage 和 synctest.opn 預設在 sessionStorage 放 ngy:launched 當作「已經開過」跳過它；要測動畫本身用 opn(..., splash=True) 或像 loadtest 自己開頁
 - iOS 啟動圖：改了開啟動畫或貓咪圖案後，跑 python3 ft/mksplash.py 重新產生 splash/*.png（會印出 link 標籤）
