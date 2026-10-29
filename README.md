@@ -7,7 +7,8 @@
 - conflicttest：QA R2 修正階段 F1–F3、F5、F7、G1–G5（隨身只送 carry、只送改過的欄位、清單排序只送順序、壞資料讀取時略過不刪雲端、錢包面板重畫保留輸入、匯率世代計數、invalid-argument 只略過那一筆、刪行李同時刪 `@人` 勾選、離線佇列標記旅程代碼、暫時性錯誤退避 5／15／60 秒、連結只放行 https）。用 ft/phonelib.py 的雙手機輔助，共 32 項
 - reloadtest：F4 自動重新整理不吃掉沒存的內容（跨日、起飛倒數歸零、網路恢復後程式庫重載；看內容不看模式旗標），共 15 項
 - focustest：F6 旅程回顧與新手導覽走共用 modal()（Tab／Shift+Tab、Esc、非當頁 inert、焦點回到入口、從設定開導覽的堆疊），共 16 項
-- uxtest：QA R2 體驗優化批 A——X1 回顧入口在 11/24 台灣 14:20 後出現（首頁一張、第 8 天行程最後一站下面一張小卡；開著 App 時間到會自己出現）、X2 復原時對方已新增同名（記帳另比金額）會跳提示、X7 清單全刪光的說明文字與浮動鈕捲到底不蓋住最後一列。BASE 環境變數可換網址，ONLY=x1,x2,x7 只跑其中幾段，共 35 項
+- uxtest：QA R2 體驗優化批 A——X1 回顧入口在 11/24 台灣 14:20 後出現（首頁一張、第 8 天行程最後一站下面一張小卡；開著 App 時間到會自己出現）、X2 復原時對方已新增同名（記帳另比金額）會跳提示、X7 清單全刪光的說明文字與浮動鈕捲到底不蓋住最後一列。批 B（x36）——X3 回顧角色卡星星標籤對比、X4 行事曆 iPhone 卡說明與「重要：」對比、X5 回顧封面提示對比與 15px、X6 行李進度數字 12px（320／375／390／430 不換行、不水平捲動）；對比都用 getComputedStyle＋WCAG 公式實測。BASE 環境變數可換網址，ONLY=x1,x2,x7,x36 只跑其中幾段，共 46 項
+- x36measure.py：批 B 的量測腳本（不是 PASS／FAIL 測試）：X3–X6 改前後對比值、全站可見文字最小字級掃描（首頁、各分頁、行事曆／錢包／記一筆／求助面板、回顧每一頁、行李頁），結果寫 /tmp/x36_<TAG>.json。用法：BASE=http://localhost:8766/ TAG=after python3 x36measure.py
 - ft/phonelib.py：conflicttest／reloadtest／focustest 共用的雙手機輔助（開頁、種資料、讀假雲端、時間設定）
 - fs_offline.js 新增 `__reject(code, n)`（讓寫入以指定錯誤碼失敗，測 invalid-argument 與暫時性錯誤）；三份假資料庫（ft/fs.js、ft/fs_offline.js、mock/fs.js）的 writeBatch.set 都支援 `{merge:true}`
 - 全部專項測試現為 36 個（加 uxtest）；`runall.sh`（tools 分支根目錄，複製到 /home/claude/build）跑 fulltest＋專項＋sweep＋t5，`EXTRA` 追加測試（`EXTRA="conflicttest reloadtest focustest uxtest" ./runall.sh`），`P` 並行數預設 4，結果在 /tmp/runall/summary.txt

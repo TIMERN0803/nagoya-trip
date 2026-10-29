@@ -1,4 +1,4 @@
-# QA R2 體驗優化（批 A）：X1 回顧入口提前（C9a）、X2 復原時對方已新增同名的提示（C11）、X7 清單空狀態（C12）與浮動鈕捲到底（A12）
+# QA R2 體驗優化（批 A＋批 B）：批 B X3–X6 對比與字級（x36）；批 A X1 回顧入口提前（C9a）、X2 復原時對方已新增同名的提示（C11）、X7 清單空狀態（C12）與浮動鈕捲到底（A12）
 # 一律假資料庫，旅程代碼 qa-r2-test。BASE 環境變數可改網址（預設本機 8766）。
 import os, json, asyncio
 from phonelib import *
@@ -167,11 +167,52 @@ async def x7(b):
     rec(A, "記帳捲到底：浮動鈕不蓋住最後一筆的「刪除」", await pg.evaluate(COV, ['#acct-list [data-del]', '.acct-fab']) is False)
     await ctx.close()
 
+CXJS = r"""(sel=>{const el=document.querySelector(sel);if(!el)return null;const P=s=>{const m=s.match(/rgba?\(([^)]+)\)/);const a=m[1].split(/[ ,\/]+/).filter(Boolean).map(Number);return [a[0],a[1],a[2],a.length>3?a[3]:1]};
+const over=(t,b)=>{const a=t[3];return [t[0]*a+b[0]*(1-a),t[1]*a+b[1]*(1-a),t[2]*a+b[2]*(1-a),1]};const L=c=>{const f=v=>{v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4)};return .2126*f(c[0])+.7152*f(c[1])+.0722*f(c[2])};
+const st=[];for(let e=el;e&&e.nodeType===1;e=e.parentElement){const c=P(getComputedStyle(e).backgroundColor);if(c[3]>0){st.push(c);if(c[3]>=1)break}}let b=[255,255,255,1];for(let i=st.length-1;i>=0;i--)b=over(st[i],b);
+const s=getComputedStyle(el),f=over(P(s.color),b),l1=L(f),l2=L(b);return {r:+((Math.max(l1,l2)+.05)/(Math.min(l1,l2)+.05)).toFixed(2),fs:s.fontSize,fw:+s.fontWeight,c:s.color}})"""
+PEJS = '(()=>{const s=[...document.querySelectorAll(".pack-sum .pe-row")];return {fs:s.map(x=>getComputedStyle(x.querySelector("small")).fontSize),h:s.map(x=>Math.round(x.getBoundingClientRect().height)),hs:document.documentElement.scrollWidth>innerWidth}})()'
+async def x36(b):
+    A = "X3–X6 對比與字級（批 B）"
+    ctx = await newctx(b, tz="Asia/Taipei")
+    pg = await phone(ctx, twt(11, 24, 14, 21), "zhang", "rv", init=seed({**META, **RVDB}), url=BASE, wait=1200)
+    await home(pg); await pg.click('#review[data-story-open]'); await pg.wait_for_timeout(900)
+    c = await pg.evaluate(CXJS, '.st-page.pg-open p.st-cap')
+    rec(A, "X5 回顧封面「點右邊看下一頁」對比 ≥ 4.5、字級維持 15px", c and c['r'] >= 4.5 and c['fs'] == '15px', c)
+    n = await pg.evaluate('document.querySelectorAll(".story .st-page").length')
+    for i in range(n):
+        cls = await pg.evaluate(f'document.querySelectorAll(".story .st-page")[{i}].className')
+        if "pg-vs" in cls:
+            await pg.clock.run_for(2500); await pg.wait_for_timeout(300)
+            z = await pg.evaluate(CXJS, '.pg-vs .vs-zhang .vh'); s = await pg.evaluate(CXJS, '.pg-vs .vs-star .vh')
+            rec(A, "X3 角色卡「星星」標籤對比 ≥ 4.5（白字／--coral-ink）", s and s['r'] >= 4.5, s)
+            rec(A, "X3 角色卡「阿彰」標籤不變（12.5:1）", z and z['r'] == 12.5, z)
+            bar = await pg.evaluate('[...document.querySelectorAll(".pg-vs .vs-bar .bb i")].map(i=>getComputedStyle(i).backgroundColor)')
+            rec(A, "X3 只改標籤：比例條星星仍是 #E07A5F（RV_PEOPLE_COLOR 其他用途不動）", bar[-1:] == ['rgb(224, 122, 95)'], bar)
+        if i < n - 1: await pg.click('.st-tap.next'); await pg.clock.run_for(1500); await pg.wait_for_timeout(250)
+    rec(A, "沒有 JS 錯誤（回顧）", not pg.errs, pg.errs[:2]); await pg.close()
+    pg = await phone(ctx, twt(11, 10, 20), "zhang", "cal", url=BASE, wait=1200)
+    await home(pg); await pg.click('[data-cal]'); await pg.wait_for_timeout(700)
+    sm = await pg.evaluate(CXJS, '.sm-opt.main small'); em = await pg.evaluate(CXJS, '.sm-opt.main em')
+    rec(A, "X4 行事曆 iPhone 卡說明對比 ≥ 4.5（不透明白）", sm and sm['r'] >= 4.5 and sm['c'] == 'rgb(255, 255, 255)', sm)
+    rec(A, "X4「重要：」白字粗體、對比 ≥ 4.5", em and em['r'] >= 4.5 and em['c'] == 'rgb(255, 255, 255)' and em['fw'] >= 700, em)
+    await pg.close(); await ctx.close()
+    ctx = await newctx(b, tz="Asia/Taipei")
+    for w in (320, 375, 390, 430):
+        pg = await phone(ctx, twt(11, 10, 20), "zhang", f"p{w}", init=seed({}) if w == 320 else "", url=BASE, wait=2000)
+        await pg.set_viewport_size({"width": w, "height": 844}); await home(pg)
+        await pg.evaluate('document.querySelector("nav.tabs button[data-tab=list]").click()'); await pg.wait_for_timeout(600)
+        await pg.click('[data-pack-open]'); await pg.wait_for_timeout(700)
+        r = await pg.evaluate(PEJS)
+        rec(A, f"X6 {w} 寬：行李進度數字 12px、沒有換行（兩列同高 ≤ 24px）、沒有水平捲動", r['fs'] == ['12px', '12px'] and max(r['h']) <= 24 and not r['hs'], r)
+        await pg.close()
+    await ctx.close()
+
 async def main():
     only = os.environ.get('ONLY', '')
     async with async_playwright() as p:
         b = await p.chromium.launch()
-        for f in (x1, x2, x7):
+        for f in (x1, x2, x7, x36):
             if not only or f.__name__ in only.split(','): await f(b)
         await b.close()
     summary()
