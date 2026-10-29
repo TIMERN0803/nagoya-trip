@@ -1593,7 +1593,9 @@ const SCENES={
 };
 const svgTile=k=>`<svg viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)">${SCENES[k]}</g></svg>`;
 /* 首頁插圖：早上（原本）、中午（野餐吃天むす和炸蝦）、下午（午後點心：抹茶霜淇淋和糰子，逛街提袋）、晚上（蓋被子睡覺） */
-const heroPeriod=()=>{const q=new URLSearchParams(location.search).get("scene");if(q)return q;const h=new Date().getHours();return h>=5&&h<11?"morning":h>=11&&h<14?"noon":h>=14&&h<17?"afternoon":h>=17&&h<21?"dinner":"night"};
+/* ?scene= 只接受五個時段名稱，其他值忽略（避免網址內容被寫進 HTML） */
+const SCENE_KEYS=["morning","noon","afternoon","dinner","night"];
+const heroPeriod=()=>{const q=new URLSearchParams(location.search).get("scene");if(SCENE_KEYS.includes(q))return q;const h=new Date().getHours();return h>=5&&h<11?"morning":h>=11&&h<14?"noon":h>=14&&h<17?"afternoon":h>=17&&h<21?"dinner":"night"};
 function heroSVG(p){
  const night=p==="night",noon=p==="noon",aft=p==="afternoon",din=p==="dinner",lit=night||din;
  const sky=night?`<rect width="320" height="170" fill="url(#gNight)"/>`:noon?`<rect width="320" height="170" fill="url(#gNoon)"/>`:aft?`<rect width="320" height="170" fill="url(#gAft)"/>`:din?`<rect width="320" height="170" fill="url(#gDusk)"/>`:`<rect width="320" height="170" fill="url(#gSky)"/>`;
