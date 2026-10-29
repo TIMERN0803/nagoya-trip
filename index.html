@@ -533,7 +533,7 @@ button.sync{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .pe-row b{font-weight:700;width:30px;flex:none}
 .pe-bar{flex:1;height:9px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line-strong);overflow:hidden}
 .pe-bar i{display:block;height:100%;background:var(--butter);border-radius:999px;box-shadow:inset 0 0 0 1.5px #E8B94E}
-.pe-row small{font-family:var(--f-display);font-weight:700;color:var(--brown);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
+.pe-row small{font-family:var(--f-display);font-size:12px;font-weight:700;color:var(--brown);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
 .pe-go{display:inline-flex;align-items:center;gap:2px;align-self:flex-start;margin-top:2px;background:var(--accent);color:#fff;border-radius:999px;padding:4px 10px 4px 12px;font-family:var(--f-display);font-weight:900;font-size:13px}
 .pe-go svg{width:14px;height:14px}
 .pack-sum{display:flex;align-items:center;gap:12px;padding:12px 14px}
@@ -748,8 +748,8 @@ body.has-fab .shell{padding-bottom:190px}
 .sm-opt small{font-size:13px;color:var(--muted);line-height:1.5}
 .sm-opt em{font-style:normal;font-weight:700;color:var(--coral-ink)}
 .sm-opt.main{background:var(--accent);border-color:var(--accent);color:#fff}
-.sm-opt.main small{color:rgba(255,255,255,.9)}
-.sm-opt.main em{color:#FFE29A}
+.sm-opt.main small{color:#fff}
+.sm-opt.main em{color:#fff;font-weight:700}
 .sm-msg{margin:0;font-size:13px;color:var(--mint-ink);font-weight:700;min-height:1em}
 .sm-msg .sel{user-select:all;-webkit-user-select:all;font-weight:500;color:var(--ink);word-break:break-all}
 .switch{flex:none;width:48px;height:28px;border-radius:999px;background:var(--line-strong);position:relative;transition:background .2s}
@@ -1210,6 +1210,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .tape{position:absolute;width:86px;height:24px;background:rgba(246,213,138,.78);box-shadow:0 1px 2px rgba(63,49,39,.15);z-index:2}
 .tape.mint{background:rgba(124,200,180,.7)}.tape.coral{background:rgba(238,148,121,.62)}
 .st-cap{font-size:13.5px;color:var(--muted);margin:0}
+.st-page p.st-cap{color:var(--ink)}
 /* 1 登機證 */
 .pg-open{background:#F6D58A;background-image:radial-gradient(rgba(255,255,255,.55) 1.5px,transparent 1.6px);background-size:16px 16px}
 .bpass{position:relative;display:flex;width:100%;max-width:360px;background:#FFFDF8;border:2.5px solid var(--ol);border-radius:20px;box-shadow:0 5px 0 var(--ol);transform:rotate(-2deg);text-align:left}
@@ -1289,6 +1290,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .vs{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:370px}
 .vs-p{display:flex;flex-direction:column;align-items:stretch;background:#FFFDF8;border:3px solid #fff;border-radius:18px;box-shadow:0 0 0 2.5px var(--ol),0 6px 0 rgba(0,0,0,.35);overflow:hidden;color:var(--ink);transform:rotate(var(--r))}
 .vs-p .vh{background:var(--pc);color:#fff;font-family:var(--f-display);font-weight:900;font-size:17px;padding:6px 0;text-align:center}
+.vs-star .vh{background:var(--coral-ink)}
 .vs-p .vp{margin:10px auto 4px;width:76px;height:76px;border-radius:50%;background:var(--butter-soft);box-shadow:inset 0 0 0 2.5px var(--ol);display:grid;place-items:center}
 .vs-p .vp svg{width:58px;height:68px;margin-top:4px}
 .vs-row{display:flex;justify-content:space-between;align-items:baseline;gap:4px;padding:5px 12px;border-top:2px dashed var(--line);font-size:12px;color:var(--muted);font-weight:700}
@@ -3378,7 +3380,7 @@ function rvPages(D){
  if(D.total||D.nMood){
   const tp=D.ppl.reduce((a,p)=>a+p.paid,0)||1;
   const burst=`<svg class="vs-mid" viewBox="0 0 66 66" aria-hidden="true"><path d="M33 2l6 12 13-6-2 14 14 3-11 9 9 11-14 1 1 14-12-7-6 13-6-13-12 7 1-14-14-1 9-11-11-9 14-3-2-14 13 6z" fill="#EE9479" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><text x="33" y="40" text-anchor="middle" font-size="19" font-weight="900" fill="#fff" font-family="sans-serif">VS</text></svg>`;
-  pages.push({cls:"pg-vs",html:`<h2>阿彰和星星</h2><div class="vs">${D.ppl.map((p,j)=>`<div class="vs-p" style="--pc:${RV_PEOPLE_COLOR[p.id]};--r:${j?2:-2}deg"><div class="vh">${p.name}</div><div class="vp"><svg viewBox="0 0 60 70" aria-hidden="true"><use href="#${p.sym}"/></svg></div><div class="vs-row">付了<em>${yen(p.paid)}</em></div>${p.cash!=null?`<div class="vs-row">現金用掉<em>${yen(p.cash)}</em></div>`:""}<div class="vs-row">心情<em>${p.moods} 則</em></div></div>`).join("")}${burst}</div>${D.total?`<div class="vs-bar"><div class="bt">${D.ppl.map(p=>`<span>${p.name} ${Math.round(p.paid/tp*100)}%</span>`).join("")}</div><div class="bb">${D.ppl.map(p=>`<i style="width:${(p.paid/tp*100).toFixed(2)}%;background:${RV_PEOPLE_COLOR[p.id]}"></i>`).join("")}</div></div>`:""}`});
+  pages.push({cls:"pg-vs",html:`<h2>阿彰和星星</h2><div class="vs">${D.ppl.map((p,j)=>`<div class="vs-p vs-${p.id}" style="--pc:${RV_PEOPLE_COLOR[p.id]};--r:${j?2:-2}deg"><div class="vh">${p.name}</div><div class="vp"><svg viewBox="0 0 60 70" aria-hidden="true"><use href="#${p.sym}"/></svg></div><div class="vs-row">付了<em>${yen(p.paid)}</em></div>${p.cash!=null?`<div class="vs-row">現金用掉<em>${yen(p.cash)}</em></div>`:""}<div class="vs-row">心情<em>${p.moods} 則</em></div></div>`).join("")}${burst}</div>${D.total?`<div class="vs-bar"><div class="bt">${D.ppl.map(p=>`<span>${p.name} ${Math.round(p.paid/tp*100)}%</span>`).join("")}</div><div class="bb">${D.ppl.map(p=>`<i style="width:${(p.paid/tp*100).toFixed(2)}%;background:${RV_PEOPLE_COLOR[p.id]}"></i>`).join("")}</div></div>`:""}`});
  }
  if(D.total){
   const paw=`<svg viewBox="0 0 30 30" aria-hidden="true"><g fill="currentColor"><ellipse cx="15" cy="20" rx="7" ry="6"/><circle cx="7" cy="12" r="3"/><circle cx="12" cy="7" r="3"/><circle cx="18" cy="7" r="3"/><circle cx="23" cy="12" r="3"/></g></svg>`;
