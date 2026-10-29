@@ -1741,42 +1741,70 @@ const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(
 const OB_KEY="ngy:outbox";
 let outbox=(()=>{try{return JSON.parse(localStorage.getItem(OB_KEY))||{}}catch(_){return {}}})(),obSeq=Date.now();
 const obSave=()=>{try{localStorage.setItem(OB_KEY,JSON.stringify(outbox))}catch(_){}};
+/* 每一筆變更記下建立時「確認過的旅行代碼」（c）：換成另一個旅程的代碼後，舊旅程的變更不會送進新旅程。
+   代碼錯誤、還沒確認過代碼時寫的沒有 c＝「未定」，連上下一個代碼時照舊送出（代碼打錯後換對代碼，期間記的帳還是會送出） */
+const curCode=()=>{try{return localStorage.getItem("ngy:code")||""}catch(_){return ""}};
+const stampCode=()=>{try{const c=curCode();return c&&c===localStorage.getItem("ngy:vcode")?c:""}catch(_){return ""}};
+const obOwn=e=>!e.c||e.c===curCode();
+const foreignCount=()=>Object.values(outbox).filter(e=>e.c&&e.c!==curCode()).length;
+let codeSwitchNote="";
+const obTries={};
+const OB_BACKOFF=[5000,15000,60000];
+/* 暫時性失敗（斷線、伺服器忙）：5、15、60 秒後各重送一次，之後交給 30 秒探測和恢復連線 */
+function obRetry(path,s){const n=obTries[path]=(obTries[path]||0)+1;if(n>OB_BACKOFF.length)return;setTimeout(()=>send(path,s),OB_BACKOFF[n-1])}
 /* data 為 null 代表刪除；opt.merge＝只寫這幾個欄位（不整筆覆蓋，兩人同時改同一筆時不會蓋掉對方改的欄位） */
 function put(path,data,opt){
- const s=++obSeq,o=outbox[path];let e={d:data==null?null:data,s};
+ const s=++obSeq,o0=outbox[path],o=o0&&obOwn(o0)?o0:null,c=stampCode();let e={d:data==null?null:data,s};delete obTries[path];
  if(opt&&opt.merge&&data!=null){
   /* 還沒送出的同一筆：整筆新增＋修改＝新的整筆；修改＋修改＝合併成一次修改 */
   if(o&&o.d)e={d:{...o.d,...data},s,...(o.m?{m:1}:{})};else e={d:data,s,m:1};
  }
+ if(c)e.c=c;
  outbox[path]=e;obSave();send(path,s)}
-function putMany(list){
- const sent=list.map(([p,d])=>{const s=++obSeq;outbox[p]={d,s};return[p,s]});obSave();
+function putMany(list,opt){
+ const mg=!!(opt&&opt.merge),c=stampCode();
+ /* merge：只寫這幾個欄位。規則和 put 一樣——還沒送出的整筆新增要合成整筆（不標 m） */
+ const sent=list.map(([p,d])=>{const s=++obSeq,o0=outbox[p],o=o0&&obOwn(o0)?o0:null;delete obTries[p];
+  let e;if(mg&&d!=null)e=o&&o.d?{d:{...o.d,...d},s,...(o.m?{m:1}:{})}:{d,s,m:1};
+  else e={d,s};
+  if(c)e.c=c;outbox[p]=e;
+  return[p,s]});obSave();
  if(!db)return;
  /* 一次送出（雲端只回傳一次完整的新狀態，不會出現一半新一半舊） */
- db.setMany(list).then(()=>{sent.forEach(([p,s])=>obDone(p,s));srvOk()},()=>{});
+ db.setMany(list,mg).then(()=>{sent.forEach(([p,s])=>obDone(p,s));srvOk()},err=>{
+  const cd=err&&err.code;
+  if(cd==="invalid-argument"){sent.forEach(([p,s])=>obDone(p,s));undoSnack("有一筆變更雲端不接受，已略過")}
+  else if(cd==="permission-denied")checkServer().then(ok=>{if(ok)sent.forEach(([p,s])=>obDone(p,s))});
+  else sent.forEach(([p,s])=>obRetry(p,s))});
 }
 function send(path,s){
- const e=outbox[path];if(!db||!e||e.s!==s)return;
+ const e=outbox[path];if(!db||!e||e.s!==s||!obOwn(e))return;
  const r=db.doc(path);
  (e.d===null?r.delete():e.m?r.set(e.d,{merge:true}):r.set(e.d)).then(()=>{obDone(path,s);srvOk()},err=>{
   const c=err&&err.code;
-  if(c==="invalid_argument"){canWrite=false;obDone(path,s);render(true)}
+  /* 伺服器認定這筆資料不合法（錯誤碼是 invalid-argument，連字號）：丟掉這一筆並提示。不要把整個 App 設成不能寫——一筆壞資料不該讓兩個人都不能記 */
+  if(c==="invalid-argument"){obDone(path,s);undoSnack("有一筆變更雲端不接受，已略過")}
   /* 權限錯誤：先確認是代碼錯了（整個旅程都讀不到，保留變更等換對代碼），還是只有這筆寫不進去（丟掉，不然會一直重送） */
   else if(c==="permission-denied")checkServer().then(ok=>{if(ok)obDone(path,s)});
+  else obRetry(path,s);
  });
 }
-function obDone(path,s){if(outbox[path]&&outbox[path].s===s){delete outbox[path];obSave()}}
+function obDone(path,s){if(outbox[path]&&outbox[path].s===s){delete outbox[path];delete obTries[path];obSave()}}
 function flushOutbox(){
- /* 照當初操作的先後順序送出 */
- const all=Object.entries(outbox).sort((a,b)=>a[1].s-b[1].s);
+ /* 照當初操作的先後順序送出（屬於別的旅程的不送） */
+ const all=Object.entries(outbox).filter(([,v])=>obOwn(v)).sort((a,b)=>a[1].s-b[1].s);
  for(const[p,v]of all)send(p,v.s);
 }
 /* 某個集合裡還沒送達的變更：[[id, 資料或 null]] */
-const pendingIn=col=>Object.entries(outbox).filter(([p])=>p.startsWith(col+"/")&&p.indexOf("/",col.length+1)<0).map(([p,v])=>[p.slice(col.length+1),v.d,!!v.m]);
-const pendingCount=()=>Object.keys(outbox).length;
+const pendingIn=col=>Object.entries(outbox).filter(([p,v])=>obOwn(v)&&p.startsWith(col+"/")&&p.indexOf("/",col.length+1)<0).map(([p,v])=>[p.slice(col.length+1),v.d,!!v.m]);
+const pendingCount=()=>Object.values(outbox).filter(obOwn).length;
 /* 本機產生的文件 id（和 Firestore 自動 id 同格式）：重複按也只會寫同一筆 */
 function newId(){const c="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";let s="";const a=new Uint8Array(20);try{crypto.getRandomValues(a)}catch(_){for(let i=0;i<20;i++)a[i]=Math.random()*256}for(const x of a)s+=c[x%62];return s}
-let items=(store.get("items")||DEFAULT_ITEMS).map(x=>({...x}));
+/* 讀取邊界的檢查：缺必要欄位的文件（例如對方刪掉後被「只改一個欄位」的寫入重新建出來的殘缺文件）不顯示、不計算，也不寫回、不刪雲端 */
+const expOk=v=>!!v&&+v.amt>0&&typeof v.day==="string"&&/^\d{1,2}\/\d{1,2}$/.test(v.day)&&PEOPLE.some(p=>p[0]===v.who);
+const moodOk=v=>!!v&&Number.isInteger(+v.score)&&+v.score>=1&&+v.score<=5;
+const itemOk=v=>!!v&&typeof v.group==="string"&&!!v.group&&typeof v.title==="string";
+let items=(store.get("items")||DEFAULT_ITEMS).filter(itemOk).map(x=>({...x}));
 let setupSheet=null,suRunning=false,rateMeta=store.get("rateMeta")||{auto:true,ts:0,src:""},rateBusy=false;
 const TF_MIN=5000,tfRefund=a=>Math.floor(a*10/110);
 /* 金額：保留使用者打的原樣，送出時才檢查。只收 1～99,999,999 的整數日圓（可以有千分位、全形數字、前面的 ¥）
@@ -1806,10 +1834,11 @@ const SETUP=[
 const suKey=(k,w)=>"su-"+k+"@"+w;
 const suCnt=w=>SETUP.filter(r=>done[suKey(r[0],w)]).length;
 const PHONE_SVG=`<svg class="su-phone" viewBox="0 0 52 60" aria-hidden="true"><g stroke="#3F3127" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="10" y="4" width="28" height="50" rx="7" fill="#fff"/><rect x="14" y="11" width="20" height="30" rx="3" fill="#F6D58A"/><path d="M20 48h8"/><path d="M18 26l4 4 8-8" fill="none" stroke="#24695A" stroke-width="3"/><circle cx="41" cy="12" r="8" fill="#EE9479"/><path d="M41 8v5M41 16v.1" stroke="#fff" stroke-width="2.4"/></g></svg>`;
-let sosInfo=store.get("sos")||{},sosSheet=null,sosEditing=false,stayEditing=false;
+let sosInfo=store.get("sos")||{},sosSheet=null,sosEditing=false,stayEditing=false,sosBase=null;
 const sosEsc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mapUrl=(q,pid)=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q)+(pid?"&query_place_id="+encodeURIComponent(pid):"");
-const ext=(label,href)=>`<a class="chip" href="${esc(href)}" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg>${esc(label)}</a>`;
+/* 外部連結只放行 http／https（links 是雲端資料，不能讓 javascript: 之類的網址變成可點的連結） */
+const ext=(label,href)=>!/^https?:\/\//i.test(String(href||"").trim())?`<span class="chip">${esc(label)}</span>`:`<a class="chip" href="${esc(href)}" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg>${esc(label)}</a>`;
 const yen=n=>(Math.round(n)<0?"-":"")+"¥"+Math.abs(Math.round(n)).toLocaleString("en-US");
 /* 現金餘額：變成負數時寫「超支 ¥2,500」（珊瑚色），不寫 ¥-2,500 */
 const cashTxt=n=>n<0?`超支 ${yen(-n)}`:yen(n);
@@ -1817,7 +1846,8 @@ const cashTxt=n=>n<0?`超支 ${yen(-n)}`:yen(n);
 const jpDay=()=>{const p=tzNow("Asia/Tokyo"),[mo,da]=p.md.split("/").map(Number);return new Date(p.y,mo-1,da)};
 const YEAR=2026,start=new Date(YEAR,10,17),today=jpDay();
 const LOADED_DAY=today.getTime();
-function dayCheck(){if(jpDay().getTime()===LOADED_DAY)return false;const a=document.activeElement;if(a&&/^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)&&a.value)return false;location.reload();return true}
+/* 換日的重新整理：有沒存的內容就先等（每 30 秒、切回 App、存檔或關面板時再檢查）。等的期間「今天」和草稿的日期維持舊的一天，所以 LOADED_DAY 不更新 */
+function dayCheck(){if(jpDay().getTime()===LOADED_DAY)return false;return safeReload()}
 setInterval(dayCheck,30000);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")dayCheck()});
 const dayDate=x=>{const[m,d]=x.d.split("/").map(Number);return new Date(YEAR,m-1,d)};
 const DEPART=Date.parse("2026-11-17T07:05:00+08:00");
@@ -1829,7 +1859,7 @@ const todayIdx=DAYS.findIndex(x=>dayDate(x).getTime()===today.getTime());
 let tab="plan",view="home",dayIdx=todayIdx>=0?todayIdx:0;
 let done=store.get("done")||{},db=null,canWrite=true,live=false;
 /* exp：記帳的本機副本（雲端快照＋自己剛記的），離線開 App 時也看得到之前的帳、現金餘額才算得對 */
-let expenses=store.get("exp")||[],rate=store.get("rate")||0.2,forecast=null;
+let expenses=(store.get("exp")||[]).filter(expOk),rate=store.get("rate")||0.2,forecast=null;
 /* 舊版離線記的帳（id 以 l 開頭）還沒上傳過：搬進同步佇列，連上時送出 */
 if(!store.get("expMig")){for(const x of expenses){const id=String(x.id||"");if(id.startsWith("l")&&!outbox["expenses/"+id]){const{id:_i,...rec}=x;outbox["expenses/"+id]={d:rec,s:++obSeq}}}obSave();store.set("expMig",1)}
 /* 現金錢包：各自記「手上換了多少日圓」，現金付的帳從付款人扣 */
@@ -1843,11 +1873,12 @@ let draft={amt:"",cat:"food",who:(()=>{try{return localStorage.getItem("ngy:me")
 const MOODS=[[1,"很糟","#C9C3E6"],[2,"不太好","#BFDCEB"],[3,"普通","#EDE3D3"],[4,"開心","#F8D778"],[5,"超開心","#F4A68C"]];
 const ME_KEY="ngy:me";
 let me=(()=>{try{return localStorage.getItem(ME_KEY)}catch(_){return null}})();
-let moods=store.get("moods")||{},moodEdit=null,moodDraft=null;
+let moods=Object.fromEntries(Object.entries(store.get("moods")||{}).filter(([,v])=>moodOk(v))),moodEdit=null,moodDraft=null;
 const mk=(d,who)=>d.replace("/","-")+"_"+who;
 const nameOf=w=>(PEOPLE.find(p=>p[0]===w)||[0,"?"])[1];
 function moodFace(n,cls=""){
- const m=MOODS[n-1],L="#2B2420",sw=`stroke="${L}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"`;
+ const m=MOODS[n-1];if(!m)return "";
+ const L="#2B2420",sw=`stroke="${L}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"`;
  const eyes=n===5?`<path d="M11.5 21.5 Q14.5 17.5 17.5 21.5 M22.5 21.5 Q25.5 17.5 28.5 21.5" fill="none" ${sw}/>`
   :n===1?`<path d="M12 19.5 L16.5 21.5 L12 23.5 M28 19.5 L23.5 21.5 L28 23.5" fill="none" ${sw}/>`
   :`<circle cx="14.5" cy="21" r="2.2" fill="${L}"/><circle cx="25.5" cy="21" r="2.2" fill="${L}"/>`;
@@ -2143,10 +2174,10 @@ function stayOrdHTML(){
 }
 document.addEventListener("click",async e=>{
  if(e.target.closest("[data-sos-hotel]")){sosShow("hotel");return}
- if(e.target.closest("[data-stay-edit]")){stayEditing=true;render(true);setTimeout(()=>document.querySelector("[data-stay-form] input")?.focus(),30);return}
+ if(e.target.closest("[data-stay-edit]")){sosBase={...sosInfo};stayEditing=true;render(true);setTimeout(()=>document.querySelector("[data-stay-form] input")?.focus(),30);return}
  const f=e.target.closest("[data-stay-form]");if(!f)return;
- if(e.target.closest("[data-sos-cancel]")){stayEditing=false;render(true);return}
- if(e.target.closest("[data-stay-save]")){await sosSave(f);stayEditing=false;render(true)}
+ if(e.target.closest("[data-sos-cancel]")){stayEditing=false;sosBase=null;render(true);maybeReload();return}
+ if(e.target.closest("[data-stay-save]")){await sosSave(f);stayEditing=false;render(true);maybeReload()}
 });
 const smin=t=>{const[h,m]=t.split(":");return h*60+ +m};
 function schedNow(stat){if(!stat)return -1;return SCHED.findIndex(r=>{const[a,b]=r[0].split("–");return stat.nowM>=smin(a)&&stat.nowM<smin(b)})}
@@ -2341,7 +2372,12 @@ function walletSheetHTML(){
 }
 let walletSheet=null;
 /* 重畫面板內容時保留標題下緣的捲動陰影（同步資料進來時會重畫） */
-function paintWalletSheet(focus){if(!walletSheet)return;const c=walletSheet.querySelector(".sm-card");c.innerHTML=walletSheetHTML();smShade(c);if(focus)setTimeout(()=>walletSheet&&walletSheet.querySelector(".w-form input")?.focus(),30)}
+function paintWalletSheet(focus){if(!walletSheet)return;const c=walletSheet.querySelector(".sm-card");
+ /* 對方記帳或改錢包會讓這裡重畫：正在打的金額、焦點和游標要留著（身分、模式沒變才帶過去） */
+ const w0=c.querySelector(".w-form input[name=amt]"),keep=w0&&!focus?{v:w0.value,f:document.activeElement===w0,s:w0.selectionStart,e:w0.selectionEnd,me,mode:walletMode,we:walletEdit}:null;
+ c.innerHTML=walletSheetHTML();
+ if(keep&&keep.me===me&&keep.mode===walletMode&&keep.we===walletEdit){const w1=c.querySelector(".w-form input[name=amt]");if(w1){w1.value=keep.v;if(keep.f){w1.focus({preventScroll:true});try{w1.setSelectionRange(keep.s,keep.e)}catch(_){}}}}
+ smShade(c);if(focus)setTimeout(()=>walletSheet&&walletSheet.querySelector(".w-form input")?.focus(),30)}
 function afterWalletChange(){paintWalletSheet();if(tab==="acct"||(tab==="plan"&&view==="home"))render(true)}
 /* ===== 面板共用：aria-modal、打開時焦點移進面板、Tab 不會跑到後面的頁面、Esc 關閉最上層、關閉後焦點回到原本的按鈕 ===== */
 const modals=[];
@@ -2352,7 +2388,7 @@ function modal(v,close,focusSel){
  /* 原本的按鈕可能在面板開著時被重畫掉：記下它的 data- 屬性，關閉時找同一顆新的按鈕 */
  const backSel=back?dataSel(back):(ae===document.body||!ae?lastClickSel:"");
  v.setAttribute("aria-modal","true");
- m.close=()=>{const i=modals.indexOf(m);if(i<0)return;modals.splice(i,1);close();
+ m.close=()=>{const i=modals.indexOf(m);if(i<0)return;modals.splice(i,1);close();maybeReload();
   /* 關掉的面板裡的按鈕不要再被記住，不然下一個面板會連帶留住它（記憶體不會釋放） */
   {const lc=lastClickedEl();if(!lc||v.contains(lc)){lastClickRef=null;lastClickSel=""}}
   while(modals.length&&!(modals[modals.length-1].v&&modals[modals.length-1].v.isConnected))modals.pop();
@@ -2378,7 +2414,7 @@ document.addEventListener("keydown",e=>{
  const m=modals[modals.length-1];if(!m)return;
  if(e.key==="Escape"){e.preventDefault();e.stopPropagation();/* 面板可以攔下 Esc（例如記帳填了還沒存要先問） */if(m.v&&m.v._esc&&m.v._esc()===false)return;m.close();return}
  if(e.key!=="Tab")return;
- const f=[...m.v.querySelectorAll(FOCUSABLE)].filter(x=>x.getClientRects().length);if(!f.length)return;
+ const f=[...m.v.querySelectorAll(FOCUSABLE)].filter(x=>x.getClientRects().length&&!x.closest("[inert]"));if(!f.length)return;
  const a=f[0],z=f[f.length-1],cur=document.activeElement;
  if(!m.v.contains(cur)){e.preventDefault();a.focus();return}
  if(e.shiftKey&&cur===a){e.preventDefault();z.focus()}else if(!e.shiftKey&&cur===z){e.preventDefault();a.focus()}
@@ -2397,7 +2433,7 @@ function openWallet(){
   if(e.target.closest("[data-wallet-swap]")){me=me==="zhang"?"star":"zhang";try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;walletEdit=null;afterWalletChange();return}
   const we=e.target.closest("[data-wallet-edit]");if(we){walletEdit=me;walletMode=we.dataset.mode||"add";paintWalletSheet(true);return}
   const wm=e.target.closest("[data-wmode]");if(wm){const val=v.querySelector(".w-form input")?.value||"";walletMode=wm.dataset.wmode;paintWalletSheet(true);const i=v.querySelector(".w-form input");if(i)i.value=val;return}
-  if(e.target.closest("[data-wallet-cancel]")){walletEdit=null;paintWalletSheet();return}
+  if(e.target.closest("[data-wallet-cancel]")){walletEdit=null;paintWalletSheet();maybeReload();return}
  });
  v.addEventListener("input",e=>{const er=v.querySelector("#w-err");if(er&&e.target.name==="amt")er.textContent=""});
  v.addEventListener("submit",async e=>{
@@ -2405,7 +2441,7 @@ function openWallet(){
   const mode=cashIn(me)>0?walletMode:"set",total=py.err?0:(mode==="add"?cashIn(me)+py.v:py.v);
   const bad=py.err||(total>YEN_MAX?"錢包總額最多 ¥99,999,999":"");
   if(bad){if(er)er.textContent=bad;f.amt.focus();return}
-  saveWallet(me,total);walletEdit=null;afterWalletChange();
+  saveWallet(me,total);walletEdit=null;afterWalletChange();maybeReload();
  });
 }
 let walletMode="set";
@@ -2425,7 +2461,7 @@ function renderAcct(){
   <div class="settle"><svg aria-hidden="true"><use href="#cats"/></svg><span>${settle}</span></div>
   <label class="rate" for="f-rate">匯率 1 日圓 ＝ <input id="f-rate" inputmode="decimal" value="${rate}"> 台幣</label>${rateNoteHTML()}`;
  if(!expenses.length){list.innerHTML=`<div class="empty"><svg viewBox="0 0 110 70" aria-hidden="true"><use href="#cats"/></svg>還沒有記帳。按右下角「記一筆」，記好就會出現在這裡。</div>`;return}
- const days=[...new Set(expenses.map(e=>e.day))].sort((a,b)=>b.localeCompare(a));
+ const days=[...new Set(expenses.map(e=>e.day))].sort((a,b)=>(b||"").localeCompare(a||""));
  list.innerHTML=days.map(d=>{const es=expenses.filter(e=>e.day===d).sort((a,b)=>(b.ts||0)-(a.ts||0));const x=DAYS.find(z=>z.d===d);
   return `<div class="day-group"><h4>${esc(d)}${x?`（${x.w}）`:""}<span>${yen(es.reduce((a,e)=>a+e.amt,0))}</span></h4>${es.map(e=>{const c=ECAT.find(z=>z[0]===e.cat)||ECAT[5];const p=PEOPLE.find(z=>z[0]===e.who)||PEOPLE[0];
    return `<div class="ex${editingId===e.id?" editing":""}"${canWrite?` data-edit="${esc(e.id)}" role="button" tabindex="0"`:""}><span class="ic ${c[3]}"><svg><use href="#${c[2]}"/></svg></span><div class="m"><b>${esc(e.note||c[1])}${e.tf?`<span class="tf-badge">免稅</span>`:""}</b><small>${p[1]}${e.pay==="cash"?"付現":e.pay==="card"?"刷卡":"付"}，${e.split==="both"?"兩人平分":"自己的"}${canWrite?"，點一下修改":""}</small></div><div class="a">${yen(e.amt)}${canWrite?`<button type="button" class="del${pendingDel===e.id?" sure":""}" data-del="${esc(e.id)}">${pendingDel===e.id?"確定刪除":"刪除"}</button>`:""}</div></div>`}).join("")}</div>`}).join('<div class="gap"></div>');
@@ -2545,6 +2581,16 @@ function ensureSeeded(){
  return seeding;
 }
 let pendingRestore=false,lastItemSig="",lastItemAt=0;
+/* 清單表單的值（送出與「打開時的基準」用同一個讀法，due 組字才會一致） */
+function itemFormVals(f,g){
+ const dd=f.dued&&f.dued.value,t=f.duet&&f.duet.value;let due="";if(dd){const[,mo,da]=dd.split("-");due=`${+mo}/${+da}`+(t?` ${t}`:"")}
+ return{title:f.title.value.trim(),...(g==="buy"?{place:f.place.value.trim(),what:f.what.value.trim(),note:""}:{note:f.note.value.trim()}),...(g==="pack"?{cat:f.cat?f.cat.value:"etc"}:{}),due};
+}
+let editItemBase=null;
+function captureItemBase(){
+ editItemBase=null;if(!editItem||editItem.startsWith("new:"))return;
+ const f=app.querySelector(".chk-form");if(f&&f.dataset.id===editItem)editItemBase={id:editItem,v:itemFormVals(f,f.dataset.group)};
+}
 function saveItem(it){
  const i=items.findIndex(x=>x.id===it.id);if(i>=0)items[i]=it;else items.push(it);
  store.set("items",items);
@@ -2558,8 +2604,8 @@ async function deleteItem(id){
   for(const k of dk)put("checks/"+k,{done:dv[k]});
   render(true);
  });
- items=items.filter(x=>x.id!==id);store.set("items",items);delete done[id];store.set("done",done);
- put("items/"+id,null);put("checks/"+id,null);
+ items=items.filter(x=>x.id!==id);store.set("items",items);for(const k of dk)delete done[k];store.set("done",done);
+ put("items/"+id,null);for(const k of dk)put("checks/"+k,null);if(!dk.includes(id))put("checks/"+id,null);
 }
 function focusItemForm(){const f=app.querySelector(".chk-form input[name=title]");if(f){f.focus({preventScroll:true});f.closest(".chk").scrollIntoView({block:"center",behavior:reduce()?"auto":"smooth"})}}
 
@@ -2770,12 +2816,12 @@ app.addEventListener("click",e=>{
  if(e.target.closest("[data-scroll-mood]")){const el=document.getElementById("mood");if(el){const top=el.getBoundingClientRect().top+scrollY-topGap()-16;scrollTo({top,behavior:reduce()?"auto":"smooth"})}return}
  const fb=e.target.closest(".fbtn");if(fb){const f=fb.closest("form");moodDraft={d:f.dataset.d,score:+fb.dataset.score,note:f.querySelector("#mood-note").value};f.querySelectorAll(".fbtn").forEach(b=>{const on=b===fb;b.classList.toggle("on",on);b.setAttribute("aria-checked",on)});f.querySelector("[type=submit]").disabled=false;return}
  const me_=e.target.closest("[data-mood-edit]");if(me_){moodEdit=me_.dataset.moodEdit;moodDraft=null;const sec=document.getElementById("mood");sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);document.getElementById("mood-note")?.focus({preventScroll:true});return}
- if(e.target.closest("[data-mood-cancel]")){pendingMoodDel=false;moodEdit=null;moodDraft=null;document.getElementById("mood").outerHTML=moodSectionHTML(DAYS[dayIdx]);return}
+ if(e.target.closest("[data-mood-cancel]")){pendingMoodDel=false;moodEdit=null;moodDraft=null;document.getElementById("mood").outerHTML=moodSectionHTML(DAYS[dayIdx]);maybeReload();return}
  const jp=e.target.closest("[data-jump]");if(jp){jumpToItem(jp.dataset.jump);return}
  if(e.target.closest("[data-restore]")){if(!pendingRestore){pendingRestore=true;render(true);clearTimeout(window._pr);window._pr=setTimeout(()=>{if(pendingRestore){pendingRestore=false;if(tab==="list")render(true)}},3000);return}pendingRestore=false;restoreDefaults().then(()=>render(true));return}
- const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);focusItemForm();return}
+ const ie=e.target.closest("[data-item-edit]");if(ie){editItem=ie.dataset.itemEdit;pendingItemDel=null;render(true);captureItemBase();focusItemForm();return}
  const inw=e.target.closest("[data-item-new]");if(inw){editItem="new:"+inw.dataset.itemNew;pendingItemDel=null;render(true);focusItemForm();return}
- if(e.target.closest("[data-item-cancel]")){editItem=null;pendingItemDel=null;render(true);return}
+ if(e.target.closest("[data-item-cancel]")){editItem=null;editItemBase=null;pendingItemDel=null;render(true);maybeReload();return}
  const idl=e.target.closest("[data-item-del]");if(idl){const id=idl.dataset.itemDel;pendingItemDel=null;editItem=null;deleteItem(id).then(()=>render(true));render(true);return}
  const d=e.target.closest("[data-day]");if(d){const i=+d.dataset.day;if(tab==="plan"&&view==="day"&&d.classList.contains("day-btn")){switchDay(i);return}tab="plan";view="day";dayIdx=i;render();return}
  if(e.target.closest("[data-home]")){const from=dayIdx;view="home";render(false,true);const t=app.querySelector(`.tile[data-day="${from}"]`);if(t){const r=t.getBoundingClientRect();if(r.top<60||r.bottom>innerHeight-110)t.scrollIntoView({block:"center"});t.classList.add("flash");setTimeout(()=>t.classList.remove("flash"),1300)}return}
@@ -2812,7 +2858,7 @@ app.addEventListener("change",async e=>{
  if(t.id==="f-rate"){const v=parseFloat(String(t.value).normalize("NFKC"));
   /* 手動匯率和自動抓取一樣只收 0.1～0.5（1 日圓約 0.2 台幣），打錯會讓所有台幣換算差很多倍 */
   if(!(v>=0.1&&v<=0.5)){t.value=rate;rateErr="匯率要在 0.1～0.5 之間（1 日圓約 0.2 台幣）";renderAcct();return}
-  rateErr="";if(v>0){rate=v;store.set("rate",rate);rateMeta={auto:false,ts:Date.now(),src:""};store.set("rateMeta",rateMeta);renderAcct();if(canWrite)put("settings/rate",{jpyTwd:v,auto:false,ts:rateMeta.ts})}else{t.value=rate}return}
+  rateErr="";if(v>0){rateGen++;rate=v;store.set("rate",rate);rateMeta={auto:false,ts:Date.now(),src:""};store.set("rateMeta",rateMeta);renderAcct();if(canWrite)put("settings/rate",{jpyTwd:v,auto:false,ts:rateMeta.ts})}else{t.value=rate}return}
  if(!t.matches(".chk input[type=checkbox]"))return;
  const id=t.id.slice(2);done[id]=t.checked;store.set("done",done);refresh();
  if(t.checked)popEl(document.getElementById("c-"+id));else unpop("#"+CSS.escape("c-"+id));
@@ -2825,15 +2871,25 @@ app.addEventListener("submit",async e=>{
   const d=f.dataset.d,score=+on.dataset.score,note=f.querySelector("#mood-note").value.trim();
   moodEdit=null;moodDraft=null;saveMood(d,score,note);
   const sec=document.getElementById("mood");if(sec){sec.outerHTML=moodSectionHTML(DAYS[dayIdx]);const n=document.getElementById("mood");n.classList.add("saved")}
-  return;
+  maybeReload();return;
  }
  if(e.target.classList.contains("chk-form")){
   const f=e.target,g=f.dataset.group,id=f.dataset.id,title=f.title.value.trim();if(!title){f.title.focus();return}
   /* 連點「新增」：同一個標題 1 秒內只存一次 */
   const sig=g+"|"+(id||"")+"|"+title;if(sig===lastItemSig&&Date.now()-lastItemAt<1000)return;lastItemSig=sig;lastItemAt=Date.now();
-  const old=items.find(x=>x.id===id);
-  const it={...(old||{}),id:id||("i"+Date.now().toString(36)),group:g,title,...(g==="buy"?{place:f.place.value.trim(),what:f.what.value.trim(),note:""}:{note:f.note.value.trim()}),...(g==="pack"?{cat:f.cat?f.cat.value:"etc"}:{}),due:(()=>{const dd=f.dued&&f.dued.value;if(!dd)return "";const[,mo,da]=dd.split("-");const t=f.duet&&f.duet.value;return `${+mo}/${+da}`+(t?` ${t}`:"")})(),links:old?old.links||null:null,order:old?old.order:Math.max(0,...items.filter(x=>x.group===g).map(x=>x.order||0))+1};
-  editItem=null;await saveItem(it);render(true);return;
+  const old=items.find(x=>x.id===id),vals=itemFormVals(f,g);
+  if(old){
+   /* 編輯既有項目：只送「表單 ≠ 打開時」的欄位（不拿最新快照當基準），對方同時改的別的欄位不會被蓋回舊值 */
+   const base=editItemBase&&editItemBase.id===id?editItemBase.v:Object.fromEntries(Object.keys(vals).map(k=>[k,old[k]??""])),ch={};
+   for(const k of Object.keys(vals))if(vals[k]!==base[k])ch[k]=vals[k];
+   /* 舊的「要買的」備註是整段文字（📍地點 🍵品項）：有改動就連地點、品項、備註一起存成獨立欄位 */
+   if(g==="buy"&&Object.keys(ch).length&&old.note&&!old.place&&!old.what){ch.place=vals.place;ch.what=vals.what;ch.note=""}
+   editItem=null;editItemBase=null;
+   if(Object.keys(ch).length){const i=items.findIndex(x=>x.id===id);if(i>=0)items[i]={...items[i],...ch};store.set("items",items);put("items/"+id,ch,{merge:true});ensureSeeded().catch(()=>{})}
+   render(true);maybeReload();return;
+  }
+  const it={id:id||("i"+Date.now().toString(36)),group:g,...vals,links:null,order:Math.max(0,...items.filter(x=>x.group===g).map(x=>x.order||0))+1};
+  editItem=null;editItemBase=null;await saveItem(it);render(true);maybeReload();return;
  }
  if(e.target.id==="code-form"){const v=(document.getElementById("f-code").value||"").normalize("NFKC").trim();if(!v)return;
   if(!/^[\w-]+$/.test(v)){syncMsg="fmt";render(true);const i=document.getElementById("f-code");if(i){i.value=v;i.focus()}return}
@@ -2888,7 +2944,7 @@ document.querySelectorAll("nav.tabs button").forEach(b=>b.onclick=()=>{const t=b
 
 
 setInterval(()=>{if(tab==="plan"&&view==="day"&&dayIdx===todayIdx){const b=document.getElementById("dayBody");const k=JSON.stringify(dayStatus(DAYS[dayIdx]));if(b&&b.dataset.k!==k){b.dataset.k=k;b.innerHTML=dayBodyHTML();bindSched();pinCheck()}}},30000);
-setInterval(()=>{const el=document.getElementById("cd-s");if(!el)return;const c=cdParts();if(c.ms<=0){if(todayIdx<0&&jpDay()>=start){location.reload();return}render(true);return}
+setInterval(()=>{const el=document.getElementById("cd-s");if(!el)return;const c=cdParts();if(c.ms<=0){if(todayIdx<0&&jpDay()>=start){safeReload();return}render(true);return}
  document.getElementById("cd-d").textContent=c.d;document.getElementById("cd-h").textContent=p2(c.h);document.getElementById("cd-m").textContent=p2(c.m);el.textContent=p2(c.s)},1000);
 
 /* ---------- 兩人共用：Firebase Firestore（用旅行代碼當門禁） ---------- */
@@ -2904,7 +2960,7 @@ const TRIP_KEY="ngy:code";
 let syncMsg="";
 function getCode(){
  const m=location.hash.match(/k=([\w-]+)/);
- if(m){try{localStorage.setItem(TRIP_KEY,m[1])}catch(_){};history.replaceState(null,"",location.pathname+location.search)}
+ if(m){try{const prev=localStorage.getItem(TRIP_KEY);if(prev&&prev!==m[1]){const k=Object.values(outbox).filter(e=>e.c===prev).length;if(k){codeSwitchNote=`還有 ${k} 筆變更還沒同步，換代碼後會留在原本的旅程`;try{syncOpen=true}catch(_){}}}localStorage.setItem(TRIP_KEY,m[1])}catch(_){};history.replaceState(null,"",location.pathname+location.search)}
  try{return localStorage.getItem(TRIP_KEY)}catch(_){return null}
 }
 /* 同步狀態：live＝已接上雲端資料庫；srv＝伺服器是否回應過（"?" 還不確定、"ok"、"down"） */
@@ -2918,11 +2974,14 @@ const OFFLINE_TXT="離線中";
 /* 點同步膠囊：看目前的旅行代碼（只顯示後 4 碼）、換一個代碼 */
 let syncOpen=false,pendingNew=null,newCheck=null;
 const codeTail=c=>{c=String(c||"");return c.length>4?"••••"+c.slice(-4):c};
+let dropAsk=false;
 function syncInfoHTML(){
- const n=pendingCount();
+ const n=pendingCount(),fo=foreignCount();
  return `<div class="box code" id="code-info"><b>目前的旅行代碼：<span class="code-now">${esc(codeTail(getCode()))}</span></b>
+  ${codeSwitchNote?`<p class="code-err" role="status">${esc(codeSwitchNote)}</p>`:""}
   <p>${n?`還有 ${n} 筆變更還沒同步，等網路恢復、同步完再換代碼`:"換代碼後，會改成和那個代碼的旅伴共用"}</p>
-  <div class="code-row">${n?"":`<button class="ghost" type="button" data-code-change>換一個代碼</button>`}<button class="primary" type="button" data-sync-close>好</button></div></div>`;
+  ${fo?`<p class="code-err" role="status">有 ${fo} 筆變更屬於另一個旅程，沒有送出</p>`:""}
+  <div class="code-row">${n?"":`<button class="ghost" type="button" data-code-change>換一個代碼</button>`}${fo?`<button class="ghost" type="button" data-ob-drop>${dropAsk?"確定丟掉？再按一次":"丟掉這些變更"}</button>`:""}<button class="primary" type="button" data-sync-close>好</button></div></div>`;
 }
 function syncHTML(){
  const btn=(cls,txt,lbl)=>`<button type="button" class="sync${cls}" data-sync-info aria-expanded="${syncOpen}"${lbl?` aria-label="${lbl}"`:""}><i></i><span>${txt}</span></button>`;
@@ -2969,8 +3028,8 @@ function connect(){
   const {F,fs}=fbInst,base=`trips/${code}`,ref=p=>F.doc(fs,base+"/"+p);
   /* 快照疊上還沒送達的變更（同步佇列），雲端的舊資料不會蓋掉手機上剛做的事 */
   const wrap=(r,p)=>({id:r.id,get:()=>F.getDoc(r).then(x=>({exists:x.exists(),data:()=>x.data()})),set:(d,o)=>o?F.setDoc(r,d,o):F.setDoc(r,d),delete:()=>F.deleteDoc(r),
-   onSnapshot:(n,e)=>F.onSnapshot(r,s=>{const o=p&&outbox[p];if(o){const d=o.m?{...(s.exists()?s.data():{}),...o.d}:o.d;n({id:s.id,exists:d!==null,data:()=>d})}else n({id:s.id,exists:s.exists(),data:()=>s.data()})},e)});
-  const fdb={setMany:async list=>{if(F.writeBatch){const b=F.writeBatch(fs);for(const[p,d]of list)b.set(ref(p),d);await b.commit()}else{for(const[p,d]of list)await F.setDoc(ref(p),d)}},
+   onSnapshot:(n,e)=>F.onSnapshot(r,s=>{const o0=p&&outbox[p],o=o0&&obOwn(o0)?o0:null;if(o){const d=o.m?{...(s.exists()?s.data():{}),...o.d}:o.d;n({id:s.id,exists:d!==null,data:()=>d})}else n({id:s.id,exists:s.exists(),data:()=>s.data()})},e)});
+  const fdb={setMany:async(list,mg)=>{const o=mg?{merge:true}:undefined;if(F.writeBatch){const b=F.writeBatch(fs);for(const[p,d]of list)o?b.set(ref(p),d,o):b.set(ref(p),d);await b.commit()}else{for(const[p,d]of list)await(o?F.setDoc(ref(p),d,o):F.setDoc(ref(p),d))}},
    doc:p=>wrap(ref(p),p),
    collection:p=>{const c=F.collection(fs,base+"/"+p);return{doc:()=>wrap(F.doc(c)),onSnapshot:(n,e)=>F.onSnapshot(c,s=>{
     const m=new Map(s.docs.map(d=>[d.id,d.data()]));for(const[id,d,mg]of pendingIn(p)){if(d===null)m.delete(id);else m.set(id,mg?{...(m.get(id)||{}),...d}:d)}
@@ -2987,16 +3046,16 @@ function connect(){
   sub(()=>db.collection("items").onSnapshot(snap=>{
    /* 原本項目還沒確認上傳前，不讓「伺服器上比較少的清單」蓋掉手機上的清單 */
    serverIds=new Set(snap.docs.map(d=>d.id));
-   if(!seededOk&&snap.docs.length<items.length){const srv=snap.docs.map(d=>({id:d.id,...d.data()}));items=[...items.filter(x=>!srv.some(y=>y.id===x.id)),...srv]}
-   else items=snap.docs.map(d=>({id:d.id,...d.data()}));
+   if(!seededOk&&snap.docs.length<items.length){const srv=snap.docs.map(d=>({id:d.id,...d.data()}));items=[...items.filter(x=>!srv.some(y=>y.id===x.id)),...srv.filter(itemOk)]}
+   else items=snap.docs.map(d=>({id:d.id,...d.data()})).filter(itemOk);
    store.set("items",items);itemsReady();if(tab!=="acct")refresh()},()=>itemsReady()));
   /* 心情：用快照重建整份（對方刪掉的會消失），不和舊的合併 */
-  sub(()=>db.collection("moods").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{}));
+  sub(()=>db.collection("moods").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{if(moodOk(d.data()))n[d.id]=d.data()});moods=n;store.set("moods",moods);rerenderMood()},()=>{}));
   sub(()=>db.collection("checks").onSnapshot(snap=>{const n={};snap.docs.forEach(d=>{n[d.id]=!!(d.data()||{}).done});done=n;store.set("done",done);if(setupSheet)paintSetup();if(tab!=="acct")refresh()},()=>{}));
-  sub(()=>db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0,...(v.tf?{tf:true}:{}),...(v.carry?{carry:true}:{})}});store.set("exp",expenses);paintWalletSheet();const wasEd=editingId,en=editSync();if(en&&expSheet){if(!editingId&&wasEd){closeExp();acctNote=`<span class="err">${en}</span>`}else{expSheet.querySelector(".sm-card").innerHTML=expFormHTML();const m=document.getElementById("f-msg");if(m){m.className="msg err";m.textContent=en}}}if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{}));
+  sub(()=>db.collection("expenses").onSnapshot(snap=>{expenses=snap.docs.filter(d=>expOk(d.data())).map(d=>{const v=d.data()||{};return{id:d.id,amt:+v.amt||0,cat:v.cat,who:v.who,split:v.split,pay:v.pay||"",day:v.day,note:v.note||"",ts:v.ts||0,...(v.tf?{tf:true}:{}),...(v.carry?{carry:true}:{})}});store.set("exp",expenses);paintWalletSheet();const wasEd=editingId,en=editSync();if(en&&expSheet){if(!editingId&&wasEd){closeExp();acctNote=`<span class="err">${en}</span>`}else{expSheet.querySelector(".sm-card").innerHTML=expFormHTML();const m=document.getElementById("f-msg");if(m){m.className="msg err";m.textContent=en}}}if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{}));
   sub(()=>db.collection("wallet").onSnapshot(snap=>{const w={};snap.docs.forEach(d=>{w[d.id]=d.data()||{}});wallet=w;store.set("wallet",wallet);paintWalletSheet();if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home")render(true)},()=>{}));
   sub(()=>db.doc("settings/sos").onSnapshot(x=>{if(x.exists){sosInfo=x.data()||{};store.set("sos",sosInfo);if(!sosEditing)paintSos();if(tab==="plan"&&view!=="home"&&!stayEditing)render(true)}},()=>{}));
-  sub(()=>db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const d=s.data()||{},v=+d.jpyTwd;if(v>0){rate=v;store.set("rate",v);rateMeta={auto:d.auto!==false,ts:+d.ts||0,src:d.src||""};store.set("rateMeta",rateMeta);if(tab==="acct")renderAcct()}}fetchRate()},()=>{}));
+  sub(()=>db.doc("settings/rate").onSnapshot(s=>{if(s.exists){const d=s.data()||{},v=+d.jpyTwd;if(v>0){rate=v;store.set("rate",v);rateMeta={auto:d.auto!==false,ts:+d.ts||0,src:d.src||""};if(!rateMeta.auto)rateGen++;store.set("rateMeta",rateMeta);if(tab==="acct")renderAcct()}}fetchRate()},()=>{}));
   rerenderData();
   ensureSeeded().catch(()=>{});
   checkServer();
@@ -3012,21 +3071,46 @@ function checkServer(){
   if(err&&err.code==="permission-denied"){badCode();return false}
   if(srv!=="down"){srv="down";paintSync()}return false});
 }
-function srvOk(){if(srv!=="ok"){srv="ok";paintSync()}}
+function srvOk(){try{const c=curCode();if(c&&localStorage.getItem("ngy:vcode")!==c)localStorage.setItem("ngy:vcode",c)}catch(_){}if(srv!=="ok"){srv="ok";paintSync()}}
 function badCode(){
+ /* 這個代碼不能用：記在它名下的變更改回「未定」，換對代碼後照舊送出 */
+ {const old=curCode();for(const e of Object.values(outbox))if(e.c&&e.c===old)delete e.c;obSave();try{localStorage.removeItem("ngy:vcode")}catch(_){}}
  unsubs.forEach(u=>{try{u()}catch(_){}});unsubs=[];db=null;live=false;probe=null;srv="?";
  try{localStorage.removeItem(TRIP_KEY)}catch(_){};syncMsg="bad";render(true);
 }
 /* 網路恢復時重新連線。程式庫上次載入失敗的話，同一頁再載入一定還是失敗（瀏覽器會記住），
    確認程式庫抓得到之後重新整理頁面（正在輸入時先等，不會吃掉輸入到一半的內容） */
 function libReachable(){return fetch(`https://www.gstatic.com/firebasejs/${FB_V}/firebase-app.js`,{cache:"no-store"}).then(r=>r.ok,()=>false)}
-function busyEditing(){
- const a=document.activeElement;if(a&&a.matches&&a.matches("input:not([type=checkbox]):not([type=radio]),textarea,select"))return true;
- return !!(draft.amt||(draft.note||"").trim()||moodDraft||editItem||editingId||stayEditing||sosEditing||walletEdit);
+/* 有沒存的內容嗎：看「內容」，不看模式旗標（開著編輯但什麼都沒改，不該讓換日永遠等下去） */
+function hasDraft(){
+ /* 正在關閉（淡出中）的面板不算 */
+ const on=el=>!!el&&!el.closest(".leaving,[inert]");
+ const a=document.activeElement;
+ if(on(a)&&a.matches&&a.matches("input:not([type=checkbox]):not([type=radio]),textarea,select")&&a.value)return true;
+ if(expDirty()||(!expSheet&&(String(draft.amt||"").trim()||(draft.note||"").trim())))return true;
+ const mt=document.getElementById("mood-note");
+ if(on(mt)){const f=mt.closest("form"),ex=f&&moods[mk(f.dataset.d,me)];if(mt.value.trim()!==((ex&&ex.note)||""))return true}
+ if(moodDraft&&(moodDraft.note||"").trim())return true;
+ const cf=editItem&&app.querySelector(".chk-form");
+ if(on(cf)){const v=itemFormVals(cf,cf.dataset.group);
+  if(editItemBase&&editItemBase.id===editItem){if(Object.keys(v).some(k=>v[k]!==editItemBase.v[k]))return true}
+  else if(v.title||v.note||v.place||v.what)return true}
+ const sb=sosBase||sosInfo;
+ if([...document.querySelectorAll("[data-sos-f]")].some(i=>on(i)&&i.value.trim()!==(sb[i.dataset.sosF]||"").trim()))return true;
+ const w=document.querySelector(".w-form input[name=amt]");if(on(w)&&w.value.trim())return true;
+ return false;
 }
-let reloadWait=null;
+const busyEditing=hasDraft;
+let reloadPending=false;
+/* 有草稿就等（回傳 false），沒有才重新整理 */
+function safeReload(){if(hasDraft()){reloadPending=true;return false}reloadPending=false;location.reload();return true}
+/* 存檔、取消、關面板之後：之前等著的重新整理現在可以做了 */
+function maybeReload(){if(reloadPending)setTimeout(()=>{if(reloadPending)dayCheck()||reloadSoonIfNeeded()},0)}
+let reloadWait=null,reloadSoonWanted=false;
+function reloadSoonIfNeeded(){if(reloadSoonWanted)reloadSoon()}
 function reloadSoon(){
- if(busyEditing()){clearTimeout(reloadWait);reloadWait=setTimeout(retrySync,15000);return}
+ if(hasDraft()){reloadSoonWanted=true;reloadPending=true;clearTimeout(reloadWait);reloadWait=setTimeout(retrySync,15000);return}
+ reloadSoonWanted=false;
  try{const t=+sessionStorage.getItem("ngy:reloadAt")||0;if(Math.abs(Date.now()-t)<60000)return;
   sessionStorage.setItem("ngy:reloadAt",String(Date.now()));sessionStorage.setItem("ngy:resume",JSON.stringify({tab,view,dayIdx,y:scrollY,at:Date.now()}))}catch(_){}
  location.reload();
@@ -3040,7 +3124,10 @@ function retrySync(){
 }
 document.addEventListener("click",e=>{
  if(e.target.closest("[data-sync-info]")){syncOpen=!syncOpen;render(true);return}
- if(e.target.closest("[data-sync-close]")){syncOpen=false;render(true);return}
+ if(e.target.closest("[data-sync-close]")){syncOpen=false;codeSwitchNote="";dropAsk=false;render(true);return}
+ if(e.target.closest("[data-ob-drop]")){
+  if(!dropAsk){dropAsk=true;render(true);clearTimeout(window._dropT);window._dropT=setTimeout(()=>{if(dropAsk){dropAsk=false;if(syncOpen)render(true)}},4000);return}
+  dropAsk=false;for(const[p,v]of Object.entries(outbox))if(v.c&&v.c!==curCode())delete outbox[p];obSave();render(true);return}
  if(e.target.closest("[data-newtrip-ok]")){const c=pendingNew;pendingNew=null;try{localStorage.setItem(TRIP_KEY,c)}catch(_){};syncMsg="connecting";render(true);connect();return}
  if(e.target.closest("[data-newtrip-no]")){pendingNew=null;syncMsg="";render(true);setTimeout(()=>document.getElementById("f-code")?.focus(),30);return}
  if(e.target.closest("[data-code-change]")){
@@ -3123,7 +3210,7 @@ function openSetup(){
  if(setupSheet)return;
  const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","出發前手機設定");
  v.innerHTML=`<div class="sm-card su-sheet"></div>`;setupSheet=v;document.body.appendChild(v);document.body.style.overflow="hidden";setupAuto();paintSetup();
- const close=modal(v,()=>{leave(v);setupSheet=null;document.body.style.overflow=""},".sm-head .sm-x");
+ const close=v._close=modal(v,()=>{leave(v);setupSheet=null;document.body.style.overflow=""},".sm-head .sm-x");
  v.addEventListener("click",async e=>{
   if(e.target===v||e.target.closest(".sm-head .sm-x")){close();return}
   const pm=e.target.closest("[data-setup-me]");if(pm){me=pm.dataset.setupMe;try{localStorage.setItem(ME_KEY,me)}catch(_){};draft.who=me;await setupAuto();paintSetup();if(tab==="plan"&&view==="home")render(true);return}
@@ -3181,20 +3268,20 @@ function openTour(){
   /* 換頁轉場會讓目標位移一下，轉場結束再對準一次 */
   {const vw=app.querySelector(".view"),an=vw&&vw.getAnimations?vw.getAnimations():[];if(an[0])an[0].finished.then(place,()=>{})}
  };
- const close=()=>{try{localStorage.setItem(TOUR_KEY,"1")}catch(_){};removeEventListener("resize",place);leave(v);coachEl=null;document.body.style.overflow="";goHome();scrollTo(0,0)};
+ /* 走共用的 modal()；自動第一次開的沒有入口按鈕，關閉後焦點給底部「行程」分頁（有入口的會被 modal 換回入口） */
+ const close=modal(v,()=>{try{localStorage.setItem(TOUR_KEY,"1")}catch(_){};removeEventListener("resize",place);leave(v);coachEl=null;document.body.style.overflow="";goHome();scrollTo(0,0);document.querySelector('.tabs [data-tab="plan"],[data-tab="plan"]')?.focus({preventScroll:true})},"[data-coach-next]");
  skip.addEventListener("click",close);
  next.addEventListener("click",()=>{if(cur<n-1){cur++;show();return}const pre=Date.now()<DEPART;close();if(pre)openSetup()});
- v.addEventListener("keydown",e=>{if(e.key==="Escape")close()});
  addEventListener("resize",place);
  show();setTimeout(()=>next.focus({preventScroll:true}),50);
 }
 (()=>{let seen=false;try{seen=localStorage.getItem(TOUR_KEY)==="1"}catch(_){seen=true}if(!seen)setTimeout(openTour,900)})();
-document.addEventListener("click",e=>{if(e.target.closest("[data-tour-open]")){if(setupSheet){setupSheet.remove();setupSheet=null;document.body.style.overflow=""}openTour()}});
+document.addEventListener("click",e=>{if(e.target.closest("[data-tour-open]")){if(setupSheet&&setupSheet._close)setupSheet._close();openTour()}});
 
 /* ===== 退稅清單：記帳打開「免稅」的每一筆，回國那天逐筆確認放進隨身行李 ===== */
 function renderTf(){
  const box=document.getElementById("tf-list");if(!box)return;
- const l=expenses.filter(e=>e.tf).sort((a,b)=>a.day.localeCompare(b.day)||(a.ts||0)-(b.ts||0));
+ const l=expenses.filter(e=>e.tf).sort((a,b)=>(a.day||"").localeCompare(b.day||"")||(a.ts||0)-(b.ts||0));
  if(!l.length){box.hidden=true;box.innerHTML="";return}
  const tot=l.reduce((a,e)=>a+tfRefund(e.amt),0),c=l.filter(e=>e.carry).length,left=l.length-c;
  box.hidden=false;
@@ -3206,7 +3293,8 @@ function renderTf(){
 document.addEventListener("click",async e=>{
  const tg=e.target.closest("[data-tf-toggle]");if(tg){draft.tf=!draft.tf;tg.setAttribute("aria-pressed",String(draft.tf));tg.querySelector(".switch").classList.toggle("on",draft.tf);return}
  const cy=e.target.closest("[data-carry]");if(cy){const id=cy.dataset.carry,ex=expenses.find(x=>x.id===id);if(!ex)return;ex.carry=!ex.carry;renderTf();
-  const {id:_i,...rec}=ex;put("expenses/"+id,rec);store.set("exp",expenses);return}
+  /* 只寫 carry：對方同時改的金額、備註不會被蓋回舊值 */
+  put("expenses/"+id,{carry:!!ex.carry},{merge:true});store.set("exp",expenses);return}
  if(e.target.closest("[data-go-tf]")){tab="acct";render();setTimeout(()=>{const b=document.getElementById("tf-list");if(b&&!b.hidden)b.scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});else scrollTo(0,0)},60);return}
 });
 
@@ -3279,12 +3367,15 @@ function openStory(){
  v.innerHTML=`<div class="st-frame"><div class="st-bars" aria-hidden="true">${pages.map(()=>"<i></i>").join("")}</div>${pages.map((p,i)=>`<section class="st-page ${p.cls}" data-pg="${i}" aria-label="第 ${i+1} 頁，共 ${n} 頁">${p.html}</section>`).join("")}<button type="button" class="st-tap prev" aria-label="上一頁"></button><button type="button" class="st-tap next" aria-label="下一頁"></button><button type="button" class="st-x" aria-label="關閉回顧"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/></svg></button></div>`;
  storyEl=v;document.body.appendChild(v);document.body.style.overflow="hidden";
  const secs=[...v.querySelectorAll(".st-page")],bars=[...v.querySelectorAll(".st-bars i")];
- const go=i=>{cur=Math.max(0,Math.min(n-1,i));secs.forEach((s,k)=>s.classList.toggle("on",k===cur));bars.forEach((b,k)=>{b.classList.toggle("done",k<cur);b.classList.toggle("on",k===cur)});const last=cur===n-1;v.querySelector(".st-tap.next").hidden=last;v.querySelector(".st-tap.prev").style.width=last?"0":"";const c=secs[cur].querySelector("[data-count]");if(c)rvCount(c,+c.dataset.count,x=>String(x))};
- const close=()=>{leave(v);storyEl=null;document.body.style.overflow=""};
+ const go=i=>{cur=Math.max(0,Math.min(n-1,i));secs.forEach((s,k)=>{s.classList.toggle("on",k===cur);s.inert=k!==cur});bars.forEach((b,k)=>{b.classList.toggle("done",k<cur);b.classList.toggle("on",k===cur)});const last=cur===n-1;v.querySelector(".st-tap.next").hidden=last;v.querySelector(".st-tap.prev").style.width=last?"0":"";const c=secs[cur].querySelector("[data-count]");if(c)rvCount(c,+c.dataset.count,x=>String(x));
+  /* 焦點在換頁後看不到的控制上（上一頁的按鈕、剛被藏起來的「下一頁」）：移到這頁看得到的控制 */
+  const ae=document.activeElement;if(ae===document.body||(v.contains(ae)&&(ae.closest("[inert]")||ae.hidden||!ae.getClientRects().length))){const t=[v.querySelector(".st-tap.next:not([hidden])"),secs[cur].querySelector("button"),v.querySelector(".st-x")].find(Boolean);if(t)t.focus({preventScroll:true})}};
+ /* 走共用的 modal()：Tab 不會跑到背後、Esc 可以關、關閉後焦點回到入口 */
+ const close=modal(v,()=>{leave(v);storyEl=null;document.body.style.overflow=""},".st-tap.next");
  v.querySelector(".st-x").addEventListener("click",close);
  v.querySelector(".st-tap.next").addEventListener("click",()=>go(cur+1));
  v.querySelector(".st-tap.prev").addEventListener("click",()=>go(cur-1));
- v.addEventListener("keydown",e=>{if(e.key==="Escape")close();if(e.key==="ArrowRight")go(cur+1);if(e.key==="ArrowLeft")go(cur-1)});
+ v.addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(cur+1);if(e.key==="ArrowLeft")go(cur-1)});
  let sx=null;v.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});v.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;sx=null;if(Math.abs(dx)>50){e.preventDefault();go(cur+(dx<0?1:-1))}});
  v.addEventListener("click",async e=>{
   if(e.target.closest("[data-story-again]")){go(0);return}
@@ -3348,22 +3439,26 @@ function rateNoteHTML(){
  const src=RATE_SRC.find(r=>r[0]===rateMeta.src);
  return `<div class="rate-note"><span>${rateMeta.ts?`<i class="live" aria-hidden="true"></i>自動更新・${when}`:"自動更新・等待連線"}</span>${src?`<span>匯率來源：<a href="${src[3]}" target="_blank" rel="noopener">${src[0]}</a></span>`:""}</div>`;
 }
+/* 世代號：請求進行中使用者改成手動（或對方改成手動），舊回應回來不能把模式寫回自動 */
+let rateGen=0;
 async function fetchRate(force){
  if(rateBusy||!rateMeta.auto)return;if(!force&&rateMeta.ts&&Date.now()-rateMeta.ts<RATE_EVERY)return;if(!navigator.onLine)return;
- rateBusy=true;
+ rateBusy=true;const g=rateGen;
  try{
   for(const [name,url,pick] of RATE_SRC){
+   if(g!==rateGen||!rateMeta.auto)return;
    try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),8000);const r=await fetch(url,{cache:"no-store",signal:ctl.signal});clearTimeout(to);if(!r.ok)continue;
     const v=+pick(await r.json());if(!(v>0.1&&v<0.5))continue;
+    if(g!==rateGen||!rateMeta.auto)return;
     rate=Math.round(v*10000)/10000;rateMeta={auto:true,ts:Date.now(),src:name};store.set("rate",rate);store.set("rateMeta",rateMeta);
     if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home"&&todayIdx<0&&diff<=0)render(true);
     if(db&&canWrite)put("settings/rate",{jpyTwd:rate,auto:true,ts:rateMeta.ts,src:name});
     return}catch(_){}
   }
- }finally{rateBusy=false}
+ }finally{rateBusy=false;if(g!==rateGen&&rateMeta.auto)fetchRate(true)}
 }
 /* 改回自動也寫回雲端（進同步佇列）：離線時按也算數，重開後不會又被雲端的「手動」蓋回去 */
-document.addEventListener("click",e=>{if(e.target.closest("[data-rate-auto]")){rateErr="";rateMeta={auto:true,ts:0,src:""};store.set("rateMeta",rateMeta);if(canWrite)put("settings/rate",{jpyTwd:rate,auto:true,ts:0,src:""});renderAcct();fetchRate(true)}});
+document.addEventListener("click",e=>{if(e.target.closest("[data-rate-auto]")){rateErr="";rateGen++;rateMeta={auto:true,ts:0,src:""};store.set("rateMeta",rateMeta);if(canWrite)put("settings/rate",{jpyTwd:rate,auto:true,ts:0,src:""});renderAcct();fetchRate(true)}});
 setTimeout(()=>fetchRate(),2500);
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")fetchRate()});
 addEventListener("online",()=>fetchRate());
@@ -3382,7 +3477,9 @@ function telHref(raw){
 const SOS_HOTEL={pid:"ChIJ74aBvtd2A2AR8TRTA-QLXZM",jp:"ランプライトブックスホテル名古屋",zh:"名古屋燈光圖書飯店",zip:"〒460-0003",ad:"愛知県名古屋市中区錦1丁目13-18",tel:"052-231-7011",telI:"+81522317011",ac:"地下鐵東山線・鶴舞線「伏見站」10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋"};
 const BOOK_FIELDS=[["order","訂單編號"],["via","訂房平台"],["guest","訂房人"],["room","房型"],["pay","付款"],["payNote","提醒"]],INS_FIELDS=[["ins","旅平險公司"],["insTel","旅平險急難電話"]];
 const sosFormHTML=(fs,save)=>`<div class="sos-form">${fs.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${sosEsc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" ${save}>儲存</button></div></div>`;
-async function sosSave(root){const n={...sosInfo};root.querySelectorAll("[data-sos-f]").forEach(i=>{n[i.dataset.sosF]=i.value.trim()});sosInfo=n;store.set("sos",sosInfo);if(canWrite)put("settings/sos",sosInfo)}
+/* 只送「表單 ≠ 打開時」的欄位（清空也算改）：訂房和旅平險共用一份文件，對方改的另一區或同區別的欄位不會被舊值蓋回 */
+async function sosSave(root){const base=sosBase||sosInfo,ch={};root.querySelectorAll("[data-sos-f]").forEach(i=>{const k=i.dataset.sosF,v=i.value.trim();if(v!==(base[k]||"").trim())ch[k]=v});sosBase=null;
+ if(!Object.keys(ch).length)return;sosInfo={...sosInfo,...ch};store.set("sos",sosInfo);if(canWrite)put("settings/sos",ch,{merge:true})}
 /* 求助的日文句子：[中文, 日文, 讀音, 分類, 特殊]。分類 emg 放在「緊急」分頁，其他放在「日常日文」 */
 const SOS_GROUPS=[["eat","餐廳","餐廳"],["buy","購物","購物"],["stay","飯店・寄放行李","飯店"],["go","交通・問路","交通"]];
 const SOS_PHRASES=[
@@ -3508,9 +3605,9 @@ function openSos(){
   const sh=e.target.closest("[data-sos-show]");if(sh){const p=SOS_PHRASES[+sh.dataset.sosShow];sosShow(p&&p[4]==="hotel"?"hotel":sh.dataset.sosShow);return}
   const st=e.target.closest("[data-sos-tab]");if(st){sosTab=st.dataset.sosTab;sosEditing=false;paintSos();v.querySelector(".sm-card").scrollTop=0;sosShade(v);return}
   const sg=e.target.closest("[data-sos-grp]");if(sg){sosGrp=sg.dataset.sosGrp;paintSos();v.querySelector(".sm-card").scrollTop=0;sosShade(v);return}
-  if(e.target.closest("[data-sos-edit]")){sosEditing=true;paintSos();setTimeout(()=>v.querySelector(".sos-form input")?.focus(),30);return}
-  if(e.target.closest("[data-sos-cancel]")){sosEditing=false;paintSos();return}
-  if(e.target.closest("[data-sos-save]")){sosEditing=false;await sosSave(v);paintSos()}
+  if(e.target.closest("[data-sos-edit]")){sosBase={...sosInfo};sosEditing=true;paintSos();setTimeout(()=>v.querySelector(".sos-form input")?.focus(),30);return}
+  if(e.target.closest("[data-sos-cancel]")){sosEditing=false;sosBase=null;paintSos();maybeReload();return}
+  if(e.target.closest("[data-sos-save]")){sosEditing=false;await sosSave(v);paintSos();maybeReload()}
  });
 }
 document.addEventListener("click",e=>{if(e.target.closest("[data-sos]"))openSos()});
@@ -3520,9 +3617,9 @@ let undoEl=null,undoTimer=null;
 function undoSnack(label,restore){
  if(undoEl)undoEl.remove();clearTimeout(undoTimer);
  const v=document.createElement("div");v.className="undo-bar";v.setAttribute("role","status");v.setAttribute("aria-live","polite");
- v.innerHTML=`<span></span><button type="button">復原</button><i aria-hidden="true"></i>`;v.querySelector("span").textContent=label;
+ v.innerHTML=`<span></span><button type="button">復原</button><i aria-hidden="true"></i>`;v.querySelector("span").textContent=label;if(!restore)v.querySelector("button").hidden=true;
  const done=()=>{clearTimeout(undoTimer);v.remove();if(undoEl===v)undoEl=null};
- v.querySelector("button").addEventListener("click",async()=>{done();try{await restore()}catch(_){}});
+ v.querySelector("button").addEventListener("click",async()=>{done();try{await restore()}catch(_){}});if(!restore)v.style.paddingRight="16px";
  document.body.appendChild(v);undoEl=v;undoTimer=setTimeout(done,5000);
 }
 
@@ -3534,7 +3631,8 @@ async function applyOrder(g,ids,redraw){
  if(!changed.length)return;
  ensureSeeded().catch(()=>{});
  /* 一次寫入全部順序：雲端只回傳一次完整的新順序，不會出現一半新一半舊的中間狀態 */
- putMany(changed.map(it=>{const{id,...rec}=it;return["items/"+id,rec]}));
+ /* 只送 order：同時被對方改過標題、備註的項目不會被舊值蓋回 */
+ putMany(changed.map(it=>["items/"+it.id,{order:it.order}]),{merge:true});
 }
 document.addEventListener("click",e=>{
  const t=e.target.closest("[data-sort-toggle]");if(t){const g=t.dataset.sortToggle;sortGroup=sortGroup===g?null:g;sortFocusId=null;editItem=null;render(true);const el=document.querySelector(`[data-group-id="${g}"]`);if(el)el.scrollIntoView({block:"nearest"});return}
