@@ -1,0 +1,16 @@
+NOTE 星星首次 | 連結 #k= 開啟後 | {'code': 'neko-qa', 'hash': '', 'me': None, 'live': True, 'coach': True, 'coachText': '嗨！我們是豆花和芝麻，帶你認識一下這個 App'}
+NOTE 星星首次 | 教學步驟文字 | ['嗨！我們是豆花和芝麻，帶你認識一下這個 App', '遇到狀況按「求助」，有飯店日文地址和緊急電話', '點一天，看那天的行程和交通', '清單可以按「排序」調整順序，刪錯了下面會出現「復原」', '最後，把這支手機設定好']
+NOTE 星星首次 | 教學結束後畫面（出發前設定） | 出發前手機設定 每個人的手機要各自設定。先選你是誰： 我是阿彰 我是星星
+NOTE 星星首次 | 選身分後設定清單（自動打勾） | ['□ 加到主畫面', '✔ 選好「我是誰」', '✔ 連上同步，看到「同步中」', '□ 開啟 App 內提醒', '□ 訂閱行事曆', '□ 開飛航模式打開一次', '□ 看一次「求助」頁', '□ 日本上網方式開通']
+NOTE 星星首次 | 沒選身分時記帳「誰付的」預設 | None
+PASS 代碼 | 輸入含空白的代碼「neko qa」：應提示格式錯誤（不應存成無效代碼卡在連線中） | {'存下的代碼': None, '狀態': '輸入旅行代碼，就能和同行者共用記帳與清單 代碼只能有英文、數字、- 和 _，不能有空白 開啟共用'}
+FAIL 代碼 | 代碼打錯（不存在的旅程也會連上，變成另一個空旅程）時有辦法看到／更換目前代碼 | {'狀態': '同步中'}
+NOTE 阿彰 | 當天行程交通連結 | [['走路約 2 分', 'https://www.google.com/maps/dir/?api=1&origin=%E3%82%B3%E3%83%B3%E3%83%91%E3%83%AB%20%E3%82%B5%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%E5%BA%97&destination=Meitetsu%20Nagoya%20Station&travelmode=walking'], ['走路約 22 分 從犬山站出發，搭車也不會比較快', 'https://www.google.com/maps/dir/?api=1&origin=%E7%8A%AC%E5%B1%B1%E9%A7%85&destination=%E7%8A%AC%E5%B1%B1%E5%9F%8E&travelmode=walking'], ['走路約 9 分', 'https://www.google.com/maps/dir/?api=1&origin=%E7%8A%AC%E5%B1%B1%E5%9F%8E&destination=%E7%8A%AC%E5%B1%B1%E5%9F%8E%E4%B8%8B%E7%94%BA&origin_place_id=ChIJke1IrfUOA2ARNfYDRkP6Wig&destination_place_id=ChIJ5Y9f
+NOTE 阿彰 | 第一站的地圖連結 | ['前往', 'https://www.google.com/maps/search/?api=1&query=%E3%82%B3%E3%83%B3%E3%83%91%E3%83%AB%20%E3%82%B5%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%E5%BA%97&query_place_id=ChIJ_b1H2HV3A2ARM1ZUBuk0Rxw']
+NOTE 阿彰 | 記帳「記下這筆」按鈕位置（未捲動時） | {'top': 778, 'bottom': 832, 'vh': 844}
+NOTE 阿彰 | 迷路時從首頁到「給司機看」需要的點擊數 | {'點擊': 3, '步驟': ['點求助', '預設在日常日文，要切到「緊急求助」', '往下找飯店卡', '按「給司機看」']}
+NOTE 阿彰 | 回家導航網址 | https://www.google.com/maps/dir/?api=1&destination=%E3%83%A9%E3%83%B3%E3%83%97%E3%83%A9%E3%82%A4%E3%83%88%E3%83%96%E3%83%83%E3%82%AF%E3%82%B9%E3%83%9B%E3%83%86%E3%83%AB%E5%90%8D%E5%8F%A4%E5%B1%8B&destination_place_id=ChIJ74aBvtd2A2AR8TRTA-QLXZM&travelmode=transit
+NOTE 最後一天 | 07:40 開著 App 的提醒 | 5 分鐘後：先辦退稅，再託運 07:45・免稅品帶在身上，到退稅機出示護照
+NOTE 回顧 | 沒有任何資料時最後一頁 | {'頁數': 3, '內容': '8 天走了 32 個地方的 名古屋旅行二人組 特徵 32 個地方 旅行紀錄 去了 32 個地方，蓋滿 8 個章 阿彰的一句話 這趟沒有留下心情 星星的一句話 這趟沒有留下心情 再看一次 存成圖片', 'errs': []}
+TOTAL 14 FAIL 1
+ADAPT {"exp": 3, "tab": 0, "sos": 0, "msg": 0}

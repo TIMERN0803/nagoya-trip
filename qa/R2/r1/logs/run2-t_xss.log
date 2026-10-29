@@ -1,0 +1,9 @@
+PASS XSS | 雲端資料含 HTML／script：所有頁面都跳脫、沒有執行 | {'__xss': 0, 'visited': ['home', 'acct', 'list', 'pack', 'day3', 'day1 stay', 'sos emg', 'sos edit', 'story'], 'errs': []}
+NOTE XSS | 旅平險電話含奇怪字元時的 tel: 連結 | []
+PASS XSS | 輸入欄位輸入 HTML 後原樣顯示文字、不執行 | {'__xss': 0, '顯示原文': True}
+PASS 輸入邊界 | 待辦名稱只有空白：不新增、停在表單
+NOTE 輸入邊界 | 名稱欄位上限（maxlength） | 40
+PASS 輸入邊界 | emoji（含 ZWJ 家庭）與日文正常存取顯示
+NOTE 輸入邊界 | 心情 600 字輸入後實際長度（maxlength） | 200
+TOTAL 7 FAIL 0
+ADAPT {"exp": 1, "tab": 1, "sos": 0, "msg": 0}

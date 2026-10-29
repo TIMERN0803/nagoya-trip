@@ -1,0 +1,10 @@
+FAIL listener 洩漏 | 求助 開關 30 次：listeners 69→75，nodes 1909→3481
+PASS listener 洩漏 | 錢包 開關 30 次：listeners 69→72，nodes 1909→3024
+FAIL listener 洩漏 | 行事曆 開關 30 次：listeners 69→102，nodes 1909→3968
+PASS listener 洩漏 | 出發前設定 開關 30 次：listeners 69→70，nodes 1909→3207
+FAIL listener 洩漏 | 地圖檢視器 開關 30 次：listeners 69→304，nodes 1909→3475
+FAIL listener 洩漏 | 給司機看 開關 30 次：listeners 69→102，nodes 1909→3741
+FAIL listener 洩漏 | 回顧故事 開關 30 次：listeners 69→76，nodes 2149→3076
+PASS listener 洩漏 | 首頁重畫 開關 30 次：listeners 69→69，nodes 1909→2956
+TOTAL 8 FAIL 5
+ADAPT {"exp": 0, "tab": 0, "sos": 0, "msg": 0}

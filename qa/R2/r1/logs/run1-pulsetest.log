@@ -1,0 +1,8 @@
+PASS first open pulses
+PASS ring light brown
+PASS stops after 10s
+PASS same item on reopen: no pulse
+PASS item changed
+PASS change pulses
+PASS no errors
+7/7 passed []

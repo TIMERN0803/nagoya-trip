@@ -1,0 +1,12 @@
+FAIL SW | 第一次開啟後 SW 接管、建立 ngy-v44 快取 | ['ngy-v9044', 'ngy-lib']
+PASS SW | 只開過一次（沒重新整理）就離線，仍能打開 | 名古屋看花花
+11/17 – 11/24・兩個人的旅行
+求助
+NOTE SW | 新版上線後 SW 狀態（重開 6 秒後／手動 update 後） | [{'active': 'activated', 'waiting': False, 'installing': False}, {'active': 'activated', 'waiting': False, 'installing': False}, ['ngy-lib', 'ngy-v9045']]
+PASS SW | 新版上線後重開一次就是新版頁面（網路優先） | {'第一次重開': 'v45', '第二次': 'v45'}
+FAIL SW | 舊快取 ngy-v44 被清掉 | {'第一次重開後': ['ngy-lib', 'ngy-v9045'], '第二次': ['ngy-lib', 'ngy-v9045']}
+PASS SW | 更新後離線開啟是新版 | v45
+PASS SW | 離線時開啟帶查詢參數的連結（?fbclid=…）仍顯示 App | 名古屋看花花
+11/17 – 11/24
+NOTE SW | Firebase 程式庫（www.gstatic.com）快取優先策略：Playwright route 會攔在 SW 之前，本機無法驗證，列入實機測試 | 
+TOTAL 8 FAIL 2

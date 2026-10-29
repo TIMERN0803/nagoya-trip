@@ -1,0 +1,12 @@
+t_layout rc=0 pass=17 fail=1 note=6 tb=0 ADAPT {"exp": 1, "tab": 0, "sos": 0, "msg": 0} 58s
+t_money rc=1 pass=6 fail=0 note=1 tb=1 ADAPT {"exp": 2, "tab": 0, "sos": 0, "msg": 0} 7s
+t_offline rc=1 pass=4 fail=0 note=0 tb=1 ADAPT {"exp": 3, "tab": 1, "sos": 0, "msg": 3} 19s
+t_slowlib rc=0 pass=10 fail=0 note=4 tb=0 ADAPT {"exp": 2, "tab": 2, "sos": 0, "msg": 0} 22s
+t_slowserver rc=0 pass=6 fail=0 note=2 tb=0 ADAPT {"exp": 0, "tab": 2, "sos": 0, "msg": 0} 29s
+t_sos rc=1 pass=4 fail=2 note=2 tb=1 ADAPT {"exp": 0, "tab": 0, "sos": 2, "msg": 0} 39s
+t_stress rc=1 pass=0 fail=0 note=0 tb=1 ADAPT {"exp": 1, "tab": 0, "sos": 0, "msg": 0} 5s
+t_sync rc=1 pass=1 fail=0 note=1 tb=1 ADAPT {"exp": 1, "tab": 0, "sos": 0, "msg": 0} 50s
+t_ux rc=1 pass=1 fail=1 note=8 tb=1 ADAPT {"exp": 2, "tab": 0, "sos": 0, "msg": 0} 51s
+t_xss rc=0 pass=4 fail=0 note=3 tb=0 ADAPT {"exp": 1, "tab": 1, "sos": 0, "msg": 0} 13s
+t_leak rc=0 pass=3 fail=5 note=0 tb=0 ADAPT {"exp": 0, "tab": 0, "sos": 0, "msg": 0} 20s
+DONE

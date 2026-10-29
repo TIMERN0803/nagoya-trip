@@ -1,0 +1,26 @@
+PASS 版面 | 320×568 各頁沒有水平捲動 | {'home': 320, 'wx': 320, 'move': 320, 'acct': 320, 'list': 320, 'day': 320}
+PASS 版面 | 320×568 浮動按鈕不壓到底部分頁 | {'sw': 320, 'fab': [168, 406, 304, 464], 'tabs': [489, 568], 'overlap': False, 'tabH': 79, 'tabsVisibleH': 79}
+PASS 版面 | 375×667 各頁沒有水平捲動 | {'home': 375, 'wx': 375, 'move': 375, 'acct': 375, 'list': 375, 'day': 375}
+PASS 版面 | 375×667 浮動按鈕不壓到底部分頁 | {'sw': 375, 'fab': [223, 504, 359, 563], 'tabs': [588, 667], 'overlap': False, 'tabH': 79, 'tabsVisibleH': 79}
+PASS 版面 | 390×844 各頁沒有水平捲動 | {'home': 390, 'wx': 390, 'move': 390, 'acct': 390, 'list': 390, 'day': 390}
+PASS 版面 | 390×844 浮動按鈕不壓到底部分頁 | {'sw': 390, 'fab': [238, 681, 374, 740], 'tabs': [765, 844], 'overlap': False, 'tabH': 79, 'tabsVisibleH': 79}
+PASS 版面 | 430×932 各頁沒有水平捲動 | {'home': 430, 'wx': 430, 'move': 430, 'acct': 430, 'list': 430, 'day': 430}
+PASS 版面 | 430×932 浮動按鈕不壓到底部分頁 | {'sw': 430, 'fab': [278, 770, 414, 828], 'tabs': [853, 932], 'overlap': False, 'tabH': 79, 'tabsVisibleH': 79}
+PASS 版面 | 844×390 各頁沒有水平捲動 | {'home': 844, 'wx': 844, 'move': 844, 'acct': 844, 'list': 844, 'day': 844}
+PASS 版面 | 844×390 浮動按鈕不壓到底部分頁 | {'sw': 844, 'fab': [692, 227, 828, 286], 'tabs': [311, 390], 'overlap': False, 'tabH': 79, 'tabsVisibleH': 79}
+PASS 版面 | 667×375 各頁沒有水平捲動 | {'home': 667, 'wx': 667, 'move': 667, 'acct': 667, 'list': 667, 'day': 667}
+PASS 版面 | 667×375 浮動按鈕不壓到底部分頁 | {'sw': 667, 'fab': [515, 212, 651, 271], 'tabs': [296, 375], 'overlap': False, 'tabH': 79, 'tabsVisibleH': 79}
+NOTE 版面 | 橫向 844×390 求助面板：固定標題後剩下可捲動內容高度 | {'top': 74, 'h': 359, 'vh': 390, 'contentVisible': 225}
+NOTE 版面 | 底部分頁 padding-bottom（未模擬 inset 時） | {'pb': '10px', 'bottom': '0px'}
+NOTE 對比 | WCAG AA 不足的文字（去重，依對比由低到高，前 40） | ['當天行程｜送出｜15px/900｜rgb(110, 94, 82)｜4.38:1（需 4.5）']
+FAIL 對比 | 所有頁面文字對比 ≥ AA（共 1 種不足）
+NOTE 觸控目標 | 小於 44×44 的可點元素（去重） | ['a.chip「VJW」75×31', 'a.chip「填寫教學」97×31', 'a「走路約 16 分，開啟 Goog」187×40', 'a「走路約 2 分，開啟 Googl」143×40', 'a「走路約 22 分，開啟 Goog」252×40', 'a「走路約 9 分，開啟 Googl」143×40', 'a「電車約 57 分，開啟 Goog」180×40', 'button.back「全部天數」104×36', 'button.back「清單」76×36', 'button.da-done「完成」60×40', 'button.day-btn「11/17（二）」41×47', 'button.day-btn「11/18（三）」41×47', 'button.day-btn「11/19（四）」41×47', 'button.day-btn「11/20（五）」41×47', 'button.day-btn「11/21（六）」41×47', 'button.day-btn「11/22（日）」41×47', 'button.day-btn「11/23（一）」41×47', 'button.day-btn「11/24（二）」41×47', 'button.edit-btn「編輯 Visit Japan W」40×40', 'button.edit-btn「編輯 乳液、護唇膏」40
+NOTE 無障礙 | 沒有可讀名稱的互動元素 | {}
+PASS 無障礙 | 全螢幕放大畫面打開後焦點移到畫面內（讀屏會讀到大字） | {'show': 'dialog', 'modal': 'true', 'focus': 's-body sos-text'}
+PASS 無障礙 | prefers-reduced-motion 時沒有無限循環動畫 | []
+PASS 版面 | 200% 縮放（195 CSS px 寬）沒有水平捲動 | {'home': {'sw': 195, 'iw': 195}, 'acct': 195}
+NOTE 鍵盤 | 首頁按 Tab 25 次的焦點順序 | ['東山動植物園\n11/20', '熱田神宮\n11/21 週', '常滑\n11/22 週日', '名駅・榮\n11/23 週', '回家\n11/24 週二', '要買的\n0 / 5 已買', '11/17 心情', '11/18 心情', '11/19 心情', 'App 內提醒\n關閉中', '加到手機行事曆\n加一次，', '行程', '天氣', '交通', '記帳', '清單', '現在：搭名鐵到犬山，看行', '名古屋看花花\n11/17〔無焦點框〕', '求助：飯店地址、緊急電話', '待辦完成 0 項，共 5', '要買的已買 0 項，共 ', '目前花費 ¥0', '犬山一日\n犬山城 → 城', '寫今天的心情\n今天才剛開', '已過期限 4 天 3 小']
+PASS 鍵盤 | 只用鍵盤可完成記一筆帳
+PASS 鍵盤 | 排序把手（role=button, tabindex=0）可用鍵盤移動
+TOTAL 24 FAIL 1
+ADAPT {"exp": 1, "tab": 0, "sos": 0, "msg": 0}

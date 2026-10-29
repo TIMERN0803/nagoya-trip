@@ -1,0 +1,241 @@
+diff -ru '--exclude=out_*' '--exclude=__pycache__' nagoya-tools/qa/claude/scripts/qa_common.py build/qa/claude/scripts/qa_common.py
+--- nagoya-tools/qa/claude/scripts/qa_common.py	2026-10-28 18:26:21.764343970 +0800
++++ build/qa/claude/scripts/qa_common.py	2026-10-29 09:30:23.563862277 +0800
+@@ -91,3 +91,46 @@
+     json.dump(R, open(f"/home/claude/qa/scripts/out_{name}.json", "w"), ensure_ascii=False, indent=1, default=str)
+     bad = [r for r in R if r[2] is False]
+     print("TOTAL", len(R), "FAIL", len(bad))
++
++# ===== R2 批 1 轉接層（2026-10-29，只在工作複本，不進 repo）=====
++# v44 之後介面改了：記帳表單搬進「記一筆」面板（10/27）、清單改成待辦／要買的分頁（10/26）、
++# 求助面板改版（3A）。腳本照舊寫舊選擇器，這裡在用到時先做「人會做的那一步」：打開記一筆、切到對應分頁。
++# 只補「找得到元素」，不改判斷。依賴這層的結果在 REPORT 標註。
++from playwright.async_api import Page as _P
++_EXP = ('#f-amt', '#f-save', '#f-note', '#f-msg', '[data-pick=', '[data-tf-toggle]', '#f-tf', '#f-date')
++ADAPT = {"exp": 0, "tab": 0, "sos": 0, "msg": 0}
++async def _prep(pg, sel):
++    if not isinstance(sel, str): return sel
++    s = sel.replace('.sos [data-sos-show', '[data-sos-show')
++    if s != sel:
++        ADAPT["sos"] += 1; s = s + ' >> visible=true'
++    if s.startswith('#f-msg'):
++        if not await _orig_qs(pg, '.exp-sheet:not(.leaving) #f-msg'):
++            ADAPT["msg"] += 1; s = '#acct-note'
++        else: s = '.exp-sheet:not(.leaving) ' + s
++    elif s.startswith(_EXP) or any(k in s for k in _EXP[:3]):
++        try:
++            if not await _orig_qs(pg, '.exp-sheet:not(.leaving) #f-amt') and await _orig_qs(pg, '[data-exp-new]'):
++                ADAPT["exp"] += 1; await _orig_click(pg, '[data-exp-new]'); await pg.wait_for_timeout(650)
++        except Exception: pass
++        if s.startswith('#f-'): s = '.exp-sheet:not(.leaving) ' + s
++    for g in ('buy', 'prep'):
++        if f'data-item-new="{g}"' in s and not await _orig_qs(pg, s) and await _orig_qs(pg, f'[data-list-tab="{g}"]'):
++            ADAPT["tab"] += 1; await _orig_click(pg, f'[data-list-tab="{g}"]'); await pg.wait_for_timeout(300)
++    return s
++_orig_qs, _orig_click = _P.query_selector, _P.click
++def _wrap(name):
++    orig = getattr(_P, name)
++    async def w(self, selector, *a, **k):
++        return await orig(self, await _prep(self, selector), *a, **k)
++    setattr(_P, name, w)
++for _n in ('fill', 'click', 'focus', 'type', 'press', 'input_value', 'inner_text', 'is_visible', 'wait_for_selector', 'query_selector', 'check', 'dispatch_event', 'text_content'):
++    _wrap(_n)
++_orig_eval = _P.evaluate
++async def _eval(self, expr, *a, **k):
++    if isinstance(expr, str) and ('"f-save"' in expr or '"f-amt"' in expr or "#f-amt" in expr or '"f-day"' in expr or 'data-pick' in expr) and '"f-msg").innerText.includes' not in expr:
++        await _prep(self, '#f-amt')
++    return await _orig_eval(self, expr, *a, **k)
++_P.evaluate = _eval
++import atexit as _ax
++_ax.register(lambda: print("ADAPT", json.dumps(ADAPT), flush=True))
+diff -ru '--exclude=out_*' '--exclude=__pycache__' nagoya-tools/qa/claude/scripts/t_money.py build/qa/claude/scripts/t_money.py
+--- nagoya-tools/qa/claude/scripts/t_money.py	2026-10-28 18:26:21.764343970 +0800
++++ build/qa/claude/scripts/t_money.py	2026-10-29 09:46:08.301427628 +0800
+@@ -49,7 +49,12 @@
+         await add_exp(pg,1000,"cash",note="阿彰的咖啡")
+         e=[x for x in await exps(pg) if x.get("note")=="阿彰的咖啡"][0]
+         q.rec("記帳編輯","→ 不改選項直接記下：這筆被記成誰的？哪一天？",e["who"]=="zhang" and e["day"]=="11/21",{k:e[k] for k in("who","split","day","pay")})
+-        await pg.click('.ex[data-edit="s1"]'); await pg.wait_for_timeout(200); await pg.click('#f-cancel'); await pg.wait_for_timeout(200)
++        await pg.click('.ex[data-edit="s1"]'); await pg.wait_for_timeout(200)
++        # R2：「取消修改」改成關掉修改面板（10/27 記一筆面板）
++        if await pg.query_selector('.exp-sheet:not(.leaving)'):
++            await pg.click('.exp-sheet:not(.leaving) [data-exp-x]'); await pg.wait_for_timeout(350)
++            if await pg.query_selector('.exp-sheet:not(.leaving) .exp-confirm'): await pg.click('[data-exp-discard]')
++            await pg.wait_for_timeout(350)
+         st2=await pg.evaluate('({who:document.querySelector("[data-pick=who] [aria-pressed=true]")?.dataset.v,day:document.getElementById("f-day").value})')
+         q.rec("記帳編輯","按「取消修改」後預設值回到自己／今天",st2["who"]=="zhang" and st2["day"]=="11/21",st2)
+         await ctx.close()
+@@ -150,6 +155,7 @@
+         items3=[v for v in (await q.mock(pg,"/items/")).values() if v.get("title")=="慢網路連點"]
+         q.rec("快速連點","寫入延遲 600ms 時連點「新增」3 次只新增 1 筆",len(items3)==1,f"雲端 {len(items3)} 筆")
+         await pg.evaluate('window.__writeDelay=0')
++        await pg.click('[data-list-tab="buy"]'); await pg.wait_for_timeout(300)  # R2：清單分頁
+         cid=await pg.evaluate('document.querySelector("[data-group-id=buy] .chk input").id')
+         await pg.evaluate(f'(()=>{{for(let i=0;i<10;i++){{document.getElementById("{cid}").click()}}}})()'); await pg.wait_for_timeout(600)
+         st=await pg.evaluate(f'({{ui:document.getElementById("{cid}").checked,db:(JSON.parse(localStorage.getItem("mockdb"))["{B}/checks/{cid[2:]}"]||{{}}).done}})')
+@@ -163,7 +169,7 @@
+         ctx=await q.mkctx(b); pg=await q.page(ctx,q.jst(11,19,12,0)); await acct(pg)
+         await pg.evaluate('window.__writeDelay=800')
+         await pg.fill('#f-amt','777')
+-        await pg.evaluate('(()=>{for(let i=0;i<10;i++)document.querySelector("#f-save").click()})()'); await pg.wait_for_timeout(1500)
++        await pg.evaluate('(()=>{for(let i=0;i<10;i++)document.querySelector("#f-save")?.click()})()'); await pg.wait_for_timeout(1500)
+         n=len([e for e in await exps(pg) if e["amt"]==777])
+         q.rec("快速連點","「記下這筆」慢網路連點 10 次只記 1 筆",n==1,n)
+         await pg.evaluate('window.__writeDelay=3000')
+diff -ru '--exclude=out_*' '--exclude=__pycache__' nagoya-tools/qa/claude/scripts/t_offline.py build/qa/claude/scripts/t_offline.py
+--- nagoya-tools/qa/claude/scripts/t_offline.py	2026-10-28 18:26:21.765466103 +0800
++++ build/qa/claude/scripts/t_offline.py	2026-10-29 09:35:09.789161025 +0800
+@@ -42,6 +42,7 @@
+         await pg.clock.install(time=q.jst(11,19,20,0)); await pg.goto('http://localhost:8766/'); await pg.wait_for_timeout(1500)
+         await q.tab(pg,"list"); s0=await pg.evaluate(SYNC)
+         await pg.click('[data-item-new="buy"]'); await pg.fill('.chk-form input[name=title]','離線時新增的要買'); await pg.click('.chk-form .primary'); await pg.wait_for_timeout(300)
++        await pg.click('[data-list-tab="prep"]'); await pg.wait_for_timeout(300)  # R2：待辦在「待辦」分頁
+         cid=await pg.evaluate('document.querySelector("[data-group-id=prep] .chk input:not(:checked)").id'); await pg.check('#'+cid); await pg.wait_for_timeout(200)
+         await q.tab(pg,"acct"); await pg.fill('#f-amt','1200'); await pg.fill('#f-note','離線記帳'); await pg.click('#f-save'); await pg.wait_for_timeout(300)
+         await pg.click('.wchip'); await pg.wait_for_timeout(200)
+@@ -105,6 +106,10 @@
+         q.rec("離線（已快取）","→ 切分頁回來表單還留著同一筆，再按一次會重複記帳",n_srv==1,{"切回來時":r2,"本機筆數":n_local,"恢復連線後雲端筆數":n_srv})
+         # 錢包：離線補錢
+         await pg.evaluate('__goOffline()')
++        if await pg.query_selector('.exp-sheet:not(.leaving)'):  # R2：記一筆面板蓋住錢包
++            await pg.click('.exp-sheet:not(.leaving) [data-exp-x]'); await pg.wait_for_timeout(350)
++            if await pg.query_selector('.exp-sheet:not(.leaving) .exp-confirm'): await pg.click('[data-exp-discard]')
++            await pg.wait_for_timeout(350)
+         await pg.click('.wchip'); await pg.wait_for_timeout(200)
+         await pg.click('.ws [data-wallet-edit][data-mode="add"]'); await pg.fill('.ws .w-form input','10000'); await pg.click('.ws .w-form .primary'); await pg.wait_for_timeout(800)
+         ws=await pg.evaluate('({form:!!document.querySelector(".ws .w-form"),hero:document.querySelector(".ws-hero").innerText.replace(/\\s+/g," ")})')
+diff -ru '--exclude=out_*' '--exclude=__pycache__' nagoya-tools/qa/claude/scripts/t_sos.py build/qa/claude/scripts/t_sos.py
+--- nagoya-tools/qa/claude/scripts/t_sos.py	2026-10-28 18:26:21.765466103 +0800
++++ build/qa/claude/scripts/t_sos.py	2026-10-29 09:44:49.481161933 +0800
+@@ -26,7 +26,7 @@
+         q.rec("求助","「求助」按鈕在每個分頁都找得到（迷路時不用先回首頁）",all(where.values()),where)
+         await open_sos(pg)
+         # 鍵盤 Escape
+-        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(200)
++        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(450)  # R2：退場動畫 0.25 秒
+         q.rec("求助","外接鍵盤按 Esc 可關閉求助面板",not await pg.query_selector('.sheet-modal .sos'))
+         await pg.evaluate('document.querySelector(".sheet-modal")?.remove();sosSheet=null;document.body.style.overflow=""')
+         await open_sos(pg)
+@@ -58,22 +58,23 @@
+         closed=not await pg.query_selector('.sos-show')
+         q.rec("求助","「給司機看」全螢幕：點到畫面文字（司機想指著看）不應直接關閉",not closed,"點文字就關閉" if closed else "")
+         # 橫向
++        if await pg.query_selector('.sos-show'): await pg.keyboard.press("Escape"); await pg.wait_for_timeout(450)  # R2：只能 × 或 Esc 關（C4）
+         await pg.set_viewport_size({"width":844,"height":390}); await pg.wait_for_timeout(200)
+         await pg.click('.sos [data-sos-show="hotel"]'); await pg.wait_for_timeout(250)
+         lay=await pg.evaluate('(()=>{const v=document.querySelector(".sos-show");const els=[...v.children].map(e=>{const r=e.getBoundingClientRect();return [e.className,Math.round(r.top),Math.round(r.bottom)]});return {sh:v.scrollHeight,ch:v.clientHeight,els}})()')
+         await pg.screenshot(path=q.SHOTS+"sos_hotel_show_landscape.png")
+         hidden=[e for e in lay["els"] if e[1]<0 or e[2]>390]
+         q.rec("求助","橫向（844×390）「給司機看」內容完整可見或可捲動",not hidden or lay["sh"]>lay["ch"],lay)
+-        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(150)
++        await pg.keyboard.press("Escape"); await pg.wait_for_timeout(450)  # R2：退場動畫
+         esc_closed=not await pg.query_selector('.sos-show')
+         q.rec("求助","外接鍵盤 Esc 可關閉全螢幕",esc_closed)
+-        await pg.evaluate('document.querySelector(".sos-show")?.remove()')
++        await pg.evaluate('document.querySelector(".sos-show:not(.leaving) .sm-x")?.click()'); await pg.wait_for_timeout(450)  # R2：用 × 關（3A 要還原焦點與 inert）
+         await pg.set_viewport_size({"width":320,"height":568}); await pg.wait_for_timeout(200)
+         await pg.click('.sos [data-sos-show="hotel"]'); await pg.wait_for_timeout(250)
+         lay2=await pg.evaluate('(()=>{const v=document.querySelector(".sos-show");return [...v.children].map(e=>{const r=e.getBoundingClientRect();return [e.className,Math.round(r.top),Math.round(r.bottom),Math.round(r.right)]})})()')
+         await pg.screenshot(path=q.SHOTS+"sos_hotel_show_320.png")
+         q.rec("求助","320×568（iPhone SE 1）「給司機看」內容不超出畫面",all(e[1]>=0 and e[2]<=568 and e[3]<=320 for e in lay2),lay2)
+-        await pg.evaluate('document.querySelector(".sos-show")?.remove()')
++        await pg.evaluate('document.querySelector(".sos-show:not(.leaving) .sm-x")?.click()'); await pg.wait_for_timeout(450)  # R2：用 × 關（3A 要還原焦點與 inert）
+         await pg.set_viewport_size({"width":390,"height":844})
+         # 語音邊界
+         await pg.click('[data-sos-tab="talk"]'); await pg.wait_for_timeout(200)
+@@ -93,28 +94,28 @@
+         await pg.click('.sos-ph button >> nth=2'); await pg.wait_for_timeout(100)
+         c1=await pg.evaluate('window._cancel')
+         q.rec("語音","播放中關閉→點另一句：上一句被停止",c1>c0,[c0,c1])
+-        await pg.evaluate('document.querySelector(".sos-show")?.remove()')
++        await pg.evaluate('document.querySelector(".sos-show:not(.leaving) .sm-x")?.click()'); await pg.wait_for_timeout(450)  # R2：用 × 關（3A 要還原焦點與 inert）
+         # getVoices 先空，按播放後才載入（iOS 常見）
+         await pg.evaluate('window._voices=[]')
+         await pg.click('.sos-ph button >> nth=3'); await pg.wait_for_timeout(100)
+         await pg.click('.sos-show [data-say]'); await pg.wait_for_timeout(50)
+         said=(await pg.evaluate('window._said'))[-1]
+         q.rec("語音","getVoices() 空陣列時仍以 ja-JP 播放",said["lang"]=="ja-JP",said)
+-        await pg.evaluate('document.querySelector(".sos-show")?.remove()')
++        await pg.evaluate('document.querySelector(".sos-show:not(.leaving) .sm-x")?.click()'); await pg.wait_for_timeout(450)  # R2：用 × 關（3A 要還原焦點與 inert）
+         await pg.evaluate('window._voices=[{lang:"en-US",name:"Samantha"},{lang:"zh-TW",name:"Meijia"}]')
+         await pg.click('.sos-ph button >> nth=3'); await pg.wait_for_timeout(100)
+         await pg.click('.sos-show [data-say]'); await pg.wait_for_timeout(50)
+         lab3=await pg.inner_text('.sos-show [data-say]')
+         q.rec("語音","沒有日文語音時按鈕改顯示說明","沒有日文語音" in lab3,lab3)
+         await pg.screenshot(path=q.SHOTS+"voice_no_ja.png")
+-        await pg.evaluate('document.querySelector(".sos-show")?.remove()')
++        await pg.evaluate('document.querySelector(".sos-show:not(.leaving) .sm-x")?.click()'); await pg.wait_for_timeout(450)  # R2：用 × 關（3A 要還原焦點與 inert）
+         # 'ja_JP' 格式（Android 某些版本）
+         await pg.evaluate('window._voices=[{lang:"ja_JP",name:"Google 日本語"}]')
+         await pg.click('.sos-ph button >> nth=3'); await pg.wait_for_timeout(100)
+         await pg.click('.sos-show [data-say]'); await pg.wait_for_timeout(50)
+         said=(await pg.evaluate('window._said'))[-1]
+         q.rec("語音","Android 'ja_JP' 格式語音也能被選到",said.get("voice")=="Google 日本語",said)
+-        await pg.evaluate('document.querySelector(".sos-show")?.remove()')
++        await pg.evaluate('document.querySelector(".sos-show:not(.leaving) .sm-x")?.click()'); await pg.wait_for_timeout(450)  # R2：用 × 關（3A 要還原焦點與 inert）
+         # 求助打開時關閉 → 預設停在日常日文
+         await pg.click('.sos [data-sos-tab="emg"]'); await pg.click('.sos .sm-head .sm-x'); await pg.wait_for_timeout(100)
+         await pg.click('[data-sos]'); await pg.wait_for_timeout(200)
+diff -ru '--exclude=out_*' '--exclude=__pycache__' nagoya-tools/qa/claude/scripts/t_stress.py build/qa/claude/scripts/t_stress.py
+--- nagoya-tools/qa/claude/scripts/t_stress.py	2026-10-28 18:26:21.765466103 +0800
++++ build/qa/claude/scripts/t_stress.py	2026-10-29 09:35:09.789721585 +0800
+@@ -28,7 +28,7 @@
+             ta=await timed(pg,'tab="acct";render()')
+             # 新增一筆（含 snapshot 回來後重畫）的時間
+             await pg.fill('#f-amt','123')
+-            tadd=await pg.evaluate('(async()=>{const t=performance.now();document.getElementById("f-save").click();await new Promise(r=>setTimeout(r,0));while(!document.getElementById("f-msg").innerText.includes("已記下"))await new Promise(r=>setTimeout(r,5));await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));return Math.round(performance.now()-t)})()')
++            tadd=await pg.evaluate('(async()=>{const t=performance.now();document.getElementById("f-save").click();await new Promise(r=>setTimeout(r,0));while(!((document.getElementById("acct-note")?.innerText||"")+(document.getElementById("f-msg")?.innerText||"")).includes("已記下"))await new Promise(r=>setTimeout(r,5));await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));return Math.round(performance.now()-t)})()')
+             # 一次 snapshot 觸發的重畫成本（模擬對方新增一筆）
+             tsnap=await timed(pg,'renderAcct()')
+             sm=await pg.inner_text('#acct-sum')
+@@ -59,7 +59,9 @@
+             for i in range(200): db[f"{B}/items/{g}{i:03d}"]={"group":g,"title":f"{g} 項目 {i}","note":"備註","due":"11/20 10:00" if g=="prep" and i%7==0 else "","order":base+i,**({"cat":"etc"} if g=="pack" else {})}
+         ctx=await q.mkctx(b); pg=await q.page(ctx,q.jst(11,19,12,0),init=q.seed(db)); await pg.wait_for_timeout(1500)
+         tl=await timed(pg,'tab="list";render()')
++        await pg.click('[data-list-tab="buy"]'); await pg.wait_for_timeout(300)  # R2：清單分頁
+         tchk=await pg.evaluate('(async()=>{const c=document.querySelector("#c-buy100");const t=performance.now();c.click();await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));return Math.round(performance.now()-t)})()')
++        await pg.click('[data-list-tab="prep"]'); await pg.wait_for_timeout(300)  # R2：清單分頁
+         tsort=await timed(pg,'document.querySelector("[data-sort-toggle=prep]").click()')
+         w0=await pg.evaluate('window.__writes||0')
+         ids=await pg.evaluate('[...document.querySelectorAll("[data-sort-id]")].map(x=>x.dataset.sortId)')
+diff -ru '--exclude=out_*' '--exclude=__pycache__' nagoya-tools/qa/claude/scripts/t_sync.py build/qa/claude/scripts/t_sync.py
+--- nagoya-tools/qa/claude/scripts/t_sync.py	2026-10-28 18:26:21.765466103 +0800
++++ build/qa/claude/scripts/t_sync.py	2026-10-29 09:30:23.564948251 +0800
+@@ -35,6 +35,7 @@
+         db2={**META,f"{B}/items/i1":{"group":"buy","title":"小倉山莊","note":"","due":"","order":1}}
+         ctx,a,s=await two(b,q.jst(11,19,20,0),db2)
+         for x in (a,s): await q.tab(x,"list")
++        for x in (a,s): await x.click('[data-list-tab="buy"]'); await x.wait_for_timeout(300)  # R2：清單分頁
+         await a.click('[data-item-edit="i1"]'); await a.wait_for_timeout(200); await a.click('[data-item-del="i1"]'); await a.wait_for_timeout(400)
+         # 對方在 5 秒內新增一筆同名（以為被刪了）
+         await s.click('[data-item-new="buy"]'); await s.fill('.chk-form input[name=title]','小倉山莊'); await s.click('.chk-form .primary'); await s.wait_for_timeout(300)
+@@ -47,6 +48,7 @@
+         db3={**META,**{f"{B}/items/{i}":{"group":"prep","title":t,"note":"","due":"","order":k+1} for k,(i,t) in enumerate(P)}}
+         ctx,a,s=await two(b,q.jst(11,10,20,0),db3)
+         for x in (a,s): await q.tab(x,"list")
++        for x in (a,s): await x.click('[data-list-tab="prep"]'); await x.wait_for_timeout(300)  # R2：清單分頁
+         await a.click('[data-sort-toggle=prep]'); await a.wait_for_timeout(300)
+         await s.click('[data-item-new="prep"]'); await s.fill('.chk-form input[name=title]','星星新增'); await s.click('.chk-form .primary'); await s.wait_for_timeout(500)
+         rows_a=await a.evaluate('[...document.querySelectorAll("[data-sort-id]")].map(x=>x.dataset.sortId)')
+@@ -62,6 +64,7 @@
+         # 5. 勾選同步、心情同一天兩人
+         ctx,a,s=await two(b,q.jst(11,19,21,0),{**META,f"{B}/items/i1":{"group":"buy","title":"ういろう","note":"","due":"","order":1}})
+         for x in (a,s): await q.tab(x,"list")
++        for x in (a,s): await x.click('[data-list-tab="buy"]'); await x.wait_for_timeout(300)  # R2：清單分頁
+         await a.check('#c-i1'); await s.wait_for_timeout(500)
+         q.rec("同步","A 勾選，B 畫面跟著勾",await s.evaluate('document.getElementById("c-i1").checked'))
+         await ctx.close()
+diff -ru '--exclude=out_*' '--exclude=__pycache__' nagoya-tools/qa/claude/scripts/t_ux.py build/qa/claude/scripts/t_ux.py
+--- nagoya-tools/qa/claude/scripts/t_ux.py	2026-10-28 18:26:21.765466103 +0800
++++ build/qa/claude/scripts/t_ux.py	2026-10-29 09:30:23.565117299 +0800
+@@ -82,6 +82,10 @@
+         await pg.screenshot(path=S+"zhang_08_acct_keyboard.png")
+         await pg.set_viewport_size({"width":390,"height":844})
+         # 求助 → 給司機看
++        if await pg.query_selector('.exp-sheet:not(.leaving)'):  # R2：記一筆面板
++            await pg.click('.exp-sheet:not(.leaving) [data-exp-x]'); await pg.wait_for_timeout(350)
++            if await pg.query_selector('.exp-sheet:not(.leaving) .exp-confirm'): await pg.click('[data-exp-discard]')
++            await pg.wait_for_timeout(350)
+         await q.home(pg); await pg.click('[data-sos]'); await pg.wait_for_timeout(200); await pg.screenshot(path=S+"zhang_09_sos_default.png")
+         steps=["點求助","預設在日常日文，要切到「緊急求助」","往下找飯店卡","按「給司機看」"]
+         await pg.click('[data-sos-tab="emg"]'); await pg.wait_for_timeout(200); await pg.screenshot(path=S+"zhang_10_sos_emg.png")

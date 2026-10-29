@@ -1,0 +1,20 @@
+t_coldcash rc=0 pass=2 fail=0 note=0 tb=0 15s
+t_extra rc=0 pass=3 fail=0 note=0 tb=0 8s
+t_land rc=0 pass=1 fail=0 note=0 tb=0 2s
+t_layout rc=1 pass=15 fail=1 note=6 tb=1 87s
+t_leak rc=0 pass=4 fail=4 note=0 tb=0 20s
+t_money rc=1 pass=0 fail=0 note=0 tb=1 32s
+t_offline rc=1 pass=0 fail=0 note=0 tb=1 33s
+t_slowlib rc=1 pass=0 fail=0 note=0 tb=1 34s
+t_slowserver rc=1 pass=0 fail=0 note=0 tb=1 34s
+t_sos rc=1 pass=5 fail=1 note=2 tb=1 39s
+t_stress rc=1 pass=0 fail=0 note=0 tb=1 34s
+t_sw rc=0 pass=4 fail=2 note=2 tb=0 31s
+t_swlib rc=0 pass=1 fail=0 note=3 tb=0 15s
+t_sync rc=1 pass=1 fail=0 note=0 tb=1 16s
+t_time rc=0 pass=4 fail=0 note=26 tb=0 283s
+t_ux rc=1 pass=1 fail=1 note=7 tb=1 49s
+t_xss rc=1 pass=1 fail=0 note=1 tb=1 37s
+x_independent rc=0 pass=75 fail=7 tb=4 151s
+pulsetest rc=0 pass=7 fail=0 tb=0 4s
+DONE
