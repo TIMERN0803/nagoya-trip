@@ -4,8 +4,9 @@
 
 ## 明彰要做的（Mac）
 1. 取得最新的兩個分支：`git fetch origin && git checkout main && git pull --ff-only`（應為 `a320dcc`）；tools 用 worktree：`git worktree add ../nagoya-tools origin/tools-qa-r2`（已有就 `git -C ../nagoya-tools pull --ff-only`）。
-2. 在 repo 根目錄啟動 Codex，貼上下面「提示」整段。
-3. Codex 只會寫 `EXEC_LOG.md`（repo 根目錄，不要 commit）。做完把整份 EXEC_LOG 內容貼到 Project 的新對話（見 Project `claude/QA_R2_批5_開工提示詞.md`）。
+2. 在 repo 根目錄開 **Claude Code**，用 Codex 外掛的 rescue（和欣晨 R2 批 1 同一個方式）把下面「提示」整段交給 Codex。Claude Code 只負責轉交與存檔，**審查本身要由 Codex 做**：換一個模型看，才找得到 Claude 這邊的誤報與漏掉。
+3. Codex 只會寫 `EXEC_LOG.md`（repo 根目錄，不要 commit）。如果 Codex 的結果是回到 Claude Code 畫面而不是寫檔，請 Claude Code 把 Codex 的回覆**原文**存成 `EXEC_LOG.md`，不要整理或改寫。
+4. 做完把整份 EXEC_LOG 內容貼到 Project 的新對話（見 Project `claude/QA_R2_批5_開工提示詞.md`）。
 
 ## lead 的修正時機判斷（10/29）
 批 3 的 4 項真問題**不先修，批 5 後一起修**：
