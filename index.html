@@ -40,7 +40,6 @@
 .hud-pill:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ol)}
 .hp-ic{width:28px;height:28px;flex:none;border-radius:50%;display:grid;place-items:center;border:2px solid var(--ol)}
 .hp-ic svg{width:16px;height:16px}
-.hp-day .hp-ic{background:var(--butter);color:var(--ol)}
 .hp-todo .hp-ic{background:var(--mint-soft);color:var(--mint-ink)}
 .hp-yen .hp-ic{background:var(--coral-soft);color:var(--coral-ink)}
 .hud-pill b{font-family:var(--f-display);font-weight:900;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}
@@ -468,14 +467,10 @@ button.sync{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .ws-acts{display:flex;gap:8px}
 .ws-acts button{flex:1;margin:0}
 .ws .w-swap{align-self:center}
-.w-head{display:flex;justify-content:space-between;align-items:baseline}
-.w-head h3{margin:0;font-size:17px}
-.w-ask{margin:2px 0 4px;font-size:14px;color:var(--muted);line-height:1.5}
 .w-who{display:flex;gap:8px}
 .w-who .pick{flex:1;justify-content:center;gap:6px}
 .w-who svg{width:30px;height:25px}
 .w-swap{border:0;background:none;padding:6px 0;font:inherit;font-size:13px;font-weight:700;color:var(--accent);font-family:var(--f-display);cursor:pointer}
-.w-head span{font-size:13px;color:var(--muted);font-family:var(--f-display);font-weight:700}
 .w-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:16px;background:var(--sunk)}
 .w-row.mine{background:var(--butter-soft)}
 .w-cat{width:34px;height:28px;flex:none}
@@ -485,7 +480,6 @@ button.sync{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .w-left{flex:none;font-family:var(--f-display);font-weight:900;font-size:20px;font-variant-numeric:tabular-nums;text-align:right}
 .w-left small{font-size:12px;color:var(--muted);margin-right:3px;font-weight:700}
 .w-left.low{color:var(--coral-ink)}
-.w-acts{display:flex;gap:6px;margin:0 0 4px 44px}
 .w-form{display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:16px;background:var(--butter-soft)}
 .w-mode{display:flex;gap:6px}
 .w-form .amt{display:flex;align-items:center;gap:6px;border:2px solid var(--line-strong);border-radius:16px;padding:4px 12px;background:var(--card)}
@@ -534,8 +528,6 @@ button.sync{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .pe-bar{flex:1;height:9px;border-radius:999px;background:var(--card);box-shadow:inset 0 0 0 1.5px var(--line-strong);overflow:hidden}
 .pe-bar i{display:block;height:100%;background:var(--butter);border-radius:999px;box-shadow:inset 0 0 0 1.5px #E8B94E}
 .pe-row small{font-family:var(--f-display);font-size:12px;font-weight:700;color:var(--brown);font-variant-numeric:tabular-nums;min-width:34px;text-align:right}
-.pe-go{display:inline-flex;align-items:center;gap:2px;align-self:flex-start;margin-top:2px;background:var(--accent);color:#fff;border-radius:999px;padding:4px 10px 4px 12px;font-family:var(--f-display);font-weight:900;font-size:13px}
-.pe-go svg{width:14px;height:14px}
 .pack-sum{display:flex;align-items:center;gap:12px;padding:12px 14px}
 .pack-sum .pe-art{width:92px;height:74px}
 .ps-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:7px}
@@ -543,10 +535,6 @@ button.sync{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .pt-toggle .switch{transform:scale(.85);transform-origin:left center;margin-right:-4px}
 .pack-done{display:flex;align-items:center;gap:10px;background:var(--butter-soft)}
 .pack-done svg{width:64px;height:40px;flex:none}
-.pk-prog{display:flex;gap:8px;font-family:var(--f-display);font-size:13px;font-weight:700;color:var(--brown)}
-.pk-prog span{display:inline-flex;align-items:center;gap:3px;background:var(--accent-soft);border-radius:8px;padding:1px 8px 1px 4px;font-variant-numeric:tabular-nums}
-.pk-prog svg{width:20px;height:17px}
-.pk-hint{margin:-4px 18px 6px;font-size:13px;color:var(--muted)}
 .pack-row .chk{cursor:default;align-items:center;padding-right:52px}
 .pack-row.mine-done .txt b{text-decoration:line-through;color:var(--muted)}
 .pk-btns{display:flex;gap:6px;flex:none}
@@ -634,7 +622,6 @@ body.has-fab .shell{padding-bottom:190px}
 .nowcard .nt b,.nowcard .nt small{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nowcard .nt small{font-size:13px;color:var(--muted)}
 .nowcard .nt b{font-weight:700}
-.nowcard .nl{flex:none;font-size:13px;color:var(--muted)}
 .nowcard .go{width:14px;height:14px;flex:none;color:var(--brown)}
 .nowcard.done{cursor:default;color:var(--muted)}
 .nowcard.done .nt b{color:var(--ink)}
@@ -654,19 +641,9 @@ body.has-fab .shell{padding-bottom:190px}
 .tile.today .art{outline:3px solid var(--mint-ink);outline-offset:3px}
 /* iOS 輸入框字小於 16px 會在點擊時自動放大畫面 */
 .field,.rate input,textarea,select{font-size:16px!important}
-.mood-cta,.mood-done{display:flex;align-items:center;gap:12px;width:calc(100% - 40px);margin:0 20px 18px;border:0;border-radius:20px;padding:12px 14px;text-align:left;cursor:pointer;font-family:var(--f-body)}
-.mood-cta{background:var(--accent);color:#fff;box-shadow:0 3px 0 var(--accent-deep)}
-.mood-cta:active{transform:translateY(2px);box-shadow:0 1px 0 var(--accent-deep)}
 .mc-faces{display:flex;flex:none}
 .mc-faces .face{width:30px;height:30px;margin-left:-8px;background:#fff;border-radius:50%;padding:1px}
 .mc-faces .face:first-child{margin-left:0}
-.mc-txt,.mood-done span{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.35}
-.mc-txt b,.mood-done b{font-family:var(--f-display);font-weight:900;font-size:17px}
-.mc-txt small{font-size:13px;opacity:.95}
-.mood-cta .go,.mood-done .go{width:20px;height:20px;flex:none}
-.mood-done{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
-.mood-done .face{width:40px;height:40px;flex:none}
-.mood-done small{font-size:13px;color:var(--muted)}
 .iam{display:flex;align-items:center;flex-wrap:wrap;gap:4px 8px;font-size:13px;color:var(--muted);margin:2px 0 4px}
 .iam b{color:var(--ink)}
 .linkbtn{position:relative;border:0;background:none;padding:6px 2px;color:var(--accent);font-weight:700;font-size:13px;text-decoration:underline;cursor:pointer;font-family:var(--f-body)}
@@ -732,9 +709,8 @@ body.has-fab .shell{padding-bottom:190px}
 .rm-txt small{font-size:13px;color:var(--muted)}
 .rm-row.cal small{color:rgba(255,255,255,.88)}
 .rm-row .go{width:20px;height:20px;flex:none}
-.sheet-modal{position:fixed;inset:0;z-index:55;background:rgba(43,36,32,.45);display:flex;align-items:flex-end;justify-content:center;animation:fadein .18s ease}
+.sheet-modal{position:fixed;inset:0;z-index:55;background:rgba(43,36,32,.45);display:flex;align-items:flex-end;justify-content:center}
 .sm-card{width:100%;max-width:520px;background:var(--card);border-radius:28px 28px 0 0;padding:16px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:10px;animation:sheetup .28s cubic-bezier(.2,.9,.3,1)}
-@keyframes sheetup{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
 .sm-head{display:flex;align-items:center;justify-content:space-between}
 /* 所有彈出面板：不超過畫面高度、內容可捲；標題列（求助是標題＋分頁）固定在面板頂端，捲動後下緣出現淡陰影 */
 .sm-card{max-height:92vh;max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
@@ -777,14 +753,7 @@ body.has-fab .shell{padding-bottom:190px}
 .ms-legend span{display:inline-flex;align-items:center;gap:4px}
 .ms-legend svg{width:16px;height:19px}
 .ms-legend .ms-note{margin-left:auto}
-.mapcard{width:100%;margin-top:18px;display:flex;align-items:center;gap:12px;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:20px;padding:10px 14px 10px 10px;box-shadow:var(--shadow);cursor:pointer;font-family:var(--f-body)}
-.mapcard img{width:84px;height:84px;border-radius:12px;object-fit:cover;flex:none}
-.mapcard span{flex:1;display:flex;flex-direction:column}
-.mapcard b{font-family:var(--f-display);font-weight:900;font-size:16px}
-.mapcard small{color:var(--muted);font-size:13px}
-.mapcard .go{width:20px;height:20px;color:var(--brown);flex:none}
-.mapcard:active{transform:scale(.98)}
-.viewer{position:fixed;inset:0;z-index:50;background:rgba(43,36,32,.94);touch-action:none;overflow:hidden;animation:fadein .18s ease}
+.viewer{position:fixed;inset:0;z-index:50;background:rgba(43,36,32,.94);touch-action:none;overflow:hidden}
 .viewer img{position:absolute;left:0;top:0;transform-origin:0 0;user-select:none;-webkit-user-select:none;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.4)}
 .vclose{position:absolute;top:calc(12px + env(safe-area-inset-top,0px));right:calc(12px + env(safe-area-inset-right,0px));width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#2B2420;display:grid;place-items:center;cursor:pointer}
 .vclose svg{width:20px;height:20px}
@@ -812,7 +781,6 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
 .step-a,.step-b{animation:step .8s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
 .step-b{animation-delay:-.4s}
 @keyframes step{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(2deg)}}
-.cats-bob{animation:bob 3.4s ease-in-out infinite;transform-box:fill-box;transform-origin:50% 100%}
 /* 首頁小動態：眨眼、偷看、尾巴、揮手、雲飄、點一下會跳 */
 .hero-cats{cursor:pointer}
 .hero-cats .cat-a,.hero-cats .cat-b{transform-box:fill-box;transform-origin:50% 100%;animation:breathe 3.6s ease-in-out infinite}
@@ -845,7 +813,6 @@ nav.tabs button[aria-selected="true"] .cl{opacity:1;transform:translate(-50%,-22
 @keyframes drift{from{transform:translateX(-6px)}to{transform:translateX(12px)}}
 @keyframes hop{0%{transform:translateY(0) scale(1,1)}25%{transform:translateY(0) scale(1.06,.92)}55%{transform:translateY(-12px) scale(.97,1.04)}85%{transform:translateY(0) scale(1.03,.97)}100%{transform:translateY(0) scale(1,1)}}
 @keyframes squint{0%,100%{transform:scaleY(1)}20%,70%{transform:scaleY(.15)}}
-@keyframes bob{50%{transform:translateY(-3px)}}
 @keyframes pop{from{transform:scale(.97);opacity:.5}to{transform:none;opacity:1}}
 /* 換頁轉場：只動 opacity 和 transform（GPU 合成，不重新排版）；只做新頁進場，不同時留兩頁 */
 /* ===== 記帳：清單頁的「記一筆」按鈕＋全螢幕填寫面板 ===== */
@@ -1098,8 +1065,6 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .setup-entry.all-done small{color:var(--mint-ink);font-weight:700}
 .su-sheet{max-height:90vh;overflow-y:auto;overscroll-behavior:contain}
 .su-intro{margin:-2px 2px 0;font-size:13.5px;color:var(--muted);line-height:1.5}
-.su-me{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted)}
-.su-me b{color:var(--ink)}
 .su-list{display:flex;flex-direction:column;gap:8px}
 .su-row{display:flex;align-items:flex-start;gap:10px;padding:11px 12px;border-radius:18px;background:var(--paper)}
 .su-row.done{background:var(--sunk)}
@@ -1197,11 +1162,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .st-page{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:calc(76px + env(safe-area-inset-top,0px)) 24px calc(40px + env(safe-area-inset-bottom,0px));text-align:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .st-page.on{opacity:1;pointer-events:auto}
 .st-page h2{margin:0;font-size:26px;line-height:1.3}
-.st-page .st-k{font-family:var(--f-display);font-weight:900;font-size:13px;letter-spacing:.18em;color:var(--brown)}
-.st-page .st-big{font-family:var(--f-display);font-weight:900;font-size:64px;line-height:1;font-variant-numeric:tabular-nums}
-.st-page .st-big small{font-size:22px;margin-left:4px}
 .st-page p{margin:0;font-size:15px;line-height:1.6;color:var(--muted)}
-.st-hint{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:12px;color:var(--muted);opacity:.8}
 .st-tap{position:absolute;z-index:2;top:0;bottom:0;width:34%;border:0;background:none;padding:0;cursor:pointer}
 .st-tap.prev{left:0}.st-tap.next{right:0;width:66%}
 .st-page .st-act{position:relative;z-index:3}
@@ -1425,7 +1386,6 @@ setTimeout(function(){if(s.isConnected)s.remove()},8000)})()</script>
     <linearGradient id="gWarm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBDDB7"/><stop offset="1" stop-color="#FFF4E4"/></linearGradient>
     <linearGradient id="gPink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7D3CB"/><stop offset="1" stop-color="#FFF1EC"/></linearGradient>
     <linearGradient id="gMint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CDEBE2"/><stop offset="1" stop-color="#F1FAF6"/></linearGradient>
-    <linearGradient id="gDusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C9C3E6"/><stop offset=".6" stop-color="#F6D2C4"/><stop offset="1" stop-color="#FCE7D8"/></linearGradient>
 
     <symbol id="w-sun" viewBox="0 0 32 32"><circle cx="16" cy="16" r="7" fill="#F4C04A"/><g stroke="#F4C04A" stroke-width="2.6" stroke-linecap="round"><path d="M16 3v3M16 26v3M3 16h3M26 16h3M6.8 6.8l2.1 2.1M23.1 23.1l2.1 2.1M6.8 25.2l2.1-2.1M23.1 8.9l2.1-2.1"/></g></symbol>
     <symbol id="w-cloudsun" viewBox="0 0 32 32"><circle cx="12" cy="12" r="6" fill="#F4C04A"/><path d="M10 26h14a5 5 0 0 0 0-10 7 7 0 0 0-13 2 4 4 0 0 0-1 8z" fill="#fff" stroke="#7FAFCF" stroke-width="2"/></symbol>
@@ -1746,7 +1706,7 @@ let editItem=null,pendingItemDel=null;
 const PEOPLE=[["zhang","阿彰","cat-b"],["star","星星","cat-w"]];
 const ECAT=[["food","餐飲","k-eat","c-eat"],["move","交通","k-move","c-move"],["shop","購物","k-buy","c-buy"],["ticket","門票","k-ticket","c-go"],["stay","住宿","k-stay","c-stay"],["etc","其他","k-etc","c-etc"]];
 
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store={get(k){try{return JSON.parse(localStorage.getItem("ngy:"+k))}catch(e){return null}},set(k,v){try{localStorage.setItem("ngy:"+k,JSON.stringify(v))}catch(e){}}};
 /* ===== 同步佇列：每一筆要寫到雲端的變更，先存在手機上（outbox），雲端確認收到後才刪掉。
    還沒連上（程式庫載入中、伺服器很慢、離線開 App）時的變更也會留著，連上後先送出；
@@ -1848,7 +1808,6 @@ const suKey=(k,w)=>"su-"+k+"@"+w;
 const suCnt=w=>SETUP.filter(r=>done[suKey(r[0],w)]).length;
 const PHONE_SVG=`<svg class="su-phone" viewBox="0 0 52 60" aria-hidden="true"><g stroke="#3F3127" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"><rect x="10" y="4" width="28" height="50" rx="7" fill="#fff"/><rect x="14" y="11" width="20" height="30" rx="3" fill="#F6D58A"/><path d="M20 48h8"/><path d="M18 26l4 4 8-8" fill="none" stroke="#24695A" stroke-width="3"/><circle cx="41" cy="12" r="8" fill="#EE9479"/><path d="M41 8v5M41 16v.1" stroke="#fff" stroke-width="2.4"/></g></svg>`;
 let sosInfo=store.get("sos")||{},sosSheet=null,sosEditing=false,stayEditing=false,sosBase=null;
-const sosEsc=v=>String(v==null?"":v).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const mapUrl=(q,pid)=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q)+(pid?"&query_place_id="+encodeURIComponent(pid):"");
 /* 外部連結只放行 http／https（links 是雲端資料，不能讓 javascript: 之類的網址變成可點的連結） */
 const ext=(label,href)=>!/^https?:\/\//i.test(String(href||"").trim())?`<span class="chip">${esc(label)}</span>`:`<a class="chip" href="${esc(href)}" target="_blank" rel="noopener"><svg><use href="#i-ext"/></svg>${esc(label)}</a>`;
@@ -1930,12 +1889,6 @@ function moodLineHTML(x,i){
  if(mv){const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])];
   return `<button class="mood-line" type="button" data-mood-day="${i}">${moodFace(mv.score)}<span class="ml"><b>今天：${MOODS[mv.score-1][1]}</b><small>${ov?`${other[1]}也寫了，點開看看`:`等${other?other[1]:"對方"}寫完一起看`}</small></span>${GO}</button>`}
  return `<button class="mood-line" type="button" data-mood-day="${i}"><span class="mc-faces">${[1,3,5].map(n=>moodFace(n)).join("")}</span><span class="ml"><b>寫今天的心情</b><small>${esc(moodHint(x))}</small></span>${GO}</button>`;
-}
-function moodCtaHTML(x,i){
- const mv=me&&moods[mk(x.d,me)];
- if(mv){const other=PEOPLE.find(p=>p[0]!==me),ov=other&&moods[mk(x.d,other[0])];
-  return `<button class="mood-done" type="button" data-mood-day="${i}">${moodFace(mv.score)}<span><b>今天的心情：${MOODS[mv.score-1][1]}</b><small>${ov?`${other[1]}也寫了，點開看看`:`等${other?other[1]:"對方"}寫完就能一起看`}</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
- return `<button class="mood-cta" type="button" data-mood-day="${i}"><span class="mc-faces">${[1,3,5].map(n=>moodFace(n)).join("")}</span><span class="mc-txt"><b>寫今天的心情</b><small>${moodHint(x)}</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 function moodLockedHTML(x){
  return `<section class="mood locked" id="mood" aria-disabled="true"><div class="mood-head"><h3>今天的心情</h3><span>${x.d}（${x.w}）</span></div>
@@ -2185,8 +2138,8 @@ function itemHTML(it,i,stat){
 }
 function stayOrdHTML(){
  if(stayEditing)return `<div class="stay-ord" data-stay-form>${sosFormHTML(BOOK_FIELDS,"data-stay-save")}</div>`;
- const v=k=>(sosInfo[k]||"").trim(),row=(l,k,c)=>`<dt>${l}</dt>${v(k)?`<dd${c?` class="${c}"`:""}>${sosEsc(v(k))}</dd>`:`<dd class="sos-empty">還沒填</dd>`}`;
- return `<div class="stay-ord"><dl class="sos-ord">${row("訂單編號","order","mono")}${row("訂房平台","via")}${row("訂房人","guest")}${row("房型","room")}${row("付款","pay")}${v("payNote")?`<div class="warn">${sosEsc(v("payNote"))}</div>`:""}</dl><div class="stay-row"><button type="button" class="stay-sos" data-sos-hotel>日文地址給司機看</button><button type="button" class="sos-edit" data-stay-edit>編輯訂房資料</button></div></div>`;
+ const v=k=>(sosInfo[k]||"").trim(),row=(l,k,c)=>`<dt>${l}</dt>${v(k)?`<dd${c?` class="${c}"`:""}>${esc(v(k))}</dd>`:`<dd class="sos-empty">還沒填</dd>`}`;
+ return `<div class="stay-ord"><dl class="sos-ord">${row("訂單編號","order","mono")}${row("訂房平台","via")}${row("訂房人","guest")}${row("房型","room")}${row("付款","pay")}${v("payNote")?`<div class="warn">${esc(v("payNote"))}</div>`:""}</dl><div class="stay-row"><button type="button" class="stay-sos" data-sos-hotel>日文地址給司機看</button><button type="button" class="sos-edit" data-stay-edit>編輯訂房資料</button></div></div>`;
 }
 document.addEventListener("click",async e=>{
  if(e.target.closest("[data-sos-hotel]")){sosShow("hotel");return}
@@ -3478,7 +3431,7 @@ async function fetchRate(force){
   for(const [name,url,pick] of RATE_SRC){
    if(g!==rateGen||!rateMeta.auto)return;
    try{const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),8000);const r=await fetch(url,{cache:"no-store",signal:ctl.signal});clearTimeout(to);if(!r.ok)continue;
-    const v=+pick(await r.json());if(!(v>0.1&&v<0.5))continue;
+    const v=+pick(await r.json());if(!(v>=0.1&&v<=0.5))continue;
     if(g!==rateGen||!rateMeta.auto)return;
     rate=Math.round(v*10000)/10000;rateMeta={auto:true,ts:Date.now(),src:name};store.set("rate",rate);store.set("rateMeta",rateMeta);
     if(tab==="acct")renderAcct();else if(tab==="plan"&&view==="home"&&todayIdx<0&&diff<=0)render(true);
@@ -3506,7 +3459,7 @@ function telHref(raw){
 }
 const SOS_HOTEL={pid:"ChIJ74aBvtd2A2AR8TRTA-QLXZM",jp:"ランプライトブックスホテル名古屋",zh:"名古屋燈光圖書飯店",zip:"〒460-0003",ad:"愛知県名古屋市中区錦1丁目13-18",tel:"052-231-7011",telI:"+81522317011",ac:"地下鐵東山線・鶴舞線「伏見站」10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋"};
 const BOOK_FIELDS=[["order","訂單編號"],["via","訂房平台"],["guest","訂房人"],["room","房型"],["pay","付款"],["payNote","提醒"]],INS_FIELDS=[["ins","旅平險公司"],["insTel","旅平險急難電話"]];
-const sosFormHTML=(fs,save)=>`<div class="sos-form">${fs.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${sosEsc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" ${save}>儲存</button></div></div>`;
+const sosFormHTML=(fs,save)=>`<div class="sos-form">${fs.map(([k,l])=>`<label>${l}<input data-sos-f="${k}" value="${esc(sosInfo[k]||"")}" ${k==="insTel"?'inputmode="tel"':""} autocomplete="off"></label>`).join("")}<div class="sos-acts"><button type="button" data-sos-cancel>取消</button><button type="button" class="main" ${save}>儲存</button></div></div>`;
 /* 只送「表單 ≠ 打開時」的欄位（清空也算改）：訂房和旅平險共用一份文件，對方改的另一區或同區別的欄位不會被舊值蓋回 */
 async function sosSave(root){const base=sosBase||sosInfo,ch={};root.querySelectorAll("[data-sos-f]").forEach(i=>{const k=i.dataset.sosF,v=i.value.trim();if(v!==(base[k]||"").trim())ch[k]=v});sosBase=null;
  if(!Object.keys(ch).length)return;sosInfo={...sosInfo,...ch};store.set("sos",sosInfo);if(canWrite)put("settings/sos",ch,{merge:true})}
@@ -3581,7 +3534,7 @@ function sosHTML(){
  <h3>緊急電話<small>點一下直接撥</small></h3>
 ${sosEditing?sosFormHTML(INS_FIELDS,"data-sos-save"):""}
  <div class="sos-tels">${SOS_TELS.map(t=>t.wide?`<a class="sos-tel wide" href="tel:${t.tel}"><div><span>${t.l}</span><small>${t.s}</small></div><b>${t.n}</b></a>`:`<a class="sos-tel${t.hot?" hot":""}" href="tel:${t.tel}"><b>${t.n}</b><span>${t.l}</span><small>${t.s}</small></a>`).join("")}
-  ${ins?`<a class="sos-tel wide" href="tel:${sosEsc(telHref(ins))}"><div><span>旅平險・${sosEsc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${sosEsc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡填寫</small></div></button>`}${ins&&!sosEditing?`<button type="button" class="sos-edit" data-sos-edit style="grid-column:1/-1;justify-self:end">修改旅平險</button>`:""}
+  ${ins?`<a class="sos-tel wide" href="tel:${esc(telHref(ins))}"><div><span>旅平險・${esc(sosInfo.ins||"急難救助")}</span><small>理賠、就醫墊付</small></div><b>${esc(ins)}</b></a>`:`<button type="button" class="sos-tel wide off" data-sos-edit style="border:0;font:inherit;text-align:left;cursor:pointer"><div><span>旅平險急難電話</span><small>還沒填，點這裡填寫</small></div></button>`}${ins&&!sosEditing?`<button type="button" class="sos-edit" data-sos-edit style="grid-column:1/-1;justify-self:end">修改旅平險</button>`:""}
  </div>
  <h3>緊急時用的日文<small>點一句放大・可播放日文</small></h3>
  ${sosPhBtns(sosPh("emg"))}

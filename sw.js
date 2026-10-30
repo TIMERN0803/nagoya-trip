@@ -1,9 +1,9 @@
 /* 離線快取：頁面先抓最新（訊號差超過 1.5 秒就先用快取）、沒網路時用快取；字型與 Firebase 程式庫用快取並在背景更新 */
-const VERSION = "ngy-v63";
+const VERSION = "ngy-v64";
 /* 字型與 Firebase 程式庫放在獨立的快取，版本更新時不刪（不然更新後第一次沒網路就無法同步） */
 const LIB = "ngy-lib";
 const isLib = (u) => /fonts\.(googleapis|gstatic)\.com$/.test(u.hostname) || (u.hostname === "www.gstatic.com" && u.pathname.startsWith("/firebasejs/"));
-const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./ghibli-map.jpg", "./ghibli-map-thumb.jpg", "./nagoya-trip.ics"];
+const CORE = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png", "./ghibli-map.jpg", "./nagoya-trip.ics"];
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(VERSION).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
