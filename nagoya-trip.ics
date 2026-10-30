@@ -95,8 +95,8 @@ DTSTAMP:20261024T000000Z
 DTSTART;TZID=Asia/Tokyo:20261118T193000
 DTEND;TZID=Asia/Tokyo:20261118T203000
 SUMMARY:伏見屋 飛騨牛 別邸
-DESCRIPTION:晚餐預約\n名駅焼肉 Fushimiya Bettei\n已預約 19:30\
- n名古屋看花花 https://timern0803.github.io/nagoya-trip/
+DESCRIPTION:晚餐預約\n名駅焼肉 Fushimiya Bettei\n已預約 19:30
+ ・2 位\n名古屋看花花 https://timern0803.github.io/nagoya-trip/
 LOCATION:名駅焼肉 伏見屋 別邸
 URL:https://www.google.com/maps/search/?api=1&query=%E5%90%8D%E9%A7%85%E7
  %84%BC%E8%82%89%20%E4%BC%8F%E8%A6%8B%E5%B1%8B%20%E5%88%A5%E9%82%B8
@@ -296,8 +296,8 @@ DTSTAMP:20261024T000000Z
 DTSTART;TZID=Asia/Tokyo:20261123T090000
 DTEND;TZID=Asia/Tokyo:20261123T100000
 SUMMARY:伏見町 POPEYE
-DESCRIPTION:早餐\n名古屋看花花 https://timern0803.github.io/nagoy
- a-trip/
+DESCRIPTION:早餐預約\n已預約 9:00・2 位・預約 ID NNVPQV\n名
+ 古屋看花花 https://timern0803.github.io/nagoya-trip/
 LOCATION:POPEYE 伏見 名古屋
 URL:https://www.google.com/maps/search/?api=1&query=POPEYE%20%E4%BC%8F%E8
  %A6%8B%20%E5%90%8D%E5%8F%A4%E5%B1%8B

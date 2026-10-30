@@ -272,6 +272,11 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .item .card h3{margin:6px 0 0;font-size:17px;line-height:1.4;font-weight:900}
 .item .card .jp{font-size:13px;color:var(--muted)}
 .item .card p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.rsv{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0 0;padding:0;list-style:none;font-size:14px;font-weight:700;color:var(--ink)}
+.rsv li{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.rsv svg{width:17px;height:17px;flex:none;color:var(--c-do)}
+.rsv .id{letter-spacing:.04em}
+.rsv .k{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .item .card.has-pic{display:grid;grid-template-columns:minmax(0,1fr) 72px;column-gap:12px;align-items:start}
 .item .card.has-pic>*:not(.pic){grid-column:1}
@@ -1405,6 +1410,8 @@ setTimeout(function(){if(s.isConnected)s.remove()},8000)})()</script>
     <symbol id="k-walk" viewBox="0 0 24 24"><g fill="currentColor"><ellipse cx="7" cy="11.2" rx="3.1" ry="4.6" transform="rotate(-8 7 11.2)"/><ellipse cx="7.7" cy="19.6" rx="2.5" ry="2.1"/><ellipse cx="16.8" cy="5.6" rx="3.1" ry="4.6" transform="rotate(8 16.8 5.6)"/><ellipse cx="16.2" cy="14" rx="2.5" ry="2.1"/></g></symbol>
     <symbol id="k-move" viewBox="0 0 24 24"><rect x="6" y="3.5" width="12" height="13" rx="3.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M6 11h12M9 20l-1.5 1.5M15 20l1.5 1.5M9 14h.01M15 14h.01" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
     <symbol id="k-fly" viewBox="0 0 24 24"><path d="M21 15l-8-4V5a1.5 1.5 0 0 0-3 0v6l-7 4v2l7-2v4l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-4l8 2z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0M15.5 5.4a3.2 3.2 0 0 1 0 6.2M17.6 14.3a5.4 5.4 0 0 1 2.9 5.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="k-do" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="3" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M4 10h16M9 3v4M15 3v4M9 15l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
     <symbol id="i-cash" viewBox="0 0 24 24"><rect x="3" y="6.5" width="18" height="11" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6.5 9.5v5M17.5 9.5v5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
     <symbol id="i-card" viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M3 10h18M7 15h4" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></symbol>
@@ -1612,7 +1619,7 @@ const DAYS=[
   notes:["公園 10:00 開，最晚 9:20 要到「愛・地球博記念公園站」","大倉庫入場 14:00"],sched:true,items:[
    {k:"move",n:"名古屋車站 4 樓搭名鐵巴士",p:"車程約 1 小時",map:"名鉄バスセンター",pid:"ChIJVVVV4t12A2ARuGHeruHGtx8"},
    {t:"10:00",k:"go",n:"吉卜力公園",p:"園區時間表在本頁上方",map:"ジブリパーク",img:"ghibli",pid:"ChIJs9ADAkVnA2ARixLFaXpLFjY"},
-   {t:"19:30",k:"do",l:"晚餐預約",n:"伏見屋 飛騨牛 別邸",jp:"名駅焼肉 Fushimiya Bettei",p:"已預約 19:30",map:"名駅焼肉 伏見屋 別邸",pid:"ChIJ5bzUCut3A2ARM5etF3E8j_M"}]},
+   {t:"19:30",k:"do",l:"晚餐預約",n:"伏見屋 飛騨牛 別邸",jp:"名駅焼肉 Fushimiya Bettei",rsv:{t:"19:30",n:2},map:"名駅焼肉 伏見屋 別邸",pid:"ChIJ5bzUCut3A2ARM5etF3E8j_M"}]},
  {d:"11/19",w:"四",title:"犬山一日",place:"犬山",art:"inuyama",wx:["犬山",16,6],route:["犬山城","城下町","名古屋"],
   notes:["可到名鐵買「犬山城下町套票」：車票、犬山城門票加商家優惠"],items:[
    {t:"08:00",k:"eat",l:"早餐",n:"コンパル サンロード店",map:"コンパル サンロード店",pid:"ChIJ_b1H2HV3A2ARM1ZUBuk0Rxw"},
@@ -1646,7 +1653,7 @@ const DAYS=[
    {k:"eat",l:"抹茶",n:"西条園抹茶カフェ",p:"大名古屋ビルヂング店",map:"西条園抹茶カフェ 大名古屋ビルヂング",pid:"ChIJyzjvrtZ3A2ARJnvP031e7v0"},
    {k:"eat",l:"晚餐",n:"Yellow 則武新町店",map:"yellow 則武新町",pid:"ChIJWdt81dt3A2ARfUrIxR3sNQg"}]},
  {d:"11/23",w:"一",title:"名駅與榮最後採買",place:"名駅・榮",art:"bread",wx:["名古屋",16,7],route:["伏見","名駅","榮"],items:[
-   {t:"09:00",k:"eat",l:"早餐",n:"伏見町 POPEYE",map:"POPEYE 伏見 名古屋",pid:"ChIJ75UdoKt3A2AR2s1j5yzSBHc"},
+   {t:"09:00",k:"do",l:"早餐預約",n:"伏見町 POPEYE",rsv:{t:"9:00",n:2,id:"NNVPQV"},map:"POPEYE 伏見 名古屋",pid:"ChIJ75UdoKt3A2AR2s1j5yzSBHc"},
    {k:"eat",l:"點心",n:"升半茶店 本店",jp:"Masuhan Chaten",map:"升半茶店 本店",pid:"ChIJj0VR29V2A2AR1wCU3RJ8afk"},
    {t:"11:30",k:"buy",n:"沢村 名古屋",p:"帶回家的麵包",map:"ベーカリー＆レストラン沢村 名古屋",pid:"ChIJaxUfTtl2A2ARPsQNvYUnFyk"},
    {t:"12:00",k:"buy",n:"つばめパン＆Milk 名駅店",p:"帶回家的吐司",map:"つばめパン＆Milk 名駅店",pid:"ChIJJX5mDJx3A2ARRkSisgKVHXU"},
@@ -2134,7 +2141,10 @@ function itemHTML(it,i,stat){
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
  if(it.tf)acts.push(`<button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button>`);
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
-  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
+  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.rsv?rsvHTML(it.rsv):""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
+}
+function rsvHTML(r){
+ return `<ul class="rsv" aria-label="預約資訊">${r.t?`<li><svg aria-hidden="true"><use href="#i-clock"/></svg><span class="k">時間</span>${esc(r.t)}</li>`:""}${r.n?`<li><svg aria-hidden="true"><use href="#i-people"/></svg><span class="k">人數</span>${esc(r.n)} 位</li>`:""}${r.id?`<li class="id"><svg aria-hidden="true"><use href="#k-ticket"/></svg><span class="k">預約 ID</span>${esc(r.id)}</li>`:""}</ul>`;
 }
 function stayOrdHTML(){
  if(stayEditing)return `<div class="stay-ord" data-stay-form>${sosFormHTML(BOOK_FIELDS,"data-stay-save")}</div>`;
