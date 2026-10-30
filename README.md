@@ -8,10 +8,12 @@
 - reloadtest：F4 自動重新整理不吃掉沒存的內容（跨日、起飛倒數歸零、網路恢復後程式庫重載；看內容不看模式旗標），共 15 項
 - focustest：F6 旅程回顧與新手導覽走共用 modal()（Tab／Shift+Tab、Esc、非當頁 inert、焦點回到入口、從設定開導覽的堆疊），共 16 項
 - uxtest：QA R2 體驗優化批 A——X1 回顧入口在 11/24 台灣 14:20 後出現（首頁一張、第 8 天行程最後一站下面一張小卡；開著 App 時間到會自己出現）、X2 復原時對方已新增同名（記帳另比金額）會跳提示、X7 清單全刪光的說明文字與浮動鈕捲到底不蓋住最後一列。批 B（x36）——X3 回顧角色卡星星標籤對比、X4 行事曆 iPhone 卡說明與「重要：」對比、X5 回顧封面提示對比與 15px、X6 行李進度數字 12px（320／375／390／430 不換行、不水平捲動）；對比都用 getComputedStyle＋WCAG 公式實測。BASE 環境變數可換網址，ONLY=x1,x2,x7,x36 只跑其中幾段，共 46 項
+- cleantest：QA R2 第 3 組清理（ngy-v64）——CODE-15 死碼已刪、心情列的 .mc-faces 保留，CODE-16 gDusk 只留第一組，CODE-17 自動匯率 0.1／0.5 邊界和手動一致，CODE-18 預快取不列 ghibli-map-thumb.jpg，CODE-19 esc 合併（單引號、雙引號、<>、& 照原樣顯示，空欄位不出現 null）。BASE 可換網址，共 15 項
+- stylediff.py：改版前後「畫面不變」比對（不是一般回歸）：OLD、NEW 兩個網址各開 26 個畫面（旅途中各分頁與面板、出發前清單與行李、暮色、夜晚、回顧 7 頁），凍結動畫後逐元素比 getComputedStyle 全部屬性＋位置＋文字，再比截圖像素；舊版自己重跑一次當對照。用法：OLD=http://localhost:8766/ NEW=http://localhost:8770/ python3 stylediff.py
 - x36measure.py：批 B 的量測腳本（不是 PASS／FAIL 測試）：X3–X6 改前後對比值、全站可見文字最小字級掃描（首頁、各分頁、行事曆／錢包／記一筆／求助面板、回顧每一頁、行李頁），結果寫 /tmp/x36_<TAG>.json。用法：BASE=http://localhost:8766/ TAG=after python3 x36measure.py
 - ft/phonelib.py：conflicttest／reloadtest／focustest 共用的雙手機輔助（開頁、種資料、讀假雲端、時間設定）
 - fs_offline.js 新增 `__reject(code, n)`（讓寫入以指定錯誤碼失敗，測 invalid-argument 與暫時性錯誤）；三份假資料庫（ft/fs.js、ft/fs_offline.js、mock/fs.js）的 writeBatch.set 都支援 `{merge:true}`
-- 全部專項測試現為 36 個（加 uxtest）；`runall.sh`（tools 分支根目錄，複製到 /home/claude/build）跑 fulltest＋專項＋sweep＋t5，`EXTRA` 追加測試（`EXTRA="conflicttest reloadtest focustest uxtest" ./runall.sh`），`P` 並行數預設 4，結果在 /tmp/runall/summary.txt
+- 全部專項測試現為 37 個（加 uxtest、cleantest）；`runall.sh`（tools 分支根目錄，複製到 /home/claude/build）跑 fulltest＋專項＋sweep＋t5，`EXTRA` 追加測試（`EXTRA="conflicttest reloadtest focustest uxtest cleantest" ./runall.sh`），`P` 並行數預設 4，結果在 /tmp/runall/summary.txt
 - R2 重現腳本（qa/R2/b5、b3）：cx06 依設計維持 FAIL；u03 舊腳本的「沒有外洩 = FAIL」是舊語意，不是驗收失敗
 - pulsetest：浮動按鈕第一次出現與換到下一個項目時外圈脈動 10 秒、同一項重新開啟不再脈動（之前漏列在清單裡，2026-10-29 補上）
 - scenetest：首頁插圖網址參數 `?scene=` 只接受 morning／noon／afternoon／dinner／night，其他值（含 HTML、引號、大小寫不同）忽略並顯示目前時段，不會執行或插入元素；出發前與旅途中各測一次（R2 批 4 CODE-01，2026-10-29 新增）
