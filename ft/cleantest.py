@@ -15,7 +15,7 @@ async def static(b):
     rec(A, "心情列仍用得到的 .mc-faces 樣式保留", ".mc-faces{" in SRC and ".mood-line .mc-faces{" in SRC)
     core = re.search(r'const CORE = \[(.*?)\]', SW).group(1)
     rec(A, "CODE-18 預快取不再列沒用到的 ghibli-map-thumb.jpg、吉卜力地圖本體仍在", "ghibli-map-thumb" not in core and "./ghibli-map.jpg" in core, core)
-    rec(A, "sw.js 版本 ngy-v64", 'const VERSION = "ngy-v64"' in SW)
+    _v = re.search(r'const VERSION = "ngy-v(\d+)"', SW); rec(A, "sw.js 版本 ngy-v64 以上", bool(_v) and int(_v.group(1)) >= 64, _v and _v.group(0))
 
 async def escape(b):
     A = "清理｜CODE-19 esc 合併"
