@@ -238,7 +238,7 @@ async def H_offline(b):
 def I_ics():
     s=open('/home/claude/nagoya-trip/nagoya-trip.ics',encoding='utf8').read().replace("\r\n ","")
     ev=s.split("BEGIN:VEVENT")[1:]
-    rec("I 行事曆檔","26 個行程（含 11/24 07:45 先辦退稅、11/19 12:00 まつい）",len(ev)==26,len(ev))
+    rec("I 行事曆檔","26 個行程（含 11/24 07:45 先辦退稅、11/19 11:30 まつい）",len(ev)==26,len(ev))
     al=all("BEGIN:VALARM" in e and "TRIGGER:-PT30M" in e for e in ev)
     rec("I 行事曆檔","每個行程都有 30 分鐘前提醒",al)
     bad=[]
