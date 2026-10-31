@@ -27,7 +27,7 @@ async def main():
         ft.rec("R 旅程回顧","7 頁依序：開場、集章、心情、最開心、對戰、收據、總結",cls==["pg-open","pg-stamp","pg-mood","pg-best","pg-vs","pg-rcpt","pg-sum"],cls)
         ft.rec("R 旅程回顧","打開時在第 1 頁、進度條 7 段",await cur(pg)==0 and len(await pg.query_selector_all('.st-bars i'))==7)
         await pg.click('.st-tap.next');await pg.clock.run_for(1500);await pg.wait_for_timeout(300)
-        ft.rec("R 旅程回顧","點右邊到下一頁，集章頁數字跳到 32",await cur(pg)==1 and await pg.inner_text('.pg-stamp [data-count]')=="32")
+        ft.rec("R 旅程回顧","點右邊到下一頁，集章頁數字跳到 33（11/19 加了まつい）",await cur(pg)==1 and await pg.inner_text('.pg-stamp [data-count]')=="33")
         ft.rec("R 旅程回顧","8 個戳章",len(await pg.query_selector_all('.pg-stamp .stamp'))==8)
         await pg.click('.st-tap.prev');await pg.wait_for_timeout(200)
         ft.rec("R 旅程回顧","點左邊回上一頁",await cur(pg)==0)
