@@ -1625,6 +1625,7 @@ const DAYS=[
    {t:"08:00",k:"eat",l:"早餐",n:"コンパル サンロード店",map:"コンパル サンロード店",pid:"ChIJ_b1H2HV3A2ARM1ZUBuk0Rxw"},
    {k:"move",n:"搭名鐵到犬山",p:"套票在名鐵車站買"},
    {k:"go",n:"犬山城",map:"犬山城",pid:"ChIJke1IrfUOA2ARNfYDRkP6Wig"},
+   {t:"12:00",k:"eat",l:"午餐",n:"蕎麦正 まつい 犬山店",p:"手打冷蕎麥，11:00 開、賣完就收，只收現金",map:"蕎麦正 まつい 犬山店",pid:"ChIJeauxvQoSA2ARaoIN3R6CrUA"},
    {k:"eat",l:"必吃",n:"城下町小吃",p:"五平餅、木曾川烤魚、肉兵衛、菓子屋 shirushi",map:"犬山城下町",pid:"ChIJ5Y9fqhEPA2AR2D46BA_SRiY"},
    {t:"17:00",k:"eat",l:"晚餐",n:"麵家 獅子丸",map:"麺家 獅子丸 名古屋",pid:"ChIJtWEoR-l2A2ARyai0CWUxIDM"},
    {k:"go",n:"Sky Promenade 屋外展望台",jp:"スカイプロムナード",map:"スカイプロムナード 名古屋",pid:"ChIJFzn4mt52A2ARiB__8576cz4"}]},
@@ -2069,9 +2070,10 @@ const PICS={
  matcha:`<path d="M12 30h40a20 18 0 0 1-40 0z" fill="#fff" ${O}/><ellipse cx="32" cy="30" rx="20" ry="4" fill="#7DB35A" ${O}/><path d="M24 52h16" ${O}/><path d="M44 10l-6 18" stroke="#C9A36A" stroke-width="3" stroke-linecap="round"/><path d="M36 26l6 2 3-6" fill="#C9A36A"/>`,
  plate:`<ellipse cx="32" cy="40" rx="22" ry="9" fill="#fff" ${O}/><ellipse cx="32" cy="37" rx="12" ry="6" fill="#F4C04A" ${O}/><path d="M26 36q6-4 12 0" fill="none" stroke="#C17A33" stroke-width="2" stroke-linecap="round"/><path d="M50 18v12M54 18v12M52 30v10" ${O}/><path d="M12 18v22M10 18q2 8 4 0" ${O} fill="none"/>`,
  donburi:`${bowl("#fff")}<path d="M14 34c4-8 32-8 36 0z" fill="#F8D778" ${O}/><circle cx="26" cy="30" r="3" fill="#EE9479"/><circle cx="36" cy="29" r="3" fill="#9FD38A"/><path d="M38 10l10 22M44 10l8 20" ${O}/>`,
+ soba:`<path d="M30 8l20 22M36 8l18 20" ${O}/><rect x="6" y="40" width="38" height="9" rx="3" fill="#D9B57A" ${O}/><path d="M14 44h22" stroke="#B08A4E" stroke-width="2" stroke-linecap="round"/><path d="M9 40c0-13 32-13 32 0z" fill="#B9A487" ${O}/><path d="M14 36q3-3 6 0t6 0 6 0 6 0M18 31q3-3 6 0t6 0 4 0" fill="none" stroke="#857158" stroke-width="2" stroke-linecap="round"/><path d="M21 27l5-2M28 26l5 0" stroke="#3B4A3A" stroke-width="2.6" stroke-linecap="round"/><path d="M44 37h14l-2 13h-10z" fill="#fff" ${O}/><path d="M45 42h12" stroke="#5B7FB8" stroke-width="2.4"/><ellipse cx="51" cy="37" rx="7" ry="2.2" fill="#6E4A2E" ${O}/>`,
  shop:`<rect x="12" y="24" width="40" height="28" fill="#fff" ${O}/>${[0,1,2,3].map(i=>`<path d="M${12+i*10} 24h10v6a5 5 0 0 1-10 0z" fill="${i%2?"#fff":"#EE9479"}" ${O}/>`).join("")}<rect x="18" y="36" width="12" height="16" fill="#BFE2F0" ${O}/><rect x="36" y="38" width="10" height="14" fill="#B08463" ${O}/>`
 };
-const PIC_OF={"JX 320 台中 → 名古屋":"plane","搭名鐵到名古屋車站":"train","名古屋燈光圖書飯店":"hotel","つばめパン＆Milk 名駅店":"bread","名古屋城":"castle","榮":"tower","すゞ家 赤門店":"katsu","名古屋車站 4 樓搭名鐵巴士":"bus","吉卜力公園":"park","伏見屋 飛騨牛 別邸":"yakiniku","コンパル サンロード店":"coffee","搭名鐵到犬山":"train","犬山城":"castle","城下町小吃":"gohei","麵家 獅子丸":"ramen","Sky Promenade 屋外展望台":"night","イトウ珈琲喫茶室":"coffee","東山動物植物園":"giraffe","星星：snuw【スニュウ】":"hair","阿彰：men's NEELU 名古屋":"hair","搶 KISO 號碼牌":"ticket","挽き肉のトリコ":"hamburg","KISO":"breakfast","熱田神宮":"torii","熱田うなぎ 天":"unagi","大須商店街":"lantern","大須鮨":"sushi","久屋大通與中日大樓 7 樓":"night","ふみ屋 錦店":"beer","New Poppy":"breakfast","常滑":"pottery","nuu":"cake","風舎 常滑店":"cake","西条園抹茶カフェ":"matcha","Yellow 則武新町店":"plate","伏見町 POPEYE":"coffee","升半茶店 本店":"matcha","沢村 名古屋":"bread","桂昇":"donburi","名古屋車站搭名鐵往機場":"train","抵達中部國際機場":"plane","JX 321 名古屋 → 台中":"plane"};
+const PIC_OF={"JX 320 台中 → 名古屋":"plane","搭名鐵到名古屋車站":"train","名古屋燈光圖書飯店":"hotel","つばめパン＆Milk 名駅店":"bread","名古屋城":"castle","榮":"tower","すゞ家 赤門店":"katsu","名古屋車站 4 樓搭名鐵巴士":"bus","吉卜力公園":"park","伏見屋 飛騨牛 別邸":"yakiniku","コンパル サンロード店":"coffee","搭名鐵到犬山":"train","犬山城":"castle","蕎麦正 まつい 犬山店":"soba","城下町小吃":"gohei","麵家 獅子丸":"ramen","Sky Promenade 屋外展望台":"night","イトウ珈琲喫茶室":"coffee","東山動物植物園":"giraffe","星星：snuw【スニュウ】":"hair","阿彰：men's NEELU 名古屋":"hair","搶 KISO 號碼牌":"ticket","挽き肉のトリコ":"hamburg","KISO":"breakfast","熱田神宮":"torii","熱田うなぎ 天":"unagi","大須商店街":"lantern","大須鮨":"sushi","久屋大通與中日大樓 7 樓":"night","ふみ屋 錦店":"beer","New Poppy":"breakfast","常滑":"pottery","nuu":"cake","風舎 常滑店":"cake","西条園抹茶カフェ":"matcha","Yellow 則武新町店":"plate","伏見町 POPEYE":"coffee","升半茶店 本店":"matcha","沢村 名古屋":"bread","桂昇":"donburi","名古屋車站搭名鐵往機場":"train","抵達中部國際機場":"plane","JX 321 名古屋 → 台中":"plane"};
 const KCOL={fly:"move",move:"move",go:"go",eat:"eat",stay:"stay",do:"do",remind:"do",buy:"buy"};
 /* ---------- 兩站之間：已知的交通時間＋一鍵查路線（Google 地圖即時路線） ---------- */
 /* 兩站之間的交通：Google 地圖實測（2026/10），15 分鐘內或搭車沒有比較快就用走的 */
@@ -2086,7 +2088,8 @@ const LEGS={
  "11/18|伏見屋 飛騨牛 別邸":["train",66,0,0,"Linimo＋地鐵東山線"],
  "11/19|搭名鐵到犬山":["walk",2,"コンパル サンロード店",MEI],
  "11/19|犬山城":["walk",22,"犬山駅","犬山城","從犬山站出發，搭車也不會比較快"],
- "11/19|城下町小吃":["walk",9],
+ "11/19|蕎麦正 まつい 犬山店":["walk",8],
+ "11/19|城下町小吃":["walk",3],
  "11/19|麵家 獅子丸":["train",57,0,0,"名鐵犬山線回名古屋"],
  "11/19|Sky Promenade 屋外展望台":["walk",16,0,0,"搭車約 14 分，差不多"],
  "11/20|東山動物植物園":["subway",27],
