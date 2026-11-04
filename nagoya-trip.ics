@@ -259,17 +259,19 @@ END:VEVENT
 BEGIN:VEVENT
 UID:ngy-20261121-2@nagoya-trip
 DTSTAMP:20261024T000000Z
-DTSTART;TZID=Asia/Tokyo:20261121T110000
-DTEND;TZID=Asia/Tokyo:20261121T120000
-SUMMARY:熱田うなぎ 天
-DESCRIPTION:午餐\n鰻魚飯，提早到\n名古屋看花花 https://tim
- ern0803.github.io/nagoya-trip/
-LOCATION:熱田うなぎ 天 名古屋
-URL:https://www.google.com/maps/search/?api=1&query=%E7%86%B1%E7%94%B0%E3
- %81%86%E3%81%AA%E3%81%8E%20%E5%A4%A9%20%E5%90%8D%E5%8F%A4%E5%B1%8B
+DTSTART;TZID=Asia/Tokyo:20261121T130000
+DTEND;TZID=Asia/Tokyo:20261121T140000
+SUMMARY:炭燒富士鰻魚 總店
+DESCRIPTION:午餐預約\n炭焼うな富士 本店\n鰻魚飯，一休
+ 訂位\n已預約 13:00・2 位・預約 ID IR0563167387\n名古屋看
+ 花花 https://timern0803.github.io/nagoya-trip/
+LOCATION:炭焼うな富士 本店 名古屋
+URL:https://www.google.com/maps/search/?api=1&query=%E7%82%AD%E7%84%BC%E3
+ %81%86%E3%81%AA%E5%AF%8C%E5%A3%AB%20%E6%9C%AC%E5%BA%97%20%E5%90%8D%E5%8F
+ %A4%E5%B1%8B
 BEGIN:VALARM
 ACTION:DISPLAY
-DESCRIPTION:30 分鐘後：熱田うなぎ 天
+DESCRIPTION:30 分鐘後：炭燒富士鰻魚 總店
 TRIGGER:-PT30M
 END:VALARM
 END:VEVENT
