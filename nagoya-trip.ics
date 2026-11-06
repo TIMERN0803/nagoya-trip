@@ -327,6 +327,25 @@ TRIGGER:-PT30M
 END:VALARM
 END:VEVENT
 BEGIN:VEVENT
+UID:ngy-20261123-1@nagoya-trip
+DTSTAMP:20261024T000000Z
+DTSTART;TZID=Asia/Tokyo:20261123T100000
+DTEND;TZID=Asia/Tokyo:20261123T110000
+SUMMARY:sanrio house 名古屋 PARCO 店
+DESCRIPTION:購物\n名古屋PARCO 西館 B1\n先領整理券，再照券
+ 上時間入場\n整理券：9:30–9:50 在西館外面排；10:00 起 
+ 到西館 B1 店門口領（一人一張・發完就結束）\n名古屋
+ 看花花 https://timern0803.github.io/nagoya-trip/
+LOCATION:sanrio house 名古屋PARCO店
+URL:https://www.google.com/maps/search/?api=1&query=sanrio%20house%20%E5%
+ 90%8D%E5%8F%A4%E5%B1%8BPARCO%E5%BA%97
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:30 分鐘後：sanrio house 名古屋 PARCO 店
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
 UID:ngy-20261123-2@nagoya-trip
 DTSTAMP:20261024T000000Z
 DTSTART;TZID=Asia/Tokyo:20261123T113000

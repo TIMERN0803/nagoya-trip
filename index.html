@@ -278,6 +278,29 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .rsv .id{letter-spacing:.04em}
 .rsv .k{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .acts{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.qt{grid-column:1 / -1;margin-top:10px;border:1.5px solid var(--line);border-radius:14px;background:#FFFDF8}
+.item .card.has-pic>.qt{grid-column:1 / -1}
+.qt summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:9px;min-height:48px;padding:6px 12px;box-sizing:border-box}
+.qt summary::-webkit-details-marker{display:none}
+.qt summary>svg{width:20px;height:20px;flex:none;color:var(--brown)}
+.qt summary b{display:block;font-size:14px;font-weight:900;color:var(--ink);line-height:1.3}
+.qt summary small{display:block;font-size:12px;font-weight:700;color:var(--muted);line-height:1.3}
+.qt summary::after{content:"";margin-left:auto;width:8px;height:8px;border:solid var(--brown);border-width:0 2.5px 2.5px 0;transform:translateY(-2px) rotate(45deg);flex:none}
+.qt[open] summary::after{transform:translateY(2px) rotate(-135deg)}
+.qt-body{padding:0 12px 12px;border-top:2px dashed var(--line)}
+.qt-steps{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:6px}
+.qt-steps li{display:grid;grid-template-columns:76px minmax(0,1fr);column-gap:8px;padding:8px 10px;border-radius:10px}
+.qt-steps li.on{background:var(--sunk)}
+.qt-t{font-family:var(--f-display);font-weight:900;font-size:14px;font-variant-numeric:tabular-nums;color:var(--muted);line-height:1.4}
+.qt-steps li.on .qt-t{color:var(--brown)}
+.qt-x b{display:block;font-size:14px;font-weight:900;color:var(--ink);line-height:1.4}
+.qt-x small{display:block;font-size:13px;font-weight:600;color:var(--muted);line-height:1.45}
+.qt-h{margin:12px 0 4px;font-size:12px;font-weight:900;color:var(--muted)}
+.qt-rules{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:13px;line-height:1.5;color:var(--ink)}
+.qt-rules li{position:relative;padding-left:14px}
+.qt-rules li::before{content:"";position:absolute;left:3px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--brown)}
+.qt-rules li.warn{color:var(--coral-ink);font-weight:700}
+.qt-rules li.warn::before{background:var(--coral-ink)}
 .item .card.has-pic{display:grid;grid-template-columns:minmax(0,1fr) 72px;column-gap:12px;align-items:start}
 .item .card.has-pic>*:not(.pic){grid-column:1}
 .item .card.has-pic>.pic{grid-column:2;grid-row:1 / span 6}
@@ -1653,9 +1676,11 @@ const DAYS=[
    {k:"eat",l:"下午茶",n:"風舎 常滑店",jp:"Fusha Tokoname",map:"風舎 常滑店",pid:"ChIJ9Xpt5EuHBGARYxyPOT8xGHo"},
    {k:"eat",l:"抹茶",n:"西条園抹茶カフェ",p:"大名古屋ビルヂング店",map:"西条園抹茶カフェ 大名古屋ビルヂング",pid:"ChIJyzjvrtZ3A2ARJnvP031e7v0"},
    {k:"eat",l:"晚餐",n:"Yellow 則武新町店",map:"yellow 則武新町",pid:"ChIJWdt81dt3A2ARfUrIxR3sNQg"}]},
- {d:"11/23",w:"一",title:"名駅與榮最後採買",place:"名駅・榮",art:"bread",wx:["名古屋",16,7],route:["伏見","名駅","榮"],items:[
+ {d:"11/23",w:"一",title:"名駅與榮最後採買",place:"名駅・榮",art:"bread",wx:["名古屋",16,7],route:["伏見","榮","名駅"],items:[
    {t:"09:00",k:"do",l:"早餐預約",n:"伏見町 POPEYE",rsv:{t:"9:00",n:2,id:"NNVPQV"},map:"POPEYE 伏見 名古屋",pid:"ChIJ75UdoKt3A2AR2s1j5yzSBHc"},
-   {k:"eat",l:"點心",n:"升半茶店 本店",jp:"Masuhan Chaten",map:"升半茶店 本店",pid:"ChIJj0VR29V2A2AR1wCU3RJ8afk"},
+   {t:"10:00",k:"buy",l:"購物",n:"sanrio house 名古屋 PARCO 店",jp:"名古屋PARCO 西館 B1",p:"先領整理券，再照券上時間入場",map:"sanrio house 名古屋PARCO店",pid:"ChIJE8jefwBxA2ARQxQOIfwvqLk",
+    qt:{sum:"一人一張・發完就結束",steps:[["9:30–9:50","在西館外面排","從西館 1F 正面入口（大津通那側）排起，沿著建物順時針排"],["10:00 起","到西館 B1 店門口領","sanrio house 店門口，我們 10:00 直接到這裡",1]],
+     rules:[["發完就結束，發放時間也可能提早或延後",1],["一人一張，一張只能進一個人，兩個人都要去領"],["照券上的時間回來入場，遲到可能不能進"],["拿到券先去別處逛，到時間再回來；有券也可能要再排一下"],["券不能換、不能補發、不能轉讓"]]}},
    {t:"11:30",k:"buy",n:"沢村 名古屋",p:"帶回家的麵包",map:"ベーカリー＆レストラン沢村 名古屋",pid:"ChIJaxUfTtl2A2ARPsQNvYUnFyk"},
    {t:"12:00",k:"buy",n:"つばめパン＆Milk 名駅店",p:"帶回家的吐司",map:"つばめパン＆Milk 名駅店",pid:"ChIJJX5mDJx3A2ARRkSisgKVHXU"},
    {k:"eat",l:"晚餐",n:"熱田うなぎ 天 伏見",p:"鰻魚飯，營業到 20:00",map:"熱田うなぎ 天 伏見 名古屋",pid:"ChIJ2WPawLV3A2AR1xmLIaXjDqo"}]},
@@ -2105,8 +2130,8 @@ const LEGS={
  "11/22|風舎 常滑店":["walk",4],
  "11/22|西条園抹茶カフェ":["train",49,0,0,"名鐵回名古屋"],
  "11/22|Yellow 則武新町店":["walk",17,0,0,"搭車也是 17 分"],
- "11/23|升半茶店 本店":["walk",7],
- "11/23|沢村 名古屋":["subway",15],
+ "11/23|sanrio house 名古屋 PARCO 店":["walk",18,0,0,"搭地鐵也差不多"],
+ "11/23|沢村 名古屋":["subway",20],
  "11/23|つばめパン＆Milk 名駅店":["walk",5],
  "11/23|熱田うなぎ 天 伏見":["subway",13]
 };
@@ -2143,10 +2168,14 @@ function itemHTML(it,i,stat){
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
  if(it.tf)acts.push(`<button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button>`);
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
-  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.rsv?rsvHTML(it.rsv):""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
+  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.rsv?rsvHTML(it.rsv):""}${it.qt?qtHTML(it.qt):""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
 function rsvHTML(r){
  return `<ul class="rsv" aria-label="預約資訊">${r.t?`<li><svg aria-hidden="true"><use href="#i-clock"/></svg><span class="k">時間</span>${esc(r.t)}</li>`:""}${r.n?`<li><svg aria-hidden="true"><use href="#i-people"/></svg><span class="k">人數</span>${esc(r.n)} 位</li>`:""}${r.id?`<li class="id"><svg aria-hidden="true"><use href="#k-ticket"/></svg><span class="k">預約 ID</span>${esc(r.id)}</li>`:""}</ul>`;
+}
+/* 整理券：收合時只看重點，打開看領取步驟與注意事項 */
+function qtHTML(q){
+ return `<details class="qt"><summary><svg aria-hidden="true"><use href="#k-ticket"/></svg><span><b>整理券怎麼拿</b><small>${esc(q.sum)}</small></span></summary><div class="qt-body"><ol class="qt-steps">${q.steps.map(s=>`<li${s[3]?' class="on"':""}><span class="qt-t">${esc(s[0])}</span><span class="qt-x"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></span></li>`).join("")}</ol><div class="qt-h">注意事項</div><ul class="qt-rules">${q.rules.map(r=>`<li${r[1]?' class="warn"':""}>${esc(r[0])}</li>`).join("")}</ul></div></details>`;
 }
 function stayOrdHTML(){
  if(stayEditing)return `<div class="stay-ord" data-stay-form>${sosFormHTML(BOOK_FIELDS,"data-stay-save")}</div>`;
