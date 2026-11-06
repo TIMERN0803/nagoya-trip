@@ -2173,9 +2173,9 @@ function itemHTML(it,i,stat){
 function rsvHTML(r){
  return `<ul class="rsv" aria-label="預約資訊">${r.t?`<li><svg aria-hidden="true"><use href="#i-clock"/></svg><span class="k">時間</span>${esc(r.t)}</li>`:""}${r.n?`<li><svg aria-hidden="true"><use href="#i-people"/></svg><span class="k">人數</span>${esc(r.n)} 位</li>`:""}${r.id?`<li class="id"><svg aria-hidden="true"><use href="#k-ticket"/></svg><span class="k">預約 ID</span>${esc(r.id)}</li>`:""}</ul>`;
 }
-/* 整理券：收合時只看重點，打開看領取步驟與注意事項 */
+/* 整理券：預設展開領取步驟與注意事項，點標題可收起 */
 function qtHTML(q){
- return `<details class="qt"><summary><svg aria-hidden="true"><use href="#k-ticket"/></svg><span><b>整理券怎麼拿</b><small>${esc(q.sum)}</small></span></summary><div class="qt-body"><ol class="qt-steps">${q.steps.map(s=>`<li${s[3]?' class="on"':""}><span class="qt-t">${esc(s[0])}</span><span class="qt-x"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></span></li>`).join("")}</ol><div class="qt-h">注意事項</div><ul class="qt-rules">${q.rules.map(r=>`<li${r[1]?' class="warn"':""}>${esc(r[0])}</li>`).join("")}</ul></div></details>`;
+ return `<details class="qt" open><summary><svg aria-hidden="true"><use href="#k-ticket"/></svg><span><b>整理券怎麼拿</b><small>${esc(q.sum)}</small></span></summary><div class="qt-body"><ol class="qt-steps">${q.steps.map(s=>`<li${s[3]?' class="on"':""}><span class="qt-t">${esc(s[0])}</span><span class="qt-x"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></span></li>`).join("")}</ol><div class="qt-h">注意事項</div><ul class="qt-rules">${q.rules.map(r=>`<li${r[1]?' class="warn"':""}>${esc(r[0])}</li>`).join("")}</ul></div></details>`;
 }
 function stayOrdHTML(){
  if(stayEditing)return `<div class="stay-ord" data-stay-form>${sosFormHTML(BOOK_FIELDS,"data-stay-save")}</div>`;
