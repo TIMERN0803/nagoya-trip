@@ -1,4 +1,4 @@
-# 11/23 升半茶店換成 sanrio house 名古屋 PARCO 店（ngy-v68）：10:00、整理券怎麼拿（收合／展開）、地圖、交通時間、行事曆檔
+# 11/23 升半茶店換成 sanrio house 名古屋 PARCO 店（ngy-v68）：10:00、整理券怎麼拿（預設展開，可收起）、地圖、交通時間、行事曆檔
 import asyncio
 from fulltest import newpage, jst, close, rec, R
 from playwright.async_api import async_playwright
@@ -49,25 +49,23 @@ async def main():
             rec(A, f"{w} 寬：點插圖開 Google 地圖（含 place_id）", bool(r["pic"]) and PID in r["pic"], r["pic"])
             rec(A, f"{w} 寬：POPEYE → 這間 走路約 18 分", bool(r["legIn"]) and "走路約 18 分" in r["legIn"] and "origin_place_id=" + POPEYE in r["legInHref"] and PID in r["legInHref"], r["legIn"])
             rec(A, f"{w} 寬：這間 → 沢村 地鐵約 20 分", bool(r["legOut"]) and "地鐵約 20 分" in r["legOut"] and "origin_place_id=" + PID in r["legOutHref"], r["legOut"])
-            rec(A, f"{w} 寬：整理券預設收合，只看到重點，可點高度 ≥ 44", r["qt"] and not r["open"] and not r["bodyVis"] and r["sum"] == "整理券怎麼拿一人一張・發完就結束" and r["sumH"] >= 44, (r["sum"], r["sumH"]))
+            rec(A, f"{w} 寬：整理券預設展開，標題寫重點，可點高度 ≥ 44", r["qt"] and r["open"] and r["bodyVis"] and r["sum"] == "整理券怎麼拿一人一張・發完就結束" and r["sumH"] >= 44, (r["sum"], r["sumH"], r["open"]))
             rec(A, f"{w} 寬：整理券在插圖下方、不超出卡片", r["qtT"] >= r["picB"] - 0.5 and r["qtR"] <= r["cardR"] + 0.5 and r["qtL"] >= r["cardL"], (r["qtT"], r["picB"]))
-            await pg.click(f'.card:has(h3:text-is("{N}")) details.qt summary'); await pg.wait_for_timeout(300)
-            r = await pg.evaluate(Q, N)
             st = r["steps"]
-            rec(A, f"{w} 寬：打開後兩個時段，10:00 那段標出來", r["open"] and r["bodyVis"] and len(st) == 2 and st[0][0] == "" and st[0][1].startswith("9:30–9:50在西館外面排") and st[1][0] == "on" and st[1][1].startswith("10:00 起到西館 B1 店門口領"), st)
+            rec(A, f"{w} 寬：兩個時段，10:00 那段標出來", r["open"] and r["bodyVis"] and len(st) == 2 and st[0][0] == "" and st[0][1].startswith("9:30–9:50在西館外面排") and st[1][0] == "on" and st[1][1].startswith("10:00 起到西館 B1 店門口領"), st)
             ru = r["rules"]
             rec(A, f"{w} 寬：注意事項 5 條，「發完就結束」用警示色", len(ru) == 5 and ru[0][0] == "warn" and "發完就結束" in ru[0][1] and all(c == "" for c, _ in ru[1:]) and "兩個人都要去領" in ru[1][1], ru)
             rec(A, f"{w} 寬：字級 ≥ 12、對比 ≥ 4.5、沒有句號", r["minFont"] >= 12 and r["minRatio"] >= 4.5 and r["periods"] == 0, (r["minFont"], r["minRatio"]))
             rec(A, f"{w} 寬：展開後不超出卡片、沒有水平捲動、沒有錯誤", r["qtR"] <= r["cardR"] + 0.5 and r["sw"] == w and not pg.errs, pg.errs)
             await pg.click(f'.card:has(h3:text-is("{N}")) details.qt summary'); await pg.wait_for_timeout(200)
             r = await pg.evaluate(Q, N)
-            rec(A, f"{w} 寬：再點一次收起來", not r["open"] and not r["bodyVis"])
+            rec(A, f"{w} 寬：點標題收起來", not r["open"] and not r["bodyVis"])
+            await pg.click(f'.card:has(h3:text-is("{N}")) details.qt summary'); await pg.wait_for_timeout(200)
+            r = await pg.evaluate(Q, N)
+            rec(A, f"{w} 寬：再點一次打開", r["open"] and r["bodyVis"])
             if w == 390:
                 el = await pg.query_selector(f'.card:has(h3:text-is("{N}"))')
                 await el.scroll_into_view_if_needed(); await pg.evaluate("scrollBy(0,-200)"); await pg.wait_for_timeout(300)
-                await pg.screenshot(path="/tmp/sanrio_closed_390.png")
-                await pg.click(f'.card:has(h3:text-is("{N}")) details.qt summary'); await pg.wait_for_timeout(300)
-                await el.scroll_into_view_if_needed(); await pg.evaluate("scrollBy(0,-120)"); await pg.wait_for_timeout(300)
                 await pg.screenshot(path="/tmp/sanrio_open_390.png")
             await close(pg)
         await b.close()
