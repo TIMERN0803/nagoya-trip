@@ -12,12 +12,13 @@
 - inuyamatest：11/19 犬山午餐（ngy-v66）——蕎麦正 まつい 犬山店 11:30 排在犬山城與城下町小吃之間、標籤午餐、蕎麥麵插圖、地圖帶 place_id、犬山城→まつい走路約 8 分、まつい→城下町小吃約 3 分、320／390／430 不水平捲動；行事曆檔有 11/19 11:30 午餐。共 20 項
 - unagitest：鰻魚改訂（ngy-v67）——11/21 午餐改炭燒富士鰻魚 總店（炭焼うな富士 本店）13:00、午餐預約、預約資訊 13:00・2 位・IR0563167387（一休），排在熱田神宮與大須商店街之間，熱田神宮→這間地鐵約 30 分、這間→大須地鐵約 20 分；11/23 晚餐改熱田うなぎ 天 伏見（取代桂昇），つばめパン→這間地鐵約 13 分；鰻魚插圖、地圖帶 place_id、320／390／430 不水平捲動；行事曆檔同步且不含訂位人姓名或信箱。共 40 項
 - sanriotest：11/23 升半茶店換成 sanrio house 名古屋 PARCO 店（ngy-v68），ngy-v69 整理券改成「卡片只留重點＋完整說明用彈窗」——10:00、標籤購物、排在 POPEYE 與沢村之間、地圖帶 place_id、POPEYE→這間走路約 18 分、這間→沢村地鐵約 20 分；卡片上只有「整理券 10:00 起到西館 B1 店門口領」與兩條重點（一人一張兩人都要領、發完就結束用警示色），在插圖下方橫跨整張卡片；「看完整說明」高度 ≥ 44，點了開彈窗（焦點在 ×）：兩個時段（10:00 那段標出來）與 5 條注意事項；Esc 關閉焦點回到按鈕、× 也能關；卡片與彈窗字級 ≥ 12、對比 ≥ 4.5、沒有句號、320／390／430 不水平捲動；行事曆檔有 11/23 10:00 且說明寫整理券時段。共 48 項
+- tsubametest：11/17 午餐改成つばめパン＆Milk 尼ヶ坂本店（ngy-v70，取代名駅店）——排在飯店與名古屋城之間、標籤午餐、麵包插圖、地圖帶新 place_id、飯店→這間電車約 25 分（東山線＋名鐵瀨戶線，估算）、這間→名古屋城東門走路約 20 分（估算）、320／390／430 不水平捲動；11/23 名駅店外帶不受影響。共 21 項
 - cleantest：QA R2 第 3 組清理（ngy-v64）——CODE-15 死碼已刪、心情列的 .mc-faces 保留，CODE-16 gDusk 只留第一組，CODE-17 自動匯率 0.1／0.5 邊界和手動一致，CODE-18 預快取不列 ghibli-map-thumb.jpg，CODE-19 esc 合併（單引號、雙引號、<>、& 照原樣顯示，空欄位不出現 null）。BASE 可換網址，共 15 項
 - stylediff.py：改版前後「畫面不變」比對（不是一般回歸）：OLD、NEW 兩個網址各開 26 個畫面（旅途中各分頁與面板、出發前清單與行李、暮色、夜晚、回顧 7 頁），凍結動畫後逐元素比 getComputedStyle 全部屬性＋位置＋文字，再比截圖像素；舊版自己重跑一次當對照。用法：OLD=http://localhost:8766/ NEW=http://localhost:8770/ python3 stylediff.py
 - x36measure.py：批 B 的量測腳本（不是 PASS／FAIL 測試）：X3–X6 改前後對比值、全站可見文字最小字級掃描（首頁、各分頁、行事曆／錢包／記一筆／求助面板、回顧每一頁、行李頁），結果寫 /tmp/x36_<TAG>.json。用法：BASE=http://localhost:8766/ TAG=after python3 x36measure.py
 - ft/phonelib.py：conflicttest／reloadtest／focustest 共用的雙手機輔助（開頁、種資料、讀假雲端、時間設定）
 - fs_offline.js 新增 `__reject(code, n)`（讓寫入以指定錯誤碼失敗，測 invalid-argument 與暫時性錯誤）；三份假資料庫（ft/fs.js、ft/fs_offline.js、mock/fs.js）的 writeBatch.set 都支援 `{merge:true}`
-- 全部專項測試現為 41 個（加 uxtest、cleantest、resvtest、inuyamatest、unagitest、sanriotest）；`runall.sh`（tools 分支根目錄，複製到 /home/claude/build）跑 fulltest＋專項＋sweep＋t5，`EXTRA` 追加測試（`EXTRA="conflicttest reloadtest focustest uxtest cleantest resvtest inuyamatest unagitest sanriotest" ./runall.sh`），`P` 並行數預設 4，結果在 /tmp/runall/summary.txt
+- 全部專項測試現為 41 個（加 uxtest、cleantest、resvtest、inuyamatest、unagitest、sanriotest、tsubametest）；`runall.sh`（tools 分支根目錄，複製到 /home/claude/build）跑 fulltest＋專項＋sweep＋t5，`EXTRA` 追加測試（`EXTRA="conflicttest reloadtest focustest uxtest cleantest resvtest inuyamatest unagitest sanriotest tsubametest" ./runall.sh`），`P` 並行數預設 4，結果在 /tmp/runall/summary.txt
 - R2 重現腳本（qa/R2/b5、b3）：cx06 依設計維持 FAIL；u03 舊腳本的「沒有外洩 = FAIL」是舊語意，不是驗收失敗
 - pulsetest：浮動按鈕第一次出現與換到下一個項目時外圈脈動 10 秒、同一項重新開啟不再脈動（之前漏列在清單裡，2026-10-29 補上）
 - scenetest：首頁插圖網址參數 `?scene=` 只接受 morning／noon／afternoon／dinner／night，其他值（含 HTML、引號、大小寫不同）忽略並顯示目前時段，不會執行或插入元素；出發前與旅途中各測一次（R2 批 4 CODE-01，2026-10-29 新增）
