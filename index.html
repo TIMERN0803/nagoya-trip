@@ -1635,7 +1635,7 @@ const DAYS=[
    {t:"07:05",tz:"Asia/Taipei",k:"fly",n:"JX 320 台中 → 名古屋",p:"10:40 抵達中部國際機場"},
    {t:"10:40",k:"move",n:"搭名鐵到名古屋車站",p:"μSKY 約 28 分鐘，詳見交通分頁"},
    {k:"stay",n:"名古屋燈光圖書飯店",jp:"ランプライトブックスホテル名古屋",p:"入住 15:00 起・11/24 退房 10:00 前・伏見站 10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋",stay:1,pid:"ChIJ74aBvtd2A2AR8TRTA-QLXZM"},
-   {k:"eat",l:"午餐",n:"つばめパン＆Milk 名駅店",p:"天然酵母吐司專門店",map:"つばめパン＆Milk 名駅店",pid:"ChIJJX5mDJx3A2ARRkSisgKVHXU"},
+   {k:"eat",l:"午餐",n:"つばめパン＆Milk 尼ヶ坂本店",p:"天然酵母吐司專門店・名鐵瀨戶線尼ケ坂站旁",map:"つばめパン＆Milk 尼ヶ坂本店",pid:"ChIJF9_6-GRxA2ARAF326QqzWeo"},
    {k:"go",n:"名古屋城",map:"名古屋城",pid:"ChIJse-wx8t2A2ARd6Z1knjp07k"},
    {k:"go",n:"榮",p:"從 Oasis 21 開始逛",map:"オアシス21 名古屋",pid:"ChIJT5niKdRwA2AR1oO7t2LlvlQ"},
    {t:"20:30",k:"eat",l:"晚餐",n:"すゞ家 赤門店",p:"炸豬排，20:30 前入店",map:"すゞ家 赤門店 名古屋",pid:"ChIJ_a8Oi8xwA2ARLJ-1RMwegZY"}]},
@@ -2098,15 +2098,15 @@ const PICS={
  soba:`<path d="M30 8l20 22M36 8l18 20" ${O}/><rect x="6" y="40" width="38" height="9" rx="3" fill="#D9B57A" ${O}/><path d="M14 44h22" stroke="#B08A4E" stroke-width="2" stroke-linecap="round"/><path d="M9 40c0-13 32-13 32 0z" fill="#B9A487" ${O}/><path d="M14 36q3-3 6 0t6 0 6 0 6 0M18 31q3-3 6 0t6 0 4 0" fill="none" stroke="#857158" stroke-width="2" stroke-linecap="round"/><path d="M21 27l5-2M28 26l5 0" stroke="#3B4A3A" stroke-width="2.6" stroke-linecap="round"/><path d="M44 37h14l-2 13h-10z" fill="#fff" ${O}/><path d="M45 42h12" stroke="#5B7FB8" stroke-width="2.4"/><ellipse cx="51" cy="37" rx="7" ry="2.2" fill="#6E4A2E" ${O}/>`,
  shop:`<rect x="12" y="24" width="40" height="28" fill="#fff" ${O}/>${[0,1,2,3].map(i=>`<path d="M${12+i*10} 24h10v6a5 5 0 0 1-10 0z" fill="${i%2?"#fff":"#EE9479"}" ${O}/>`).join("")}<rect x="18" y="36" width="12" height="16" fill="#BFE2F0" ${O}/><rect x="36" y="38" width="10" height="14" fill="#B08463" ${O}/>`
 };
-const PIC_OF={"JX 320 台中 → 名古屋":"plane","搭名鐵到名古屋車站":"train","名古屋燈光圖書飯店":"hotel","つばめパン＆Milk 名駅店":"bread","名古屋城":"castle","榮":"tower","すゞ家 赤門店":"katsu","名古屋車站 4 樓搭名鐵巴士":"bus","吉卜力公園":"park","伏見屋 飛騨牛 別邸":"yakiniku","コンパル サンロード店":"coffee","搭名鐵到犬山":"train","犬山城":"castle","蕎麦正 まつい 犬山店":"soba","城下町小吃":"gohei","麵家 獅子丸":"ramen","Sky Promenade 屋外展望台":"night","イトウ珈琲喫茶室":"coffee","東山動物植物園":"giraffe","星星：snuw【スニュウ】":"hair","阿彰：men's NEELU 名古屋":"hair","搶 KISO 號碼牌":"ticket","挽き肉のトリコ":"hamburg","KISO":"breakfast","熱田神宮":"torii","炭燒富士鰻魚 總店":"unagi","大須商店街":"lantern","大須鮨":"sushi","久屋大通與中日大樓 7 樓":"night","ふみ屋 錦店":"beer","New Poppy":"breakfast","常滑":"pottery","nuu":"cake","風舎 常滑店":"cake","西条園抹茶カフェ":"matcha","Yellow 則武新町店":"plate","伏見町 POPEYE":"coffee","升半茶店 本店":"matcha","沢村 名古屋":"bread","熱田うなぎ 天 伏見":"unagi","名古屋車站搭名鐵往機場":"train","抵達中部國際機場":"plane","JX 321 名古屋 → 台中":"plane"};
+const PIC_OF={"JX 320 台中 → 名古屋":"plane","搭名鐵到名古屋車站":"train","名古屋燈光圖書飯店":"hotel","つばめパン＆Milk 名駅店":"bread","つばめパン＆Milk 尼ヶ坂本店":"bread","名古屋城":"castle","榮":"tower","すゞ家 赤門店":"katsu","名古屋車站 4 樓搭名鐵巴士":"bus","吉卜力公園":"park","伏見屋 飛騨牛 別邸":"yakiniku","コンパル サンロード店":"coffee","搭名鐵到犬山":"train","犬山城":"castle","蕎麦正 まつい 犬山店":"soba","城下町小吃":"gohei","麵家 獅子丸":"ramen","Sky Promenade 屋外展望台":"night","イトウ珈琲喫茶室":"coffee","東山動物植物園":"giraffe","星星：snuw【スニュウ】":"hair","阿彰：men's NEELU 名古屋":"hair","搶 KISO 號碼牌":"ticket","挽き肉のトリコ":"hamburg","KISO":"breakfast","熱田神宮":"torii","炭燒富士鰻魚 總店":"unagi","大須商店街":"lantern","大須鮨":"sushi","久屋大通與中日大樓 7 樓":"night","ふみ屋 錦店":"beer","New Poppy":"breakfast","常滑":"pottery","nuu":"cake","風舎 常滑店":"cake","西条園抹茶カフェ":"matcha","Yellow 則武新町店":"plate","伏見町 POPEYE":"coffee","升半茶店 本店":"matcha","沢村 名古屋":"bread","熱田うなぎ 天 伏見":"unagi","名古屋車站搭名鐵往機場":"train","抵達中部國際機場":"plane","JX 321 名古屋 → 台中":"plane"};
 const KCOL={fly:"move",move:"move",go:"go",eat:"eat",stay:"stay",do:"do",remind:"do",buy:"buy"};
 /* ---------- 兩站之間：已知的交通時間＋一鍵查路線（Google 地圖即時路線） ---------- */
 /* 兩站之間的交通：Google 地圖實測（2026/10），15 分鐘內或搭車沒有比較快就用走的 */
 const MEI="Meitetsu Nagoya Station";
 const LEGS={
  "11/17|名古屋燈光圖書飯店":["subway",12,MEI,"ランプライトブックスホテル名古屋","名古屋站→伏見站，走路約 17 分"],
- "11/17|つばめパン＆Milk 名駅店":["walk",12],
- "11/17|名古屋城":["subway",21],
+ "11/17|つばめパン＆Milk 尼ヶ坂本店":["train",25,0,0,"東山線伏見→榮，換名鐵瀨戶線榮町→尼ケ坂"],
+ "11/17|名古屋城":["walk",20,0,"名古屋城 東門","從東門入場，搭瀨戶線到東大手也差不多"],
  "11/17|榮":["subway",15,0,0,"名城線 名古屋城站→榮站"],
  "11/17|すゞ家 赤門店":["subway",9,0,0,"榮站→上前津站"],
  "11/18|吉卜力公園":["bus",60,0,0,"名鐵巴士直達"],
