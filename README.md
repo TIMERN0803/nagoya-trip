@@ -19,7 +19,8 @@
 - x36measure.py：批 B 的量測腳本（不是 PASS／FAIL 測試）：X3–X6 改前後對比值、全站可見文字最小字級掃描（首頁、各分頁、行事曆／錢包／記一筆／求助面板、回顧每一頁、行李頁），結果寫 /tmp/x36_<TAG>.json。用法：BASE=http://localhost:8766/ TAG=after python3 x36measure.py
 - ft/phonelib.py：conflicttest／reloadtest／focustest 共用的雙手機輔助（開頁、種資料、讀假雲端、時間設定）
 - fs_offline.js 新增 `__reject(code, n)`（讓寫入以指定錯誤碼失敗，測 invalid-argument 與暫時性錯誤）；三份假資料庫（ft/fs.js、ft/fs_offline.js、mock/fs.js）的 writeBatch.set 都支援 `{merge:true}`
-- 全部專項測試現為 41 個（加 uxtest、cleantest、resvtest、inuyamatest、unagitest、sanriotest、tsubametest、skygardentest）；`runall.sh`（tools 分支根目錄，複製到 /home/claude/build）跑 fulltest＋專項＋sweep＋t5，`EXTRA` 追加測試（`EXTRA="conflicttest reloadtest focustest uxtest cleantest resvtest inuyamatest unagitest sanriotest tsubametest skygardentest" ./runall.sh`），`P` 並行數預設 4，結果在 /tmp/runall/summary.txt
+- wxtest：天氣改以氣象廳為主（ngy-v72）——7 天內用氣象廳愛知縣預報（3 天內用愛知西部天氣＋降雨、名古屋氣溫，發布當天的最低不採用；週間帶可信度 A–C），更遠用 Open-Meteo 標「長期參考」，長期參考的雨看降雨機率（≥50 有雨、30–49 陰偶有雨、<30 陰天）；氣象廳抓不到或已過去的日子保留快取裡的氣象廳資料；舊版快取（沒有 v:2）會重抓、3 小時內不重抓；資料來源卡 4 個 tenki.jp 10 天預報連結；當天頁同樣標可信度。氣象廳與 Open-Meteo 都用 route 假回應，共 39 項。fulltest.newpage 與 G_weather 會擋掉 www.jma.go.jp
+- 全部專項測試現為 42 個（加 uxtest、cleantest、resvtest、inuyamatest、unagitest、sanriotest、tsubametest、skygardentest、wxtest）；`runall.sh`（tools 分支根目錄，複製到 /home/claude/build）跑 fulltest＋專項＋sweep＋t5，`EXTRA` 追加測試（`EXTRA="conflicttest reloadtest focustest uxtest cleantest resvtest inuyamatest unagitest sanriotest tsubametest skygardentest wxtest" ./runall.sh`），`P` 並行數預設 4，結果在 /tmp/runall/summary.txt
 - R2 重現腳本（qa/R2/b5、b3）：cx06 依設計維持 FAIL；u03 舊腳本的「沒有外洩 = FAIL」是舊語意，不是驗收失敗
 - pulsetest：浮動按鈕第一次出現與換到下一個項目時外圈脈動 10 秒、同一項重新開啟不再脈動（之前漏列在清單裡，2026-10-29 補上）
 - scenetest：首頁插圖網址參數 `?scene=` 只接受 morning／noon／afternoon／dinner／night，其他值（含 HTML、引號、大小寫不同）忽略並顯示目前時段，不會執行或插入元素；出發前與旅途中各測一次（R2 批 4 CODE-01，2026-10-29 新增）

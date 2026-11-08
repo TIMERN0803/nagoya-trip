@@ -14,6 +14,7 @@ async def newpage(b,t,tz="Asia/Tokyo",me="zhang",code="neko-test",init="",perm=N
         await ctx.route("**/firebasejs/**/firebase-app.js",lambda r:r.fulfill(body=APP,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))
         await ctx.route("**/firebasejs/**/firebase-firestore.js",lambda r:r.fulfill(body=FS,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))
         await ctx.route("**/api.open-meteo.com/**",lambda r:r.abort())
+        await ctx.route("**/www.jma.go.jp/**",lambda r:r.abort())
         await ctx.route("**/fonts.googleapis.com/**",lambda r:r.abort())
         await ctx.route("**/open.er-api.com/**",lambda r:r.abort())
         await ctx.route("**/currency-api*/**",lambda r:r.abort())
@@ -211,11 +212,12 @@ async def G_weather(b):
     await ctx.route("**/firebasejs/**/firebase-app.js",lambda r:r.fulfill(body=APP,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))
     await ctx.route("**/firebasejs/**/firebase-firestore.js",lambda r:r.fulfill(body=FS,content_type="text/javascript",headers={"access-control-allow-origin":"*"}))
     await ctx.route("**/api.open-meteo.com/**",lambda r:r.fulfill(body=body,content_type="application/json",headers={"access-control-allow-origin":"*"}))
+    await ctx.route("**/www.jma.go.jp/**",lambda r:r.abort())
     pg=await newpage(b,jst(11,9,9,0),ctx=ctx)
     await pg.wait_for_timeout(800)
     await pg.click('nav.tabs button[data-tab="wx"]');await pg.wait_for_timeout(400)
     w=await pg.evaluate('document.querySelector(".app, #app").innerText.replace(/\\s+/g," ")')
-    rec("G 天氣","出發前 8 天抓到預報並顯示","實際預報" in w and "15°" in w and "有雨" in w,w[w.find("實際"):w.find("實際")+40] if "實際" in w else w[:80])
+    rec("G 天氣","出發前 8 天抓到預報並顯示（氣象廳抓不到時用長期參考）","長期參考預報" in w and "15°" in w and "有雨" in w,w[w.find("長期"):w.find("長期")+40] if "長期" in w else w[:80])
     await ctx.close()
 
 async def H_offline(b):
