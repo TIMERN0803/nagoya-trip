@@ -238,7 +238,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .route{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;margin-top:6px;font-size:13px;color:var(--muted)}
 .route svg{width:11px;height:11px;color:var(--brown)}
 .wx{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:2px dashed var(--line)}
-.wx svg{width:34px;height:34px;flex:none}
+.wx svg{width:47px;height:34px;flex:none}
 .wx .temp{font-family:var(--f-display);font-weight:900;font-size:20px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .wx .temp span{font-size:15px;color:var(--muted)}
 .wx .w-meta{font-size:13px;color:var(--muted);line-height:1.45;min-width:0}
@@ -351,12 +351,12 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .box{background:var(--card);border-radius:20px;padding:16px 18px;border:1.5px solid var(--line);box-shadow:var(--shadow)}
 .gap{height:14px}
 
-.wxrow{display:grid;grid-template-columns:54px 34px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 0;border-top:2px dashed var(--line)}
+.wxrow{display:grid;grid-template-columns:54px 44px minmax(0,1fr) auto;align-items:center;gap:10px;padding:10px 0;border-top:2px dashed var(--line)}
 .wxrow:first-child{border-top:0;padding-top:0}
 .wxrow:last-child{padding-bottom:0}
 .wxrow .d{font-family:var(--f-display);font-weight:900;font-variant-numeric:tabular-nums;line-height:1.2}
 .wxrow .d small{display:block;font-size:12px;color:var(--muted);font-weight:700}
-.wxrow svg{width:32px;height:32px}
+.wxrow svg{width:44px;height:32px}
 .wxrow .p{font-size:14px;color:var(--muted);line-height:1.4}
 .wxrow .p b{color:var(--ink);font-weight:700}
 .wxrow .t{font-family:var(--f-display);font-weight:900;font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -370,6 +370,8 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .wx-src .acts{row-gap:16px}
 .tip{display:flex;gap:12px;align-items:center;background:var(--accent-soft);border:1.5px solid var(--brown-soft);border-radius:20px;padding:14px 16px;font-size:14px}
 .tip svg{width:66px;height:48px;flex:none}
+.tip.wear{flex-direction:column;align-items:stretch;gap:8px}
+.tip svg.wear{width:180px;height:auto;align-self:center}
 .tip b{font-family:var(--f-display);font-weight:900}
 
 .pass .row{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
@@ -1371,7 +1373,7 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 /* 200% 縮放（約 195px 寬）：所有標題列的同步只留燈號，各頁的格子可以縮或換行，不會出現左右捲動 */
 @media (max-width:240px){.bar .sync span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}.bar .sync{position:relative;flex:none;width:44px;height:44px;padding:0;justify-content:center}
  .faces{grid-template-columns:repeat(5,minmax(0,1fr));gap:2px}.fbtn{min-width:0}.fbtn svg{width:100%;height:auto;max-width:44px}.fbtn small{font-size:11px}
- .wxrow{grid-template-columns:44px 28px minmax(0,1fr);gap:6px}.wxrow .t{grid-column:2/-1;white-space:normal}
+ .wxrow{grid-template-columns:44px 39px minmax(0,1fr);gap:6px}.wxrow svg{width:39px;height:28px}.wxrow .t{grid-column:2/-1;white-space:normal}
  .pass .row{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:4px}.pass .ap{font-size:22px;min-width:0}.pass .ap small{font-size:11px;overflow-wrap:anywhere}
  .pe-row{flex-wrap:wrap}
  nav.tabs .in button[aria-selected="true"]::after{width:min(44px,100%)}
@@ -1420,10 +1422,6 @@ setTimeout(function(){if(s.isConnected)s.remove()},8000)})()</script>
     <linearGradient id="gPink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F7D3CB"/><stop offset="1" stop-color="#FFF1EC"/></linearGradient>
     <linearGradient id="gMint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CDEBE2"/><stop offset="1" stop-color="#F1FAF6"/></linearGradient>
 
-    <symbol id="w-sun" viewBox="0 0 32 32"><circle cx="16" cy="16" r="7" fill="#F4C04A"/><g stroke="#F4C04A" stroke-width="2.6" stroke-linecap="round"><path d="M16 3v3M16 26v3M3 16h3M26 16h3M6.8 6.8l2.1 2.1M23.1 23.1l2.1 2.1M6.8 25.2l2.1-2.1M23.1 8.9l2.1-2.1"/></g></symbol>
-    <symbol id="w-cloudsun" viewBox="0 0 32 32"><circle cx="12" cy="12" r="6" fill="#F4C04A"/><path d="M10 26h14a5 5 0 0 0 0-10 7 7 0 0 0-13 2 4 4 0 0 0-1 8z" fill="#fff" stroke="#7FAFCF" stroke-width="2"/></symbol>
-    <symbol id="w-cloud" viewBox="0 0 32 32"><path d="M8 25h16a6 6 0 0 0 0-12 8 8 0 0 0-15 2.5A4.8 4.8 0 0 0 8 25z" fill="#EEF2F5" stroke="#8A9BAA" stroke-width="2"/></symbol>
-    <symbol id="w-rain" viewBox="0 0 32 32"><path d="M8 20h16a6 6 0 0 0 0-12 8 8 0 0 0-15 2.5A4.8 4.8 0 0 0 8 20z" fill="#EEF2F5" stroke="#8A9BAA" stroke-width="2"/><path d="M11 24l-1.5 4M17 24l-1.5 4M23 24l-1.5 4" stroke="#5C93C4" stroke-width="2.2" stroke-linecap="round"/></symbol>
 
     <symbol id="i-pen" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16v4zM14 6l4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></symbol>
     <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="12" cy="10" r="2.3" fill="currentColor"/></symbol>
@@ -1514,10 +1512,18 @@ function catInner(o){
   <path d="M48.5 47.5 C54 46 58.5 46 60.4 49.2 C61.8 52.2 59.4 55.4 56.2 54.9 C53.4 54.4 50.6 53.8 48.6 53.6" fill="${o.fur}" ${s}/>`;
  }else{
   const armR=o.wave?`<g class="arm">${dbl("M47 50 Q55 47 57 37")}</g>`:o.eat?"":`<path d="M47 51 Q54 56 52 62 Q48 64 45 59" fill="${o.fur}" ${s}/>`;
-  bodyPart=`<g class="tail${o.tailL?" l":""}">${dbl(o.tailL?"M19 66 Q4 65 7 49":"M51 66 Q66 65 63 49")}</g>
-  <path d="M22 42 C19 52 18 61 20 67 Q35 71 50 67 C52 61 51 52 48 42 Z" fill="${o.fur}" ${s}/>
-  <path d="M21.5 63 C17 66 17 74 22.5 75.5 C27.5 76.8 31.5 73.5 32 68.5" fill="${o.fur}" ${s}/><path d="M48.5 63 C53 66 53 74 47.5 75.5 C42.5 76.8 38.5 73.5 38 68.5" fill="${o.fur}" ${s}/>
-  <path d="M21.5 72.5 v-2 M25.5 74 v-2 M48.5 72.5 v-2 M44.5 74 v-2" stroke="${LN}" stroke-width="1.8" stroke-linecap="round"/>
+  const tail=`<g class="tail${o.tailL?" l":""}">${dbl(o.tailL?"M19 66 Q4 65 7 49":"M51 66 Q66 65 63 49")}</g>`,
+   body=`<path d="M22 42 C19 52 18 61 20 67 Q35 71 50 67 C52 61 51 52 48 42 Z" fill="${o.fur}" ${s}/>`,
+   legs=`<path d="M21.5 63 C17 66 17 74 22.5 75.5 C27.5 76.8 31.5 73.5 32 68.5" fill="${o.fur}" ${s}/><path d="M48.5 63 C53 66 53 74 47.5 75.5 C42.5 76.8 38.5 73.5 38 68.5" fill="${o.fur}" ${s}/>
+  <path d="M21.5 72.5 v-2 M25.5 74 v-2 M48.5 72.5 v-2 M44.5 74 v-2" stroke="${LN}" stroke-width="1.8" stroke-linecap="round"/>`;
+  const wr=o.wear;
+  if(wr){
+   /* 穿搭：腳先畫、衣服蓋在上面（長大衣下襬蓋住腳的上半），袖子用衣服的顏色、手掌露出來（冷的時候是手套） */
+   const paw=wr.mitt||o.fur;
+   bodyPart=`${tail}${legs}${body}${WEAR[wr.k](wr,s)}
+  <path d="M23 51 Q16 56 18 62 Q22 64 25 59" fill="${wr.coat}" ${s}/><path d="M47 51 Q54 56 52 62 Q48 64 45 59" fill="${wr.coat}" ${s}/>
+  <circle cx="19.8" cy="61.6" r="3.1" fill="${paw}" ${s} stroke-width="2.4"/><circle cx="50.2" cy="61.6" r="3.1" fill="${paw}" ${s} stroke-width="2.4"/>`;
+  }else bodyPart=`${tail}${body}${legs}
   ${o.eat?"":`<path d="M23 51 Q16 56 18 62 Q22 64 25 59" fill="${o.fur}" ${s}/>`}${armR}`;
  }
  return `<g filter="url(#rough)"${o.walk?` transform="rotate(3 35 70)"`:""}${o.anim?` class="anim ${o.anim}"`:""}>
@@ -1525,7 +1531,9 @@ function catInner(o){
   ${bodyPart}
   <path d="M21.5 41 Q35 47 48.5 41 L49 46.5 Q35 52.5 21 46.5 Z" fill="${o.scarf}" ${s} stroke-width="2.6"/>
   <circle cx="35" cy="50.5" r="3" fill="#F4C04A" ${s} stroke-width="2.4"/>
+  ${o.wear&&(o.wear.k==="cool"||o.wear.k==="cold")?`<path d="M42.6 46.4 L45.4 57.6 L40.9 58.3 L39.4 47.2Z" fill="${o.scarf}" ${s} stroke-width="2.4"/>`:""}
   ${headM(o)}
+  ${o.wear&&o.wear.hat?`<path d="M20 14.5 Q20.5 2.5 35 2.5 Q49.5 2.5 50 14.5Z" fill="${o.wear.hat}" ${s}/><path d="M19.5 14.2 Q35 10.6 50.5 14.2 L50.3 16.8 Q35 13.4 19.7 16.8 Z" fill="${o.wear.band}" stroke="${LN}" stroke-width="2" stroke-linejoin="round"/><circle cx="35" cy="1" r="3.6" fill="#fff" ${s} stroke-width="2.4"/>`:""}
   ${o.eat?FOOD[o.eat](s)+`<path d="M22 50 Q20 57 29 57.5" fill="${o.fur}" ${s}/><path d="M48 50 Q50 57 41 57.5" fill="${o.fur}" ${s}/>`:""}
  </g>`;
 }
@@ -1538,6 +1546,15 @@ const FOOD={
  mabushi:s=>`<path d="M49 29 L37.5 45 M52.5 31 L40 46" stroke="#E3B98A" stroke-width="2.4" stroke-linecap="round"/><path d="M22.5 47 Q35 37.5 47.5 47 Z" fill="#FFF8EC" ${s} stroke-width="2.4"/><path d="M26 45.5 Q29.5 40.8 34.5 41 Q34 45 26 45.5 Z M35.5 41 Q41 40.5 44 45 Q38.5 45.6 35.5 41 Z" fill="#8A4A22" stroke="${LN}" stroke-width="1.6" stroke-linejoin="round"/><path d="M28.5 43.5 l2-1.5 M39 42.5 l1.5 1.5" stroke="#C47A3C" stroke-width="1.2" stroke-linecap="round"/><path d="M22.5 47 H47.5 Q46.5 61 35 61 Q23.5 61 22.5 47 Z" fill="#C9443A" ${s} stroke-width="2.6"/><path d="M26 51.5 H44" stroke="#E98C76" stroke-width="1.8" stroke-linecap="round"/>`,
  ebi:s=>`<path d="M26 56 Q34 44 46 44 Q49 46 46 49 Q38 50 31 58 Z" fill="#E7A953" ${s} stroke-width="2.6"/><path d="M46 44 l5-4 M47 47 l6-1" stroke="#E2603F" stroke-width="2.6" stroke-linecap="round"/><path d="M31 53 l2 2 M35 50 l2 2 M39 48 l2 2" stroke="#B9762E" stroke-width="1.6" stroke-linecap="round"/>`
 };
+/* 怎麼穿：長袖 warm、薄外套 mild、大衣 cool、羽絨衣＋毛帽＋手套 cold */
+const WEAR={
+ warm:(w,s)=>`<path d="M22 42 C19 52 18 61 20 67 Q35 71 50 67 C52 61 51 52 48 42 Z" fill="${w.coat}" ${s}/><path d="M20.3 54 Q35 57 49.7 54 M19.7 61 Q35 64 50.3 61" fill="none" stroke="${w.line}" stroke-width="2.6" stroke-linecap="round"/>`,
+ mild:(w,s)=>`<path d="M22 42 C19 52 18 61 20 67 Q35 71 50 67 C52 61 51 52 48 42 Z" fill="${w.coat}" ${s}/><path d="M32 46 L38 46 L37.6 68.6 Q35 69.2 32.4 68.6Z" fill="${w.line}" stroke="${LN}" stroke-width="2" stroke-linejoin="round"/><path d="M23.5 58.5h5M41.5 58.5h5" stroke="${LN}" stroke-width="2" stroke-linecap="round"/>`,
+ cool:(w,s)=>`<path d="M21.5 42 C18 52 16 62 17.5 71 Q35 75 52.5 71 C54 62 52 52 48.5 42 Z" fill="${w.coat}" ${s}/><path d="M35 49 V73.2" stroke="${LN}" stroke-width="2" stroke-linecap="round"/><circle cx="31.4" cy="57" r="1.6" fill="${LN}"/><circle cx="31.4" cy="65" r="1.6" fill="${LN}"/>`,
+ cold:(w,s)=>`<path d="M20.5 42 C16 51 15 62 17 70 Q35 75 53 70 C55 62 54 51 49.5 42 Z" fill="${w.coat}" ${s}/><path d="M18.4 52.5 Q35 56 51.6 52.5 M17.3 61.5 Q35 65 52.7 61.5" fill="none" stroke="${LN}" stroke-width="2" stroke-linecap="round"/><path d="M35 49 V73.4" stroke="${LN}" stroke-width="2" stroke-linecap="round"/>`
+};
+const WEAR_W={warm:{coat:"#F7D98B",line:"#E9A93B"},mild:{coat:"#9CC3DE",line:"#FFF8EC"},cool:{coat:"#C99A6E"},cold:{coat:"#F4C04A",hat:"#EE9479",band:"#F6B8A8",mitt:"#EE9479"}};
+const WEAR_B={warm:{coat:"#BFE2F0",line:"#7FB8D4"},mild:{coat:"#E7C79A",line:"#FFF8EC"},cool:{coat:"#F3E3C3"},cold:{coat:"#7CC8B4",hat:"#F4C04A",band:"#FCE4A0",mitt:"#F4C04A"}};
 const W={fur:"#FBFAF5",scarf:"#7CC8B4",nose:LN,tailL:1};
 const B={fur:"#3A3133",scarf:"#EE9479",nose:"#F2A79C",whisk:LN};
 document.getElementById("defs").insertAdjacentHTML("beforeend",
@@ -1546,7 +1563,25 @@ document.getElementById("defs").insertAdjacentHTML("beforeend",
   <symbol id="head-w" viewBox="3 -3 64 51"><g filter="url(#rough)">${headM(W)}</g></symbol><symbol id="head-b" viewBox="3 -3 64 51"><g filter="url(#rough)">${headM({...B,look:-2.4})}</g></symbol>
   <symbol id="heads" viewBox="2 -4 108 52"><g filter="url(#rough)"><g transform="rotate(-7 35 24)">${headM(W)}</g><g transform="translate(44 0) rotate(7 35 24)">${headM({...B,look:-2.4})}</g></g></symbol>
   <symbol id="cats-walk" viewBox="0 0 132 80"><g class="step-a"><use href="#cat-w-walk" x="0" y="0" width="70" height="80"/></g><g class="step-b"><use href="#cat-b-walk" x="64" y="0" width="70" height="80"/></g></symbol>
+  ${Object.keys(WEAR).map(k=>catSym(`cat-w-${k}`,{...W,wear:{k,...WEAR_W[k]}})+catSym(`cat-b-${k}`,{...B,look:-2.4,wear:{k,...WEAR_B[k]}})+`<symbol id="cats-${k}" viewBox="0 0 132 80"><use href="#cat-w-${k}" x="0" y="0" width="70" height="80"/><use href="#cat-b-${k}" x="62" y="0" width="70" height="80"/></symbol>`).join("")}
   <symbol id="cats-hi" viewBox="0 0 132 80"><use href="#cat-w-wave" x="0" y="0" width="70" height="80"/><use href="#cat-b" x="62" y="0" width="70" height="80"/></symbol>`);
+
+/* ---------- 天氣圖示：照 tenki.jp 的表現方式原創重畫（太陽、雲、雨傘、雪；「時々」疊在一起、「のち」用箭頭），App 的深色粗外框平塗 ---------- */
+const WXE={
+ s:`<g stroke="#E9774F" stroke-width="2.4" stroke-linecap="round"><path d="M0-13.5v3M0 10.5v3M-13.5 0h3M10.5 0h3M-9.5-9.5l2.1 2.1M7.4 7.4l2.1 2.1M-9.5 9.5l2.1-2.1M7.4-7.4l2.1-2.1"/></g><circle r="7.4" fill="#F7A84B" stroke="${LN}" stroke-width="1.9"/>`,
+ c:`<path d="M-8.5 9h16a6 6 0 0 0 0-12 8 8 0 0 0-15 2.5A4.8 4.8 0 0 0-8.5 9z" fill="#fff" stroke="${LN}" stroke-width="1.9" stroke-linejoin="round"/><path d="M-9 6.2h15.5" stroke="#D9E2EA" stroke-width="2" stroke-linecap="round"/>`,
+ r:`<path d="M0-11v2" stroke="${LN}" stroke-width="1.9" stroke-linecap="round"/><path d="M0 0v7.5a2.6 2.6 0 0 1-5.2 0" fill="none" stroke="${LN}" stroke-width="1.9" stroke-linecap="round"/><path d="M-12 0Q-12-10 0-10Q12-10 12 0Q9-2.4 6 0Q3-2.4 0 0Q-3-2.4-6 0Q-9-2.4-12 0Z" fill="#5C93C4" stroke="${LN}" stroke-width="1.9" stroke-linejoin="round"/>`,
+ n:`<g stroke="#6FA8D6" stroke-width="2.6" stroke-linecap="round"><path d="M0-10v20M-8.7-5l17.4 10M-8.7 5l17.4-10"/></g><circle r="2.6" fill="#fff" stroke="${LN}" stroke-width="1.6"/>`
+};
+const wxAt=(e,x,y,k)=>`<g transform="translate(${x} ${y}) scale(${k})">${WXE[e]}</g>`;
+const wxArrow=`<path d="M19 16h5.5M21.8 12.8l3.2 3.2-3.2 3.2" fill="none" stroke="${LN}" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>`;
+/* key：單一 s／c／r／n；「時々」a-b（a 為主，b 小的疊在右下）；「のち」a2b */
+const WX_ICONS={sun:wxAt("s",22,16,1.05),cloud:wxAt("c",22,16,1.1),rain:wxAt("r",22,17,1.1),snow:wxAt("n",22,16,1.15),
+ "sun-cloud":wxAt("s",18,13,.95)+wxAt("c",29,20,.66),"cloud-sun":wxAt("s",28,9,.62)+wxAt("c",19,17,.95),
+ "cloud-rain":wxAt("c",17,13,.9)+wxAt("r",31,21,.62),"sun-rain":wxAt("s",17,13,.9)+wxAt("r",31,21,.62),"cloud-snow":wxAt("c",17,13,.9)+wxAt("n",31,21,.6)};
+{const nm={s:"sun",c:"cloud",r:"rain"};[["s","c"],["c","s"],["c","r"],["r","s"],["r","c"],["s","r"]].forEach(([a,b])=>{WX_ICONS[`${nm[a]}2${nm[b]}`]=wxAt(a,10,16,.62)+wxArrow+wxAt(b,34,16,.62)})}
+WX_ICONS.cloudsun=WX_ICONS["sun-cloud"];/* 舊快取的名稱 */
+document.getElementById("defs").insertAdjacentHTML("beforeend",Object.entries(WX_ICONS).map(([k,v])=>`<symbol id="w-${k}" viewBox="0 0 44 32">${v}</symbol>`).join(""));
 
 /* ---------- 場景插畫：同樣的深色外框與平塗 ---------- */
 const cloud=(x,y,s=1)=>`<g class="ol" transform="translate(${x} ${y}) scale(${s})" fill="#fff"><path d="M-13 4 a6 6 0 0 1 3-10 a8 8 0 0 1 15-2 a6 6 0 0 1 9 6 a4.5 4.5 0 0 1 -1 6 z"/></g>`;
@@ -2021,8 +2056,8 @@ const app=document.getElementById("app");
 
 function wxFor(x){
  const f=forecast&&forecast.days&&forecast.days[x.d];
- if(f&&f.hi!=null)return{live:true,hi:f.hi,lo:f.lo,icon:["sun","cloudsun","cloud","rain"].includes(f.icon)?f.icon:"cloudsun",desc:f.desc||"",pop:f.pop,src:f.src==="jma"?"jma":"om",rel:/^[A-C]$/.test(f.rel||"")?f.rel:""};
- return{live:false,hi:x.wx[1],lo:x.wx[2],icon:"cloudsun",desc:"",src:""};
+ if(f&&f.hi!=null)return{live:true,hi:f.hi,lo:f.lo,icon:WX_ICONS[f.icon]?f.icon:"sun-cloud",desc:f.desc||"",pop:f.pop,src:f.src==="jma"?"jma":"om",rel:/^[A-C]$/.test(f.rel||"")?f.rel:""};
+ return{live:false,hi:x.wx[1],lo:x.wx[2],icon:"sun-cloud",desc:"",src:""};
 }
 const wxNote=w=>w.src==="jma"?(w.rel?`・可信度 ${w.rel}`:""):w.src==="om"?"・長期參考":"";
 function updatedText(){if(!forecast||!forecast.updated)return"";const d=new Date(forecast.updated);return isNaN(d)?"":`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} 更新`}
@@ -2285,6 +2320,19 @@ async function switchDay(i){
   /* 舊內容一定要移除：iOS Safari 的 animation.finished 有時不會觸發，舊內容會停在左邊留下殘影，所以用計時器保底 */
   const kill=()=>{ghost.remove();if(!par.querySelector(".day-ghost"))par.style.overflowX=""};ghost.animate([{transform:"translateX(0)"},{transform:`translateX(calc(${-dir} * (100% + 24px)))`}],{...o,fill:"forwards"}).finished.then(kill,kill);setTimeout(kill,o.duration+80)}
 }
+/* 怎麼穿：照 8 天預報（沒有預報時用往年平均）的平均最低／最高決定穿搭，有雨的日子貓咪撐傘 */
+function wearPlan(){
+ const ws=DAYS.map(wxFor),avg=a=>Math.round(a.reduce((x,y)=>x+y,0)/a.length);
+ const lo=avg(ws.map(w=>w.lo)),hi=avg(ws.map(w=>w.hi)),rain=ws.filter(w=>w.live&&/rain/.test(w.icon)).length;
+ const k=lo<=5?"cold":lo<=10?"cool":lo<=15?"mild":"warm";
+ return{k,lo,hi,rain};
+}
+function wearTipHTML(){
+ const p=wearPlan(),T={cold:"羽絨衣、毛帽、手套都要帶",cool:"洋蔥式穿搭，帶薄羽絨或大衣、圍巾",mild:"洋蔥式穿搭，外面加件薄外套",warm:"長袖就好，帶件薄外套備用"};
+ const art=p.rain?`<svg class="wear" viewBox="0 -24 132 104" aria-hidden="true"><g class="ol" transform="translate(66 -2) scale(1.04)" filter="url(#rough)"><path d="M0 0v50" fill="none"/><path d="M-44 8a44 26 0 0 1 88 0q-11-5-22 0q-11-5-22 0q-11-5-22 0q-11-5-22 0z" fill="#EE9479"/></g><use href="#cats-${p.k}" x="0" y="0" width="132" height="80"/></svg>`
+  :`<svg class="wear" viewBox="0 -4 132 84" aria-hidden="true"><use href="#cats-${p.k}" x="0" y="0" width="132" height="80"/></svg>`;
+ return `<div class="tip wear" data-wear="${p.k}${p.rain?"-rain":""}">${art}<div><b>怎麼穿</b><br>早晚約 ${p.lo} 度、白天約 ${p.hi} 度${p.hi-p.lo>=8?"，溫差大":""}。建議${T[p.k]}，穿好走的鞋${p.rain?`，有 ${p.rain} 天可能下雨，記得帶折傘`:""}。下午 4 點半左右天就暗了。</div></div>`;
+}
 function wxHTML(){
  const any=DAYS.some(x=>wxFor(x).live),anyJ=DAYS.some(x=>wxFor(x).src==="jma"),anyO=DAYS.some(x=>wxFor(x).live&&wxFor(x).src==="om");
  return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>天氣</h1></header>
@@ -2293,7 +2341,7 @@ function wxHTML(){
  <span class="src ${any?"live":"avg"}">${any?`${anyJ?"氣象廳預報":"長期參考預報"}，${updatedText()}`:"目前是往年平均，出發前約兩週會自動換成預報"}</span>
  <div class="stack"><div class="box">${DAYS.map(x=>{const w=wxFor(x);return `<div class="wxrow"><div class="d">${x.d}<small>週${x.w}</small></div><svg><use href="#w-${w.icon}"/></svg><div class="p">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>`:""}${esc(x.wx[0])}${esc(wxNote(w))}</div><div class="t">${w.hi}° <span>/ ${w.lo}°</span></div></div>`}).join("")}</div>
  <div class="box wx-src"><b>資料來源</b><p>${!any?"目前是往年平均，出發前約兩週會自動換成預報":[anyJ?"7 天內用日本氣象廳（名古屋地方氣象台）的預報，可信度 A 最準、C 較會變":"",anyO?(anyJ?"更遠的日子是長期參考，越接近出發會自動換成氣象廳預報":"目前是長期參考，出發前一週左右會自動換成日本氣象廳的預報"):""].filter(Boolean).join("；")}</p><div class="acts">${[...new Set(DAYS.map(x=>x.wx[0]))].map(n=>ext(`tenki.jp ${n}`,tenkiURL(n))).join("")}</div></div>
- <div class="tip"><svg aria-hidden="true"><use href="#cats"/></svg><div><b>怎麼穿</b><br>早晚約 8 度、白天約 17 度，溫差大。建議洋蔥式穿搭，帶薄羽絨或大衣，穿好走的鞋。下午 4 點半左右天就暗了。</div></div></div>`;
+ ${wearTipHTML()}</div>`;
 }
 function moveHTML(){
  return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>交通</h1></header>
@@ -3196,18 +3244,19 @@ connect();
 const LOC={"名古屋":[35.1709,136.8815],"長久手":[35.1702,137.0889],"犬山":[35.3883,136.9393],"常滑":[34.8866,136.832]};
 const TENKI={"名古屋":"23100","長久手":"23238","犬山":"23215","常滑":"23216"};
 const tenkiURL=n=>`https://tenki.jp/lite/forecast/5/26/5110/${TENKI[n]||"23100"}/10days.html`;
-const WMO=c=>c===0?["sun","晴"]:c<=2?["cloudsun","晴時多雲"]:c===3?["cloud","陰天"]:c<=48?["cloud","有霧"]:(c<=67||(c>=80&&c<=82))?["rain","有雨"]:(c<=77||c===85||c===86)?["cloud","下雪"]:["rain","雷雨"];
+const WMO=c=>c===0?["sun","晴"]:c===1?["sun-cloud","晴時多雲"]:c===2?["cloud-sun","多雲時晴"]:c===3?["cloud","陰天"]:c<=48?["cloud","有霧"]:(c<=67||(c>=80&&c<=82))?["rain","有雨"]:(c<=77||c===85||c===86)?["snow","下雪"]:["rain","雷雨"];
 /* Open-Meteo 的天氣代碼和降雨機率來自不同模型，會出現「有雨，降雨 12%」：雨要看降雨機率 */
-const omWx=(c,pop)=>{const w=WMO(c);if(w[0]!=="rain"||pop==null||pop>=50)return w;return pop>=30?["cloud","陰偶有雨"]:["cloud","陰天"]};
+const omWx=(c,pop)=>{const w=WMO(c);if(w[0]!=="rain"||pop==null||pop>=50)return w;return pop>=30?["cloud-rain","陰偶有雨"]:["cloud","陰天"]};
 /* 氣象廳天氣代碼（100 晴、200 陰、300 雨、400 雪系列） */
 const JMA_RAIN1=[102,106,108,112,120,121,122,125,140],JMA_SNOW=[104,105,115,116,117,160,170,181,204,205,215,216,217,228,229,230,250,260,270,281];
 function jmaWx(code,pop){
- const c=+code,m=Math.floor(c/100);
- if(m===1){if([100,123,124,130,131].includes(c))return["sun","晴"];if([101,110,111,132].includes(c))return["cloudsun","晴時多雲"];return["cloudsun",JMA_SNOW.includes(c)?"晴偶有雪":(JMA_RAIN1.includes(c)?"晴偶有雨":"晴時有雨")]}
- if(m===2){if(c===200)return["cloud","陰天"];if(c===209||c===231)return["cloud","有霧"];if([201,210,211,223].includes(c))return["cloudsun","多雲時晴"];if(JMA_SNOW.includes(c))return["cloud","陰偶有雪"];
-  if([202,206,208,212,220,221,222].includes(c))return["cloud","陰偶有雨"];if([214,218,219,224,225,226].includes(c))return[pop!=null&&pop<50?"cloud":"rain","陰後轉雨"];return[pop!=null&&pop<50?"cloud":"rain","陰時有雨"]}
- if(m===3){if(c===306)return["rain","大雨"];if(c===308)return["rain","暴風雨"];if([303,304,309,314,315,322,326,327,329,340].includes(c))return["rain","雨或雪"];return["rain","有雨"]}
- if(m===4)return["cloud","下雪"];
+ const c=+code,m=Math.floor(c/100),in_=(...a)=>a.includes(c);
+ if(m===1){if(in_(100,123,124,130,131))return["sun","晴"];if(in_(101,132))return["sun-cloud","晴時多雲"];if(in_(110,111))return["sun2cloud","晴後轉陰"];
+  if(JMA_SNOW.includes(c))return["cloud-snow","晴偶有雪"];if(in_(112,113,114,118,119,126,127,128))return["sun2rain","晴後轉雨"];return["sun-rain",JMA_RAIN1.includes(c)?"晴偶有雨":"晴時有雨"]}
+ if(m===2){if(c===200)return["cloud","陰天"];if(c===209||c===231)return["cloud","有霧"];if(in_(201,223))return["cloud-sun","多雲時晴"];if(in_(210,211))return["cloud2sun","陰後轉晴"];if(JMA_SNOW.includes(c))return["cloud-snow","陰偶有雪"];
+  if(in_(202,206,208,212,220,221,222))return[c===212?"cloud2rain":"cloud-rain","陰偶有雨"];if(in_(214,218,219,224,225,226))return["cloud2rain","陰後轉雨"];return["cloud-rain","陰時有雨"]}
+ if(m===3){if(c===306)return["rain","大雨"];if(c===308)return["rain","暴風雨"];if(in_(311,316,320,323,324,325,361))return["rain2sun","雨後轉晴"];if(in_(313,317,321,371))return["rain2cloud","雨後轉陰"];if(in_(303,304,309,314,315,322,326,327,329,340))return["rain","雨或雪"];return["rain","有雨"]}
+ if(m===4)return["snow","下雪"];
  return null;
 }
 /* 氣象廳 JSON：[0] 3 天內（愛知西部 230010，降雨 6 小時一格、名古屋 51106 最低／最高）；[1] 週間（愛知縣、名古屋氣溫、可信度） */
