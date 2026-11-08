@@ -364,6 +364,10 @@ details.sched[open] summary::after{transform:rotate(-135deg)}
 .src{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:700;border-radius:8px;padding:3px 12px;margin-bottom:12px}
 .src.avg{background:var(--sunk);color:var(--muted)}
 .src.live{background:var(--mint-soft);color:var(--mint-ink)}
+.wx-src{font-size:14px;color:var(--muted);line-height:1.5}
+.wx-src b{color:var(--ink);font-family:var(--f-display);font-weight:900}
+.wx-src p{margin:4px 0 0}
+.wx-src .acts{row-gap:16px}
 .tip{display:flex;gap:12px;align-items:center;background:var(--accent-soft);border:1.5px solid var(--brown-soft);border-radius:20px;padding:14px 16px;font-size:14px}
 .tip svg{width:66px;height:48px;flex:none}
 .tip b{font-family:var(--f-display);font-weight:900}
@@ -2017,9 +2021,10 @@ const app=document.getElementById("app");
 
 function wxFor(x){
  const f=forecast&&forecast.days&&forecast.days[x.d];
- if(f&&f.hi!=null)return{live:true,hi:f.hi,lo:f.lo,icon:["sun","cloudsun","cloud","rain"].includes(f.icon)?f.icon:"cloudsun",desc:f.desc||"",pop:f.pop};
- return{live:false,hi:x.wx[1],lo:x.wx[2],icon:"cloudsun",desc:""};
+ if(f&&f.hi!=null)return{live:true,hi:f.hi,lo:f.lo,icon:["sun","cloudsun","cloud","rain"].includes(f.icon)?f.icon:"cloudsun",desc:f.desc||"",pop:f.pop,src:f.src==="jma"?"jma":"om",rel:/^[A-C]$/.test(f.rel||"")?f.rel:""};
+ return{live:false,hi:x.wx[1],lo:x.wx[2],icon:"cloudsun",desc:"",src:""};
 }
+const wxNote=w=>w.src==="jma"?(w.rel?`・可信度 ${w.rel}`:""):w.src==="om"?"・長期參考":"";
 function updatedText(){if(!forecast||!forecast.updated)return"";const d=new Date(forecast.updated);return isNaN(d)?"":`${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} 更新`}
 
 function heroHTML(){
@@ -2226,7 +2231,7 @@ function dayBodyHTML(){
  const x=DAYS[dayIdx],w=wxFor(x),stat=dayIdx===todayIdx?dayStatus(x):null;
  return `${x.sched?`<div class="sched-pin" aria-hidden="true"></div>${schedHTML(stat)}`:""}<section class="banner"><div class="top"><svg class="art" viewBox="2 2 116 116" aria-hidden="true"><g filter="url(#rough)">${SCENES[x.art]}</g></svg><div class="ttl"><div class="when">${x.d}（${x.w}）${dayIdx===todayIdx?`<span class="today-pill">今天</span>`:dayDate(x)<today?`<span class="past-pill">已結束</span>`:""}</div><h2>${esc(x.title)}</h2>
   <div class="route">${x.route.map(esc).join('<svg><use href="#i-arrow"/></svg>')}</div></div></div>
-  <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
+  <div class="wx"><svg><use href="#w-${w.icon}"/></svg><div class="temp">${w.hi}° <span>/ ${w.lo}°</span></div><div class="w-meta">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>${esc(x.wx[0])}${esc(wxNote(w))}，${updatedText()}`:`${esc(x.wx[0])}往年平均<br>日落約 16:40`}</div></div></section>
 ${nowCardHTML(x,stat)}
  ${x.notes?`<div class="notes">${x.notes.map(n=>`<div class="day-note"><span class="dn-ic" aria-hidden="true"><svg><use href="#i-bell"/></svg></span><span class="dn-t"><small>提醒</small>${esc(n)}</span></div>`).join("")}</div>`:""}
  <ol class="tl">${x.items.map((it,i)=>legHTML(x,i)+itemHTML(it,i,stat)).join("")}</ol>${reviewMiniHTML()}${moodSectionHTML(x)}`;
@@ -2281,12 +2286,13 @@ async function switchDay(i){
   const kill=()=>{ghost.remove();if(!par.querySelector(".day-ghost"))par.style.overflowX=""};ghost.animate([{transform:"translateX(0)"},{transform:`translateX(calc(${-dir} * (100% + 24px)))`}],{...o,fill:"forwards"}).finished.then(kill,kill);setTimeout(kill,o.duration+80)}
 }
 function wxHTML(){
- const any=DAYS.some(x=>wxFor(x).live);
+ const any=DAYS.some(x=>wxFor(x).live),anyJ=DAYS.some(x=>wxFor(x).src==="jma"),anyO=DAYS.some(x=>wxFor(x).live&&wxFor(x).src==="om");
  return `<header class="bar"><svg class="logo" aria-hidden="true"><use href="#heads"/></svg><h1>天氣</h1></header>
  <svg class="illo" viewBox="2 2 316 116" aria-hidden="true"><g filter="url(#rough)"><rect width="320" height="120" fill="url(#gSky)"/><circle class="ol" cx="270" cy="32" r="16" fill="#FCE4A0"/>${cloud(64,34,1.4)}${cloud(196,30,1)}<path d="M0 100q80-14 160-4t160-2v26H0z" fill="#CFE6BE"/>${maple(34,106,"#F2A877",1)}${maple(292,108,"#EF8E74",.9)}<g class="ol" transform="translate(160 40)"><path d="M0 0v52" fill="none"/><path d="M-44 8a44 26 0 0 1 88 0q-11-5-22 0q-11-5-22 0q-11-5-22 0q-11-5-22 0z" fill="#EE9479"/></g></g>${use("cats-hi",118,46,84,55)}</svg>
  <div class="gap"></div>
- <span class="src ${any?"live":"avg"}">${any?`實際預報，${updatedText()}`:"目前是往年平均，出發前約兩週會自動換成預報"}</span>
- <div class="stack"><div class="box">${DAYS.map(x=>{const w=wxFor(x);return `<div class="wxrow"><div class="d">${x.d}<small>週${x.w}</small></div><svg><use href="#w-${w.icon}"/></svg><div class="p">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>`:""}${esc(x.wx[0])}</div><div class="t">${w.hi}° <span>/ ${w.lo}°</span></div></div>`}).join("")}</div>
+ <span class="src ${any?"live":"avg"}">${any?`${anyJ?"氣象廳預報":"長期參考預報"}，${updatedText()}`:"目前是往年平均，出發前約兩週會自動換成預報"}</span>
+ <div class="stack"><div class="box">${DAYS.map(x=>{const w=wxFor(x);return `<div class="wxrow"><div class="d">${x.d}<small>週${x.w}</small></div><svg><use href="#w-${w.icon}"/></svg><div class="p">${w.live?`<b>${esc(w.desc||"預報")}</b>${w.pop!=null?`，降雨 ${esc(w.pop)}%`:""}<br>`:""}${esc(x.wx[0])}${esc(wxNote(w))}</div><div class="t">${w.hi}° <span>/ ${w.lo}°</span></div></div>`}).join("")}</div>
+ <div class="box wx-src"><b>資料來源</b><p>${!any?"目前是往年平均，出發前約兩週會自動換成預報":[anyJ?"7 天內用日本氣象廳（名古屋地方氣象台）的預報，可信度 A 最準、C 較會變":"",anyO?(anyJ?"更遠的日子是長期參考，越接近出發會自動換成氣象廳預報":"目前是長期參考，出發前一週左右會自動換成日本氣象廳的預報"):""].filter(Boolean).join("；")}</p><div class="acts">${[...new Set(DAYS.map(x=>x.wx[0]))].map(n=>ext(`tenki.jp ${n}`,tenkiURL(n))).join("")}</div></div>
  <div class="tip"><svg aria-hidden="true"><use href="#cats"/></svg><div><b>怎麼穿</b><br>早晚約 8 度、白天約 17 度，溫差大。建議洋蔥式穿搭，帶薄羽絨或大衣，穿好走的鞋。下午 4 點半左右天就暗了。</div></div></div>`;
 }
 function moveHTML(){
@@ -3186,20 +3192,63 @@ render();hideSplash();
 document.addEventListener("DOMContentLoaded",()=>{if(startTab){tab=startTab;render()}if(resumeY)requestAnimationFrame(()=>scrollTo(0,resumeY))});
 connect();
 
-/* ---------- 天氣：Open-Meteo 預報（免金鑰，約可預報 16 天） ---------- */
+/* ---------- 天氣：7 天內用氣象廳（名古屋地方氣象台）愛知縣預報；更遠的日子用 Open-Meteo 當長期參考 ---------- */
 const LOC={"名古屋":[35.1709,136.8815],"長久手":[35.1702,137.0889],"犬山":[35.3883,136.9393],"常滑":[34.8866,136.832]};
+const TENKI={"名古屋":"23100","長久手":"23238","犬山":"23215","常滑":"23216"};
+const tenkiURL=n=>`https://tenki.jp/lite/forecast/5/26/5110/${TENKI[n]||"23100"}/10days.html`;
 const WMO=c=>c===0?["sun","晴"]:c<=2?["cloudsun","晴時多雲"]:c===3?["cloud","陰天"]:c<=48?["cloud","有霧"]:(c<=67||(c>=80&&c<=82))?["rain","有雨"]:(c<=77||c===85||c===86)?["cloud","下雪"]:["rain","雷雨"];
+/* Open-Meteo 的天氣代碼和降雨機率來自不同模型，會出現「有雨，降雨 12%」：雨要看降雨機率 */
+const omWx=(c,pop)=>{const w=WMO(c);if(w[0]!=="rain"||pop==null||pop>=50)return w;return pop>=30?["cloud","陰偶有雨"]:["cloud","陰天"]};
+/* 氣象廳天氣代碼（100 晴、200 陰、300 雨、400 雪系列） */
+const JMA_RAIN1=[102,106,108,112,120,121,122,125,140],JMA_SNOW=[104,105,115,116,117,160,170,181,204,205,215,216,217,228,229,230,250,260,270,281];
+function jmaWx(code,pop){
+ const c=+code,m=Math.floor(c/100);
+ if(m===1){if([100,123,124,130,131].includes(c))return["sun","晴"];if([101,110,111,132].includes(c))return["cloudsun","晴時多雲"];return["cloudsun",JMA_SNOW.includes(c)?"晴偶有雪":(JMA_RAIN1.includes(c)?"晴偶有雨":"晴時有雨")]}
+ if(m===2){if(c===200)return["cloud","陰天"];if(c===209||c===231)return["cloud","有霧"];if([201,210,211,223].includes(c))return["cloudsun","多雲時晴"];if(JMA_SNOW.includes(c))return["cloud","陰偶有雪"];
+  if([202,206,208,212,220,221,222].includes(c))return["cloud","陰偶有雨"];if([214,218,219,224,225,226].includes(c))return[pop!=null&&pop<50?"cloud":"rain","陰後轉雨"];return[pop!=null&&pop<50?"cloud":"rain","陰時有雨"]}
+ if(m===3){if(c===306)return["rain","大雨"];if(c===308)return["rain","暴風雨"];if([303,304,309,314,315,322,326,327,329,340].includes(c))return["rain","雨或雪"];return["rain","有雨"]}
+ if(m===4)return["cloud","下雪"];
+ return null;
+}
+/* 氣象廳 JSON：[0] 3 天內（愛知西部 230010，降雨 6 小時一格、名古屋 51106 最低／最高）；[1] 週間（愛知縣、名古屋氣溫、可信度） */
+function jmaDays(j){
+ const out={},md=t=>`${+String(t).slice(5,7)}/${+String(t).slice(8,10)}`,put=(t,o)=>{const k=md(t);out[k]={...(out[k]||{}),...o}};
+ const area=(ts,code)=>(ts&&ts.areas||[]).find(a=>a.area&&a.area.code===code);
+ const near=Array.isArray(j)?j[0]:null,week=Array.isArray(j)?j[1]:null;
+ const w0=week&&week.timeSeries&&week.timeSeries[0],w1=week&&week.timeSeries&&week.timeSeries[1];
+ const wa=w0&&w0.areas&&w0.areas[0],wt=area(w1,"51106");
+ if(wa)(w0.timeDefines||[]).forEach((t,i)=>{const o={},c=wa.weatherCodes&&wa.weatherCodes[i],p=wa.pops&&wa.pops[i],r=wa.reliabilities&&wa.reliabilities[i];if(c)o.code=c;if(p!==""&&p!=null)o.pop=+p;if(r)o.rel=r;put(t,o)});
+ if(wt)(w1.timeDefines||[]).forEach((t,i)=>{const o={},hi=wt.tempsMax&&wt.tempsMax[i],lo=wt.tempsMin&&wt.tempsMin[i];if(hi!==""&&hi!=null)o.hi=+hi;if(lo!==""&&lo!=null)o.lo=+lo;put(t,o)});
+ const ts=near&&near.timeSeries||[],rd=near&&near.reportDatetime?md(near.reportDatetime):"";
+ const na=area(ts[0],"230010");if(na)(ts[0].timeDefines||[]).forEach((t,i)=>{const c=na.weatherCodes&&na.weatherCodes[i];if(c)put(t,{code:c})});
+ const np=area(ts[1],"230010");if(np){const mx={};(ts[1].timeDefines||[]).forEach((t,i)=>{const v=np.pops&&np.pops[i];if(v===""||v==null)return;const k=md(t);mx[k]=Math.max(mx[k]==null?0:mx[k],+v)});for(const k in mx)out[k]={...(out[k]||{}),pop:mx[k]}}
+ /* 09:00＝白天最高、00:00＝早上最低；發布當天的最低已經過了，不採用 */
+ const nt=area(ts[2],"51106");if(nt)(ts[2].timeDefines||[]).forEach((t,i)=>{const v=nt.temps&&nt.temps[i];if(v===""||v==null)return;const h=String(t).slice(11,13);if(h==="09")put(t,{hi:+v});else if(h==="00"&&md(t)!==rd)put(t,{lo:+v})});
+ return out;
+}
 async function loadWeather(){
  const cached=store.get("wx");if(cached&&cached.days)forecast=cached;
- if(cached&&Date.now()-(cached.fetched||0)<3*3600e3)return;
+ if(cached&&cached.v===2&&Date.now()-(cached.fetched||0)<3*3600e3)return;
  const names=Object.keys(LOC);
+ const omURL="https://api.open-meteo.com/v1/forecast?latitude="+names.map(n=>LOC[n][0]).join(",")+"&longitude="+names.map(n=>LOC[n][1]).join(",")+"&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=16";
+ const get=u=>fetch(u).then(r=>r.ok?r.json():null).catch(()=>null);
  try{
-  const url="https://api.open-meteo.com/v1/forecast?latitude="+names.map(n=>LOC[n][0]).join(",")+"&longitude="+names.map(n=>LOC[n][1]).join(",")+"&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&forecast_days=16";
-  const r=await fetch(url);if(!r.ok)return;let j=await r.json();if(!Array.isArray(j))j=[j];
+  let[om,jm]=await Promise.all([get(omURL),get("https://www.jma.go.jp/bosai/forecast/data/forecast/230000.json")]);
+  if(om&&!Array.isArray(om))om=[om];
+  const J=jm?jmaDays(jm):{};
   const days={...((cached&&cached.days)||{})};let got=0;
-  DAYS.forEach(x=>{const d=j[names.indexOf(x.wx[0])]?.daily;if(!d)return;const i=d.time.indexOf(`${YEAR}-${x.d.replace("/","-")}`);if(i<0)return;const[icon,desc]=WMO(d.weather_code[i]);days[x.d]={hi:Math.round(d.temperature_2m_max[i]),lo:Math.round(d.temperature_2m_min[i]),icon,desc,pop:d.precipitation_probability_max[i]};got++});
-  forecast={updated:new Date().toISOString(),fetched:Date.now(),days};store.set("wx",forecast);
-  if(!got)return;
+  DAYS.forEach(x=>{
+   let e=null;const d=om&&om[names.indexOf(x.wx[0])]&&om[names.indexOf(x.wx[0])].daily,i=d?d.time.indexOf(`${YEAR}-${x.d.replace("/","-")}`):-1;
+   if(i>=0&&d.temperature_2m_max[i]!=null){const pop=d.precipitation_probability_max[i],[icon,desc]=omWx(d.weather_code[i],pop);e={hi:Math.round(d.temperature_2m_max[i]),lo:Math.round(d.temperature_2m_min[i]),icon,desc,pop,src:"om"}}
+   const k=J[x.d],w=k&&k.code?jmaWx(k.code,k.pop):null;
+   if(w){const prev=days[x.d],hi=k.hi!=null?k.hi:e?e.hi:prev&&prev.hi,lo=k.lo!=null?k.lo:e?e.lo:prev&&prev.lo;
+    if(hi!=null&&lo!=null)e={hi,lo,icon:w[0],desc:w[1],pop:k.pop!=null?k.pop:null,src:"jma",rel:k.rel||""}}
+   /* 這次沒有氣象廳資料（已經過去的日子、或氣象廳暫時抓不到）時，保留快取裡的氣象廳資料，不用長期參考蓋掉 */
+   if(e&&e.src==="om"&&days[x.d]&&days[x.d].src==="jma")e=null;
+   if(e){days[x.d]=e;got++}
+  });
+  if(!got&&!om&&!jm)return;
+  forecast={v:2,updated:new Date().toISOString(),fetched:Date.now(),days};store.set("wx",forecast);
   if(tab==="wx")render(true);else if(tab==="plan"&&view==="day"){const b=document.getElementById("dayBody");if(b){b.innerHTML=dayBodyHTML();bindSched();pinCheck()}}
  }catch(_){}
 }
