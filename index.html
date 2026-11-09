@@ -272,6 +272,10 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .item .card h3{margin:6px 0 0;font-size:17px;line-height:1.4;font-weight:900}
 .item .card .jp{font-size:13px;color:var(--muted)}
 .item .card p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.pr{display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;margin:5px 0 0;font-size:14px;line-height:1.35}
+.pr svg{width:17px;height:17px;flex:none;color:var(--c-eat)}
+.pr b{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums}
+.pr span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .rsv{display:flex;flex-wrap:wrap;gap:4px 14px;margin:6px 0 0;padding:0;list-style:none;font-size:14px;font-weight:700;color:var(--ink)}
 .rsv li{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
 .rsv svg{width:17px;height:17px;flex:none;color:var(--c-do)}
@@ -1674,56 +1678,56 @@ const DAYS=[
    {t:"07:05",tz:"Asia/Taipei",k:"fly",n:"JX 320 台中 → 名古屋",p:"10:40 抵達中部國際機場"},
    {t:"10:40",k:"move",n:"搭名鐵到名古屋車站",p:"μSKY 約 28 分鐘，詳見交通分頁"},
    {k:"stay",n:"名古屋燈光圖書飯店",jp:"ランプライトブックスホテル名古屋",p:"入住 15:00 起・11/24 退房 10:00 前・伏見站 10 號出口走 3 分鐘",map:"ランプライトブックスホテル名古屋",stay:1,pid:"ChIJ74aBvtd2A2AR8TRTA-QLXZM"},
-   {k:"eat",l:"午餐",n:"つばめパン＆Milk 尼ヶ坂本店",p:"天然酵母吐司專門店・名鐵瀨戶線尼ケ坂站旁",map:"つばめパン＆Milk 尼ヶ坂本店",pid:"ChIJF9_6-GRxA2ARAF326QqzWeo"},
+   {k:"eat",l:"午餐",n:"つばめパン＆Milk 尼ヶ坂本店",pr:[1000,2000],p:"天然酵母吐司專門店・名鐵瀨戶線尼ケ坂站旁",map:"つばめパン＆Milk 尼ヶ坂本店",pid:"ChIJF9_6-GRxA2ARAF326QqzWeo"},
    {k:"go",n:"名古屋城",map:"名古屋城",pid:"ChIJse-wx8t2A2ARd6Z1knjp07k"},
    {k:"go",n:"榮",p:"從 Oasis 21 開始逛",map:"オアシス21 名古屋",pid:"ChIJT5niKdRwA2AR1oO7t2LlvlQ"},
-   {t:"20:30",k:"eat",l:"晚餐",n:"すゞ家 赤門店",p:"炸豬排，20:30 前入店",map:"すゞ家 赤門店 名古屋",pid:"ChIJ_a8Oi8xwA2ARLJ-1RMwegZY"}]},
+   {t:"20:30",k:"eat",l:"晚餐",n:"すゞ家 赤門店",pr:[2000,3000],p:"炸豬排，20:30 前入店",map:"すゞ家 赤門店 名古屋",pid:"ChIJ_a8Oi8xwA2ARLJ-1RMwegZY"}]},
  {d:"11/18",w:"三",title:"吉卜力公園",place:"吉卜力公園",art:"park",wx:["長久手",16,6],route:["青春之丘","Dondoko 森林","魔法之里","魔女之谷","大倉庫"],
   notes:["公園 10:00 開，最晚 9:20 要到「愛・地球博記念公園站」","大倉庫入場 14:00"],sched:true,items:[
    {k:"move",n:"名古屋車站 4 樓搭名鐵巴士",p:"車程約 1 小時",map:"名鉄バスセンター",pid:"ChIJVVVV4t12A2ARuGHeruHGtx8"},
    {t:"10:00",k:"go",n:"吉卜力公園",p:"園區時間表在本頁上方",map:"ジブリパーク",img:"ghibli",pid:"ChIJs9ADAkVnA2ARixLFaXpLFjY"},
-   {t:"19:30",k:"do",l:"晚餐預約",n:"伏見屋 飛騨牛 別邸",jp:"名駅焼肉 Fushimiya Bettei",rsv:{t:"19:30",n:2},map:"名駅焼肉 伏見屋 別邸",pid:"ChIJ5bzUCut3A2ARM5etF3E8j_M"}]},
+   {t:"19:30",k:"do",l:"晚餐預約",n:"伏見屋 飛騨牛 別邸",pr:[10000,15000],jp:"名駅焼肉 Fushimiya Bettei",rsv:{t:"19:30",n:2},map:"名駅焼肉 伏見屋 別邸",pid:"ChIJ5bzUCut3A2ARM5etF3E8j_M"}]},
  {d:"11/19",w:"四",title:"犬山一日",place:"犬山",art:"inuyama",wx:["犬山",16,6],route:["犬山城","城下町","名古屋"],
   notes:["可到名鐵買「犬山城下町套票」：車票、犬山城門票加商家優惠"],items:[
-   {t:"08:00",k:"eat",l:"早餐",n:"コンパル サンロード店",map:"コンパル サンロード店",pid:"ChIJ_b1H2HV3A2ARM1ZUBuk0Rxw"},
+   {t:"08:00",k:"eat",l:"早餐",n:"コンパル サンロード店",pr:[1000,2000],map:"コンパル サンロード店",pid:"ChIJ_b1H2HV3A2ARM1ZUBuk0Rxw"},
    {k:"move",n:"搭名鐵到犬山",p:"套票在名鐵車站買"},
    {k:"go",n:"犬山城",map:"犬山城",pid:"ChIJke1IrfUOA2ARNfYDRkP6Wig"},
-   {t:"11:30",k:"eat",l:"午餐",n:"蕎麦正 まつい 犬山店",p:"手打冷蕎麥，11:00 開、賣完就收，只收現金",map:"蕎麦正 まつい 犬山店",pid:"ChIJeauxvQoSA2ARaoIN3R6CrUA"},
+   {t:"11:30",k:"eat",l:"午餐",n:"蕎麦正 まつい 犬山店",pr:[1000,2000],p:"手打冷蕎麥，11:00 開、賣完就收，只收現金",map:"蕎麦正 まつい 犬山店",pid:"ChIJeauxvQoSA2ARaoIN3R6CrUA"},
    {k:"eat",l:"必吃",n:"城下町小吃",p:"五平餅、木曾川烤魚、肉兵衛、菓子屋 shirushi",map:"犬山城下町",pid:"ChIJ5Y9fqhEPA2AR2D46BA_SRiY"},
-   {t:"17:00",k:"eat",l:"晚餐",n:"麵家 獅子丸",map:"麺家 獅子丸 名古屋",pid:"ChIJtWEoR-l2A2ARyai0CWUxIDM"},
+   {t:"17:00",k:"eat",l:"晚餐",n:"麵家 獅子丸",pr:[1000,2000],map:"麺家 獅子丸 名古屋",pid:"ChIJtWEoR-l2A2ARyai0CWUxIDM"},
    {k:"go",n:"5F 空中花園",jp:"大名古屋ビルヂング スカイガーデン",p:"大名古屋大廈 5 樓・免費，搭電梯或手扶梯上去",map:"大名古屋ビルヂング スカイガーデン",pid:"ChIJR4hJQM53A2ARwg4uzRWt0IU"}]},
  {d:"11/20",w:"五",title:"東山動物植物園",place:"東山動植物園",art:"zoo",wx:["名古屋",17,8],route:["東山動植物園","伏見","榮"],
   notes:["動物園 09:00 開門，到榮約 20 分鐘","今晚 20:00 搶 KISO 號碼牌，選 8:00–8:45"],items:[
-   {t:"08:30",k:"eat",l:"早餐",n:"イトウ珈琲喫茶室",map:"イトウ珈琲 泉 名古屋",pid:"ChIJvZFTA69xA2ARrqmx6E3HNbI"},
+   {t:"08:30",k:"eat",l:"早餐",n:"イトウ珈琲喫茶室",pr:[0,1000],map:"イトウ珈琲 泉 名古屋",pid:"ChIJvZFTA69xA2ARrqmx6E3HNbI"},
    {t:"09:00",k:"go",n:"東山動物植物園",map:"東山動植物園",pid:"ChIJt7ZD20plA2ARbRV7VnfVBnA"},
    {t:"17:00",k:"do",l:"染髮",n:"星星：snuw【スニュウ】",p:"伏見站 6 號出口",link:["預約頁","https://beauty.hotpepper.jp/slnH000642791/"],map:"snuw スニュウ 名古屋",pid:"ChIJWb8pbvB3A2AR_DpMfL_r93U"},
    {t:"17:00",k:"do",l:"染髮",n:"阿彰：men's NEELU 名古屋",p:"伏見站 10 號出口",map:"men's NEELU 名古屋"},
    {t:"20:00",k:"remind",n:"搶 KISO 號碼牌",p:"選 8:00–8:45 時段",link:["KISO 官網","https://kiso-nagoya.my.canva.site/"]},
-   {k:"eat",l:"晚餐",n:"挽き肉のトリコ",jp:"Hikiniku no Toriko",p:"22:00 打烊",map:"挽き肉のトリコ 名古屋",pid:"ChIJtTyBr9JwA2ARXk4_qFiyTQw"}]},
+   {k:"eat",l:"晚餐",n:"挽き肉のトリコ",pr:[2000,3000],jp:"Hikiniku no Toriko",p:"22:00 打烊",map:"挽き肉のトリコ 名古屋",pid:"ChIJtTyBr9JwA2ARXk4_qFiyTQw"}]},
  {d:"11/21",w:"六",title:"熱田神宮與大須",place:"熱田神宮",art:"shrine",wx:["名古屋",17,8],route:["熱田神宮","大須商店街","久屋大通"],items:[
-   {t:"08:00",k:"eat",l:"早餐",n:"KISO",p:"用前一晚搶到的號碼牌",map:"KISO 名古屋",pid:"ChIJ85qgZhl7A2ARKG7WRxldB7A"},
+   {t:"08:00",k:"eat",l:"早餐",n:"KISO",pr:[1000,2000],p:"用前一晚搶到的號碼牌",map:"KISO 名古屋",pid:"ChIJ85qgZhl7A2ARKG7WRxldB7A"},
    {k:"go",n:"熱田神宮",map:"熱田神宮",pid:"ChIJ3abhnht6A2ARu-Y4yDEWlao"},
-   {t:"13:00",k:"do",l:"午餐預約",n:"炭燒富士鰻魚 總店",jp:"炭焼うな富士 本店",p:"鰻魚飯，一休訂位",rsv:{t:"13:00",n:2,id:"IR0563167387"},map:"炭焼うな富士 本店 名古屋",pid:"ChIJJflGL6VwA2ARLO3QB-ruz4c"},
+   {t:"13:00",k:"do",l:"午餐預約",n:"炭燒富士鰻魚 總店",pr:[6000,8000],jp:"炭焼うな富士 本店",p:"鰻魚飯，一休訂位",rsv:{t:"13:00",n:2,id:"IR0563167387"},map:"炭焼うな富士 本店 名古屋",pid:"ChIJJflGL6VwA2ARLO3QB-ruz4c"},
    {k:"go",n:"大須商店街",map:"大須商店街",pid:"ChIJZdlrqMxwA2ARpJpFJF45vgg"},
-   {t:"17:30",k:"eat",l:"晚餐",n:"大須鮨",p:"提早到",map:"大須鮨",pid:"ChIJQwh-9zJ3A2ARuSaFxkQyVXk"},
+   {t:"17:30",k:"eat",l:"晚餐",n:"大須鮨",pr:[6000,8000],p:"提早到",map:"大須鮨",pid:"ChIJQwh-9zJ3A2ARuSaFxkQyVXk"},
    {k:"go",n:"久屋大通與中日大樓 7 樓",map:"中日ビル 栄 名古屋",pid:"ChIJxUbLSQBxA2ARLpK85qQiOAg"},
-   {k:"eat",l:"宵夜",n:"ふみ屋 錦店",jp:"Fumiya Nishiki",map:"ふみ屋 錦店",pid:"ChIJpf3ElIFxA2ARURv3r4mJTiI"}]},
+   {k:"eat",l:"宵夜",n:"ふみ屋 錦店",pr:[3000,4000],jp:"Fumiya Nishiki",map:"ふみ屋 錦店",pid:"ChIJpf3ElIFxA2ARURv3r4mJTiI"}]},
  {d:"11/22",w:"日",title:"常滑陶藝小鎮",place:"常滑",art:"tokoname",wx:["常滑",17,9],route:["常滑","名古屋車站","則武新町"],
   notes:["回程選位 11:40 開放"],items:[
-   {t:"08:00",k:"eat",l:"早餐",n:"New Poppy",p:"要提早 30 分鐘到",map:"New Poppy 名古屋",pid:"ChIJfTT820x3A2ARHDFAy7-Y5I0"},
+   {t:"08:00",k:"eat",l:"早餐",n:"New Poppy",pr:[0,1000],p:"要提早 30 分鐘到",map:"New Poppy 名古屋",pid:"ChIJfTT820x3A2ARHDFAy7-Y5I0"},
    {k:"go",n:"常滑",map:"常滑 やきもの散歩道",pid:"ChIJ_fTz9UuHBGAR9x7ADIKLBrU"},
-   {k:"eat",l:"下午茶",n:"nuu",p:"營業 10:00–16:00",map:"nuu 常滑",pid:"ChIJw8kEaUyHBGARwzrwl2JFuzE"},
-   {k:"eat",l:"下午茶",n:"風舎 常滑店",jp:"Fusha Tokoname",map:"風舎 常滑店",pid:"ChIJ9Xpt5EuHBGARYxyPOT8xGHo"},
-   {k:"eat",l:"抹茶",n:"西条園抹茶カフェ",p:"大名古屋ビルヂング店",map:"西条園抹茶カフェ 大名古屋ビルヂング",pid:"ChIJyzjvrtZ3A2ARJnvP031e7v0"},
-   {k:"eat",l:"晚餐",n:"Yellow 則武新町店",map:"yellow 則武新町",pid:"ChIJWdt81dt3A2ARfUrIxR3sNQg"}]},
+   {k:"eat",l:"下午茶",n:"nuu",pr:[1000,2000],p:"營業 10:00–16:00",map:"nuu 常滑",pid:"ChIJw8kEaUyHBGARwzrwl2JFuzE"},
+   {k:"eat",l:"下午茶",n:"風舎 常滑店",pr:[0,1000],jp:"Fusha Tokoname",map:"風舎 常滑店",pid:"ChIJ9Xpt5EuHBGARYxyPOT8xGHo"},
+   {k:"eat",l:"抹茶",n:"西条園抹茶カフェ",pr:[0,1000],p:"大名古屋ビルヂング店",map:"西条園抹茶カフェ 大名古屋ビルヂング",pid:"ChIJyzjvrtZ3A2ARJnvP031e7v0"},
+   {k:"eat",l:"晚餐",n:"Yellow 則武新町店",pr:[1000,2000],map:"yellow 則武新町",pid:"ChIJWdt81dt3A2ARfUrIxR3sNQg"}]},
  {d:"11/23",w:"一",title:"名駅與榮最後採買",place:"名駅・榮",art:"bread",wx:["名古屋",16,7],route:["伏見","榮","名駅"],items:[
-   {t:"09:00",k:"do",l:"早餐預約",n:"伏見町 POPEYE",rsv:{t:"9:00",n:2,id:"NNVPQV"},map:"POPEYE 伏見 名古屋",pid:"ChIJ75UdoKt3A2AR2s1j5yzSBHc"},
+   {t:"09:00",k:"do",l:"早餐預約",n:"伏見町 POPEYE",pr:[2000,3000],rsv:{t:"9:00",n:2,id:"NNVPQV"},map:"POPEYE 伏見 名古屋",pid:"ChIJ75UdoKt3A2AR2s1j5yzSBHc"},
    {t:"10:00",k:"buy",l:"購物",n:"sanrio house 名古屋 PARCO 店",jp:"名古屋PARCO 西館 B1",p:"先領整理券，再照券上時間入場",map:"sanrio house 名古屋PARCO店",pid:"ChIJE8jefwBxA2ARQxQOIfwvqLk",
     qt:{sum:"一人一張・發完就結束",key:[["一人一張，兩個人都要去領"],["發完就結束，發放時間可能提早或延後",1]],steps:[["9:30–9:50","在西館外面排","從西館 1F 正面入口（大津通那側）排起，沿著建物順時針排"],["10:00 起","到西館 B1 店門口領","sanrio house 店門口，我們 10:00 直接到這裡",1]],
      rules:[["發完就結束，發放時間也可能提早或延後",1],["一人一張，一張只能進一個人，兩個人都要去領"],["照券上的時間回來入場，遲到可能不能進"],["拿到券先去別處逛，到時間再回來；有券也可能要再排一下"],["券不能換、不能補發、不能轉讓"]]}},
    {t:"11:30",k:"buy",n:"沢村 名古屋",p:"帶回家的麵包",map:"ベーカリー＆レストラン沢村 名古屋",pid:"ChIJaxUfTtl2A2ARPsQNvYUnFyk"},
    {t:"12:00",k:"buy",n:"つばめパン＆Milk 名駅店",p:"帶回家的吐司",map:"つばめパン＆Milk 名駅店",pid:"ChIJJX5mDJx3A2ARRkSisgKVHXU"},
-   {k:"eat",l:"晚餐",n:"熱田うなぎ 天 伏見",p:"鰻魚飯，營業到 20:00",map:"熱田うなぎ 天 伏見 名古屋",pid:"ChIJ2WPawLV3A2AR1xmLIaXjDqo"}]},
+   {k:"eat",l:"晚餐",n:"熱田うなぎ 天 伏見",pr:[3000,4000],p:"鰻魚飯，營業到 20:00",map:"熱田うなぎ 天 伏見 名古屋",pid:"ChIJ2WPawLV3A2AR1xmLIaXjDqo"}]},
  {d:"11/24",w:"二",title:"回家",place:"回家",art:"home",wx:["名古屋",16,7],route:["名古屋車站","中部國際機場","台中"],
   notes:["06:30 要搭車，07:40 到機場"],items:[
    {t:"06:30",k:"move",n:"名古屋車站搭名鐵往機場"},
@@ -2209,7 +2213,13 @@ function itemHTML(it,i,stat){
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
  if(it.tf)acts.push(`<button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button>`);
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
-  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.rsv?rsvHTML(it.rsv):""}${it.qt?qtHTML(it):""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
+  <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.pr?prHTML(it.pr):""}${it.rsv?rsvHTML(it.rsv):""}${it.qt?qtHTML(it):""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
+}
+/* 人均花費：食べログ口コミ集計（依用餐時段取午或晚），台幣用目前匯率換算、取整到 10 元 */
+const twd10=n=>(Math.round(n*rate/10)*10).toLocaleString("en-US");
+function prHTML(r){
+ const[a,b]=r,jp=a?`¥${a.toLocaleString("en-US")}–${b.toLocaleString("en-US")}`:`¥${b.toLocaleString("en-US")} 以內`,tw=a?`${twd10(a)}–${twd10(b)}`:`${twd10(b)} 以內`;
+ return `<div class="pr"><svg aria-hidden="true"><use href="#i-cash"/></svg><b>人均 ${jp}</b><span>約 NT$ ${tw}</span></div>`;
 }
 function rsvHTML(r){
  return `<ul class="rsv" aria-label="預約資訊">${r.t?`<li><svg aria-hidden="true"><use href="#i-clock"/></svg><span class="k">時間</span>${esc(r.t)}</li>`:""}${r.n?`<li><svg aria-hidden="true"><use href="#i-people"/></svg><span class="k">人數</span>${esc(r.n)} 位</li>`:""}${r.id?`<li class="id"><svg aria-hidden="true"><use href="#k-ticket"/></svg><span class="k">預約 ID</span>${esc(r.id)}</li>`:""}</ul>`;
