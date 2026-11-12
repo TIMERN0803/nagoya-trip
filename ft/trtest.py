@@ -18,12 +18,19 @@ async def main():
         await a.click('.tf-tip [data-tr-open]');await a.wait_for_timeout(650)
         ft.rec("退稅流程","從要買的打開面板",await opened(a))
         t=await a.inner_text(SH)
-        for k in ["先付含稅價","稅前 ¥5,000","90 天內出境","託運之後就不能辦了","Customs_WiFi_For_TaxRefund","jcustoms","綠色","紅色","退稅手續","免税手続きはできますか？","整張退不到"]:
+        ft.rec("退稅流程","細節預設收起來（Wi-Fi 看不到）","Customs_WiFi_For_TaxRefund" not in t and await a.evaluate('[...document.querySelectorAll(".tr-sheet details.tr-d")].every(d=>!d.open)'))
+        ft.rec("退稅流程","每一步都只有標題＋一句話",await a.evaluate('[...document.querySelectorAll(".tr-sheet .tr-steps>li>small")].every(x=>x.textContent.length<=22)'))
+        await a.evaluate('document.querySelectorAll(".tr-sheet details.tr-d").forEach(d=>d.open=true)');await a.wait_for_timeout(100)
+        t=await a.inner_text(SH)
+        for k in ["先付含稅價","稅前 ¥5,000","90 天內出境","託運之後就不能辦了","Customs_WiFi_For_TaxRefund","jcustoms","綠色","紅色","退稅手續","整張收據會退不到","NT$300–400","menzei tetsuzuki"]:
             ft.rec("退稅流程",f"內容有「{k}」",k in t)
         ft.rec("退稅流程","五段依序：出發前→買東西→前一晚→回國那天→回到台灣",await a.evaluate('[...document.querySelectorAll(".tr-sheet [data-tr-ph]")].map(e=>e.dataset.trPh).join()')=="pre,shop,pack,fly,home")
         ft.rec("退稅流程","11/21 標出「買東西的時候」是現在",await a.evaluate('[...document.querySelectorAll(".tr-sheet .tr-ph.on")].map(e=>e.dataset.trPh).join()')=="shop" and "現在" in await a.inner_text(SH+' .tr-ph.on h4'))
         ft.rec("退稅流程","買東西期間從頭看（不自動捲）",await a.evaluate('document.querySelector(".tr-sheet").scrollTop')==0)
         ft.rec("退稅流程","外部連結另開分頁",await a.evaluate('[...document.querySelectorAll(".tr-sheet a[href^=http]")].every(x=>x.target==="_blank"&&x.rel.includes("noopener"))'))
+        await a.evaluate('document.querySelectorAll(".tr-sheet details.tr-d").forEach(d=>d.open=false)')
+        await a.click('.tr-sheet [data-tr-ph=fly] details.tr-d summary')
+        ft.rec("退稅流程","點「看細節」展開 Wi-Fi 步驟","jcustoms" in await a.inner_text('.tr-sheet [data-tr-ph=fly]') and "收起來" in await a.inner_text('.tr-sheet [data-tr-ph=fly] details.tr-d summary'))
         await a.keyboard.press("Escape");await a.wait_for_timeout(400)
         ft.rec("退稅流程","Esc 關閉，焦點回到入口",not await opened(a) and await a.evaluate('document.activeElement&&document.activeElement.matches("[data-tr-open]")'))
         # 記帳頁的退稅清單入口

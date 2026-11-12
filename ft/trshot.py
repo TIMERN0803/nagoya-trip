@@ -30,5 +30,7 @@ async def main():
         await d.screenshot(path=O+'tr_7_day8.png')
         await d.click('ol.tl [data-tr-open]');await d.wait_for_timeout(800)
         await d.screenshot(path=O+'tr_8_sheet_fly.png')
+        await d.click('.tr-sheet [data-tr-ph=fly] details.tr-d summary');await d.wait_for_timeout(300)
+        await d.screenshot(path=O+'tr_9_fly_detail.png')
         print(pg.errs,d.errs);await b.close()
 asyncio.run(main())
