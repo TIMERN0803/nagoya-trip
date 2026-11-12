@@ -417,8 +417,9 @@ DTSTAMP:20261024T000000Z
 DTSTART;TZID=Asia/Tokyo:20261124T074500
 DTEND;TZID=Asia/Tokyo:20261124T084500
 SUMMARY:先辦退稅，再託運
-DESCRIPTION:提醒\n免稅品帶在身上，到退稅機出示護照\n名
- 古屋看花花 https://timern0803.github.io/nagoya-trip/
+DESCRIPTION:提醒\n免稅品、收據帶在身上，到海關退稅機
+ 掃護照或用手機辦\n名古屋看花花 https://timern0803.github.i
+ o/nagoya-trip/
 BEGIN:VALARM
 ACTION:DISPLAY
 DESCRIPTION:30 分鐘後：先辦退稅，再託運

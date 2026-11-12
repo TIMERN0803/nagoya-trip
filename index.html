@@ -1166,6 +1166,49 @@ details.sched.stuck{box-shadow:0 3px 0 var(--ol),var(--shadow-float)}
 .tf-carry[aria-pressed="true"]{background:var(--mint-soft);color:var(--mint-ink)}
 .tf-carry[aria-pressed="true"] i{background:var(--mint-ink);border-color:var(--mint-ink)}
 .tf-carry[aria-pressed="true"] i::after{content:"";width:9px;height:5px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
+/* ===== 退稅流程（新制）說明面板 ===== */
+.tf-tip .tr-link{display:inline-flex;align-items:center;gap:2px;margin-left:4px;padding:0;border:0;background:none;font:inherit;font-weight:900;color:var(--brown);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.tr-more{display:flex;align-items:center;justify-content:space-between;width:calc(100% + 36px);margin:8px -18px -16px;min-height:46px;padding:0 18px;border:0;border-top:2px dashed var(--line);background:none;font:inherit;font-size:14px;font-weight:800;color:var(--brown);cursor:pointer;border-radius:0 0 18px 18px}
+.tr-more svg,.tr-link svg{width:16px;height:16px}
+.tr-sheet .tr-sub{margin:-4px 0 0;font-size:13.5px;line-height:1.55;color:var(--muted)}
+.tr-sub b{color:var(--ink)}
+.tr-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tr-facts div{background:var(--butter-soft);border-radius:14px;padding:8px 11px;display:flex;flex-direction:column;line-height:1.35}
+.tr-facts small{font-size:12px;font-weight:700;color:var(--muted)}
+.tr-facts b{font-family:var(--f-display);font-weight:900;font-size:16.5px;color:var(--ink)}
+.tr-facts i{font-style:normal;font-size:12px;color:var(--muted)}
+.tr-ph{border-radius:18px;padding:10px 12px 6px;border:2px solid var(--line)}
+.tr-ph.on{border-color:var(--st-now);background:var(--paper)}
+.tr-ph h4{margin:0 0 4px;display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-weight:900;font-size:16.5px;color:var(--ink)}
+.tr-ph h4 .n{width:24px;height:24px;flex:none;border-radius:50%;background:var(--brown);color:#fff;display:grid;place-items:center;font-size:13px}
+.tr-ph h4 small{font-size:12.5px;font-weight:700;color:var(--muted);font-family:inherit}
+.tr-ph h4 .flag{margin-left:auto}
+.tr-steps{list-style:none;margin:0;padding:0;counter-reset:tr}
+.tr-steps>li{position:relative;padding:8px 0 8px 26px;border-top:2px dashed var(--line);counter-increment:tr}
+.tr-steps>li:first-child{border-top:0}
+.tr-steps>li::before{content:counter(tr);position:absolute;left:2px;top:9px;width:18px;height:18px;border-radius:50%;border:2px solid var(--line-strong);font-size:11px;font-weight:900;color:var(--muted);display:grid;place-items:center;line-height:1}
+.tr-steps b{display:block;font-size:14.5px;font-weight:900;color:var(--ink);line-height:1.4}
+.tr-steps li.warn b{color:var(--coral-ink)}
+.tr-steps small{display:block;margin-top:2px;font-size:13px;font-weight:600;color:var(--muted);line-height:1.5}
+.tr-steps .acts{margin-top:8px}
+.tr-jp{margin-top:6px;padding:7px 10px;border-radius:12px;background:var(--sunk);font-size:13px;line-height:1.45}
+.tr-jp b{display:block;font-size:15px}
+.tr-jp small{margin-top:0}
+.tr-ways{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.tr-way{border-radius:14px;background:var(--sunk);padding:8px 10px}
+.tr-way>b{font-size:13.5px}
+.tr-way ol{margin:4px 0 0;padding-left:18px;font-size:13px;line-height:1.55;color:var(--ink)}
+.tr-way p{margin:4px 0 0;font-size:12.5px;color:var(--muted);line-height:1.5}
+.tr-kv{display:flex;align-items:baseline;gap:6px;margin-top:3px}
+.tr-kv i{flex:none;font-style:normal;font-size:12px;color:var(--muted)}
+.tr-wifi{display:inline-block;padding:0 5px;border-radius:6px;background:var(--card);font-family:ui-monospace,Menlo,monospace;font-size:12.5px;font-weight:700;word-break:break-all}
+.tr-res{display:flex;flex-direction:column;gap:5px;margin-top:6px}
+.tr-res span{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.45;color:var(--ink)}
+.tr-res i{flex:none;margin-top:1px;padding:0 8px;border-radius:8px;font-style:normal;font-size:12px;font-weight:900}
+.tr-res .g{background:var(--mint-soft);color:var(--mint-ink)}
+.tr-res .r{background:var(--coral-soft);color:var(--coral-ink)}
+.tr-src{margin:2px 0 0;font-size:12px;color:var(--muted);line-height:1.6}
+.tr-src a{color:var(--brown);font-weight:800}
 
 /* ===== 旅程回顧：首頁電影票入口＋全螢幕故事 ===== */
 .rv-ticket{position:relative;display:flex;align-items:center;gap:12px;width:100%;margin-top:16px;padding:14px 16px 14px 12px;border:2.5px solid var(--ol);border-radius:22px;background:linear-gradient(120deg,#FCEFC6,#FDE3D2);box-shadow:0 4px 0 var(--ol);font:inherit;color:var(--ink);text-align:left;cursor:pointer;overflow:hidden}
@@ -1728,7 +1771,7 @@ const DAYS=[
   notes:["06:30 要搭車，07:40 到機場"],items:[
    {t:"06:30",k:"move",n:"名古屋車站搭名鐵往機場"},
    {t:"07:40",k:"fly",n:"抵達中部國際機場",p:"先辦退稅，再辦登機和託運",map:"中部国際空港",pid:"ChIJzynM7ZN9BGARJQAsbih9mEI"},
-   {t:"07:45",k:"remind",n:"先辦退稅，再託運",p:"免稅品帶在身上，到退稅機出示護照",tf:1},
+   {t:"07:45",k:"remind",n:"先辦退稅，再託運",p:"免稅品、收據帶在身上，到海關退稅機掃護照或用手機辦",tf:1},
    {t:"11:40",k:"fly",n:"JX 321 名古屋 → 台中",p:"14:20 抵達，結束開心的旅程"}]}
 ];
 const SCHED=[
@@ -1867,7 +1910,7 @@ function parseYen(raw){
  if(/,/.test(s)&&/^[\d,]+$/.test(s))return{err:"千分位逗號的位置不對"};
  return{err:"只能輸入數字"};
 }
-const TF_TIP=`<div class="tf-tip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="7.5" cy="8.5" r="1.6" fill="currentColor"/></svg><span><b>免稅</b>：同一家店同一天稅前滿 ¥5,000，要帶護照。記帳時打開「免稅」就會列進退稅清單。</span></div>`;
+const TF_TIP=`<div class="tf-tip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12V4h8l10 10-8 8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/><circle cx="7.5" cy="8.5" r="1.6" fill="currentColor"/></svg><span><b>免稅</b>：同一家店同一天稅前滿 ¥5,000，要帶護照。記帳時打開「免稅」就會列進退稅清單。<button type="button" class="tr-link" data-tr-open>退稅怎麼辦<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></span></div>`;
 const SETUP=[
  ["home","加到主畫面","iPhone：Safari 分享 → 加入主畫面；Android：Chrome 選單 → 安裝應用程式。之後從主畫面圖示打開","auto"],
  ["me","選好「我是誰」","記帳、錢包和心情才會記在對的人身上","auto"],
@@ -2207,7 +2250,7 @@ function itemHTML(it,i,stat){
  const[kl,ki,kc]=KIND[it.k];const acts=[];const s=stat?stat.st[i]:"";
  if(it.map&&it.img)acts.push(`<a class="chip" href="${mapUrl(it.map,it.pid)}" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>地圖</a>`);
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
- if(it.tf)acts.push(`<button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button>`);
+ if(it.tf)acts.push(`<button class="chip" type="button" data-tr-open><svg><use href="#i-list"/></svg>退稅怎麼辦</button>`,`<button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button>`);
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
   <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.rsv?rsvHTML(it.rsv):""}${it.qt?qtHTML(it):""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
@@ -3421,7 +3464,8 @@ function renderTf(){
  box.innerHTML=`<h3>退稅清單<span>${l.length} 筆</span></h3>
  <div class="tf-sum"><div><small>預估可退（以 10% 計）</small><b>約 ${yen(tot)}</b></div><div class="${left?"left":""}"><small>放進隨身行李</small><b>${c} / ${l.length}</b></div></div>
  <p class="tf-note"><b>託運前</b>到機場退稅機出示護照。同一張收據的東西都要帶在身上，吃掉、用掉的不能退。</p>
- ${l.map(e=>`<div class="tf-item"><div class="m"><b>${esc(e.note||"（沒寫店名）")}</b><small>${esc(e.day)}・${yen(e.amt)}・可退約 ${yen(tfRefund(e.amt))}</small></div>${canWrite?`<button type="button" class="tf-carry" data-carry="${esc(e.id)}" aria-pressed="${!!e.carry}"><i></i>隨身</button>`:""}</div>`).join("")}`;
+ ${l.map(e=>`<div class="tf-item"><div class="m"><b>${esc(e.note||"（沒寫店名）")}</b><small>${esc(e.day)}・${yen(e.amt)}・可退約 ${yen(tfRefund(e.amt))}</small></div>${canWrite?`<button type="button" class="tf-carry" data-carry="${esc(e.id)}" aria-pressed="${!!e.carry}"><i></i>隨身</button>`:""}</div>`).join("")}
+ <button type="button" class="tr-more" data-tr-open>退稅流程怎麼走<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 document.addEventListener("click",async e=>{
  const tg=e.target.closest("[data-tf-toggle]");if(tg){draft.tf=!draft.tf;tg.setAttribute("aria-pressed",String(draft.tf));tg.querySelector(".switch").classList.toggle("on",draft.tf);return}
@@ -3430,6 +3474,63 @@ document.addEventListener("click",async e=>{
   put("expenses/"+id,{carry:!!ex.carry},{merge:true});store.set("exp",expenses);return}
  if(e.target.closest("[data-go-tf]")){tab="acct";render();setTimeout(()=>{const b=document.getElementById("tf-list");if(b&&!b.hidden)b.scrollIntoView({block:"start",behavior:reduce()?"auto":"smooth"});else scrollTo(0,0)},60);return}
 });
+
+/* ===== 退稅流程（11/1 起新制：先付含稅價，出境時海關確認後才退）：依日期標出現在走到哪一段 ===== */
+const TR_WARN=1;
+const TR_PH=[
+ ["pre","出發前","選做",[
+  ["在 Visit Japan Web 登錄護照","中部機場可以用手機辦海關確認，不用排機台。沒登錄也沒關係，現場用機台一樣能辦。",0,{link:["Visit Japan Web","https://www.vjw.digital.go.jp/"]}]]],
+ ["shop","買東西的時候","11/17–11/23",[
+  ["說要免稅，出示護照正本","同一家店、同一天，稅前滿 ¥5,000 才能辦。",0,{jp:["免税手続きはできますか？","menzei tetsuzuki wa dekimasu ka"]}],
+  ["先付含稅的全額","店裡不會當場扣稅。刷卡時選「日圓」付款，不要選台幣。"],
+  ["照店家說明登記退款方式","通常是掃 QR Code 填資料。優先選信用卡；不要填台灣的銀行帳戶，外匯入帳費約 NT$300–400，小額會被吃光。錢會退到登記的那張卡，不一定是付款那張。"],
+  ["收好收據，記帳時打開「免稅」","店名寫在備註，回國那天會列在退稅清單。"],
+  ["要在日本吃、用的東西分開結帳","同一張收據的東西都要帶出境，少一件、拆一包都可能整張退不到。",TR_WARN]]],
+ ["pack","回國前一晚","11/23",[
+  ["藥妝、零食、化妝品不要拆","衣服、鞋子、包包可以先用，但一樣要帶出境。",TR_WARN],
+  ["免稅品和收據放在好拿的地方","集中在行李箱最上層或一個袋子，海關要看時馬上拿得出來。到退稅清單逐筆勾「隨身」，確認都帶了。",0,{tf:1}]]],
+ ["fly","回國那天・中部機場","11/24",[
+  ["07:40 到機場，先不要去報到","帶著護照、免稅品、收據，到國際線出發大廳的海關退稅機台。託運之後就不能辦了。",TR_WARN],
+  ["辦海關確認（手機或機台二選一）","都在機台附近辦。",0,{ways:1}],
+  ["看結果","",0,{res:1}],
+  ["確認完再去報到、託運、安檢","確認完的免稅品可以照常託運。"],
+  ["有登記領現金的話","照店家給的說明，到機場的退稅現金機掃護照領日圓，會另外扣手續費。"]]],
+ ["home","回到台灣","11/24 之後",[
+  ["等退款入帳","官方沒有公布天數。退稅業者說約 3–5 天，也有人等了 1–2 週。收據留到入帳為止。"],
+  ["實拿會扣手續費","每家店不同：唐吉訶德不收（機場領現金除外），小額退稅的手續費可能吃掉一半以上。"]]]
+];
+const TR_LOSE=["先託運了才想到要辦","同一張收據少帶一件，或消耗品拆了、吃了","買完超過 90 天才出境","紅色判定時拿不出商品","退款的卡號、帳號填錯"];
+/* 現在走到哪一段（日本時間）：出發前／11/17–22 買東西／11/23 整理行李／11/24 回國／之後回到台灣 */
+function trPhase(){const n=tzNow("Asia/Tokyo"),[mo,d]=n.md.split("/").map(Number),k=(n.y-2026)*10000+mo*100+d;return k<1117?"pre":k<1123?"shop":k===1123?"pack":k===1124?"fly":"home"}
+function trExtraHTML(x){
+ if(!x)return"";
+ if(x.link)return `<div class="acts">${ext(x.link[0],x.link[1])}</div>`;
+ if(x.jp)return `<div class="tr-jp">跟店員說：<b lang="ja">${esc(x.jp[0])}</b><small>${esc(x.jp[1])}</small></div>`;
+ if(x.tf)return `<div class="acts"><button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button></div>`;
+ if(x.ways)return `<div class="tr-ways"><div class="tr-way"><b>用手機（Visit Japan Web）</b><ol><li>連機場的 Wi-Fi<span class="tr-kv"><i>名稱</i><span class="tr-wifi">Customs_WiFi_For_TaxRefund</span></span><span class="tr-kv"><i>密碼</i><span class="tr-wifi">jcustoms</span></span></li><li>打開 Visit Japan Web，選「退稅手續」</li><li>核對購買紀錄，按「Confirm」</li></ol><p>這個 Wi-Fi 只在機台附近收得到，不能在飯店先辦。</p></div><div class="tr-way"><b>用機台（KIOSK）</b><ol><li>掃護照，幾秒就出結果</li></ol></div></div>`;
+ if(x.res)return `<div class="tr-res"><span><i class="g">綠色</i>完成了，可以去報到</span><span><i class="r">紅色</i>帶商品和收據到旁邊的海關檢查處給海關看</span></div>`;
+ return"";
+}
+function trSheetHTML(){
+ const cur=trPhase();
+ return `<div class="sm-head"><b>退稅怎麼辦</b><button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
+ <p class="tr-sub">11/1 起是新制：<b>先付含稅價</b>，回國那天<b>託運前</b>在機場讓海關確認，之後才退錢。</p>
+ <div class="tr-facts"><div><small>門檻</small><b>稅前 ¥5,000</b><i>同一家店、同一天</i></div><div><small>退多少</small><b>約 10%</b><i>吃的喝的 8%，再扣手續費</i></div><div><small>期限</small><b>90 天內出境</b><i>我們 11/24 回國</i></div><div><small>退到哪</small><b>登記的卡</b><i>不一定是付款那張</i></div></div>
+ ${TR_PH.map(([k,t,when,steps],i)=>`<section class="tr-ph${k===cur?" on":""}" data-tr-ph="${k}"><h4><span class="n">${i+1}</span>${t}<small>${when}</small>${k===cur?`<span class="flag now">現在</span>`:""}</h4><ol class="tr-steps">${steps.map(([b,s,w,x])=>`<li${w?' class="warn"':""}><b>${esc(b)}</b>${s?`<small>${esc(s)}</small>`:""}${trExtraHTML(x)}</li>`).join("")}</ol></section>`).join("")}
+ <div><div class="qt-h">這些情況會整張退不到</div><ul class="qt-rules">${TR_LOSE.map((r,i)=>`<li${i?"":' class="warn"'}>${esc(r)}</li>`).join("")}</ul></div>
+ <p class="tr-src">整理自 2026 年 11 月的新制說明，現場以機場標示和店家說明為準。<a href="https://natasha-traveler.tw/japan-tax-refund-guide/" target="_blank" rel="noopener">看完整教學</a></p>`;
+}
+function openTrSheet(){
+ const v=document.createElement("div");v.className="sheet-modal";v.setAttribute("role","dialog");v.setAttribute("aria-label","退稅怎麼辦");
+ v.innerHTML=`<div class="sm-card tr-sheet">${trSheetHTML()}</div>`;
+ document.body.appendChild(v);document.body.style.overflow="hidden";
+ const close=modal(v,()=>{leave(v);document.body.style.overflow=""});
+ /* 整理行李、回國那天、回台灣後打開時，直接捲到那一段（買東西期間從頭看） */
+ const c=v.querySelector(".sm-card"),on=c.querySelector(".tr-ph.on");
+ if(on&&["pack","fly","home"].includes(on.dataset.trPh)){c.scrollTop=on.offsetTop-c.querySelector(".sm-head").offsetHeight-8;smShade(c)}
+ v.addEventListener("click",e=>{if(e.target===v||e.target.closest(".sm-x")){close();return}if(e.target.closest("[data-go-tf]"))close()});
+}
+document.addEventListener("click",e=>{if(e.target.closest("[data-tr-open]"))openTrSheet()});
 
 /* ===== 旅程回顧：首頁電影票入口，點開是一頁一個主題的全螢幕故事（點擊換頁），最後總結可存成圖片 ===== */
 const RV_PEOPLE_COLOR={zhang:"#3F3127",star:"#E07A5F"};
