@@ -2,8 +2,9 @@
 放在 /home/claude/build（腳本內路徑寫死這個位置）。
 - 本機伺服器：cd /home/claude/nagoya-trip && python3 -m http.server 8766
 - 功能測試：cd /home/claude/build/ft && python3 fulltest.py（177 項）
-- 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest trtest
+- 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest trtest kisotest
 - trtest：退稅流程（新制）說明面板（要買的、記帳退稅清單、11/24 行程三個入口；四個階段分頁買東西／前一晚／機場／回家，依日本日期停在「現在」那段、標「現在」；換分頁不跳高度、方向鍵／Home／End；每步一句話、看細節與「整張退不到」預設收起；Esc／背景關閉與焦點、前一晚的看退稅清單、320 寬度）。截圖用 ft/trshot.py
+- kisotest：KISO 整理券（11/21 卡片只留「8:00–8:45 時段內到店」一行＋看完整說明；彈窗三步驟、注意事項、官網／IG 連結；11/20 20:00 提醒的「怎麼抽」開同一個彈窗；sanrio 整理券照舊）
 - loadtest：開啟動畫與開啟速度（App 重新開啟時中間的豆花和芝麻點頭約 1.2 秒、只有貓咪沒有字、時間到淡出 0.4 秒、點一下跳過（0.2 秒淡出）、同一次使用中重新整理不再播、載入本來就慢就畫好立刻淡出；iOS 啟動圖各尺寸都有且和動畫對齊；訊號差超過 1.5 秒先用快取；字型不擋畫面）。會自己開 ft/slowsrv.py（8768 埠）
 - 開啟動畫會蓋住畫面約 1.2 秒：fulltest.newpage 和 synctest.opn 預設在 sessionStorage 放 ngy:launched 當作「已經開過」跳過它；要測動畫本身用 opn(..., splash=True) 或像 loadtest 自己開頁
 - iOS 啟動圖：改了開啟動畫或貓咪圖案後，跑 python3 ft/mksplash.py 重新產生 splash/*.png（會印出 link 標籤）
