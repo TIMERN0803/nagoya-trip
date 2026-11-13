@@ -302,6 +302,7 @@ h1,h2,h3{font-family:var(--f-display);font-weight:900;text-wrap:balance}
 .qt-rules li::before{content:"";position:absolute;left:3px;top:.62em;width:5px;height:5px;border-radius:50%;background:var(--brown)}
 .qt-rules li.warn{color:var(--coral-ink);font-weight:700}
 .qt-rules li.warn::before{background:var(--coral-ink)}
+.qt-links{margin-top:12px}
 .item .card.has-pic{display:grid;grid-template-columns:minmax(0,1fr) 72px;column-gap:12px;align-items:start}
 .item .card.has-pic>*:not(.pic){grid-column:1}
 .item .card.has-pic>.pic{grid-column:2;grid-row:1 / span 6}
@@ -1758,10 +1759,13 @@ const DAYS=[
    {t:"09:00",k:"go",n:"東山動物植物園",map:"東山動植物園",pid:"ChIJt7ZD20plA2ARbRV7VnfVBnA"},
    {t:"17:00",k:"do",l:"染髮",n:"星星：snuw【スニュウ】",p:"伏見站 6 號出口",link:["預約頁","https://beauty.hotpepper.jp/slnH000642791/"],map:"snuw スニュウ 名古屋",pid:"ChIJWb8pbvB3A2AR_DpMfL_r93U"},
    {t:"17:00",k:"do",l:"染髮",n:"阿彰：men's NEELU 名古屋",p:"伏見站 10 號出口",map:"men's NEELU 名古屋"},
-   {t:"20:00",k:"remind",n:"搶 KISO 號碼牌",p:"選 8:00–8:45 時段",link:["KISO 官網","https://kiso-nagoya.my.canva.site/"]},
+   {t:"20:00",k:"remind",n:"搶 KISO 號碼牌",p:"選 8:00–8:45 時段",link:["KISO 官網","https://kiso-nagoya.my.canva.site/"],qtRef:"KISO"},
    {k:"eat",l:"晚餐",n:"挽き肉のトリコ",jp:"Hikiniku no Toriko",p:"22:00 打烊",map:"挽き肉のトリコ 名古屋",pid:"ChIJtTyBr9JwA2ARXk4_qFiyTQw"}]},
  {d:"11/21",w:"六",title:"熱田神宮與大須",place:"熱田神宮",art:"shrine",wx:["名古屋",17,8],route:["熱田神宮","大須商店街","久屋大通"],items:[
-   {t:"08:00",k:"eat",l:"早餐",n:"KISO",p:"用前一晚搶到的號碼牌",map:"KISO 名古屋",pid:"ChIJ85qgZhl7A2ARKG7WRxldB7A"},
+   {t:"08:00",k:"eat",l:"早餐",n:"KISO",p:"用前一晚搶到的號碼牌",map:"KISO 名古屋",pid:"ChIJ85qgZhl7A2ARKG7WRxldB7A",
+    qt:{main:"8:00–8:45 時段內到店",sum:"LINE 抽券・一張最多 4 人",steps:[["11/20 20:00","打開 KISO 官網抽券","點「8:00–8:45」進 LINE 領券，每個時段有名額",1],["11/21 8:00–8:45","在券上的時段內到店","不會叫號，兩個人到齊再一起排、一起進",1],["13:00 後","沒抽到也能進","不用券，12:30 之後才能開始排"]],
+     rules:[["13:00 前買麵包、進店都要有券"],["一張券最多 4 人，抽一張就好"],["不會叫號，要在券上的時段內到",1],["不去了記得在 LINE 取消"],["不要在路邊停車或在附近巷子等人，會被拒絕入店",1]],
+     links:[["KISO 官網抽券","https://kiso-nagoya.my.canva.site/"],["IG 公告","https://www.instagram.com/p/DbU8VJGkbNj/"]]}},
    {k:"go",n:"熱田神宮",map:"熱田神宮",pid:"ChIJ3abhnht6A2ARu-Y4yDEWlao"},
    {t:"13:00",k:"do",l:"午餐預約",n:"炭燒富士鰻魚 總店",jp:"炭焼うな富士 本店",p:"鰻魚飯，一休訂位",rsv:{t:"13:00",n:2,id:"IR0563167387"},map:"炭焼うな富士 本店 名古屋",pid:"ChIJJflGL6VwA2ARLO3QB-ruz4c"},
    {k:"go",n:"大須商店街",map:"大須商店街",pid:"ChIJZdlrqMxwA2ARpJpFJF45vgg"},
@@ -2267,6 +2271,7 @@ function itemHTML(it,i,stat){
  const[kl,ki,kc]=KIND[it.k];const acts=[];const s=stat?stat.st[i]:"";
  if(it.map&&it.img)acts.push(`<a class="chip" href="${mapUrl(it.map,it.pid)}" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>地圖</a>`);
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
+ if(it.qtRef)acts.push(`<button class="chip" type="button" data-qt-open="${esc(it.qtRef)}"><svg><use href="#k-ticket"/></svg>怎麼抽</button>`);
  if(it.tf)acts.push(`<button class="chip" type="button" data-tr-open><svg><use href="#i-list"/></svg>退稅怎麼辦</button>`,`<button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button>`);
  return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
   <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.rsv?rsvHTML(it.rsv):""}${it.qt?qtHTML(it):""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
@@ -2278,7 +2283,7 @@ function rsvHTML(r){
 const qtRulesHTML=rs=>`<ul class="qt-rules">${rs.map(r=>`<li${r[1]?' class="warn"':""}>${esc(r[0])}</li>`).join("")}</ul>`;
 function qtHTML(it){
  const q=it.qt,m=q.steps.find(s=>s[3])||q.steps[0];
- return `<div class="qt"><div class="qt-main"><svg aria-hidden="true"><use href="#k-ticket"/></svg><span><small>整理券</small><b>${esc(m[0])}${esc(m[1])}</b></span></div>${qtRulesHTML(q.key)}<button type="button" class="qt-more" data-qt-open="${esc(it.n)}">看完整說明<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
+ return `<div class="qt"><div class="qt-main"><svg aria-hidden="true"><use href="#k-ticket"/></svg><span><small>整理券</small><b>${esc(q.main||m[0]+m[1])}</b></span></div>${q.key?qtRulesHTML(q.key):""}<button type="button" class="qt-more" data-qt-open="${esc(it.n)}">看完整說明<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
 }
 function openQtSheet(name){
  const it=DAYS.flatMap(d=>d.items||[]).find(x=>x.n===name&&x.qt);if(!it)return;const q=it.qt;
@@ -2286,7 +2291,7 @@ function openQtSheet(name){
  v.innerHTML=`<div class="sm-card qt-sheet"><div class="sm-head"><b>整理券怎麼拿</b><button type="button" class="sm-x" aria-label="關閉"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button></div>
   <p class="qt-sub">${esc(it.n)}・${esc(q.sum)}</p>
   <ol class="qt-steps">${q.steps.map(s=>`<li${s[3]?' class="on"':""}><span class="qt-t">${esc(s[0])}</span><span class="qt-x"><b>${esc(s[1])}</b><small>${esc(s[2])}</small></span></li>`).join("")}</ol>
-  <div><div class="qt-h">注意事項</div>${qtRulesHTML(q.rules)}</div></div>`;
+  <div><div class="qt-h">注意事項</div>${qtRulesHTML(q.rules)}</div>${q.links?`<div class="acts qt-links">${q.links.map(l=>ext(l[0],l[1])).join("")}</div>`:""}</div>`;
  document.body.appendChild(v);document.body.style.overflow="hidden";
  const close=modal(v,()=>{leave(v);document.body.style.overflow=""});
  v.addEventListener("click",e=>{if(e.target===v||e.target.closest(".sm-x"))close()});
