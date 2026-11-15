@@ -543,6 +543,9 @@ button.sync{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .who-tag.who-both{background:var(--butter-soft);box-shadow:inset 0 0 0 1.5px var(--line-strong);color:var(--brown)}
 .who-ic{width:20px;height:16px;flex:none}
 .who-ic.two{width:30px}
+.zone-pick{display:flex;align-items:center;gap:10px}
+.zone-pick span{flex:none;font-size:14px;font-weight:700;color:var(--brown);padding-left:4px}
+.zone-pick select{flex:1;min-width:0}
 .who-pick{display:flex;gap:6px}
 .who-pick .pick{flex:1;justify-content:center;gap:4px;min-height:44px;padding:4px 8px}
 .who-pick input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
@@ -550,6 +553,8 @@ button.sync{font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .who-pick .pick:has(input:focus-visible){outline:3px solid var(--accent);outline-offset:2px}
 .who-pick .who-ic{width:24px;height:20px}
 .who-pick .who-ic.two{width:36px}
+.who-pick .pick{white-space:nowrap}
+@media (max-width:360px){.who-pick .pick{gap:2px;padding:4px 4px}.who-pick .who-ic{width:20px;height:17px}.who-pick .who-ic.two{width:28px}}
 .fld-ic{position:relative;display:block}
 .fld-ic svg{position:absolute;left:11px;top:50%;width:17px;height:17px;transform:translateY(-50%);color:var(--brown);pointer-events:none}
 .fld-ic .field{padding-left:36px}
@@ -2634,7 +2639,7 @@ function itemForm(g,it){
  const isNew=!it;it=it||{title:"",note:"",due:""};
  return `<form class="chk-form" data-group="${g}" data-id="${isNew?"":esc(it.id)}" autocomplete="off">
   <input class="field" name="title" placeholder="${g==="buy"?"要買什麼？例如：小倉山莊":g==="pack"?"要帶什麼？例如：耳機":"要做什麼？例如：換日圓"}" value="${esc(it.title)}" maxlength="40" aria-label="名稱" required>
-  ${g==="buy"?(()=>{const b=buyParts(it),w=isNew?(BUY_WHO.some(x=>x[0]===me)?me:"star"):whoOf(it);return `<div class="who-pick" role="radiogroup" aria-label="誰要買">${BUY_WHO.map(([k,n])=>`<label class="pick"><input type="radio" name="who" value="${k}"${k===w?" checked":""}>${whoIcon(k)}${n}</label>`).join("")}</div><label class="fld-ic"><svg aria-hidden="true"><use href="#i-pin"/></svg><input class="field" name="place" placeholder="地點，例如：高島屋（可不填）" value="${esc(b.place)}" maxlength="40" aria-label="地點"></label><label class="fld-ic"><svg aria-hidden="true"><use href="#k-buy"/></svg><input class="field" name="what" placeholder="品項，例如：常磐の昔、初昔（可不填）" value="${esc(b.what||b.rest)}" maxlength="60" aria-label="品項"></label>`})():`<input class="field" name="note" placeholder="備註（可不填）" value="${esc(it.note||"")}" maxlength="60" aria-label="備註">`}
+  ${g==="buy"?(()=>{const b=buyParts(it),w=isNew?(BUY_WHO.some(x=>x[0]===me)?me:"star"):whoOf(it);return `<div class="who-pick" role="radiogroup" aria-label="誰要買">${BUY_WHO.map(([k,n])=>`<label class="pick"><input type="radio" name="who" value="${k}"${k===w?" checked":""}>${whoIcon(k)}${n}</label>`).join("")}</div><label class="fld-ic"><svg aria-hidden="true"><use href="#i-pin"/></svg><input class="field" name="place" placeholder="地點，例如：高島屋（可不填）" value="${esc(b.place)}" maxlength="40" aria-label="地點"></label><label class="zone-pick"><span>分區</span><select class="field" name="zone" aria-label="分區（不選就照地點自動分）"><option value="">${esc(autoZoneTxt(b.place))}</option>${ZONE_PICK.map(z=>`<option value="${z[0]}"${it.zone===z[0]?" selected":""}>${esc(z[1])}</option>`).join("")}</select></label><label class="fld-ic"><svg aria-hidden="true"><use href="#k-buy"/></svg><input class="field" name="what" placeholder="品項，例如：常磐の昔、初昔（可不填）" value="${esc(b.what||b.rest)}" maxlength="60" aria-label="品項"></label>`})():`<input class="field" name="note" placeholder="備註（可不填）" value="${esc(it.note||"")}" maxlength="60" aria-label="備註">`}
   ${g==="pack"?`<select class="field" name="cat" aria-label="分類">${PCATS.map(([c,n])=>`<option value="${c}"${(it.cat||"etc")===c?" selected":""}>${n}</option>`).join("")}</select>`:""}
   ${g==="prep"?(()=>{const p=dueParts(it.due);return `<div class="due-row"><label><span>期限日期</span><input class="field" type="date" name="dued" min="${YEAR}-10-01" max="${YEAR}-12-31" value="${p?`${YEAR}-${p2(p.mo)}-${p2(p.da)}`:""}"></label><label><span>時間</span><input class="field" type="time" name="duet" value="${p&&p.h!=null?`${p2(p.h)}:${p2(p.mi)}`:""}"></label></div><small class="due-hint">可不填；11/17 前是台灣時間，旅程中是日本時間</small>`})():""}
   <div class="form-btns"><button class="primary" type="submit">${isNew?"新增":"儲存"}</button><button class="ghost" type="button" data-item-cancel>取消</button>
@@ -2669,7 +2674,11 @@ const BUY_ZONES=[
  ["meitetsu","名鐵 Sun Road","名古屋車站",/名鐵|名鉄|sun ?road|サンロード/i],
  ["other","其他地點","",null],
  ["none","地點還沒填","",null]];
-function zoneOf(r){const p=buyParts(r).place;if(!p.trim())return"none";const z=BUY_ZONES.find(z=>z[3]&&z[3].test(p));return z?z[0]:"other"}
+const ZONE_PICK=BUY_ZONES.filter(z=>z[0]!=="none");
+function autoZone(place){const p=String(place||"");if(!p.trim())return"none";const z=BUY_ZONES.find(z=>z[3]&&z[3].test(p));return z?z[0]:"other"}
+const zoneName=k=>(BUY_ZONES.find(z=>z[0]===k)||BUY_ZONES[BUY_ZONES.length-1])[1];
+const autoZoneTxt=place=>"自動："+zoneName(autoZone(place));
+function zoneOf(r){if(ZONE_PICK.some(z=>z[0]===r.zone))return r.zone;const p=buyParts(r).place;if(!p.trim())return"none";const z=BUY_ZONES.find(z=>z[3]&&z[3].test(p));return z?z[0]:"other"}
 function buyZonesOf(rows){return BUY_ZONES.map(z=>[z,rows.filter(r=>zoneOf(r)===z[0])]).filter(x=>x[1].length)}
 const EDIT_SVG=`<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z M14 6l4 4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>`;
 const packCnt=(rows,who)=>rows.filter(r=>done[packKey(r.id,who)]).length;
@@ -2769,7 +2778,7 @@ let pendingRestore=false,lastItemSig="",lastItemAt=0;
 /* 清單表單的值（送出與「打開時的基準」用同一個讀法，due 組字才會一致） */
 function itemFormVals(f,g){
  const dd=f.dued&&f.dued.value,t=f.duet&&f.duet.value;let due="";if(dd){const[,mo,da]=dd.split("-");due=`${+mo}/${+da}`+(t?` ${t}`:"")}
- return{title:f.title.value.trim(),...(g==="buy"?{who:(f.querySelector("input[name=who]:checked")||{}).value||"star",place:f.place.value.trim(),what:f.what.value.trim(),note:""}:{note:f.note.value.trim()}),...(g==="pack"?{cat:f.cat?f.cat.value:"etc"}:{}),due};
+ return{title:f.title.value.trim(),...(g==="buy"?{who:(f.querySelector("input[name=who]:checked")||{}).value||"star",zone:f.zone?f.zone.value:"",place:f.place.value.trim(),what:f.what.value.trim(),note:""}:{note:f.note.value.trim()}),...(g==="pack"?{cat:f.cat?f.cat.value:"etc"}:{}),due};
 }
 let editItemBase=null;
 function captureItemBase(){
@@ -3055,6 +3064,8 @@ app.addEventListener("change",async e=>{
  if(t.checked)popEl(document.getElementById("c-"+id));else unpop("#"+CSS.escape("c-"+id));
  put("checks/"+id,{done:t.checked});
 });
+/* 要買的表單：打地點時，分區選單的「自動」那行跟著顯示會分到哪 */
+app.addEventListener("input",e=>{const t=e.target;if(t.name!=="place"||!t.closest('.chk-form[data-group="buy"]'))return;const o=t.form.zone&&t.form.zone.querySelector('option[value=""]');if(o)o.textContent=autoZoneTxt(t.value)});
 app.addEventListener("submit",async e=>{
  e.preventDefault();
  if(e.target.id==="mood-form"){
