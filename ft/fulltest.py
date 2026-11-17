@@ -49,19 +49,24 @@ async def A_timeline(b):
             nxt=None
             # 行程時間換算成日本時間：去程航班（tz Asia/Taipei）寫的是台灣時間，比日本慢 1 小時
             tmj=lambda it:None if tmin(it.get('t')) is None else tmin(it.get('t'))+(60 if it.get('tz')=="Asia/Taipei" else 0)
+            last=-1
             for i,it in enumerate(d['items']):
                 tm=tmj(it)
                 if tm is None:continue
                 if tm>nowM:
                     if nxt is None:nxt=i
-                else:exp[i]="now" if nowM-tm<90 else "done"
+                else:exp[i]="now" if nowM-tm<90 else "done";last=i
+            # 上一個有時間的行程開始後，緊接著的下一站就算接下來（沒排時間也算）；晚上 10 點後、後面沒有有時間的行程就不算
+            j=last+1
+            if j<len(d['items']) and tmj(d['items'][j]) is None and (nxt is not None or nowM<22*60):nxt=j
             if nxt is not None:exp[nxt]="next"
             got={int(x.split(':')[0][3:]):x.split(':')[1] for x in info['flags']}
             bad=[(i,exp.get(i,""),got.get(i,"")) for i in range(len(d['items'])) if exp.get(i,"")!=got.get(i,"")]
             rec("A 當天行程",f"{lab} 已過／進行中／接下來標示",not bad,bad)
             if nxt is not None:
-                it=d['items'][nxt];left=tmj(it)-nowM
-                ok=it['n'][:6] in info['now'] and (f"{left%60} 分後" in info['now'])
+                it=d['items'][nxt]
+                if tmj(it) is None:ok=it['n'][:6] in info['now'] and "彈性" in info['now'] and "分後" not in info['now']
+                else:left=tmj(it)-nowM;ok=it['n'][:6] in info['now'] and (f"{left%60} 分後" in info['now'])
                 rec("A 當天行程",f"{lab} 接下來列",ok,info['now'])
             else:
                 cur=[i for i,v in exp.items() if v=="now"]
