@@ -670,6 +670,8 @@ body.has-fab .shell{padding-bottom:190px}
 .item.s-next .t{color:var(--mint-ink)}
 .item.s-now .card{border:2.5px solid var(--st-now)}
 .item.s-done{opacity:.65}
+.chip.stop-done{background:var(--st-next);color:#fff;padding:6px 14px}.chip.stop-done svg{width:16px;height:16px}
+.chip.stop-undo{background:transparent;color:var(--muted);text-decoration:underline;text-underline-offset:3px;padding:5px 4px}
 .item.s-done .card{box-shadow:none;background:var(--paper)}
 .item.ping .card{animation:ping 1s ease}
 @keyframes ping{30%{transform:scale(1.02)}}
@@ -2284,6 +2286,7 @@ const tmin=t=>{const m=/(\d{1,2}):(\d{2})/.exec(t||"");return m?+m[1]*60+ +m[2]:
 /* 行程時間換算成日本時間的分鐘數。去程航班（tz:"Asia/Taipei"）寫的是台灣時間，台灣比日本慢 1 小時 */
 const TZ_LAG={"Asia/Taipei":60};
 const itemM=it=>{const m=tmin(it.t);return m==null?null:m+(TZ_LAG[it.tz]||0)};
+const stopKey=(x,i)=>"stop_"+x.d.replace("/","")+"_"+i;
 function dayStatus(x){
  const st=x.items.map(()=>""),nowM=tzNow("Asia/Tokyo").m;
  let next=-1;
@@ -2291,18 +2294,24 @@ function dayStatus(x){
  x.items.forEach((it,i)=>{const m=itemM(it);if(m==null)return;if(m>nowM){if(next<0)next=i}else{st[i]=nowM-m<90?"now":"done";last=i}});
  /* 上一個有時間的行程開始後，緊接著的下一站就算「接下來」，就算它沒排時間（例如飯店、名古屋城）；
     晚上 10 點後，後面又沒有有時間的行程，就不再把沒排時間的行程當「接下來」 */
+ /* 沒排時間的行程按了「完成」：標成已過，接下來往後推（兩人同步，存在 checks） */
+ x.items.forEach((it,i)=>{if(itemM(it)==null&&done[stopKey(x,i)]){st[i]="done";if(i>last)last=i}});
  const j=last+1;
- if(j<x.items.length&&itemM(x.items[j])==null&&(next>=0||nowM<22*60))next=j;
+ if(j<x.items.length&&itemM(x.items[j])==null&&!done[stopKey(x,j)]&&(next<0?nowM<22*60:j<next))next=j;
  if(next>=0)st[next]="next";
- return{st,next,nowM};
+ return{st,next,nowM,d:x.d};
 }
 function itemHTML(it,i,stat){
  const[kl,ki,kc]=KIND[it.k];const acts=[];const s=stat?stat.st[i]:"";
  if(it.map&&it.img)acts.push(`<a class="chip" href="${mapUrl(it.map,it.pid)}" target="_blank" rel="noopener"><svg><use href="#i-pin"/></svg>地圖</a>`);
  if(it.link)acts.push(ext(it.link[0],it.link[1]));
  if(it.qtRef)acts.push(`<button class="chip" type="button" data-qt-open="${esc(it.qtRef)}"><svg><use href="#k-ticket"/></svg>怎麼抽</button>`);
+ /* 沒排時間的行程：輪到它（接下來）時可以按「完成」；按過的可以取消 */
+ const sk=stat&&itemM(it)==null?"stop_"+stat.d.replace("/","")+"_"+i:null,man=sk&&done[sk];
+ if(sk&&s==="next"&&canWrite)acts.unshift(`<button class="chip stop-done" type="button" data-stop-done="${sk}" data-stop-name="${esc(it.n)}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>完成</button>`);
+ if(man&&canWrite)acts.push(`<button class="chip stop-undo" type="button" data-stop-undo="${sk}" aria-label="取消完成：${esc(it.n)}">取消完成</button>`);
  if(it.tf)acts.push(`<button class="chip" type="button" data-tr-open><svg><use href="#i-list"/></svg>退稅怎麼辦</button>`,`<button class="chip" type="button" data-go-tf><svg><use href="#k-buy"/></svg>看退稅清單</button>`);
- return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>已過</span>`:""}</div>
+ return `<li class="item${s?" s-"+s:""}" id="it-${i}"><div class="t">${it.t?esc(it.t):`<small>彈性</small>`}</div><div class="card${it.img?"":" has-pic"}">${it.img?"":picHTML(it)}<div class="tagrow"><span class="tag ${kc}"><svg><use href="#${ki}"/></svg>${esc(it.l||kl)}</span>${s==="next"?`<span class="flag next">接下來</span>`:s==="now"?`<span class="flag now">進行中</span>`:s==="done"?`<span class="flag done"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>${man?"完成":"已過"}</span>`:""}</div>
   <h3>${esc(it.n)}</h3>${it.jp?`<div class="jp">${esc(it.jp)}</div>`:""}${it.p?`<p>${esc(it.p)}</p>`:""}${it.rsv?rsvHTML(it.rsv):""}${it.qt?qtHTML(it):""}${it.stay?stayOrdHTML():""}${it.img?`<button class="inmap" type="button" data-map aria-label="放大園區地圖"><img src="ghibli-map.jpg" alt="吉卜力公園地圖" loading="lazy"><span class="zoom"><svg viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15 15l5 5M10.5 8v5M8 10.5h5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>點擊放大</span></button>`:""}${acts.length?`<div class="acts">${acts.join("")}</div>`:""}</div></li>`;
 }
 function rsvHTML(r){
@@ -2895,7 +2904,7 @@ function jumpToItem(i,instant){const el=document.getElementById("it-"+i);if(!el)
 /* 首頁右下的「現在行程」浮動按鈕：旅程中才出現，點了跳到當天正在進行的行程 */
 function curItem(x){
  const st=dayStatus(x),nowM=st.nowM;let last=-1;
- x.items.forEach((it,i)=>{const m=itemM(it);if(m!=null&&m<=nowM)last=i});
+ x.items.forEach((it,i)=>{const m=itemM(it);if(m!=null&&m<=nowM||m==null&&done[stopKey(x,i)])last=i});
  if(last>=0&&st.st[last]==="now")return{i:last,lbl:"現在"};
  const j=last+1;if(j>=x.items.length)return null;
  const it=x.items[j];if(!it.t)return{i:j,lbl:"現在"};
@@ -3037,6 +3046,9 @@ app.addEventListener("click",e=>{
  const gg=e.target.closest("[data-go-group]");if(gg){setListTab(gg.dataset.goGroup);tab="list";listSub=null;editItem=null;render();scrollTo(0,0);return}
  const gi=e.target.closest("[data-go-item]");if(gi){focusItem=gi.dataset.goItem;focusUntil=Date.now()+2500;const it=items.find(x=>x.id===focusItem);if(it&&it.group==="pack"){listSub="pack"}else{setListTab(it&&it.group||"prep");listSub=null}tab="list";editItem=null;render();return}
  const pkb=e.target.closest("[data-pack]");if(pkb){const who=pkb.dataset.who,id=pkb.dataset.pack,rows=itemsOf("pack"),wasAll=rows.length&&packCnt(rows,who)===rows.length;const k=packKey(pkb.dataset.pack,pkb.dataset.who),v=!done[k];done[k]=v;store.set("done",done);render(true);put("checks/"+k,{done:v});if(!done[packKey(id,who)])unpop(`[data-pack="${CSS.escape(id)}"][data-who="${who}"]`);else{popEl(app.querySelector(`[data-pack="${CSS.escape(id)}"][data-who="${who}"]`));if(who===me&&!wasAll&&packCnt(itemsOf("pack"),who)===rows.length)popEl(app.querySelector(".pack-sum .pe-art"),"yay",".pack-sum .pe-art")}return}
+ const sd=e.target.closest("[data-stop-done],[data-stop-undo]");if(sd){const k=sd.dataset.stopDone||sd.dataset.stopUndo,on=!!sd.dataset.stopDone,name=sd.dataset.stopName||"";
+  const set=v=>{if(v)done[k]=true;else delete done[k];store.set("done",done);put("checks/"+k,v?{done:true}:null);render(true)};
+  set(on);if(on){undoSnack(`${name} 完成了`,()=>set(false));const st=dayStatus(DAYS[dayIdx]);if(st.next>=0)requestAnimationFrame(()=>popEl(document.querySelector(`#it-${st.next} .flag.next`)))}return}
  const dn=e.target.closest("[data-done-id]");if(dn){const id=dn.dataset.doneId;done[id]=true;store.set("done",done);render(true);put("checks/"+id,{done:true});return}
  if(e.target.closest("[data-wallet-open]")){openWallet();return}
  const g=e.target.closest("[data-go]");if(g){tab=g.dataset.go;render();return}
