@@ -2,9 +2,10 @@
 放在 /home/claude/build（腳本內路徑寫死這個位置）。
 - 本機伺服器：cd /home/claude/nagoya-trip && python3 -m http.server 8766
 - 功能測試：cd /home/claude/build/ft && python3 fulltest.py（177 項）
-- 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest buyzonetest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest trtest kisotest ghiblitest nextstoptest
+- 專項測試（都在 ft/）：duetest fabtest packtest gotest buytest cashtest sostest undotest sorttest janktest setuptest tourtest tftest placetest reviewtest fxtest nexttest hometest sostabtest buyzonetest voicetest sheettest synctest fixtest helptest layouttest smalltest listtabtest transtest loadtest trtest kisotest ghiblitest nextstoptest stopdonetest
 - trtest：退稅流程（新制）說明面板（要買的、記帳退稅清單、11/24 行程三個入口；四個階段分頁買東西／前一晚／機場／回家，依日本日期停在「現在」那段、標「現在」；換分頁不跳高度、方向鍵／Home／End；每步一句話、看細節與「整張退不到」預設收起；Esc／背景關閉與焦點、前一晚的看退稅清單、320 寬度）。截圖用 ft/trshot.py
 - buyzonetest：要買的依地點分區＋誰要買（v77；PARCO／LACHIC／中日大樓／榮其他／高島屋・Gate Tower／名鐵 Sun Road／其他地點／地點還沒填；舊項目沒填 who 算星星，新增預設自己，可選星星／阿彰／一起；分區選單預設「自動：○○」照地點分、手選優先；只送改到的欄位；排序時一整串、副標帶名字；320 寬度）。截圖加 --shots
+- stopdonetest：沒排時間的行程「完成」按鈕（v80；只出現在輪到的那站、按了標「完成」變淡、接下來往後推、可復原／取消完成、存在 checks/stop_月日_序號 兩人同步、重開還在）
 - nextstoptest：當天行程的「接下來」（v79；上一個有時間的行程開始後，緊接著的下一站就算接下來，沒排時間也算，上方卡片寫「彈性」不寫幾分後；晚上 10 點後、後面沒有有時間的行程就不算；已知限制：沒排時間的行程 App 不知道逛完了沒，會停在同一站直到下一個有時間的行程開始）。fulltest A 段也照這個規則
 - ghiblitest：11/18 吉卜力交通（從飯店走到伏見站搭東山線，藤が丘換 Linimo；交通段電車約 55 分、路線起點是飯店、終點帶吉卜力地點 ID；頁面不再出現名鐵巴士）
 - kisotest：KISO 整理券（11/21 卡片只留「8:00–8:45 時段內到店」一行＋看完整說明；彈窗三步驟、注意事項、官網／IG 連結；11/20 20:00 提醒的「怎麼抽」開同一個彈窗；sanrio 整理券照舊）
