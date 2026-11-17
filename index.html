@@ -2287,7 +2287,12 @@ const itemM=it=>{const m=tmin(it.t);return m==null?null:m+(TZ_LAG[it.tz]||0)};
 function dayStatus(x){
  const st=x.items.map(()=>""),nowM=tzNow("Asia/Tokyo").m;
  let next=-1;
- x.items.forEach((it,i)=>{const m=itemM(it);if(m==null)return;if(m>nowM){if(next<0)next=i}else st[i]=nowM-m<90?"now":"done"});
+ let last=-1;
+ x.items.forEach((it,i)=>{const m=itemM(it);if(m==null)return;if(m>nowM){if(next<0)next=i}else{st[i]=nowM-m<90?"now":"done";last=i}});
+ /* 上一個有時間的行程開始後，緊接著的下一站就算「接下來」，就算它沒排時間（例如飯店、名古屋城）；
+    晚上 10 點後，後面又沒有有時間的行程，就不再把沒排時間的行程當「接下來」 */
+ const j=last+1;
+ if(j<x.items.length&&itemM(x.items[j])==null&&(next>=0||nowM<22*60))next=j;
  if(next>=0)st[next]="next";
  return{st,next,nowM};
 }
@@ -2348,8 +2353,9 @@ function nowCardHTML(x,stat){
  const cur=stat.st.lastIndexOf("now");
  if(stat.next<0&&cur>=0){const it=x.items[cur];return `<button class="nowcard" type="button" data-jump="${cur}"><span class="flag now">進行中</span><span class="nt"><b>${esc(it.t)} ${esc(it.n)}</b><small>今天最後一站</small></span>${GO_}</button>`}
  if(stat.next<0){const mv=me&&moods[mk(x.d,me)];return mv?`<div class="nowcard done"><svg class="cats" aria-hidden="true"><use href="#cats"/></svg><span class="nt"><b>今天的行程都走完了</b>，好好休息</span></div>`:`<button class="nowcard" type="button" data-scroll-mood><span class="flag next">都走完了</span><span class="nt"><b>寫今天的心情</b></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`}
- const it=x.items[stat.next],left=itemM(it)-stat.nowM,h=Math.floor(left/60),m=left%60;
- return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="flag next">接下來</span><span class="nt"><b>${esc(it.t)} ${esc(it.n)}</b><small>${h?h+" 小時 ":""}${m} 分後${(L=>L?`・${LEG_TXT[L[0]]}約 ${L[1]} 分`:"")(LEGS[x.d+"|"+it.n])}</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
+ const it=x.items[stat.next],tm=itemM(it),left=tm==null?0:tm-stat.nowM,h=Math.floor(left/60),m=left%60,leg=(L=>L?`${LEG_TXT[L[0]]}約 ${L[1]} 分`:"")(LEGS[x.d+"|"+it.n]);
+ const when=tm==null?["彈性",leg].filter(Boolean).join("・"):`${h?h+" 小時 ":""}${m} 分後${leg?"・"+leg:""}`;
+ return `<button class="nowcard" type="button" data-jump="${stat.next}"><span class="flag next">接下來</span><span class="nt"><b>${it.t?esc(it.t)+" ":""}${esc(it.n)}</b><small>${when}</small></span><svg class="go" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 }
 function dayBodyHTML(){
  const x=DAYS[dayIdx],w=wxFor(x),stat=dayIdx===todayIdx?dayStatus(x):null;
